@@ -2,14 +2,13 @@ package org.beatonma.commons.ui.svg.view
 
 import android.content.Context
 import android.util.AttributeSet
-import androidx.core.content.withStyledAttributes
 
 import org.beatonma.commons.R
 import org.beatonma.commons.political.organisation.*
 
 import org.beatonma.lib.graphic.paintedview.PaintedSvgView
 import org.beatonma.lib.util.kotlin.extensions.hasFlag
-import org.beatonma.lib.util.kotlin.extensions.log
+import org.beatonma.lib.util.kotlin.extensions.int
 
 
 /**
@@ -18,7 +17,7 @@ import org.beatonma.lib.util.kotlin.extensions.log
  */
 
 
-private const val LOGO_DURATION: Long = 2400
+//private const val LOGO_DURATION: Long = 2400
 
 class PartyLogosPaintedView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null,
@@ -27,14 +26,17 @@ class PartyLogosPaintedView @JvmOverloads constructor(
 
     private val parties: List<String>
     private val partyCount: Int
+    private val partyDuration: Long
     private var partyIndex: Int = 0
 
     private val nextLogoRunnable = Runnable(::nextLogo)
 
     init {
         context.theme.obtainStyledAttributes(attrs, R.styleable.PartyLogosPaintedView, defStyleAttr, 0).apply {
-            val partyFlags = getInt(R.styleable.PartyLogosPaintedView_party, 0)
+            val partyFlags = int(context, R.styleable.PartyLogosPaintedView_party, default = 0)
             parties = resolveParties(partyFlags).shuffled()
+
+            partyDuration = int(context, R.styleable.PartyLogosPaintedView_party_duration, default = 2400).toLong()
             recycle()
         }
         partyCount = parties.size
@@ -43,7 +45,7 @@ class PartyLogosPaintedView @JvmOverloads constructor(
 
     override fun onPaintFinished() {
         super.onPaintFinished()
-        if (partyCount > 1) postDelayed(nextLogoRunnable, LOGO_DURATION)
+        if (partyCount > 1) postDelayed(nextLogoRunnable, partyDuration)
     }
 
     private fun nextLogo() {
@@ -57,26 +59,27 @@ class PartyLogosPaintedView @JvmOverloads constructor(
     }
 
     companion object PartyFlagResolver {
-        private const val FLAG_CONSERVATIVE = 1
-        private const val FLAG_DUP = 2
-        private const val FLAG_GREEN = 4
-        private const val FLAG_INDEPENDENT = 8
-        private const val FLAG_LABOUR = 16
-        private const val FLAG_LABOUR_COOP = 32
-        private const val FLAG_LIB_DEM = 64
-        private const val FLAG_PLAID_CYMRU = 128
-        private const val FLAG_SDLP = 256
-        private const val FLAG_SINN_FEIN = 512
-        private const val FLAG_SNP = 1024
-        private const val FLAG_UKIP = 2048
-        private const val FLAG_UUP = 4096
+        private const val FLAG_CHANGE_UK = 1
+        private const val FLAG_CONSERVATIVE = 2
+        private const val FLAG_DUP = 4
+        private const val FLAG_GREEN = 8
+        private const val FLAG_INDEPENDENT = 16
+        private const val FLAG_LABOUR = 32
+        private const val FLAG_LABOUR_COOP = 64
+        private const val FLAG_LIB_DEM = 128
+        private const val FLAG_PLAID_CYMRU = 256
+        private const val FLAG_SDLP = 512
+        private const val FLAG_SINN_FEIN = 1024
+        private const val FLAG_SNP = 2048
+        private const val FLAG_UKIP = 4096
+        private const val FLAG_UUP = 8192
 
         fun resolveParties(flags: Int): List<String> {
-            log("flags=$flags")
             if (flags == 0) return partyNames
 
             val list = mutableListOf<String>()
             if (flags.hasFlag(FLAG_CONSERVATIVE)) list.add(CONSERVATIVE)
+            if (flags.hasFlag(FLAG_CHANGE_UK)) list.add(CHANGE_UK)
             if (flags.hasFlag(FLAG_DUP)) list.add(DUP)
             if (flags.hasFlag(FLAG_GREEN)) list.add(GREEN)
             if (flags.hasFlag(FLAG_INDEPENDENT)) list.add(INDEPENDENT)
