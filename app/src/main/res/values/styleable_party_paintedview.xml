@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="PartyLogosPaintedView">
+        <attr name="party" format="flags">
+            <flag name="change_uk" value="1"/>
+            <flag name="conservative" value="2"/>
+            <flag name="dup" value="4"/>
+            <flag name="green" value="8"/>
+            <flag name="independent" value="16"/>
+            <flag name="labour" value="32"/>
+            <flag name="labcoop" value="64"/>
+            <flag name="libdem" value="128"/>
+            <flag name="plaidcymru" value="256"/>
+            <flag name="sdlp" value="512"/>
+            <flag name="sinnfein" value="1024"/>
+            <flag name="snp" value="2048"/>
+            <flag name="ukip" value="4096"/>
+            <flag name="uup" value="8192"/>
+        </attr>
+        <attr name="party_duration" format="enum|integer|reference">
+            <enum name="dur_normal" value="2400"/>
+            <enum name="dur_short" value="800"/>
+        </attr>
+    </declare-styleable>
+</resources>
