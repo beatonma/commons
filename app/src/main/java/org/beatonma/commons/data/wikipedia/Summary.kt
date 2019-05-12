@@ -3,17 +3,29 @@
 package org.beatonma.commons.data.wikipedia
 
 import androidx.room.*
+import org.beatonma.commons.data.twfy.Profile
 
-@Entity
+@Entity(
+    indices = [Index("person_id")],
+    tableName = "wiki_summaries",
+    foreignKeys = [
+        ForeignKey(
+            entity = Profile::class,
+            parentColumns = ["person_id"],
+            childColumns = ["person_id"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
+)
 data class WikiSummary(
-    @PrimaryKey val url: String,
     @ColumnInfo(name = "person_id") val personID: Int?,
-    @ColumnInfo(name = "summary_text") val text: String?,
-    @ColumnInfo(name = "timestamp") val timestamp: Long
+    @PrimaryKey val url: String,
+    @ColumnInfo val text: String?,
+    @ColumnInfo val timestamp: Long
 )
 
 @Dao
-interface WikiWummaryDao {
-    @Query("SELECT * FROM wikisummary WHERE person_id = :person_id")
-    fun getWikiSummary(person_id: Int): WikiSummary
+interface WikiSummaryDao {
+    @Query("SELECT * FROM wiki_summaries WHERE person_id = :personID")
+    suspend fun getWikiSummary(personID: Int): WikiSummary
 }

@@ -3,6 +3,7 @@
 package org.beatonma.commons.data.wikipedia
 
 import androidx.room.*
+import org.beatonma.commons.data.twfy.Profile
 
 /**
  * Sometimes we have to guess at a Wikipedia URL path and resolve to the
@@ -10,18 +11,28 @@ import androidx.room.*
  *
  * After resolution, we store the resolved path locally.
  */
-@Entity
+@Entity(
+    indices = [Index("person_id")],
+    foreignKeys = [
+        ForeignKey(
+            entity = Profile::class,
+            parentColumns = ["person_id"],
+            childColumns = ["person_id"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
+)
 data class Lookup(
-    @PrimaryKey val naive_path: String,
-    @ColumnInfo(name = "person_id") val person_id: Int?,
+    @ColumnInfo(name = "person_id") val personID: Int?,
+    @PrimaryKey @ColumnInfo(name = "naive_path") val naivePath: String,
     @ColumnInfo(name = "confirmed_path") val confirmedPath: String?
 )
 
 @Dao
 interface LookupDao {
-    @Query("SELECT confirmed_path from lookup WHERE person_id = :person_id")
-    fun getWikiProfile(person_id: Int)
+    @Query("SELECT * FROM lookup WHERE person_id = :personID")
+    suspend fun getLookupInfo(personID: Int): Lookup
 
     @Insert
-    fun insert(lookup: Lookup)
+    suspend fun insert(lookup: Lookup)
 }

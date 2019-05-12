@@ -3,23 +3,36 @@
 package org.beatonma.commons.data.wikipedia
 
 import androidx.room.*
+import org.beatonma.commons.data.twfy.Profile
 
-@Entity
+@Entity(
+    indices = [Index("person_id")],
+    tableName = "profile_images",
+    foreignKeys = [
+        ForeignKey(
+            entity = Profile::class,
+            parentColumns = ["person_id"],
+            childColumns = ["person_id"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
+)
 data class ProfileImage(
-    @PrimaryKey val person_id: Int,
-    @ColumnInfo(name = "url") val url: String,
-    @ColumnInfo(name = "attribution_url") val attribution_url: String,
-    @ColumnInfo(name = "attribution_text") val attribution_text: String?
+    @ColumnInfo(name = "person_id") val personID: Int,
+    @PrimaryKey(autoGenerate = true) val id: Long,
+    @ColumnInfo val url: String,
+    @ColumnInfo val attributionUrl: String,
+    @ColumnInfo val attributionText: String?
 )
 
 @Dao
 interface ImageDao {
-    @Query("SELECT * FROM profileimage WHERE person_id = :id")
-    fun getProfileImage(id: Int): ProfileImage
+    @Query("SELECT * FROM profile_images WHERE person_id = :personID")
+    suspend fun getProfileImage(personID: Int): ProfileImage
 
     @Insert
-    fun insert(image: ProfileImage)
+    suspend fun insert(image: ProfileImage)
 
     @Delete
-    fun delete(image: ProfileImage)
+    suspend fun delete(image: ProfileImage)
 }
