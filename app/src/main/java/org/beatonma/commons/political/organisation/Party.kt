@@ -95,19 +95,23 @@ fun getPartySvg(party: String) = when (party) {
 
 interface Party {
     val id: String  // Name as used by TWFY API
-    val name: Int  // Common name
-    val shortName: Int  // Initials or abbreviation
-    val longName: Int  // Full name
+    val nameResId: Int  // Common nameResId
+    val shortNameResId: Int  // Initials or abbreviation
+    val longNameResId: Int  // Full nameResId
     val partyColors: PartyColors  // Color theme
 
     fun svg() = getPartySvg(id)
+
+    fun resolvedName(context: Context) = context.getString(nameResId)
+    fun resolvedShortName(context: Context) = context.getString(shortNameResId)
+    fun resolvedLongName(context: Context) = context.getString(longNameResId)
 }
 
 class ChangeUk : Party {
     override val id = CHANGE_UK
-    override val name = R.string.party_change_uk
-    override val shortName = R.string.party_short_change_uk
-    override val longName = R.string.party_long_change_uk
+    override val nameResId = R.string.party_change_uk
+    override val shortNameResId = R.string.party_short_change_uk
+    override val longNameResId = R.string.party_long_change_uk
     override val partyColors by lazy {
         PartyColors(R.color.party_change_uk, R.color.party_accent_change_uk, R.color.TextPrimaryDark)
     }
@@ -115,9 +119,9 @@ class ChangeUk : Party {
 
 class Conservative : Party {
     override val id = CONSERVATIVE
-    override val name = R.string.party_conservative
-    override val shortName = R.string.party_short_conservative
-    override val longName = R.string.party_long_conservative
+    override val nameResId = R.string.party_conservative
+    override val shortNameResId = R.string.party_short_conservative
+    override val longNameResId = R.string.party_long_conservative
     override val partyColors by lazy {
         PartyColors(R.color.party_conservative, R.color.party_accent_conservative, R.color.TextPrimaryLight)
     }
@@ -125,9 +129,9 @@ class Conservative : Party {
 
 class Dup : Party {
     override val id = DUP
-    override val name = R.string.party_dup
-    override val shortName = R.string.party_short_dup
-    override val longName = R.string.party_long_dup
+    override val nameResId = R.string.party_dup
+    override val shortNameResId = R.string.party_short_dup
+    override val longNameResId = R.string.party_long_dup
     override val partyColors by lazy {
         PartyColors(R.color.party_dup, R.color.party_accent_dup, R.color.TextPrimaryLight)
     }
@@ -135,9 +139,9 @@ class Dup : Party {
 
 class Green : Party {
     override val id = GREEN
-    override val name = R.string.party_green
-    override val shortName = R.string.party_short_green
-    override val longName = R.string.party_long_green
+    override val nameResId = R.string.party_green
+    override val shortNameResId = R.string.party_short_green
+    override val longNameResId = R.string.party_long_green
     override val partyColors by lazy {
         PartyColors(R.color.party_green, R.color.party_accent_green, R.color.TextPrimaryLight)
     }
@@ -145,9 +149,9 @@ class Green : Party {
 
 class Independent : Party {
     override val id = INDEPENDENT
-    override val name = R.string.party_independent
-    override val shortName = R.string.party_short_independent
-    override val longName = R.string.party_long_independent
+    override val nameResId = R.string.party_independent
+    override val shortNameResId = R.string.party_short_independent
+    override val longNameResId = R.string.party_long_independent
     override val partyColors by lazy {
         PartyColors(R.color.party_independent, R.color.party_accent_independent, R.color.TextPrimaryLight)
     }
@@ -155,9 +159,9 @@ class Independent : Party {
 
 class Labour : Party {
     override val id = LABOUR
-    override val name = R.string.party_labour
-    override val shortName = R.string.party_short_labour
-    override val longName = R.string.party_long_labour
+    override val nameResId = R.string.party_labour
+    override val shortNameResId = R.string.party_short_labour
+    override val longNameResId = R.string.party_long_labour
     override val partyColors by lazy {
         PartyColors(R.color.party_labour, R.color.party_accent_labour, R.color.TextPrimaryLight)
     }
@@ -165,9 +169,9 @@ class Labour : Party {
 
 class LabourCoop : Party {
     override val id = LABOUR_COOP
-    override val name = R.string.party_labour_coop
-    override val shortName = R.string.party_short_labour_coop
-    override val longName = R.string.party_long_labour_coop
+    override val nameResId = R.string.party_labour_coop
+    override val shortNameResId = R.string.party_short_labour_coop
+    override val longNameResId = R.string.party_long_labour_coop
     override val partyColors by lazy {
         PartyColors(R.color.party_labour_coop, R.color.party_accent_labour_coop, R.color.TextPrimaryLight)
     }
@@ -175,9 +179,9 @@ class LabourCoop : Party {
 
 class LibDem : Party {
     override val id = LIB_DEM
-    override val name = R.string.party_lib_dem
-    override val shortName = R.string.party_short_lib_dem
-    override val longName = R.string.party_long_lib_dem
+    override val nameResId = R.string.party_lib_dem
+    override val shortNameResId = R.string.party_short_lib_dem
+    override val longNameResId = R.string.party_long_lib_dem
     override val partyColors by lazy {
         PartyColors(R.color.party_lib_dem, R.color.party_accent_lib_dem, R.color.TextPrimaryDark)
     }
@@ -185,9 +189,9 @@ class LibDem : Party {
 
 class PlaidCymru : Party {
     override val id = PLAID_CYMRU
-    override val name = R.string.party_plaid_cymru
-    override val shortName = R.string.party_short_plaid_cymru
-    override val longName = R.string.party_long_plaid_cymru
+    override val nameResId = R.string.party_plaid_cymru
+    override val shortNameResId = R.string.party_short_plaid_cymru
+    override val longNameResId = R.string.party_long_plaid_cymru
     override val partyColors by lazy {
         PartyColors(R.color.party_plaid_cymru, R.color.party_accent_plaid_cymru, R.color.TextPrimaryLight)
     }
@@ -195,9 +199,9 @@ class PlaidCymru : Party {
 
 class Sdlp : Party {
     override val id = SDLP
-    override val name = R.string.party_sdlp
-    override val shortName = R.string.party_short_sdlp
-    override val longName = R.string.party_long_sdlp
+    override val nameResId = R.string.party_sdlp
+    override val shortNameResId = R.string.party_short_sdlp
+    override val longNameResId = R.string.party_long_sdlp
     override val partyColors by lazy {
         PartyColors(R.color.party_sdlp, R.color.party_accent_sdlp, R.color.TextPrimaryLight)
     }
@@ -205,9 +209,9 @@ class Sdlp : Party {
 
 class SinnFein : Party {
     override val id = SINN_FEIN
-    override val name = R.string.party_sinn_fein
-    override val shortName = R.string.party_short_sinn_fein
-    override val longName = R.string.party_long_sinn_fein
+    override val nameResId = R.string.party_sinn_fein
+    override val shortNameResId = R.string.party_short_sinn_fein
+    override val longNameResId = R.string.party_long_sinn_fein
     override val partyColors by lazy {
         PartyColors(R.color.party_sinn_fein, R.color.party_accent_sinn_fein, R.color.TextPrimaryLight)
     }
@@ -215,9 +219,9 @@ class SinnFein : Party {
 
 class Snp : Party {
     override val id = SNP
-    override val name = R.string.party_snp
-    override val shortName = R.string.party_short_snp
-    override val longName = R.string.party_long_snp
+    override val nameResId = R.string.party_snp
+    override val shortNameResId = R.string.party_short_snp
+    override val longNameResId = R.string.party_long_snp
     override val partyColors by lazy {
         PartyColors(R.color.party_snp, R.color.party_accent_snp, R.color.TextPrimaryDark)
     }
@@ -225,9 +229,9 @@ class Snp : Party {
 
 class Ukip : Party {
     override val id = UKIP
-    override val name = R.string.party_ukip
-    override val shortName = R.string.party_short_ukip
-    override val longName = R.string.party_long_ukip
+    override val nameResId = R.string.party_ukip
+    override val shortNameResId = R.string.party_short_ukip
+    override val longNameResId = R.string.party_long_ukip
     override val partyColors by lazy {
         PartyColors(R.color.party_ukip, R.color.party_accent_ukip, R.color.TextPrimaryLight)
     }
@@ -235,9 +239,9 @@ class Ukip : Party {
 
 class Uup : Party {
     override val id = UUP
-    override val name = R.string.party_uup
-    override val shortName = R.string.party_short_uup
-    override val longName = R.string.party_long_uup
+    override val nameResId = R.string.party_uup
+    override val shortNameResId = R.string.party_short_uup
+    override val longNameResId = R.string.party_long_uup
     override val partyColors by lazy {
         PartyColors(R.color.party_uup, R.color.party_accent_uup, R.color.TextPrimaryLight)
     }
@@ -249,9 +253,9 @@ class Uup : Party {
  */
 class Speaker: Party {
     override val id = SPEAKER
-    override val name = R.string.party_speaker
-    override val shortName = R.string.party_short_speaker
-    override val longName = R.string.party_long_speaker
+    override val nameResId = R.string.party_speaker
+    override val shortNameResId = R.string.party_short_speaker
+    override val longNameResId = R.string.party_long_speaker
     override val partyColors by lazy {
         PartyColors(R.color.party_speaker, R.color.party_accent_speaker, R.color.TextPrimaryLight)
     }
