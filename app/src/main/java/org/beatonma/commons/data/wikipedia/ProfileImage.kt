@@ -1,9 +1,7 @@
-@file:JvmName("ProfileImage")
-
 package org.beatonma.commons.data.wikipedia
 
 import androidx.room.*
-import org.beatonma.commons.data.twfy.Profile
+import org.beatonma.commons.data.core.Profile
 
 @Entity(
     indices = [Index("person_id")],

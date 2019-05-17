@@ -1,9 +1,7 @@
-@file:JvmName("Lookup")
-
 package org.beatonma.commons.data.wikipedia
 
 import androidx.room.*
-import org.beatonma.commons.data.twfy.Profile
+import org.beatonma.commons.data.core.Profile
 
 /**
  * Sometimes we have to guess at a Wikipedia URL path and resolve to the

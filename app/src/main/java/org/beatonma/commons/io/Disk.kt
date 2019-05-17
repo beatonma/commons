@@ -1,5 +1,3 @@
-@file:JvmName("Disk")
-
 package org.beatonma.commons.io
 
 import android.content.Context

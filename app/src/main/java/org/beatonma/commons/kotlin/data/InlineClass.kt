@@ -1,5 +1,3 @@
-@file:JvmName("InlineClass")
-
 package org.beatonma.commons.kotlin.data
 
 import android.graphics.Color as PlatformColor

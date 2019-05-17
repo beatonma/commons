@@ -1,5 +1,3 @@
-@file:JvmName("WikiService")
-
 package org.beatonma.commons.network.retrofit
 
 import okhttp3.ResponseBody

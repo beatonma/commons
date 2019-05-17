@@ -1,5 +1,3 @@
-@file:JvmName("Prefs")
-
 package org.beatonma.commons.user
 
 const val FIRST_RUN = "first_run"
