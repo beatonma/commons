@@ -1,6 +1,4 @@
-@file:JvmName("Converters")
-
-package org.beatonma.commons.data.twfy
+package org.beatonma.commons.data.core
 
 import androidx.room.TypeConverter
 import org.beatonma.commons.political.organisation.Party
