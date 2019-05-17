@@ -1,8 +1,10 @@
-apply plugin: 'com.android.application'
+apply plugin: "com.android.application"
 
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'kotlin-kapt'
+apply plugin: "kotlin-android"
+apply plugin: "kotlin-android-extensions"
+apply plugin: "kotlin-kapt"
+
+
 
 android {
     compileSdkVersion rootProject.ext.sdk.target
@@ -13,7 +15,7 @@ android {
         versionCode rootProject.ext.app.versionCode
         versionName rootProject.ext.app.versionName
 
-        buildConfigField 'String', 'TWFY_API_KEY', api_twfy
+        buildConfigField "String", "TWFY_API_KEY", api_twfy
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -30,7 +32,7 @@ android {
         }
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
         }
     }
     compileOptions {
@@ -47,10 +49,11 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-reflect:$versions.kotlin"
 
     androidTestImplementation "org.beatonma.lib:testing:$versions.bma"
+    androidTestImplementation "androidx.test:core:$versions.axtestcore"
     androidTestImplementation "androidx.test:runner:$versions.testrunner"
     androidTestImplementation "androidx.test.espresso:espresso-core:$versions.espresso"
 
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(dir: "libs", include: ["*.jar"])
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.coroutines"
@@ -59,6 +62,7 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$versions.appcompat"
     implementation "androidx.constraintlayout:constraintlayout:$versions.constraintlayout"
     implementation "androidx.core:core-ktx:$versions.core_ktx"
+    implementation "androidx.lifecycle:lifecycle-extensions:$versions.lifecycle"
 
     kapt "androidx.room:room-compiler:$versions.room"
     implementation "androidx.room:room-runtime:$versions.room"
@@ -70,6 +74,7 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-gson:$versions.retrofit2"
 
     implementation "org.beatonma.lib:activity:$versions.bma"
+
     implementation "org.beatonma.lib:core:$versions.bma"
     implementation "org.beatonma.lib:graphic-core:$versions.bma"
     implementation "org.beatonma.lib:paintedview:$versions.bma"
