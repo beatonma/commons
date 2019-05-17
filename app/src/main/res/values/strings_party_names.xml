@@ -1,0 +1,55 @@
+<resources>
+    <!-- Common party names as used by TheyWorkForYou API -->
+    <string name="party_change_uk">Change UK</string>
+    <string name="party_conservative">Conservative</string>
+    <string name="party_dup">DUP</string>
+    <string name="party_green">Green</string>
+    <string name="party_independent">Independent</string>
+    <string name="party_labour">Labour</string>
+    <string name="party_labour_coop">Labour/Co-operative</string>
+    <string name="party_lib_dem">Liberal Democrat</string>
+    <string name="party_plaid_cymru">Plaid Cymru</string>
+    <string name="party_sdlp">Social Democratic and Labour Party</string>
+    <string name="party_sinn_fein">"Sinn Féin"</string>
+    <string name="party_sinn_fein_simple">Sinn Fein</string>
+    <string name="party_snp">Scottish National Party</string>
+    <string name="party_ukip">UKIP</string>
+    <string name="party_uup">UUP</string>
+    <string name="party_speaker">Speaker</string>
+
+    <!-- Party nameResId abbreviations -->
+    <string name="party_short_change_uk">TIG</string>
+    <string name="party_short_conservative">C</string>
+    <string name="party_short_dup">DUP</string>
+    <string name="party_short_green">Green</string>
+    <string name="party_short_independent">Ind</string>
+    <string name="party_short_labour">Lab</string>
+    <string name="party_short_labour_coop">Lab Co-op</string>
+    <string name="party_short_lib_dem">LD</string>
+    <string name="party_short_plaid_cymru">PC</string>
+    <string name="party_short_sdlp">SDLP</string>
+    <string name="party_short_sinn_fein">SF</string>
+    <string name="party_short_snp">SNP</string>
+    <string name="party_short_ukip">UKIP</string>
+    <string name="party_short_uup">UUP</string>
+    <string name="party_short_speaker">Speaker</string>
+
+    <!-- Full party names -->
+    <string name="party_long_change_uk">Change UK – The Independent Group</string>
+    <string name="party_long_conservative">Conservative and Unionist Party</string>
+    <string name="party_long_dup">Democratic Unionist Party</string>
+    <string name="party_long_green">Green Party</string>
+    <string name="party_long_independent">Independent</string>
+    <string name="party_long_labour">Labour Party</string>
+    <string name="party_long_labour_coop">Labour Party/Co-operative</string>
+    <string name="party_long_lib_dem">Liberal Democrat</string>
+    <string name="party_long_plaid_cymru">Plaid Cymru</string>
+    <string name="party_long_sdlp">Social Democratic and Labour Party</string>
+    <string name="party_long_sinn_fein">Sinn Féin</string>
+    <string name="party_long_snp">Scottish National Party</string>
+    <string name="party_long_ukip">UK Independence Party</string>
+    <string name="party_long_uup">Ulster Unionist Party</string>
+    <string name="party_long_speaker">Speaker of the House of Commons</string>
+</resources>
+
+
