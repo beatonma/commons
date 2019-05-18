@@ -9,10 +9,11 @@ android {
     compileSdkVersion(Commons.Sdk.COMPILE)
     defaultConfig {
         applicationId = Commons.APPLICATION_ID
-        minSdkVersion(Commons.Sdk.MIN)
-        targetSdkVersion(Commons.Sdk.TARGET)
         versionCode = Commons.VERSION_CODE
         versionName = Commons.VERSION_NAME
+
+        minSdkVersion(Commons.Sdk.MIN)
+        targetSdkVersion(Commons.Sdk.TARGET)
 
         val api_twfy: String by project
         buildConfigField("String", "TWFY_API_KEY", api_twfy)
@@ -48,11 +49,13 @@ android {
 }
 
 dependencies {
+    // Unit tests
     testImplementation(Dependencies.Test.BMA_TESTING)
     testImplementation(Dependencies.Test.JUNIT)
     testImplementation(Dependencies.Test.MOCKITO)
     testImplementation(Dependencies.Kotlin.REFLECT)
 
+    // Instrumentation tests
     androidTestImplementation(Dependencies.Test.BMA_TESTING)
     androidTestImplementation(Dependencies.Test.ANDROIDX_TEST_CORE)
     androidTestImplementation(Dependencies.Test.ANDROIDX_TEST_RUNNER)
@@ -60,24 +63,32 @@ dependencies {
 
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 
+    // Kotlin
     implementation(Dependencies.Kotlin.STDLIB)
     implementation(Dependencies.Kotlin.COROUTINES_CORE)
     implementation(Dependencies.Kotlin.COROUTINES_ANDROID)
 
+    // Data
+    kapt(Dependencies.Dagger.COMPILER)
+    kapt(Dependencies.Dagger.AP)
+    implementation(Dependencies.Dagger.DAGGER)
+    implementation(Dependencies.Dagger.SUPPORT)
+
+    kapt(Dependencies.Room.AP)
+    implementation(Dependencies.Room.RUNTIME)
+    implementation(Dependencies.Room.KTX)
+
+    implementation(Dependencies.Retrofit.RETROFIT)
+    implementation(Dependencies.Retrofit.RETROFIT_CONVERTER_GSON)
+
+    // App
     implementation(Dependencies.AndroidX.APPCOMPAT)
     implementation(Dependencies.AndroidX.CONSTRAINTLAYOUT)
     implementation(Dependencies.AndroidX.CORE_KTX)
     implementation(Dependencies.AndroidX.LIFECYCLE_EXT)
 
-    kapt(Dependencies.Room.KAPT)
-    implementation(Dependencies.Room.RUNTIME)
-    implementation(Dependencies.Room.KTX)
-
     implementation(Dependencies.GLIDE)
     implementation(Dependencies.GOOGLE_MATERIAL)
-
-    implementation(Dependencies.Retrofit.RETROFIT)
-    implementation(Dependencies.Retrofit.RETROFIT_CONVERTER_GSON)
 
     implementation(Dependencies.Bma.ACTIVITY)
     implementation(Dependencies.Bma.CORE)
