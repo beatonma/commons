@@ -3,12 +3,14 @@ import org.gradle.api.JavaVersion
 private fun dependency(group: String, artifact: String, version: String) = "$group:$artifact:$version"
 private fun androidx(artifact: String, version: String, group: String = artifact) = dependency("androidx.$group", artifact, version)
 private fun bma(artifact: String, version: String = Versions.BMA) = dependency("org.beatonma.lib", artifact, version)
+private fun dagger(artifact: String, version: String = Versions.DAGGER) = dependency("com.google.dagger", artifact, version)
 private fun retrofit(artifact: String, version: String = Versions.RETROFIT) = dependency("com.squareup.retrofit2", artifact, version)
 private fun room(artifact: String, version: String = Versions.ROOM) = androidx(group = "room", artifact = artifact, version = version)
 
 object Versions {
     const val BMA = "0.9.29"
     const val COROUTINES = "1.0.1"
+    const val DAGGER = "2.22.1"
     val JAVA = JavaVersion.VERSION_1_8
     const val KOTLIN = "1.3.31"
     const val RETROFIT = "2.1.0"
@@ -16,7 +18,6 @@ object Versions {
 }
 
 object Dependencies {
-
     val GLIDE = dependency("com.github.bumptech.glide", "glide", "3.7.0")
     val GOOGLE_MATERIAL = dependency("com.google.android.material", "material", "1.1.0-alpha06")
 
@@ -38,6 +39,13 @@ object Dependencies {
         val UTIL = bma("util")
     }
 
+    object Dagger {
+        val DAGGER = dagger("dagger")
+        val SUPPORT =  dagger("dagger-android-support")
+        val COMPILER = dagger("dagger-compiler")
+        val AP = dagger("dagger-android-processor")
+    }
+
     object Kotlin {
         val STDLIB = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.KOTLIN}"
         val REFLECT = "org.jetbrains.kotlin:kotlin-reflect:${Versions.KOTLIN}"
@@ -51,7 +59,7 @@ object Dependencies {
     }
 
     object Room {
-        val KAPT = room("room-compiler")
+        val AP = room("room-compiler")
         val RUNTIME = room("room-runtime")
         val KTX = room("room-ktx")
     }
