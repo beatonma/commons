@@ -10,9 +10,9 @@ import javax.inject.Singleton
 
 @Module
 class CommonsCoreModule {
-    @Provides
     @Singleton
-    fun commonsDataSource(context: Context) = Room.databaseBuilder(
+    @Provides
+    fun provideCommonsDatabase(context: Context): CommonsDatabase = Room.databaseBuilder(
         context.applicationContext,
         CommonsDatabase::class.java,
         COMMONS_DB_FILENAME
