@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="iconBackground">#87878787</color>
+    <color name="iconPerson">#ffffff</color>
+    <color name="iconTieLeft">@color/Transparent</color>
+    <color name="iconTieMiddle">#212121</color>
+    <color name="iconTieRight">@color/Transparent</color>
+</resources>
