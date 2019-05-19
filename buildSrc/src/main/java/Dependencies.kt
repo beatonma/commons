@@ -104,5 +104,7 @@ object Dependencies {
         val BMA_TESTING = bma("testing")
         val MOCKITO = dependency("org.mockito", "mockito-all", "1.10.19")
         val JUNIT = dependency("junit", "junit", "4.12")
+        val RETROFIT_MOCK = retrofit("retrofit-mock")
+        val OKHTTP_MOCK_SERVER = dependency("com.squareup.okhttp3", "mockwebserver", "3.2.0")
     }
 }
