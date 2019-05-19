@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="768"
+   height="768"
+   viewBox="0 0 768 768"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   sodipodi:docname="background.svg"
+   inkscape:export-filename="C:\Users\Michael\AndroidStudioProjects\TheyWorkForYou\twfy-res\square\ic_launcher4.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
+  <metadata
+     id="metadata10">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs8" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="2560"
+     inkscape:window-height="1373"
+     id="namedview6"
+     showgrid="false"
+     inkscape:zoom="0.5"
+     inkscape:cx="-339.84839"
+     inkscape:cy="566.72074"
+     inkscape:window-x="-9"
+     inkscape:window-y="591"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2">
+    <inkscape:grid
+       type="xygrid"
+       id="grid3842"
+       empspacing="1"
+       visible="true"
+       enabled="true"
+       snapvisiblegridlinesonly="true"
+       dotted="true" />
+  </sodipodi:namedview>
+  <rect
+     style="fill:#58b4ff;fill-opacity:1;stroke:none"
+     id="rect3963"
+     width="1800"
+     height="1800"
+     x="-400"
+     y="-400" />
+  <path
+     inkscape:connector-curvature="0"
+     d="m 384,278.85087 c 68.752,0 124.43819,-55.84161 124.43819,-124.43813 0,-68.752068 -55.6862,-124.43815 -124.4382,-124.43815 -68.7521,0 -124.4382,55.686082 -124.4382,124.43815 0,68.59652 55.6861,124.43813 124.4382,124.43813 z m 0,62.21907 c -82.90691,0 -248.8763,41.53123 -248.8763,124.43813 v 62.21907 H 632.8763 V 465.50807 C 632.8763,382.60117 466.9069,341.06994 384,341.06994 z"
+     id="path4"
+     style="fill:#ffffff" />
+</svg>
