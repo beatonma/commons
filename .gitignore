@@ -6,5 +6,6 @@
 /build
 /captures
 .externalNativeBuild
-**/mipmap*
-**/drawable*
+**/mipmap*/*.png
+**/drawable*/*.png
+buildSrc/**/local/
