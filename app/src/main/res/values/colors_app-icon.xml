@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="iconBackground">#58b4ff</color>
+    <color name="iconPerson">#ffffff</color>
+    <color name="iconTieLeft">#c41230</color>
+    <color name="iconTieMiddle">#11437d</color>
+    <color name="iconTieRight">#fdbb30</color>
+</resources>
