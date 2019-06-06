@@ -19,23 +19,23 @@ private fun room(artifact: String, version: String = Versions.ROOM) =
 
 object Versions {
     const val BMA = "0.9.29"
-    const val COROUTINES = "1.0.1"
-    const val DAGGER = "2.22.1"
-    const val GLIDE = "3.7.0"
+    const val COROUTINES = "1.2.1"
+    const val DAGGER = "2.23.1"
+    const val GLIDE = "4.9.0"
     val JAVA = JavaVersion.VERSION_1_8
     const val KOTLIN = "1.3.31"
-    const val RETROFIT = "2.1.0"
-    const val ROOM = "2.1.0-beta01"
+    const val RETROFIT = "2.6.0"
+    const val ROOM = "2.1.0-rc01"
 }
 
 object Dependencies {
-    val GOOGLE_MATERIAL = dependency("com.google.android.material", "material", "1.1.0-alpha06")
+    val GOOGLE_MATERIAL = dependency("com.google.android.material", "material", "1.1.0-alpha07")
 
     object AndroidX {
-        val APPCOMPAT = androidx("appcompat", version = "1.1.0-alpha05")
+        val APPCOMPAT = androidx("appcompat", version = "1.1.0-beta01")
         val CONSTRAINTLAYOUT = androidx("constraintlayout", version = "2.0.0-beta1")
-        val CORE_KTX = androidx(group = "core", artifact = "core-ktx", version = "1.0.2")
-        val LIFECYCLE_EXT = androidx(group = "lifecycle", artifact = "lifecycle-extensions", version = "2.0.0")
+        val CORE_KTX = androidx(group = "core", artifact = "core-ktx", version = "1.2.0-alpha01")
+        val LIFECYCLE_EXT = androidx(group = "lifecycle", artifact = "lifecycle-extensions", version = "2.2.0-alpha01")
     }
 
     object Bma {
@@ -47,6 +47,10 @@ object Dependencies {
         val RECYCLERVIEW = bma("recyclerview")
         val STYLE = bma("style")
         val UTIL = bma("util")
+    }
+
+    object Build {
+        val VERSIONS = dependency("com.github.ben-manes", "gradle-versions-plugin", "0.21.0")
     }
 
     object Dagger {
@@ -95,16 +99,16 @@ object Dependencies {
 
     object Test {
         object AndroidX {
-            val CORE = androidx(group = "test", artifact = "core", version = "1.1.0")
-            val RUNNER = androidx(group = "test", artifact = "runner", version = "1.1.1-alpha01")
+            val CORE = androidx(group = "test", artifact = "core", version = "1.2.0")
+            val RUNNER = androidx(group = "test", artifact = "runner", version = "1.2.0")
             val ESPRESSO =
-                androidx(group = "test.espresso", artifact = "espresso-core", version = "3.1.1")
+                androidx(group = "test.espresso", artifact = "espresso-core", version = "3.2.0")
         }
 
         val BMA_TESTING = bma("testing")
-        val MOCKITO = dependency("org.mockito", "mockito-all", "1.10.19")
-        val JUNIT = dependency("junit", "junit", "4.12")
+        val MOCKITO = dependency("org.mockito", "mockito-all", "2.0.2-beta")
+        val JUNIT = dependency("junit", "junit", "4.13-beta-3")
         val RETROFIT_MOCK = retrofit("retrofit-mock")
-        val OKHTTP_MOCK_SERVER = dependency("com.squareup.okhttp3", "mockwebserver", "3.2.0")
+        val OKHTTP_MOCK_SERVER = dependency("com.squareup.okhttp3", "mockwebserver", "4.0.0-alpha02")
     }
 }
