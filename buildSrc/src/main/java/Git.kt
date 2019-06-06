@@ -20,10 +20,6 @@ private fun String?.execute(workingDir: File, fallback: String): String {
     }
 }
 
-fun String.wrapped(char: Char = '\"'): String {
-    return "$char$this$char"
-}
-
 object Git {
     fun sha(project: Project): String {
         // query git for the SHA, Tag and commit count. Use these to automate versioning.
