@@ -1,5 +1,6 @@
 package org.beatonma.commons.network.dagger
 
+import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -7,7 +8,7 @@ import org.beatonma.commons.network.retrofit.CommonsService
 import org.beatonma.commons.network.retrofit.TwfyService
 import org.beatonma.commons.network.retrofit.WikiService
 import retrofit2.Retrofit
-import retrofit2.converter.scalars.ScalarsConverterFactory
+import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -15,29 +16,41 @@ import javax.inject.Singleton
 class RetrofitModule {
     @Singleton
     @Provides
-    @Named(WebServices.COMMONS)
-    fun provideCommonsRetrofit(@Named(WebServices.DEFAULT) httpClient: OkHttpClient): Retrofit =
+    @Named(WebService.COMMONS)
+    fun provideCommonsRetrofit(
+        moshi: Moshi,
+        @Named(WebService.COMMONS) httpClient: OkHttpClient
+    ): Retrofit =
         Retrofit.Builder()
-            .client(httpClient)
-            .addConverterFactory(ScalarsConverterFactory.create())
             .baseUrl(CommonsService.ENDPOINT)
+            .client(httpClient)
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
 
     @Singleton
     @Provides
-    @Named(WebServices.WIKIPEDIA)
-    fun provideWikipediaRetrofit(@Named(WebServices.DEFAULT) httpClient: OkHttpClient): Retrofit =
+    @Named(WebService.TWFY)
+    fun provideTwfyRetrofit(@Named(WebService.TWFY) httpClient: OkHttpClient): Retrofit =
+        Retrofit.Builder()
+            .client(httpClient)
+            .baseUrl(TwfyService.ENDPOINT)
+            .build()
+
+    @Singleton
+    @Provides
+    @Named(WebService.GENERIC)
+    fun provideGenericRetrofit(@Named(WebService.GENERIC) httpClient: OkHttpClient): Retrofit =
+        Retrofit.Builder()
+            .client(httpClient)
+            .baseUrl(CommonsService.ENDPOINT)  // Service uses complete URLs so this is ignored.
+            .build()
+
+    @Singleton
+    @Provides
+    @Named(WebService.WIKIPEDIA)
+    fun provideWikipediaRetrofit(@Named(WebService.GENERIC) httpClient: OkHttpClient): Retrofit =
         Retrofit.Builder()
             .client(httpClient)
             .baseUrl(WikiService.ENDPOINT)
             .build()
-
-    @Singleton @Provides
-    @Named(WebServices.TWFY)
-    fun provideTwfyRetrofit(@Named(WebServices.TWFY) httpClient: OkHttpClient): Retrofit =
-            Retrofit.Builder()
-                .client(httpClient)
-                .baseUrl(TwfyService.ENDPOINT)
-                .build()
-
 }

@@ -7,6 +7,7 @@ import org.beatonma.commons.CommonsApplication
 import javax.inject.Singleton
 
 @Module
+@Deprecated("")
 class AppModule(val application: CommonsApplication) {
     @Provides
     @Singleton

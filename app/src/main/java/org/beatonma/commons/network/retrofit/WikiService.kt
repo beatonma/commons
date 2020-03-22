@@ -7,16 +7,20 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface WikiService {
-    /**
-     * Example:
-     * ?pithumbsize defines the max height (px) of the returned image
-     * https://en.wikipedia.org/w/api.php?action=query&titles=Albert%20Einstein&prop=pageimages&format=json&piprop=thumbnail&pithumbsize=500
-     */
-    @GET("w/api.php?action=query&format=json&prop=pageimages&piprop=thumbnail")
-    suspend fun getImage(
-        @Query("titles") pageTitle: String,
-        @Query("pithumbsize") maxSize: Int
-    ): Call<ResponseBody>
+    companion object {
+        const val ENDPOINT = "https://en.wikipedia.org"
+    }
+
+//    /**
+//     * Example:
+//     * ?pithumbsize defines the max height (px) of the returned image
+//     * https://en.wikipedia.org/w/api.php?action=query&titles=Albert%20Einstein&prop=pageimages&format=json&piprop=thumbnail&pithumbsize=500
+//     */
+//    @GET("w/api.php?action=query&format=json&prop=pageimages&piprop=thumbnail")
+//    suspend fun getImage(
+//        @Query("titles") pageTitle: String,
+//        @Query("pithumbsize") maxSize: Int
+//    ): Call<ResponseBody>
 
     /**
      * Example:
