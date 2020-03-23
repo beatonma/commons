@@ -1,6 +1,6 @@
+import com.android.build.gradle.internal.dsl.DefaultConfig
+import data.ParliamentDotUkPartyIDs
 import local.LocalConfig
-
-val kotlin_version: String by extra
 
 plugins {
     id("com.android.application")
@@ -36,6 +36,16 @@ android {
 
         buildConfigStrings.forEach { (key, value) ->
             buildConfigField("String", key, "\"$value\"")
+        }
+
+        // Party colors as @color resources and build config constants
+        AllPartyThemes.forEach{ (key, theme) ->
+            injectPartyTheme(key, theme)
+        }
+
+        // Party IDs as build config constants
+        ParliamentDotUkPartyIDs.forEach{ (party, parliamentdotuk) ->
+            buildConfigField("int", "${party}_PARLIAMENTDOTUK".toUpperCase(), "$parliamentdotuk")
         }
 
         vectorDrawables.useSupportLibrary = true
@@ -154,4 +164,16 @@ dependencies {
 }
 repositories {
     mavenCentral()
+}
+
+
+fun DefaultConfig.injectPartyTheme(name: String, theme: PartyColors) {
+    buildConfigField("int", "COLOR_PARTY_${name}_PRIMARY".toUpperCase(), "${theme._primaryInt}")
+    buildConfigField("int", "COLOR_PARTY_${name}_ACCENT".toUpperCase(), "${theme._accentInt}")
+    buildConfigField("int", "COLOR_PARTY_${name}_PRIMARY_TEXT".toUpperCase(), "${theme._primaryTextInt}")
+    buildConfigField("int", "COLOR_PARTY_${name}_ACCENT_TEXT".toUpperCase(), "${theme._accentTextInt}")
+    resValue("color", "party_${name}_primary", theme.primary.toString())
+    resValue("color", "party_${name}_accent", theme.accent.toString())
+    resValue("color", "party_${name}_primary", theme.primaryText.toString())
+    resValue("color", "party_${name}_accent", theme.accentText.toString())
 }
