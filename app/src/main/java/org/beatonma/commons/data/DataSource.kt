@@ -5,28 +5,32 @@ import retrofit2.Response
 import javax.inject.Inject
 
 abstract class BaseDataSource {
-    protected suspend fun <T> getResult(call: suspend () -> Response<T>): Result<T> {
+    protected suspend fun <T> getResult(call: suspend () -> Response<T>): IoResult<T> {
         try {
             val response = call()
             if (response.isSuccessful) {
                 val body = response.body()
                 if (body != null) {
-                    return Result.success(body, message = "Network OK ")
+                    return IoResult.success(body, message = "Network OK ")
                 }
             }
-            return Result.error("Network error: [${response.code()}] ${response.message()}")
+            return IoResult.error("Network error: [${response.code()}] ${response.message()}")
         } catch (e: Exception) {
-            return Result.error("getResult error: ${e.message ?: e}")
+            return IoResult.error("getResult error: ${e.message ?: e}")
         }
     }
 }
 
 
 class CommonsRemoteDataSource @Inject constructor(
-    val service: CommonsService
+    private val service: CommonsService
 ) : BaseDataSource() {
 
     suspend fun getFeaturedPeople() = getResult {
         service.getFeaturedPeople()
+    }
+
+    suspend fun getMember(parliamentdotuk: Int) = getResult {
+        service.getMember(parliamentdotuk)
     }
 }
