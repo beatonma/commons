@@ -5,11 +5,12 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.squareup.moshi.Json
+import org.beatonma.commons.data.PARLIAMENTDOTUK
 
 
 @Entity
 data class MemberProfile(
-    @field:Json(name = "parliamentdotuk") @PrimaryKey val parliamentdotuk: Int,
+    @field:Json(name = PARLIAMENTDOTUK) @PrimaryKey val parliamentdotuk: Int,
     @field:Json(name = "name") val name: String,
     @field:Json(name = "party") @ColumnInfo(name = "party_id") val party: Party,
     @field:Json(name = "constituency") @ColumnInfo(name = "constituency_id") val constituency: Constituency,

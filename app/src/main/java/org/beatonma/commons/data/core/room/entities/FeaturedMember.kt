@@ -4,13 +4,14 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import org.beatonma.commons.data.PARLIAMENTDOTUK
 
 
 @Entity(
     foreignKeys = [
         ForeignKey(
             entity = MemberProfile::class,
-            parentColumns = ["parliamentdotuk"],
+            parentColumns = [PARLIAMENTDOTUK],
             childColumns = ["member_id"],
             onUpdate = ForeignKey.CASCADE,
             onDelete = ForeignKey.CASCADE
@@ -18,7 +19,8 @@ import androidx.room.PrimaryKey
     ]
 )
 data class FeaturedMember(
-    @PrimaryKey val member_id: Int
+    @PrimaryKey val member_id: Int,
+    val about: String? = null
 )
 
 data class FeaturedMemberProfile(

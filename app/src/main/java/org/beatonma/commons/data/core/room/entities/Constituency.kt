@@ -4,10 +4,11 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.squareup.moshi.Json
+import org.beatonma.commons.data.PARLIAMENTDOTUK
 
 @Entity
 data class Constituency(
-    @field:Json(name = "parliamentdotuk")
+    @field:Json(name = PARLIAMENTDOTUK)
     @ColumnInfo(name = "constituency_parliamentdotuk")
     @PrimaryKey val parliamentdotuk: Int,
 
