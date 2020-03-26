@@ -16,7 +16,10 @@ const val COMMONS_DB_FILENAME = "commons.db"
         Birthplace::class,
         Constituency::class,
         Party::class,
-        FeaturedMember::class
+        FeaturedMember::class,
+        Post::class,
+        PhysicalAddress::class,
+        WebAddress::class
     ],
     version = 1
 )
