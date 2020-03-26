@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 
-@Entity
+@Entity(tableName = "constituencies")
 data class Constituency(
     @field:Json(name = PARLIAMENTDOTUK)
     @ColumnInfo(name = "constituency_parliamentdotuk")

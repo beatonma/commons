@@ -8,7 +8,7 @@ import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 
 
-@Entity
+@Entity(tableName = "member_profiles")
 data class MemberProfile(
     @field:Json(name = PARLIAMENTDOTUK) @PrimaryKey val parliamentdotuk: Int,
     @field:Json(name = "name") val name: String,

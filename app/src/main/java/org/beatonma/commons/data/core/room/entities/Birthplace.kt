@@ -5,7 +5,8 @@ import androidx.room.Entity
 import com.squareup.moshi.Json
 
 @Entity(
-    primaryKeys = ["town_name", "country_name"]
+    primaryKeys = ["town_name", "country_name"],
+    tableName = "birthplace"
 )
 data class Birthplace(
     @field:Json(name = "town") @ColumnInfo(name = "town_name") val town: String,

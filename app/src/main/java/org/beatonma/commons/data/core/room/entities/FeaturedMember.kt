@@ -16,7 +16,8 @@ import org.beatonma.commons.data.PARLIAMENTDOTUK
             onUpdate = ForeignKey.CASCADE,
             onDelete = ForeignKey.CASCADE
         )
-    ]
+    ],
+    tableName = "featured_members"
 )
 data class FeaturedMember(
     @PrimaryKey val member_id: Int,
