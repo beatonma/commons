@@ -17,8 +17,9 @@ import org.beatonma.commons.app.ui.datarendering.formatDate
 import org.beatonma.commons.data.IoResult
 import org.beatonma.commons.data.core.CommonsRepository
 import org.beatonma.commons.data.core.Member
-import org.beatonma.commons.data.core.room.entities.Birthplace
+import org.beatonma.commons.data.core.room.entities.CommitteeMembership
 import org.beatonma.commons.data.core.room.entities.Post
+import org.beatonma.commons.data.core.room.entities.Town
 import org.beatonma.commons.data.core.room.entities.WebAddress
 import org.beatonma.lib.util.kotlin.extensions.autotag
 import org.beatonma.lib.util.kotlin.extensions.stringCompat
@@ -35,6 +36,7 @@ class MemberProfileViewModel @Inject constructor(
     lateinit var member: LiveData<IoResult<Member>>
     lateinit var weblinks: LiveData<List<WebAddress>>
     lateinit var posts: LiveData<List<Post>>
+    lateinit var committeeMemberships: LiveData<List<CommitteeMembership>>
 
     val snippets: MutableLiveData<List<Snippet>> = MutableLiveData()
 
@@ -51,6 +53,9 @@ class MemberProfileViewModel @Inject constructor(
 
         posts = repository.observePosts(parliamentdotuk)
         posts.observeForever(observer)
+
+        committeeMemberships = repository.observeCommitteeMemberships(parliamentdotuk)
+        committeeMemberships.observeForever(observer)
     }
 
     override fun onCleared() {
@@ -71,7 +76,8 @@ class MemberProfileViewModel @Inject constructor(
             snippets.value = listOfNotNull(
                 *memberSnippets(member),
                 *webAddressSnippets(weblinks.value),
-                *postSnippets(posts.value)
+                *postSnippets(posts.value),
+                *committeeMembershipSnippets(committeeMemberships.value)
             ).shuffled()
         }
     }
@@ -85,7 +91,7 @@ class MemberProfileViewModel @Inject constructor(
 
     private fun birthSnippet(member: Member): Snippet? {
         val dob: String? = member.profile.dateOfBirth?.let { formatDate(it) }
-        val place: Birthplace? = member.profile.placeOfBirth
+        val place: Town? = member.profile.placeOfBirth
         val age: Int? = member.profile.age
 
         application.run {
@@ -125,16 +131,12 @@ class MemberProfileViewModel @Inject constructor(
         posts ?: return arrayOf()
         return posts.map { post ->
             val postType = stringCompat(when (post.postType) {
-                Post.PostType.GOVERNMENTAL -> R.string.post_type_governmental
-                Post.PostType.PARLIAMENTARY -> R.string.post_type_parliamentary
-                Post.PostType.OPPOSITION -> R.string.post_type_opposition
+                Post.PostType.GOVERNMENTAL -> R.string.snippet_post_type_governmental
+                Post.PostType.PARLIAMENTARY -> R.string.snippet_post_type_parliamentary
+                Post.PostType.OPPOSITION -> R.string.snippet_post_type_opposition
             })
 
-            val dateRange = when {
-                post.start == null -> null
-                post.end == null -> stringCompat(R.string.snippet_date_since, date(post.start))
-                else -> stringCompat(R.string.snippet_date_range, date(post.start), date(post.end))
-            }
+            val dateRange = dateRange(post.start, post.end)
 
             Snippet(
                 post.name,
@@ -144,10 +146,26 @@ class MemberProfileViewModel @Inject constructor(
         }.toTypedArray()
     }
 
+    private fun committeeMembershipSnippets(memberships: List<CommitteeMembership>?): Array<Snippet> {
+        memberships ?: return arrayOf()
+        return memberships.map { membership ->
+            Snippet(
+                stringCompat(R.string.snippet_member_of, membership.name),
+                dateRange(membership.start, membership.end) ?: ""
+            )
+        }.toTypedArray()
+    }
+
     private inline fun stringCompat(@StringRes resId: Int, vararg formatArgs: Any): String =
         application.stringCompat(resId, *formatArgs)
 
-    private inline fun date(yyyy_mm__dd: String) = formatDate(yyyy_mm__dd, calendar)
+    private fun date(yyyy_mm__dd: String) = formatDate(yyyy_mm__dd, calendar)
+
+    private fun dateRange(start: String?, end: String?): String? = when {
+        start == null -> null
+        end == null -> stringCompat(R.string.snippet_date_since, date(start))
+        else -> stringCompat(R.string.snippet_date_range, date(start), date(end))
+    }
 }
 
 /**
