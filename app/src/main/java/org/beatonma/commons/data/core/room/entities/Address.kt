@@ -35,7 +35,7 @@ data class WebAddress(
 /**
  * Used for deserializing api response
  */
-data class Addresses(
+data class ApiAddresses(
     @Embedded @field:Json(name = "physical") val physical: List<PhysicalAddress>? = null,
     @Embedded @field:Json(name = "web") val web: List<WebAddress>? = null
 ): Address()
