@@ -5,10 +5,7 @@ import androidx.lifecycle.LiveData
 import org.beatonma.commons.data.CommonsRemoteDataSource
 import org.beatonma.commons.data.IoResult
 import org.beatonma.commons.data.core.room.CommonsDatabase
-import org.beatonma.commons.data.core.room.entities.FeaturedMember
-import org.beatonma.commons.data.core.room.entities.FeaturedMemberProfile
-import org.beatonma.commons.data.core.room.entities.Post
-import org.beatonma.commons.data.core.room.entities.WebAddress
+import org.beatonma.commons.data.core.room.entities.*
 import org.beatonma.commons.data.resultLiveData
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -64,12 +61,17 @@ class CommonsRepository @Inject constructor(
                 insertPosts(member.posts.opposition.map { post ->
                     post.copy(memberId = parliamentdotuk, postType = Post.PostType.OPPOSITION)
                 })
-            }
 
+                insertCommitteeMemberships(member.committees.map { membership ->
+                    membership.copy( memberId = parliamentdotuk)
+                })
+            }
         }
     )
 
     fun observeWebAddresses(parliamentdotuk: Int): LiveData<List<WebAddress>> = memberDao.getWebAddresses(parliamentdotuk)
 
     fun observePosts(parliamentdotuk: Int): LiveData<List<Post>> = memberDao.getPosts(parliamentdotuk)
+
+    fun observeCommitteeMemberships(parliamentdotuk: Int): LiveData<List<CommitteeMembership>> = memberDao.getCommitteeMemberships(parliamentdotuk)
 }

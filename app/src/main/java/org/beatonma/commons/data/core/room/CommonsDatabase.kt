@@ -13,15 +13,16 @@ const val COMMONS_DB_FILENAME = "commons.db"
 @Database(
     entities = [
         MemberProfile::class,
-        Birthplace::class,
+        CommitteeMembership::class,
         Constituency::class,
-        Party::class,
         FeaturedMember::class,
-        Post::class,
+        Party::class,
         PhysicalAddress::class,
+        Post::class,
+        Town::class,
         WebAddress::class
     ],
-    version = 1
+    version = 2
 )
 @TypeConverters(Converters::class)
 abstract class CommonsDatabase : RoomDatabase() {
