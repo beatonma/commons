@@ -11,32 +11,22 @@ interface MemberDao {
     // Get operations
     @Query("""
         SELECT parliamentdotuk, name, party_id, constituency_id, active, is_mp, is_lord, age,
-                date_of_birth, date_of_death, gender, portrait_url, current_post, birth_town_name, birth_country_name
+            date_of_birth, date_of_death, gender, portrait_url, current_post, birth_town_name, birth_country_name
         FROM member_profiles
         INNER JOIN parties ON parties.party_parliamentdotuk = member_profiles.party_id
-        INNER JOIN constituencies ON constituencies.constituency_parliamentdotuk = member_profiles.constituency_id
+        LEFT JOIN constituencies ON constituencies.constituency_parliamentdotuk = member_profiles.constituency_id
         WHERE member_profiles.parliamentdotuk = :parliamentdotuk
-        """)
+    """)
     fun getMember(parliamentdotuk: Int): LiveData<Member>
 
     @Query("""
-        SELECT parliamentdotuk, name, party_id, constituency_id, active, is_mp, is_lord, age,
-                date_of_birth, date_of_death, gender, portrait_url, current_post, birth_town_name, birth_country_name
-        FROM member_profiles
-        INNER JOIN parties ON parties.party_parliamentdotuk = member_profiles.party_id
-        INNER JOIN constituencies ON constituencies.constituency_parliamentdotuk = member_profiles.constituency_id
-        WHERE member_profiles.parliamentdotuk = :parliamentdotuk
-        """)
-    fun getMemberProfile(parliamentdotuk: Int): LiveData<MemberProfile>
-
-    @Query("""
-        SELECT f.member_id, f.about, prof.parliamentdotuk, prof.name, prof.portrait_url, prof.current_post,
-                p.party_parliamentdotuk, p.party_name, c.constituency_parliamentdotuk, c.constituency_name 
-        FROM featured_members f, member_profiles prof, parties p, constituencies c
-        WHERE prof.parliamentdotuk = f.member_id
-        AND p.party_parliamentdotuk = prof.party_id
-        AND c.constituency_parliamentdotuk = prof.constituency_id
-        """)
+        SELECT f.member_id, f.about, prof.parliamentdotuk, prof.name, prof.portrait_url,
+            prof.current_post, p.party_parliamentdotuk, p.party_name, constituency_parliamentdotuk, constituency_name
+        FROM featured_members f, member_profiles prof, parties p
+        LEFT JOIN constituencies ON constituencies.constituency_parliamentdotuk = prof.constituency_id
+		WHERE p.party_parliamentdotuk = prof.party_id
+		AND prof.parliamentdotuk = f.member_id
+    """)
     fun getFeaturedProfiles(): LiveData<List<FeaturedMemberProfile>>
 
     @Query("""SELECT * FROM weblinks WHERE weblinks.waddr_person_id = :parliamentdotuk""")
@@ -56,7 +46,7 @@ interface MemberDao {
     suspend fun insertPhysicalAddresses(webaddresses: List<PhysicalAddress>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertWebAddresses(webaddresses: List<WebAddress>?)
+    suspend fun insertWebAddresses(webaddresses: List<WebAddress>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFeaturedPeople(people: List<FeaturedMember>)
@@ -80,7 +70,13 @@ interface MemberDao {
     suspend fun insertCommitteeMemberships(committeeMemberships: List<CommitteeMembership>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCommitteeChairships(committeeChairships: List<CommitteeChairship>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertHouseMemberships(houseMemberships: List<HouseMembership>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertFinancialInterests(financialInterests: List<FinancialInterest>)
 
     /**
      * Delete everything related to a Person via ForeignKey cascading
