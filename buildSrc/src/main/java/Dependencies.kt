@@ -22,11 +22,12 @@ private fun moshi(artifact: String, version: String = Versions.MOSHI) =
 
 object Versions {
     const val BMA = "0.9.29"
+    const val COMPOSE = "0.1.0-dev07"
     const val COROUTINES = "1.3.4"
     const val DAGGER = "2.27"
     const val GLIDE = "4.9.0"
     val JAVA = JavaVersion.VERSION_1_8
-    const val KOTLIN = "1.3.70"
+    const val KOTLIN = "1.3.71"
     const val RETROFIT = "2.6.0"
     const val ROOM = "2.1.0-rc01"
     const val MOSHI = "1.9.2"
@@ -47,6 +48,10 @@ object Dependencies {
 
         val NAVIGATION_FRAGMENT = androidx(group = "navigation", artifact = "navigation-fragment-ktx", version = "2.3.0-alpha03")
         val NAVIGATION_UI = androidx(group = "navigation", artifact = "navigation-ui-ktx", version = "2.3.0-alpha03")
+
+        val COMPOSE_TOOLING = androidx(group = "ui", artifact = "ui-tooling", version = Versions.COMPOSE)
+        val COMPOSE_LAYOUT = androidx(group = "ui", artifact = "ui-layout", version = Versions.COMPOSE)
+        val COMPOSE_MATERIAL = androidx(group = "ui", artifact = "ui-material", version = Versions.COMPOSE)
     }
 
     object Bma {
