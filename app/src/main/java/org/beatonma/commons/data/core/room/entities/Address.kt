@@ -3,14 +3,24 @@ package org.beatonma.commons.data.core.room.entities
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.ForeignKey
 import com.squareup.moshi.Json
+import org.beatonma.commons.data.PARLIAMENTDOTUK
 
 sealed class Address
 
 @Entity(
+    foreignKeys = [
+        ForeignKey(
+            entity = MemberProfile::class,
+            parentColumns = [PARLIAMENTDOTUK],
+            childColumns = ["paddr_member_id"],
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.CASCADE
+        )
+    ],
     primaryKeys = [
-        "paddr_person_id",
+        "paddr_member_id",
         "paddr_address"
     ],
     tableName = "physical_addresses"
@@ -22,20 +32,35 @@ data class PhysicalAddress(
     @field:Json(name = "phone") @ColumnInfo(name = "paddr_phone") val phone: String?,
     @field:Json(name = "fax") @ColumnInfo(name = "paddr_fax") val fax: String?,
     @field:Json(name = "email") @ColumnInfo(name = "paddr_email") val email: String?,
-    @ColumnInfo(name = "paddr_person_id") val personId: Int
+    @ColumnInfo(name = "paddr_member_id", index = true) val personId: Int
 ): Address()
 
-@Entity(tableName = "weblinks")
+@Entity(
+    foreignKeys = [
+        ForeignKey(
+            entity = MemberProfile::class,
+            parentColumns = [PARLIAMENTDOTUK],
+            childColumns = ["waddr_member_id"],
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.CASCADE
+        )
+    ],
+    primaryKeys = [
+        "waddr_url",
+        "waddr_member_id"
+    ],
+    tableName = "weblinks"
+)
 data class WebAddress(
-    @field:Json(name = "url") @ColumnInfo(name = "waddr_url") @PrimaryKey val url: String,
+    @field:Json(name = "url") @ColumnInfo(name = "waddr_url") val url: String,
     @field:Json(name = "description") @ColumnInfo(name = "waddr_description") val description: String,
-    @ColumnInfo(name = "waddr_person_id") val personId: Int
+    @ColumnInfo(name = "waddr_member_id", index = true) val personId: Int
 )
 
 /**
  * Used for deserializing api response
  */
 data class ApiAddresses(
-    @Embedded @field:Json(name = "physical") val physical: List<PhysicalAddress>? = null,
-    @Embedded @field:Json(name = "web") val web: List<WebAddress>? = null
+    @Embedded @field:Json(name = "physical") val physical: List<PhysicalAddress>,
+    @Embedded @field:Json(name = "web") val web: List<WebAddress>
 ): Address()

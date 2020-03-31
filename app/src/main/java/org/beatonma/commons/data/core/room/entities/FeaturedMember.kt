@@ -1,11 +1,8 @@
 package org.beatonma.commons.data.core.room.entities
 
-import androidx.room.Embedded
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
+import androidx.room.*
 import org.beatonma.commons.data.PARLIAMENTDOTUK
-
+import org.beatonma.commons.data.core.MinimalMember
 
 @Entity(
     foreignKeys = [
@@ -25,6 +22,10 @@ data class FeaturedMember(
 )
 
 data class FeaturedMemberProfile(
-    @Embedded val profile: MemberProfileWithRelatedObjects,
-    @Embedded val featured: FeaturedMember
+    @Embedded val featured: FeaturedMember,
+    @Relation(
+        parentColumn = "member_id",
+        entityColumn = "parliamentdotuk",
+        entity = MemberProfile::class
+    ) val profile: MinimalMember
 )

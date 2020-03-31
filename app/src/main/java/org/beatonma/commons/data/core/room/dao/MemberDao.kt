@@ -2,34 +2,22 @@ package org.beatonma.commons.data.core.room.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import org.beatonma.commons.data.core.Member
+import org.beatonma.commons.data.core.CompleteMember
 import org.beatonma.commons.data.core.room.entities.*
 
 @Dao
 interface MemberDao {
 
     // Get operations
-    @Query("""
-        SELECT parliamentdotuk, name, party_id, constituency_id, active, is_mp, is_lord, age,
-            date_of_birth, date_of_death, gender, portrait_url, current_post, birth_town_name, birth_country_name
-        FROM member_profiles
-        INNER JOIN parties ON parties.party_parliamentdotuk = member_profiles.party_id
-        LEFT JOIN constituencies ON constituencies.constituency_parliamentdotuk = member_profiles.constituency_id
-        WHERE member_profiles.parliamentdotuk = :parliamentdotuk
-    """)
-    fun getMember(parliamentdotuk: Int): LiveData<Member>
+    @Transaction
+    @Query("""SELECT * FROM member_profiles WHERE member_profiles.parliamentdotuk = :parliamentdotuk""")
+    fun getCompleteMember(parliamentdotuk: Int): LiveData<CompleteMember>
 
-    @Query("""
-        SELECT f.member_id, f.about, prof.parliamentdotuk, prof.name, prof.portrait_url,
-            prof.current_post, p.party_parliamentdotuk, p.party_name, constituency_parliamentdotuk, constituency_name
-        FROM featured_members f, member_profiles prof, parties p
-        LEFT JOIN constituencies ON constituencies.constituency_parliamentdotuk = prof.constituency_id
-		WHERE p.party_parliamentdotuk = prof.party_id
-		AND prof.parliamentdotuk = f.member_id
-    """)
+    @Transaction
+    @Query("""SELECT * FROM featured_members""")
     fun getFeaturedProfiles(): LiveData<List<FeaturedMemberProfile>>
 
-    @Query("""SELECT * FROM weblinks WHERE weblinks.waddr_person_id = :parliamentdotuk""")
+    @Query("""SELECT * FROM weblinks WHERE weblinks.waddr_member_id = :parliamentdotuk""")
     fun getWebAddresses(parliamentdotuk: Int): LiveData<List<WebAddress>>
 
     @Query("""SELECT * FROM posts WHERE post_member_id = :parliamentdotuk""")
@@ -40,6 +28,19 @@ interface MemberDao {
 
     @Query("""SELECT * FROM house_memberships WHERE house_member_id = :parliamentdotuk""")
     fun getHouseMemberships(parliamentdotuk: Int): LiveData<List<HouseMembership>>
+
+    @Query("""SELECT * FROM financial_interests WHERE interest_member_id = :parliamentdotuk""")
+    fun getFinancialInterests(parliamentdotuk: Int): LiveData<List<FinancialInterest>>
+
+    @Query("""SELECT * FROM experiences WHERE experience_member_id = :parliamentdotuk""")
+    fun getExperiences(parliamentdotuk: Int): LiveData<List<Experience>>
+
+    @Query("""SELECT * FROM topics_of_interest WHERE topic_member_id = :parliamentdotuk""")
+    fun getTopicsOfInterest(parliamentdotuk: Int): LiveData<List<TopicOfInterest>>
+
+    @Transaction
+    @Query("""SELECT * FROM committee_memberships WHERE committee_member_id = :parliamentdotuk""")
+    fun getCommitteeMembershipWithChairship(parliamentdotuk: Int): LiveData<List<CommitteeMemberWithChairs>>
 
     // Insert operations
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -77,6 +78,12 @@ interface MemberDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFinancialInterests(financialInterests: List<FinancialInterest>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertExperiences(experiences: List<Experience>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertTopicsOfInterest(topicOfInterests: List<TopicOfInterest>)
 
     /**
      * Delete everything related to a Person via ForeignKey cascading

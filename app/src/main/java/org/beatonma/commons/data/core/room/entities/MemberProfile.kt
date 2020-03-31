@@ -1,19 +1,34 @@
 package org.beatonma.commons.data.core.room.entities
 
-import androidx.room.ColumnInfo
-import androidx.room.Embedded
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.*
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 
 
-@Entity(tableName = "member_profiles")
+@Entity(
+    foreignKeys = [
+        ForeignKey(
+            entity = Party::class,
+            parentColumns = ["party_$PARLIAMENTDOTUK"],
+            childColumns = ["party_id"],
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = Constituency::class,
+            parentColumns = ["constituency_$PARLIAMENTDOTUK"],
+            childColumns = ["constituency_id"],
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.CASCADE
+        )
+    ],
+    tableName = "member_profiles"
+)
 data class MemberProfile(
     @PrimaryKey @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = PARLIAMENTDOTUK) val parliamentdotuk: Int,
     @field:Json(name = "name") @ColumnInfo(name = "name") val name: String,
-    @field:Json(name = "party") @ColumnInfo(name = "party_id") val party: Party,
-    @field:Json(name = "constituency") @ColumnInfo(name = "constituency_id") val constituency: Constituency?,
+    @field:Json(name = "party") @ColumnInfo(name = "party_id", index = true) val party: Party,  // Use Party object for api response, serialized to id for storage
+    @field:Json(name = "constituency") @ColumnInfo(name = "constituency_id", index = true) val constituency: Constituency?,  // Use Constituency object for api response, serialized to id for storage
     @field:Json(name = "active") @ColumnInfo(name = "active") val active: Boolean? = null,
     @field:Json(name = "is_mp") @ColumnInfo(name = "is_mp") val isMp: Boolean? = null,
     @field:Json(name = "is_lord") @ColumnInfo(name = "is_lord") val isLord: Boolean? = null,
@@ -24,17 +39,4 @@ data class MemberProfile(
     @Embedded(prefix = "birth_") @field:Json(name = "place_of_birth") val placeOfBirth: Town? = null,
     @field:Json(name = "portrait") @ColumnInfo(name = "portrait_url") val portraitUrl: String? = null,
     @field:Json(name = "current_post") @ColumnInfo(name = "current_post") val currentPost: String? = null
-)
-
-data class MemberProfileWithRelatedObjects(
-    @Embedded val profile: MinimalProfile,
-    @Embedded val party: Party,
-    @Embedded val constituency: Constituency?
-)
-
-data class MinimalProfile(
-    @ColumnInfo(name = PARLIAMENTDOTUK) val parliamentdotuk: Int,
-    @ColumnInfo(name = "name") val name: String,
-    @ColumnInfo(name = "portrait_url") val portraitUrl: String?,
-    @ColumnInfo(name = "current_post") val currentPost: String?
 )

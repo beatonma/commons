@@ -5,10 +5,16 @@ import androidx.lifecycle.LiveData
 import org.beatonma.commons.data.CommonsRemoteDataSource
 import org.beatonma.commons.data.IoResult
 import org.beatonma.commons.data.core.room.CommonsDatabase
-import org.beatonma.commons.data.core.room.entities.*
+import org.beatonma.commons.data.core.room.entities.CommitteeMembership
+import org.beatonma.commons.data.core.room.entities.FeaturedMember
+import org.beatonma.commons.data.core.room.entities.FeaturedMemberProfile
+import org.beatonma.commons.data.core.room.entities.Post
 import org.beatonma.commons.data.resultLiveData
+import org.beatonma.lib.util.kotlin.extensions.dump
 import javax.inject.Inject
 import javax.inject.Singleton
+
+private const val TAG = "CommonsRepo"
 
 @Singleton
 class CommonsRepository @Inject constructor(
@@ -16,6 +22,7 @@ class CommonsRepository @Inject constructor(
     private val commonsRemoteDataSource: CommonsRemoteDataSource,
     commonsDatabase: CommonsDatabase
 ) {
+
     private val memberDao = commonsDatabase.memberDao()
 
     fun observeFeaturedPeople(): LiveData<IoResult<List<FeaturedMemberProfile>>> = resultLiveData(
@@ -23,9 +30,9 @@ class CommonsRepository @Inject constructor(
         networkCall = { commonsRemoteDataSource.getFeaturedPeople() },
         saveCallResult = { profiles ->
             memberDao.apply {
-                profiles.forEach {
-                    insertParty(it.party)
-                    insertConstituency(it.constituency)
+                profiles.forEach { profile ->
+                    insertParty(profile.party)
+                    profile.constituency?.let { insertConstituency(it) }
                 }
 
                 insertProfiles(profiles)
@@ -36,20 +43,21 @@ class CommonsRepository @Inject constructor(
         }
     )
 
-    fun observeMember(parliamentdotuk: Int): LiveData<IoResult<Member>> = resultLiveData(
-        databaseQuery = { memberDao.getMember(parliamentdotuk) },
+    fun observeMember(parliamentdotuk: Int): LiveData<IoResult<CompleteMember>> = resultLiveData(
+        databaseQuery = { memberDao.getCompleteMember(parliamentdotuk) },
         networkCall = { commonsRemoteDataSource.getMember(parliamentdotuk) },
         saveCallResult = { member ->
+            member.dump()
             memberDao.apply {
                 insertParty(member.profile.party)
-                insertConstituency(member.profile.constituency)
+                member.profile.constituency?.let { insertConstituency(it) }
                 insertProfile(member.profile)
 
                 insertPhysicalAddresses(
-                    member.addresses.physical?.map { it.copy(personId = parliamentdotuk) }
+                    member.addresses.physical.map { it.copy(personId = parliamentdotuk) }
                 )
                 insertWebAddresses(
-                    member.addresses.web?.map { it.copy(personId = parliamentdotuk) }
+                    member.addresses.web.map { it.copy(personId = parliamentdotuk) }
                 )
 
                 insertPosts(member.posts.governmental.map { post ->
@@ -63,15 +71,29 @@ class CommonsRepository @Inject constructor(
                 })
 
                 insertCommitteeMemberships(member.committees.map { membership ->
-                    membership.copy( memberId = parliamentdotuk)
+                    CommitteeMembership(
+                        membership.parliamentdotuk,
+                        memberId = parliamentdotuk,
+                        name = membership.name,
+                        start = membership.start,
+                        end = membership.end
+                    )
                 })
+
+                member.committees.forEach { committee ->
+                    insertCommitteeChairships(committee.chairs.map { chair ->
+                        chair.copy(committeeId = committee.parliamentdotuk, memberId = parliamentdotuk)
+                    })
+                }
+
+                insertHouseMemberships(member.houses.map { house ->
+                    house.copy(memberId = parliamentdotuk)
+                })
+
+                insertFinancialInterests(member.financialInterests.map { it.copy(memberId = parliamentdotuk) })
+                insertExperiences(member.experiences.map { it.copy(memberId = parliamentdotuk) })
+                insertTopicsOfInterest(member.topicsOfInterest.map { it.copy(memberId = parliamentdotuk) })
             }
         }
     )
-
-    fun observeWebAddresses(parliamentdotuk: Int): LiveData<List<WebAddress>> = memberDao.getWebAddresses(parliamentdotuk)
-
-    fun observePosts(parliamentdotuk: Int): LiveData<List<Post>> = memberDao.getPosts(parliamentdotuk)
-
-    fun observeCommitteeMemberships(parliamentdotuk: Int): LiveData<List<CommitteeMembership>> = memberDao.getCommitteeMemberships(parliamentdotuk)
 }

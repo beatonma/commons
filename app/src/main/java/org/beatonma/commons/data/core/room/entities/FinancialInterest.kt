@@ -2,10 +2,20 @@ package org.beatonma.commons.data.core.room.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 
 @Entity(
+    foreignKeys = [
+        ForeignKey(
+            entity = MemberProfile::class,
+            parentColumns = [PARLIAMENTDOTUK],
+            childColumns = ["interest_member_id"],
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.CASCADE
+        )
+    ],
     primaryKeys = [
         "interest_member_id",
         "interest_id"

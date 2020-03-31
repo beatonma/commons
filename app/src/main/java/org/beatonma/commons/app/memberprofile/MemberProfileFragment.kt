@@ -12,7 +12,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import dagger.android.support.AndroidSupportInjection
-import kotlinx.android.synthetic.main.fragment_member_profile_snippet.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -22,8 +21,12 @@ import org.beatonma.commons.app.dagger.Injectable
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.core.room.entities.MemberProfile
 import org.beatonma.commons.databinding.FragmentMemberProfileBinding
+import org.beatonma.commons.databinding.FragmentMemberProfileSnippetBinding
 import org.beatonma.commons.ui.colors.PartyColors
 import org.beatonma.commons.ui.colors.getPartyTheme
+import org.beatonma.lib.ui.recyclerview.BaseRecyclerViewAdapter
+import org.beatonma.lib.ui.recyclerview.BaseViewHolder
+import org.beatonma.lib.ui.recyclerview.kotlin.extensions.setup
 import javax.inject.Inject
 
 
@@ -36,6 +39,7 @@ class MemberProfileFragment : Fragment(), Injectable {
     private val viewmodel: MemberProfileViewModel by viewModels { viewmodelFactory }
     private var snippetIndex = 0;
     private var snippetJob: Job? = null
+    private val adapter = SimpleProfileAdapter()
 
     private fun getMemberIdFromBundle(): Int = arguments?.getInt(PARLIAMENTDOTUK) ?: 0
 
@@ -58,6 +62,7 @@ class MemberProfileFragment : Fragment(), Injectable {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.recyclerview.setup(adapter)
         binding.portrait.setImageResource(R.mipmap.ic_launcher)
 
         viewmodel.member.observe(viewLifecycleOwner, Observer { result ->
@@ -66,7 +71,11 @@ class MemberProfileFragment : Fragment(), Injectable {
             }
         })
 
-        viewmodel.snippets.observe(viewLifecycleOwner, Observer { nextSnippet() })
+        viewmodel.snippets.observe(viewLifecycleOwner, Observer { snippets ->
+            nextSnippet()
+            adapter.items = snippets.sortedBy { it.title }
+            adapter.notifyDataSetChanged()
+        })
     }
 
     private fun updateUI(profile: MemberProfile) {
@@ -99,16 +108,45 @@ class MemberProfileFragment : Fragment(), Injectable {
         }
     }
 
-    private fun setSnippet(snippet: Snippet) {
-        binding.snippet.apply {
-            title.text = snippet.title
-            content.text = snippet.content
-            subtitle.text = snippet.subtitle
-            subcontent.text = snippet.subcontent
-        }
+    private fun setSnippet(snippet: Snippet) = bindSnippet(binding.snippet, snippet)
 
-        binding.snippet.action.setOnClickListener { view -> snippet.onclick?.invoke(view.context) }
-        binding.snippet.snippet.action.apply {
+    private fun applyTheme(theme: PartyColors) {
+        binding.apply{
+            portrait.setBackgroundColor(theme.primary)
+            accentLine.setBackgroundColor(theme.primary)
+        }
+    }
+}
+
+
+class SimpleProfileAdapter(var items: List<Snippet>? = null): BaseRecyclerViewAdapter() {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
+        return SimpleSnippetViewHolder(inflate(parent, R.layout.fragment_member_profile_snippet, false))
+    }
+
+    override fun getItemCount() = items?.size ?: 0
+
+    inner class SimpleSnippetViewHolder(v: View): BaseViewHolder(v) {
+        private val binding = FragmentMemberProfileSnippetBinding.bind(v)
+
+        override fun bind(position: Int) {
+            val snippet = items?.get(position) ?: return
+            bindSnippet(binding, snippet)
+        }
+    }
+}
+
+
+private fun bindSnippet(binding: FragmentMemberProfileSnippetBinding, snippet: Snippet) {
+    binding.apply {
+        title.text = snippet.title
+        content.text = snippet.content
+        subtitle.text = snippet.subtitle
+        subcontent.text = snippet.subcontent
+
+        action.apply {
+            setOnClickListener { view -> snippet.onclick?.invoke(view.context) }
+
             if (snippet.onclick == null || snippet.clickActionText == null) {
                 visibility = View.GONE
             }
@@ -116,13 +154,6 @@ class MemberProfileFragment : Fragment(), Injectable {
                 text = snippet.clickActionText
                 visibility = View.VISIBLE
             }
-        }
-    }
-
-    private fun applyTheme(theme: PartyColors) {
-        binding.apply{
-            portrait.setBackgroundColor(theme.primary)
-            accentLine.setBackgroundColor(theme.primary)
         }
     }
 }
