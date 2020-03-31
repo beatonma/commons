@@ -62,6 +62,9 @@ interface MemberDao {
     suspend fun insertConstituency(constituency: Constituency)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertConstituencies(constituencies: List<Constituency>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertParty(party: Party)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -84,6 +87,12 @@ interface MemberDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTopicsOfInterest(topicOfInterests: List<TopicOfInterest>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertElections(elections: List<Election>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertMemberForConstituencies(memberForConstituencies: List<MemberForConstituency>)
 
     /**
      * Delete everything related to a Person via ForeignKey cascading

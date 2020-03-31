@@ -5,10 +5,7 @@ import androidx.lifecycle.LiveData
 import org.beatonma.commons.data.CommonsRemoteDataSource
 import org.beatonma.commons.data.IoResult
 import org.beatonma.commons.data.core.room.CommonsDatabase
-import org.beatonma.commons.data.core.room.entities.CommitteeMembership
-import org.beatonma.commons.data.core.room.entities.FeaturedMember
-import org.beatonma.commons.data.core.room.entities.FeaturedMemberProfile
-import org.beatonma.commons.data.core.room.entities.Post
+import org.beatonma.commons.data.core.room.entities.*
 import org.beatonma.commons.data.resultLiveData
 import org.beatonma.lib.util.kotlin.extensions.dump
 import javax.inject.Inject
@@ -47,8 +44,9 @@ class CommonsRepository @Inject constructor(
         databaseQuery = { memberDao.getCompleteMember(parliamentdotuk) },
         networkCall = { commonsRemoteDataSource.getMember(parliamentdotuk) },
         saveCallResult = { member ->
-            member.dump()
-            memberDao.apply {
+            member.dump("API: ")
+
+            memberDao.run {
                 insertParty(member.profile.party)
                 member.profile.constituency?.let { insertConstituency(it) }
                 insertProfile(member.profile)
@@ -93,6 +91,17 @@ class CommonsRepository @Inject constructor(
                 insertFinancialInterests(member.financialInterests.map { it.copy(memberId = parliamentdotuk) })
                 insertExperiences(member.experiences.map { it.copy(memberId = parliamentdotuk) })
                 insertTopicsOfInterest(member.topicsOfInterest.map { it.copy(memberId = parliamentdotuk) })
+
+                insertConstituencies(member.constituencies.map { it.constituency })
+                insertElections(member.constituencies.map { it.election })
+                insertMemberForConstituencies(member.constituencies.map {
+                    MemberForConstituency(
+                        memberId = parliamentdotuk,
+                        constituencyId = it.constituency.parliamentdotuk,
+                        electionId = it.election.parliamentdotuk,
+                        start = it.start,
+                        end = it.end)
+                })
             }
         }
     )
