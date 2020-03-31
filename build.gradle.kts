@@ -1,7 +1,7 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 plugins {
-    id("com.github.ben-manes.versions") version "0.21.0"
+    id("com.github.ben-manes.versions") version "0.28.0"
 }
 
 buildscript {
@@ -13,6 +13,7 @@ buildscript {
     dependencies {
         classpath("com.android.tools.build:gradle:4.0.0-beta03")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.KOTLIN}")
+        classpath("com.github.ben-manes:gradle-versions-plugin:0.28.0")
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle.kts files
     }
@@ -30,11 +31,6 @@ allprojects {
 //                password = artifactory_password
 //            }
 //        }
-    }
-    configurations.all {
-        resolutionStrategy {
-            force("org.mockito:mockito-all:2.0.2-beta")
-        }
     }
 }
 
