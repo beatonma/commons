@@ -47,6 +47,9 @@ class CommonsRepository @Inject constructor(
     fun observeMemberProfile(parliamentdotuk: Int): LiveData<MemberProfile> =
         memberDao.getMemberProfile(parliamentdotuk)
 
+    fun observeAddresses(parliamentdotuk: Int): LiveData<List<PhysicalAddress>> =
+        memberDao.getPhysicalAddresses(parliamentdotuk)
+
     fun observeWebAddresses(parliamentdotuk: Int): LiveData<List<WebAddress>> =
         memberDao.getWebAddresses(parliamentdotuk)
 
