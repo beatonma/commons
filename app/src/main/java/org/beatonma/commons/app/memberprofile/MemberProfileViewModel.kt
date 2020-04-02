@@ -3,13 +3,10 @@ package org.beatonma.commons.app.memberprofile
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import androidx.annotation.StringRes
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.*
 import androidx.lifecycle.Observer
-import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.beatonma.commons.CommonsApplication
 import org.beatonma.commons.R
@@ -18,40 +15,84 @@ import org.beatonma.commons.data.IoResult
 import org.beatonma.commons.data.core.CommonsRepository
 import org.beatonma.commons.data.core.CompleteMember
 import org.beatonma.commons.data.core.room.entities.*
-import org.beatonma.lib.util.kotlin.extensions.autotag
 import org.beatonma.lib.util.kotlin.extensions.stringCompat
 import java.util.*
 import javax.inject.Inject
 
 class MemberProfileViewModel @Inject constructor(
     private val repository: CommonsRepository,
-    private val application: CommonsApplication
+    private val application: CommonsApplication,
 ) : AndroidViewModel(application) {
 
     // Data
-    lateinit var member: LiveData<IoResult<CompleteMember>>
+    private var member = InnerCompleteMember()
+
+    lateinit var completeMember: LiveData<IoResult<CompleteMember>>
+    lateinit var profile: LiveData<MemberProfile>
+    lateinit var addresses: LiveData<List<PhysicalAddress>>
+    lateinit var weblinks: LiveData<List<WebAddress>>
+    lateinit var posts: LiveData<List<Post>>
+    lateinit var committeeMemberships: LiveData<List<CommitteeMemberWithChairs>>
+    lateinit var houseMemberships: LiveData<List<HouseMembership>>
+    lateinit var financialInterests: LiveData<List<FinancialInterest>>
+    lateinit var experiences: LiveData<List<Experience>>
+    lateinit var topicsOfInterest: LiveData<List<TopicOfInterest>>
+    lateinit var historicalConstituencies: LiveData<List<HistoricalConstituencyWithElection>>
+    lateinit var partyAssociations: LiveData<List<PartyAssociationWithParty>>
+
+    val livedataMediator: MediatorLiveData<CompleteMember> = MediatorLiveData()
 
     val snippets: MutableLiveData<List<Snippet>> = MutableLiveData()
 
-    private val snippetObserver = Observer<Any> { generateSnippets() }
+    private var snippetJob: Job? = null
+    private val snippetObserver = Observer<CompleteMember> { generateSnippets(it) }
     private val calendar: Calendar = Calendar.getInstance()
 
     fun forMember(parliamentdotuk: Int) {
-        member = repository.observeMember(parliamentdotuk)
-        member.observeForever(snippetObserver)
+        repository.run {
+            completeMember = observeMember(parliamentdotuk)
+            profile = observeMemberProfile(parliamentdotuk)
+            addresses = observeAddresses(parliamentdotuk)
+            weblinks = observeWebAddresses(parliamentdotuk)
+            posts = observePosts(parliamentdotuk)
+            committeeMemberships = observeCommitteeMemberships(parliamentdotuk)
+            houseMemberships = observeHouseMemberships(parliamentdotuk)
+            financialInterests = observeFinancialInterests(parliamentdotuk)
+            experiences = observeExperiences(parliamentdotuk)
+            topicsOfInterest = observeTopicsOfInterest(parliamentdotuk)
+            historicalConstituencies = observeHistoricalConstituencies(parliamentdotuk)
+            partyAssociations = observePartyAssociations(parliamentdotuk)
+        }
+
+        livedataMediator.apply {
+            addSource(completeMember) {}
+            addSource(member.member) { value = it }
+            addSource(profile) { member.updateProfile(it) }
+            addSource(addresses) { member.updateAddresses(it) }
+            addSource(weblinks) { member.updateWeblinks(it) }
+            addSource(posts) { member.updatePosts(it) }
+            addSource(committeeMemberships) { member.updateCommitteeMemberships(it) }
+            addSource(houseMemberships) { member.updateHouses(it) }
+            addSource(financialInterests) { member.updateFinancialInterests(it) }
+            addSource(experiences) { member.updateExperiences(it) }
+            addSource(topicsOfInterest) { member.updateTopics(it) }
+            addSource(historicalConstituencies) { member.updateHistoricalConstituencies(it) }
+            addSource(partyAssociations) { member.updatePartyAssociations(it) }
+        }
+
+        livedataMediator.observeForever(snippetObserver)
     }
 
     override fun onCleared() {
-        member.removeObserver(snippetObserver)
+        livedataMediator.removeObserver(snippetObserver)
 
         super.onCleared()
     }
 
-    private fun generateSnippets() {
-        val member = member.value?.data ?: return
 
-        viewModelScope.launch {
-            Log.i(autotag, "Shuffling snippets")
+    private fun generateSnippets(member: CompleteMember) {
+        snippetJob?.cancel()
+        snippetJob = viewModelScope.launch {
             snippets.value = listOfNotNull(
                 *profileSnippets(member.profile),
                 *webAddressSnippets(member.weblinks),
@@ -200,5 +241,51 @@ data class Snippet(
     val subtitle: String? = null,
     val subcontent: String? = null,
     val clickActionText: String? = null, // If onclick is set this text will be displayed on the button
-    val onclick: ((Context) -> Unit)? = null
+    val onclick: ((Context) -> Unit)? = null,
 )
+
+private class InnerCompleteMember {
+    val member: MutableLiveData<CompleteMember> = MutableLiveData()
+    private var _member = CompleteMember()
+
+    fun updateProfile(profile: MemberProfile?) =
+        update(profile) { copy(profile = it) }
+
+    fun updateAddresses(addresses: List<PhysicalAddress>?) =
+        update(addresses) { copy(addresses = it) }
+
+    fun updateWeblinks(weblinks: List<WebAddress>?) =
+        update(weblinks) { copy(weblinks = it) }
+
+    fun updatePosts(posts: List<Post>?) =
+        update(posts) { copy(posts = it) }
+
+    fun updateCommitteeMemberships(committees: List<CommitteeMemberWithChairs>?) =
+        update(committees) { copy(committees = it) }
+
+    fun updateTopics(topics: List<TopicOfInterest>?) =
+        update(topics) { copy(topicsOfInterest = it) }
+
+    fun updateHouses(houses: List<HouseMembership>?) =
+        update(houses) { copy(houses = it) }
+
+    fun updateFinancialInterests(interests: List<FinancialInterest>?) =
+        update(interests) { copy(financialInterests = it) }
+
+    fun updateExperiences(experiences: List<Experience>?) =
+        update(experiences) { copy(experiences = it) }
+
+    fun updateHistoricalConstituencies(constituencies: List<HistoricalConstituencyWithElection>) =
+        update(constituencies) { copy(historicConstituencies = it) }
+
+    fun updatePartyAssociations(associations: List<PartyAssociationWithParty>?) =
+        update(associations) { copy(parties = it) }
+
+    private inline fun <reified T> update(obj: T, block: CompleteMember.(T) -> CompleteMember): CompleteMember {
+        if (obj != null) {
+            _member = block.invoke(_member, obj)
+            member.value = _member
+        }
+        return _member
+    }
+}

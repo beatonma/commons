@@ -1,59 +1,42 @@
 package org.beatonma.commons.data.core
 
 import androidx.room.Embedded
+import androidx.room.Ignore
 import androidx.room.Relation
 import com.squareup.moshi.Json
-import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.core.room.entities.*
 
-data class Member(
-    @Embedded val profile: MemberProfile
-)
-
 data class CompleteMember(
-    @Embedded val profile: MemberProfile,
-
-    @Relation(parentColumn = "party_id", entityColumn = "party_parliamentdotuk")
-    val party: Party,
-
-    @Relation(parentColumn = "constituency_id", entityColumn = "constituency_parliamentdotuk")
-    val constituency: Constituency?,
-
-    @Relation(parentColumn = PARLIAMENTDOTUK, entityColumn = "committee_member_id", entity = CommitteeMembership::class)
-    val committees: List<CommitteeMemberWithChairs>,
-
-    @Relation(parentColumn = PARLIAMENTDOTUK, entityColumn = "paddr_member_id")
-    val addresses: List<PhysicalAddress>,
-    
-    @Relation(parentColumn = PARLIAMENTDOTUK, entityColumn = "waddr_member_id")
-    val weblinks: List<WebAddress>,
-
-    @Relation(parentColumn = PARLIAMENTDOTUK, entityColumn = "post_member_id")
-    val posts: List<Post>,
-
-    @Relation(parentColumn = PARLIAMENTDOTUK, entityColumn = "experience_member_id")
-    val experiences: List<Experience>,
-
-    @Relation(parentColumn = PARLIAMENTDOTUK, entityColumn = "interest_member_id")
-    val financialInterests: List<FinancialInterest>,
-
-    @Relation(parentColumn = PARLIAMENTDOTUK, entityColumn= "house_member_id")
-    val houses: List<HouseMembership>,
-
-    @Relation(parentColumn = PARLIAMENTDOTUK, entityColumn="topic_member_id")
-    val topicsOfInterest: List<TopicOfInterest>
+    @Embedded var profile: MemberProfile? = null,
+    @Ignore val party: Party? = null,
+    @Ignore val constituency: Constituency? = null,
+    @Ignore val committees: List<CommitteeMemberWithChairs>? = null,
+    @Ignore val addresses: List<PhysicalAddress>? = null,
+    @Ignore val weblinks: List<WebAddress>? = null,
+    @Ignore val posts: List<Post>? = null,
+    @Ignore val experiences: List<Experience>? = null,
+    @Ignore val financialInterests: List<FinancialInterest>? = null,
+    @Ignore val houses: List<HouseMembership>? = null,
+    @Ignore val topicsOfInterest: List<TopicOfInterest>? = null,
+    @Ignore val historicConstituencies: List<HistoricalConstituencyWithElection>? = null,
+    @Ignore val parties: List<PartyAssociationWithParty>? = null,
 )
-
 
 data class MinimalMember(
     @Embedded val profile: MemberProfile,
 
-    @Relation(parentColumn = "party_id", entityColumn = "party_parliamentdotuk", entity=Party::class) val party: Party,
-    @Relation(parentColumn = "constituency_id", entityColumn = "constituency_parliamentdotuk", entity=Constituency::class)
-    val constituency: Constituency?
+    @Relation(
+        parentColumn = "party_id",
+        entityColumn = "party_parliamentdotuk",
+        entity = Party::class)
+    val party: Party,
+
+    @Relation(
+        parentColumn = "constituency_id",
+        entityColumn = "constituency_parliamentdotuk",
+        entity = Constituency::class)
+    val constituency: Constituency?,
 )
-
-
 
 /**
  * Class for deserializing complete /member/profile/ api response.
@@ -66,12 +49,12 @@ data class ApiCompleteMember(
     @field:Json(name = "houses") val houses: List<HouseMembership>,
     @field:Json(name = "interests") val financialInterests: List<FinancialInterest>,
     @field:Json(name = "experiences") val experiences: List<Experience>,
-    @field:Json(name = "subjects") val topicsOfInterest: List<TopicOfInterest>
+    @field:Json(name = "subjects") val topicsOfInterest: List<TopicOfInterest>,
+    @field:Json(name = "constituencies") val constituencies: List<ApiHistoricalConstituency>,
+    @field:Json(name = "parties") val parties: List<ApiPartyAssociation>,
 
     /**
      * API fields pending implementation:
-     *  - constituencies (historical associations)
      *  - speeches (maiden speech(es))
-     *  - parties (historical associations)
      */
 )
