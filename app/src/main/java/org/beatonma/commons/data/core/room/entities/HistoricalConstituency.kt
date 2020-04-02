@@ -1,11 +1,9 @@
 package org.beatonma.commons.data.core.room.entities
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.Index
+import androidx.room.*
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
+
 
 @Entity(
     indices = [
@@ -31,9 +29,9 @@ import org.beatonma.commons.data.PARLIAMENTDOTUK
         "memberfor_election_id",
         "memberfor_member_id"
     ],
-    tableName = "constituency_representatives"
+    tableName = "historic_constituencies"
 )
-data class MemberForConstituency(
+data class HistoricalConstituency(
     @ColumnInfo(name = "memberfor_member_id") val memberId: Int,
     @field:Json(name = "constituency") @ColumnInfo(name = "memberfor_constituency_id") val constituencyId: Int,
     @field:Json(name = "start") @ColumnInfo(name = "memberfor_start") val start: String,
@@ -41,21 +39,20 @@ data class MemberForConstituency(
     @field:Json(name = "election") @ColumnInfo(name = "memberfor_election_id") val electionId: Int
 )
 
+data class HistoricalConstituencyWithElection(
+    @Embedded val historicalConstituency: HistoricalConstituency,
 
-data class ApiMemberForConstituency(
+    @Relation(parentColumn = "memberfor_constituency_id", entityColumn = "constituency_$PARLIAMENTDOTUK")
+    val constituency: Constituency,
+
+    @Relation(parentColumn = "memberfor_election_id", entityColumn = "election_$PARLIAMENTDOTUK")
+    val election: Election
+)
+
+
+data class ApiHistoricalConstituency(
     @field:Json(name = "constituency") val constituency: Constituency,
     @field:Json(name = "start") val start: String,
     @field:Json(name = "end") val end: String?,
     @field:Json(name = "election") val election: Election
 )
-
-
-//data class ConstituencyRepresentativesWithRelated(
-//    @Relation(
-//        parentColumn = "constituency_id",
-//        entityColumn = "constituency_parliamentdotuk"
-//    )
-//    val constituency: Constituency,
-//    @Embedded val constituencyRepresentative: ConstituencyRepresentative,
-//    @Embedded val election: Election
-//)
