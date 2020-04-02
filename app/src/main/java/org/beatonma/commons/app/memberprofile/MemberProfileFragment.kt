@@ -30,6 +30,9 @@ import org.beatonma.lib.ui.recyclerview.kotlin.extensions.setup
 import javax.inject.Inject
 
 
+private const val TAG = "MemberProfileFrag"
+
+
 @ExperimentalStdlibApi
 class MemberProfileFragment : Fragment(), Injectable {
     private lateinit var binding: FragmentMemberProfileBinding
@@ -65,11 +68,9 @@ class MemberProfileFragment : Fragment(), Injectable {
         binding.recyclerview.setup(adapter)
         binding.portrait.setImageResource(R.mipmap.ic_launcher)
 
-        viewmodel.member.observe(viewLifecycleOwner, Observer { result ->
-            result.data?.let { profile ->
-                updateUI(profile.profile)
-            }
-        })
+        viewmodel.livedataMediator.observe(viewLifecycleOwner) { member ->
+            member.profile?.let { updateUI(it) }
+        }
 
         viewmodel.snippets.observe(viewLifecycleOwner, Observer { snippets ->
             nextSnippet()
