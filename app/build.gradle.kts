@@ -6,14 +6,10 @@ plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("kapt")
+    id("kotlin-android")
     id("kotlin-android-extensions")
     id("com.github.ben-manes.versions")
 }
-apply {
-    plugin("kotlin-android")
-    plugin("kotlin-android-extensions")
-}
-
 
 android {
     compileSdkVersion(Commons.Sdk.COMPILE)
@@ -39,27 +35,31 @@ android {
         }
 
         // Party colors as @color resources and build config constants
-        AllPartyThemes.forEach{ (key, theme) ->
+        AllPartyThemes.forEach { (key, theme) ->
             injectPartyTheme(key, theme)
         }
 
         // Party IDs as build config constants
-        ParliamentDotUkPartyIDs.forEach{ (party, parliamentdotuk) ->
+        ParliamentDotUkPartyIDs.forEach { (party, parliamentdotuk) ->
             buildConfigField("int", "${party}_PARLIAMENTDOTUK".toUpperCase(), "$parliamentdotuk")
         }
 
-        vectorDrawables.useSupportLibrary = true
-
+        testApplicationId = "org.beatonma.commons.test"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        vectorDrawables.useSupportLibrary = true
 
         kapt {
             arguments {
                 arg("room.schemaLocation", "$projectDir/schemas")
+                arg("room.incremental", "true")
+                arg("room.expandProjection", "true")
             }
         }
     }
-//    dataBinding.isEnabled = false
+
     buildFeatures {
+//        compose = true
         viewBinding = true
     }
     buildTypes {
@@ -69,14 +69,14 @@ android {
             versionNameSuffix = "-dev"
         }
         getByName("release") {
-            isMinifyEnabled = true
-//            postprocessing.apply {
-//                isOptimizeCode = true
-//                isObfuscate = true
-//                isRemoveUnusedCode = true
-//                isRemoveUnusedResources = true
-//            }
-            proguardFile(getDefaultProguardFile("proguard-android-optimize.txt"))
+//            isMinifyEnabled = true
+            postprocessing.apply {
+                isOptimizeCode = true
+                isObfuscate = true
+                isRemoveUnusedCode = true
+                isRemoveUnusedResources = true
+            }
+//            proguardFile(getDefaultProguardFile("proguard-android-optimize.txt"))
             rootProject.file("proguard").listFiles()
                 ?.filter { it.name.startsWith("proguard") }
                 ?.toTypedArray()
@@ -89,91 +89,127 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
+        languageVersion = "1.4"
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = Versions.COMPOSE
     }
 }
 
 dependencies {
+    val testAnnotationProcessors = arrayOf(
+        Dependencies.Dagger.COMPILER,
+        Dependencies.Dagger.ANNOTATION_PROCESSOR
+    )
+
     // Unit tests
-    testImplementation(project(":bmalib:testing"))
+    testAnnotationProcessors.forEach { kaptTest(it) }
+    testImplementation(bmalib("testing"))
     testImplementation(Dependencies.Test.JUNIT)
     testImplementation(Dependencies.Test.MOCKITO)
     testImplementation(Dependencies.Kotlin.REFLECT)
     testImplementation(Dependencies.Test.RETROFIT_MOCK)
     testImplementation(Dependencies.Dagger.DAGGER)
     testImplementation(Dependencies.Test.OKHTTP_MOCK_SERVER)
-    kaptTest(Dependencies.Dagger.COMPILER)
-    kaptTest(Dependencies.Dagger.ANNOTATION_PROCESSOR)
 
     // Instrumentation tests
-    androidTestImplementation(project(":bmalib:testing"))
+    androidTestImplementation(bmalib("testing"))
     androidTestImplementation(Dependencies.Test.AndroidX.CORE)
     androidTestImplementation(Dependencies.Test.AndroidX.RUNNER)
     androidTestImplementation(Dependencies.Test.AndroidX.ESPRESSO)
+    androidTestImplementation(Dependencies.Test.AndroidX.LIVEDATA)
+
+    val kotlin = arrayOf(
+        Dependencies.Kotlin.STDLIB,
+        Dependencies.Kotlin.Coroutines.CORE,
+        Dependencies.Kotlin.Coroutines.ANDROID
+    )
+
+    val annotationProcessors = arrayOf(
+        Dependencies.Dagger.COMPILER,
+        Dependencies.Dagger.ANNOTATION_PROCESSOR,
+        Dependencies.Room.AP
+    )
+
+    val dagger = arrayOf(
+        Dependencies.Dagger.DAGGER,
+        Dependencies.Dagger.ANDROID,
+        Dependencies.Dagger.SUPPORT
+    )
+
+    val room = arrayOf(
+        Dependencies.Room.RUNTIME,
+        Dependencies.Room.KTX
+    )
+
+    val androidx = arrayOf(
+        Dependencies.AndroidX.APPCOMPAT,
+        Dependencies.AndroidX.CONSTRAINTLAYOUT,
+        Dependencies.AndroidX.CORE_KTX,
+        Dependencies.AndroidX.LIFECYCLE_RUNTIME,
+        Dependencies.AndroidX.LIVEDATA_KTX,
+        Dependencies.AndroidX.VIEWMODEL_KTX,
+        Dependencies.AndroidX.NAVIGATION_UI,
+        Dependencies.AndroidX.NAVIGATION_FRAGMENT,
+        Dependencies.AndroidX.COMPOSE_LAYOUT,
+        Dependencies.AndroidX.COMPOSE_TOOLING,
+        Dependencies.AndroidX.COMPOSE_MATERIAL
+    )
+
+    val retrofit = arrayOf(
+        Dependencies.Retrofit.RETROFIT,
+        Dependencies.Retrofit.Converter.MOSHI,
+        Dependencies.Retrofit.Converter.TEXT
+    )
+
+    val other = arrayOf(
+        Dependencies.Glide.CORE,
+        Dependencies.GOOGLE_MATERIAL
+    )
+
+    val implementations = arrayOf(
+        androidx,
+        dagger,
+        kotlin,
+        other,
+        retrofit,
+        room
+    ).flatten()
+
+    annotationProcessors.forEach { kapt(it) }
+    implementations.forEach { implementation(it) }
+
+    val bmalib = arrayOf(
+        "graphic-core",
+        "paintedview",
+        "recyclerview",
+        "style",
+        "util"
+    )
+    bmalib.forEach { implementation(bmalib(it)) }
 
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-
-    // Kotlin
-    implementation(Dependencies.Kotlin.STDLIB)
-    implementation(Dependencies.Kotlin.Coroutines.CORE)
-    implementation(Dependencies.Kotlin.Coroutines.ANDROID)
-
-    // Data
-    kapt(Dependencies.Dagger.COMPILER)
-    kapt(Dependencies.Dagger.ANNOTATION_PROCESSOR)
-    implementation(Dependencies.Dagger.DAGGER)
-    implementation(Dependencies.Dagger.ANDROID)
-    implementation(Dependencies.Dagger.SUPPORT)
-
-    kapt(Dependencies.Room.AP)
-    implementation(Dependencies.Room.RUNTIME)
-    implementation(Dependencies.Room.KTX)
-
-//    implementation(Dependencies.Moshi.MOSHI)
-//    kapt(Dependencies.Moshi.KAPT_CODEGEN)
-
-    implementation(Dependencies.Retrofit.RETROFIT)
-    implementation(Dependencies.Retrofit.Converter.MOSHI)
-    implementation(Dependencies.Retrofit.Converter.TEXT)
-
-    // App
-    implementation(Dependencies.AndroidX.APPCOMPAT)
-    implementation(Dependencies.AndroidX.CONSTRAINTLAYOUT)
-    implementation(Dependencies.AndroidX.CORE_KTX)
-    implementation(Dependencies.AndroidX.LIFECYCLE_RUNTIME)
-    implementation(Dependencies.AndroidX.LIVEDATA_KTX)
-    implementation(Dependencies.AndroidX.VIEWMODEL_KTX)
-    implementation(Dependencies.AndroidX.NAVIGATION_UI)
-    implementation(Dependencies.AndroidX.NAVIGATION_FRAGMENT)
-
-    implementation(Dependencies.Glide.CORE)
-    implementation(Dependencies.GOOGLE_MATERIAL)
-
-    implementation(project(":bmalib:graphic-core"))
-    implementation(project(":bmalib:paintedview"))
-    implementation(project(":bmalib:recyclerview"))
-    implementation(project(":bmalib:style"))
-    implementation(project(":bmalib:util"))
-
-//    implementation(Dependencies.Bma.ACTIVITY)
-//    implementation(Dependencies.Bma.CORE)
-//    implementation(Dependencies.Bma.GRAPHIC_CORE)
-//    implementation(Dependencies.Bma.PAINTED_VIEW)
-//    implementation(Dependencies.Bma.RECYCLERVIEW)
-//    implementation(Dependencies.Bma.STYLE)
-//    implementation(Dependencies.Bma.UTIL)
 }
+
 repositories {
     mavenCentral()
+    maven("https://dl.bintray.com/kotlin/kotlin-eap")
 }
 
 
 fun DefaultConfig.injectPartyTheme(name: String, theme: PartyColors) {
     buildConfigField("int", "COLOR_PARTY_${name}_PRIMARY".toUpperCase(), "${theme._primaryInt}")
     buildConfigField("int", "COLOR_PARTY_${name}_ACCENT".toUpperCase(), "${theme._accentInt}")
-    buildConfigField("int", "COLOR_PARTY_${name}_PRIMARY_TEXT".toUpperCase(), "${theme._primaryTextInt}")
-    buildConfigField("int", "COLOR_PARTY_${name}_ACCENT_TEXT".toUpperCase(), "${theme._accentTextInt}")
+    buildConfigField("int",
+        "COLOR_PARTY_${name}_PRIMARY_TEXT".toUpperCase(),
+        "${theme._primaryTextInt}")
+    buildConfigField("int",
+        "COLOR_PARTY_${name}_ACCENT_TEXT".toUpperCase(),
+        "${theme._accentTextInt}")
     resValue("color", "party_${name}_primary", theme.primary.toString())
     resValue("color", "party_${name}_accent", theme.accent.toString())
     resValue("color", "party_${name}_primary", theme.primaryText.toString())
     resValue("color", "party_${name}_accent", theme.accentText.toString())
 }
+
+fun bmalib(artifact: String) = project(":bmalib:$artifact")

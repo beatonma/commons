@@ -9,6 +9,7 @@ buildscript {
     repositories {
         google()
         jcenter()
+        maven("https://dl.bintray.com/kotlin/kotlin-eap")
     }
     dependencies {
         classpath("com.android.tools.build:gradle:4.0.0-beta03")
@@ -23,6 +24,7 @@ allprojects {
     repositories {
         google()
         jcenter()
+        maven("https://dl.bintray.com/kotlin/kotlin-eap")
 //        maven(url = "http://localhost:8081/artifactory/gradle-release") {
 //            val artifactory_username: String by project
 //            val artifactory_password: String by project
