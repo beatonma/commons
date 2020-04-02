@@ -32,7 +32,7 @@ data class PhysicalAddress(
     @field:Json(name = "phone") @ColumnInfo(name = "paddr_phone") val phone: String?,
     @field:Json(name = "fax") @ColumnInfo(name = "paddr_fax") val fax: String?,
     @field:Json(name = "email") @ColumnInfo(name = "paddr_email") val email: String?,
-    @ColumnInfo(name = "paddr_member_id", index = true) val personId: Int
+    @ColumnInfo(name = "paddr_member_id", index = true) val memberId: Int
 ): Address()
 
 @Entity(
@@ -54,7 +54,7 @@ data class PhysicalAddress(
 data class WebAddress(
     @field:Json(name = "url") @ColumnInfo(name = "waddr_url") val url: String,
     @field:Json(name = "description") @ColumnInfo(name = "waddr_description") val description: String,
-    @ColumnInfo(name = "waddr_member_id", index = true) val personId: Int
+    @ColumnInfo(name = "waddr_member_id", index = true) val memberId: Int
 )
 
 /**
