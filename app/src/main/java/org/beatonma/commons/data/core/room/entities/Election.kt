@@ -13,5 +13,5 @@ data class Election(
     @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = "election_$PARLIAMENTDOTUK") @PrimaryKey val parliamentdotuk: Int,
     @field:Json(name = "name") @ColumnInfo(name = "election_name") val name: String,
     @field:Json(name = "date") @ColumnInfo(name = "election_date") val date: String,
-    @field:Json(name = "election_type") @ColumnInfo(name = "election_type") val election_type: String
+    @field:Json(name = "election_type") @ColumnInfo(name = "election_type") val electionType: String
 )
