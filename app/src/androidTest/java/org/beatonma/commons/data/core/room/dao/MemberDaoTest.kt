@@ -19,6 +19,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Suite
+import java.util.concurrent.Executors
 
 @RunWith(Suite::class)
 @Suite.SuiteClasses(
@@ -36,11 +37,8 @@ class MemberDaoInsertApiCompleteMemberTest {
     /**
      * Run the given function on the memberDao with the standard PUK as used in API_MEMBER
      */
-    private fun <T> daoTest(func: MemberDao.(Int) -> LiveData<T>, testBlock: T.() -> Unit) {
-        memberDao.func(PUK).getOrAwaitValue {
-            testBlock(this)
-        }
-    }
+    private fun <T> daoTest(func: MemberDao.(Int) -> LiveData<T>, testBlock: T.() -> Unit) =
+        memberDao.func(PUK).getOrAwaitValue { testBlock(this) }
 
     @Before
     fun setUp() {
@@ -50,6 +48,7 @@ class MemberDaoInsertApiCompleteMemberTest {
                 CommonsDatabase::class.java
             )
             .allowMainThreadQueries()
+            .setTransactionExecutor(Executors.newSingleThreadExecutor())
             .build()
 
         memberDao = db.memberDao()
