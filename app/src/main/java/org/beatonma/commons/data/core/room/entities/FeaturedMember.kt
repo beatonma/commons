@@ -9,7 +9,7 @@ import org.beatonma.commons.data.core.MinimalMember
         ForeignKey(
             entity = MemberProfile::class,
             parentColumns = [PARLIAMENTDOTUK],
-            childColumns = ["member_id"],
+            childColumns = ["featured_member_id"],
             onUpdate = ForeignKey.CASCADE,
             onDelete = ForeignKey.CASCADE
         )
@@ -17,14 +17,14 @@ import org.beatonma.commons.data.core.MinimalMember
     tableName = "featured_members"
 )
 data class FeaturedMember(
-    @PrimaryKey val member_id: Int,
-    val about: String? = null
+    @ColumnInfo(name = "featured_member_id") @PrimaryKey val memberId: Int,
+    @ColumnInfo(name = "featured_about") val about: String? = null
 )
 
 data class FeaturedMemberProfile(
     @Embedded val featured: FeaturedMember,
     @Relation(
-        parentColumn = "member_id",
+        parentColumn = "featured_member_id",
         entityColumn = "parliamentdotuk",
         entity = MemberProfile::class
     ) val profile: MinimalMember
