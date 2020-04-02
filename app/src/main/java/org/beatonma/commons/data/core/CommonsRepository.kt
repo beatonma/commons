@@ -4,10 +4,10 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import org.beatonma.commons.data.CommonsRemoteDataSource
 import org.beatonma.commons.data.IoResult
-import org.beatonma.commons.data.core.room.CommonsDatabase
+import org.beatonma.commons.data.core.room.dao.BillDao
+import org.beatonma.commons.data.core.room.dao.MemberDao
 import org.beatonma.commons.data.core.room.entities.*
 import org.beatonma.commons.data.resultLiveData
-import org.beatonma.lib.util.kotlin.extensions.dump
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -17,11 +17,9 @@ private const val TAG = "CommonsRepo"
 class CommonsRepository @Inject constructor(
     val context: Context,
     private val commonsRemoteDataSource: CommonsRemoteDataSource,
-    commonsDatabase: CommonsDatabase
+    private val memberDao: MemberDao,
+    private val billDao: BillDao
 ) {
-
-    private val memberDao = commonsDatabase.memberDao()
-
     fun observeFeaturedPeople(): LiveData<IoResult<List<FeaturedMemberProfile>>> = resultLiveData(
         databaseQuery = { memberDao.getFeaturedProfiles() },
         networkCall = { commonsRemoteDataSource.getFeaturedPeople() },
@@ -43,66 +41,37 @@ class CommonsRepository @Inject constructor(
     fun observeMember(parliamentdotuk: Int): LiveData<IoResult<CompleteMember>> = resultLiveData(
         databaseQuery = { memberDao.getCompleteMember(parliamentdotuk) },
         networkCall = { commonsRemoteDataSource.getMember(parliamentdotuk) },
-        saveCallResult = { member ->
-            member.dump("API: ")
-
-            memberDao.run {
-                insertParty(member.profile.party)
-                member.profile.constituency?.let { insertConstituency(it) }
-                insertProfile(member.profile)
-
-                insertPhysicalAddresses(
-                    member.addresses.physical.map { it.copy(personId = parliamentdotuk) }
-                )
-                insertWebAddresses(
-                    member.addresses.web.map { it.copy(personId = parliamentdotuk) }
-                )
-
-                insertPosts(member.posts.governmental.map { post ->
-                    post.copy(memberId = parliamentdotuk, postType = Post.PostType.GOVERNMENTAL)
-                })
-                insertPosts(member.posts.parliamentary.map { post ->
-                    post.copy(memberId = parliamentdotuk, postType = Post.PostType.PARLIAMENTARY)
-                })
-                insertPosts(member.posts.opposition.map { post ->
-                    post.copy(memberId = parliamentdotuk, postType = Post.PostType.OPPOSITION)
-                })
-
-                insertCommitteeMemberships(member.committees.map { membership ->
-                    CommitteeMembership(
-                        membership.parliamentdotuk,
-                        memberId = parliamentdotuk,
-                        name = membership.name,
-                        start = membership.start,
-                        end = membership.end
-                    )
-                })
-
-                member.committees.forEach { committee ->
-                    insertCommitteeChairships(committee.chairs.map { chair ->
-                        chair.copy(committeeId = committee.parliamentdotuk, memberId = parliamentdotuk)
-                    })
-                }
-
-                insertHouseMemberships(member.houses.map { house ->
-                    house.copy(memberId = parliamentdotuk)
-                })
-
-                insertFinancialInterests(member.financialInterests.map { it.copy(memberId = parliamentdotuk) })
-                insertExperiences(member.experiences.map { it.copy(memberId = parliamentdotuk) })
-                insertTopicsOfInterest(member.topicsOfInterest.map { it.copy(memberId = parliamentdotuk) })
-
-                insertConstituencies(member.constituencies.map { it.constituency })
-                insertElections(member.constituencies.map { it.election })
-                insertMemberForConstituencies(member.constituencies.map {
-                    MemberForConstituency(
-                        memberId = parliamentdotuk,
-                        constituencyId = it.constituency.parliamentdotuk,
-                        electionId = it.election.parliamentdotuk,
-                        start = it.start,
-                        end = it.end)
-                })
-            }
-        }
+        saveCallResult = { member -> memberDao.insertCompleteMember(parliamentdotuk, member) }
     )
+
+    fun observeMemberProfile(parliamentdotuk: Int): LiveData<MemberProfile> =
+        memberDao.getMemberProfile(parliamentdotuk)
+
+    fun observeWebAddresses(parliamentdotuk: Int): LiveData<List<WebAddress>> =
+        memberDao.getWebAddresses(parliamentdotuk)
+
+    fun observePosts(parliamentdotuk: Int): LiveData<List<Post>> =
+        memberDao.getPosts(parliamentdotuk)
+
+    fun observeCommitteeMemberships(parliamentdotuk: Int): LiveData<List<CommitteeMemberWithChairs>> =
+        memberDao.getCommitteeMembershipWithChairship(parliamentdotuk)
+
+    fun observeHouseMemberships(parliamentdotuk: Int): LiveData<List<HouseMembership>> =
+        memberDao.getHouseMemberships(parliamentdotuk)
+
+    fun observeFinancialInterests(parliamentdotuk: Int): LiveData<List<FinancialInterest>> =
+        memberDao.getFinancialInterests(parliamentdotuk)
+
+    fun observeExperiences(parliamentdotuk: Int): LiveData<List<Experience>> =
+        memberDao.getExperiences(parliamentdotuk)
+
+    fun observeTopicsOfInterest(parliamentdotuk: Int): LiveData<List<TopicOfInterest>> =
+        memberDao.getTopicsOfInterest(parliamentdotuk)
+
+    fun observeHistoricalConstituencies(parliamentdotuk: Int): LiveData<List<HistoricalConstituencyWithElection>> =
+        memberDao.getHistoricalConstituencies(parliamentdotuk)
+
+    fun observePartyAssociations(parliamentdotuk: Int): LiveData<List<PartyAssociationWithParty>> =
+        memberDao.getPartyAssociations(parliamentdotuk)
 }
+
