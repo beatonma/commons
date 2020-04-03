@@ -1,4 +1,4 @@
-package org.beatonma.commons.data.core.room.entities
+package org.beatonma.commons.data.core.room.entities.member
 
 import androidx.room.*
 import com.squareup.moshi.Json
