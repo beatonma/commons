@@ -4,7 +4,7 @@ import androidx.room.Embedded
 import androidx.room.Ignore
 import androidx.room.Relation
 import com.squareup.moshi.Json
-import org.beatonma.commons.data.core.room.entities.*
+import org.beatonma.commons.data.core.room.entities.member.*
 
 data class CompleteMember(
     @Embedded var profile: MemberProfile? = null,
