@@ -33,4 +33,12 @@ class CommonsRemoteDataSource @Inject constructor(
     suspend fun getMember(parliamentdotuk: Int) = getResult {
         service.getMember(parliamentdotuk)
     }
+
+    suspend fun getFeaturedBills() = getResult {
+        service.getFeaturedBills()
+    }
+
+    suspend fun getBill(parliamentdotuk: Int) = getResult {
+        service.getBill(parliamentdotuk)
+    }
 }
