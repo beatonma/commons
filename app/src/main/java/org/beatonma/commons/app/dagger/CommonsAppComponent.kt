@@ -9,6 +9,8 @@ import dagger.android.support.AndroidSupportInjectionModule
 import org.beatonma.commons.CommonsApplication
 import org.beatonma.commons.app.ExperimentalFrontPageFragment
 import org.beatonma.commons.app.MainActivity
+import org.beatonma.commons.app.bill.BillProfileFragment
+import org.beatonma.commons.app.memberprofile.MemberProfileFragment
 import org.beatonma.commons.data.CommonsRemoteDataSource
 import org.beatonma.commons.data.core.CommonsRepository
 import org.beatonma.commons.data.core.dagger.CommonsDataModule
@@ -29,6 +31,7 @@ import javax.inject.Singleton
 )
 interface CommonsAppComponent {
     fun context(): Context
+    fun commonsApplication(): CommonsApplication
     fun commonsDatabase(): CommonsDatabase
     fun commonsRepository(): CommonsRepository
     fun commonsRemoteDataSource(): CommonsRemoteDataSource
@@ -42,17 +45,28 @@ interface CommonsAppComponent {
 }
 
 
-@Module(includes = [ExperimentalFrontPageFragmentModule::class])
+@Module(includes = [
+    FragmentsModule::class
+])
 abstract class MainActivityModule {
     @ActivityScope
     @ContributesAndroidInjector
-    abstract fun contributeMainActivityInjector(): MainActivity
+    abstract fun providesActivity(): MainActivity
 }
 
 
 @Module
-abstract class ExperimentalFrontPageFragmentModule {
+abstract class FragmentsModule {
     @FragmentScope
     @ContributesAndroidInjector
-    abstract fun contributesExperiementalFrontPageFragment(): ExperimentalFrontPageFragment
+    abstract fun providesExperimentalFrontPageFragment(): ExperimentalFrontPageFragment
+
+    @ExperimentalStdlibApi
+    @FragmentScope
+    @ContributesAndroidInjector
+    abstract fun providesMemberProfileFragment(): MemberProfileFragment
+
+    @FragmentScope
+    @ContributesAndroidInjector
+    abstract fun providesBillProfileFragment(): BillProfileFragment
 }
