@@ -18,10 +18,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.beatonma.commons.R
 import org.beatonma.commons.app.dagger.Injectable
+import org.beatonma.commons.data.IoResult
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.core.room.entities.MemberProfile
 import org.beatonma.commons.databinding.FragmentMemberProfileBinding
 import org.beatonma.commons.databinding.FragmentMemberProfileSnippetBinding
+import org.beatonma.commons.kotlin.extensions.snackbar
 import org.beatonma.commons.ui.colors.PartyColors
 import org.beatonma.commons.ui.colors.getPartyTheme
 import org.beatonma.lib.ui.recyclerview.BaseRecyclerViewAdapter
@@ -68,8 +70,12 @@ class MemberProfileFragment : Fragment(), Injectable {
         binding.recyclerview.setup(adapter)
         binding.portrait.setImageResource(R.mipmap.ic_launcher)
 
-        viewmodel.livedataMediator.observe(viewLifecycleOwner) { member ->
-            member.profile?.let { updateUI(it) }
+        viewmodel.memberLiveData.observe(viewLifecycleOwner) { member ->
+            if (member.status == IoResult.Status.NETWORK_ERROR) {
+                snackbar(R.string.error_network)
+            }
+
+            member.data?.profile?.let { updateUI(it) }
         }
 
         viewmodel.snippets.observe(viewLifecycleOwner, Observer { snippets ->

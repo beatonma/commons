@@ -4,8 +4,11 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.annotation.StringRes
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.beatonma.commons.CommonsApplication
@@ -24,67 +27,23 @@ class MemberProfileViewModel @Inject constructor(
     private val application: CommonsApplication,
 ) : AndroidViewModel(application) {
 
-    // Data
-    private var member = InnerCompleteMember()
-
-    lateinit var completeMember: LiveData<IoResult<CompleteMember>>
-    lateinit var profile: LiveData<MemberProfile>
-    lateinit var addresses: LiveData<List<PhysicalAddress>>
-    lateinit var weblinks: LiveData<List<WebAddress>>
-    lateinit var posts: LiveData<List<Post>>
-    lateinit var committeeMemberships: LiveData<List<CommitteeMemberWithChairs>>
-    lateinit var houseMemberships: LiveData<List<HouseMembership>>
-    lateinit var financialInterests: LiveData<List<FinancialInterest>>
-    lateinit var experiences: LiveData<List<Experience>>
-    lateinit var topicsOfInterest: LiveData<List<TopicOfInterest>>
-    lateinit var historicalConstituencies: LiveData<List<HistoricalConstituencyWithElection>>
-    lateinit var partyAssociations: LiveData<List<PartyAssociationWithParty>>
-
-    val livedataMediator: MediatorLiveData<CompleteMember> = MediatorLiveData()
+    lateinit var memberLiveData: LiveData<IoResult<CompleteMember>>
 
     val snippets: MutableLiveData<List<Snippet>> = MutableLiveData()
 
     private var snippetJob: Job? = null
-    private val snippetObserver = Observer<CompleteMember> { generateSnippets(it) }
+    private val snippetObserver = Observer<IoResult<CompleteMember>> {
+        it.data?.let { data -> generateSnippets(data) }
+    }
     private val calendar: Calendar = Calendar.getInstance()
 
     fun forMember(parliamentdotuk: Int) {
-        repository.run {
-            completeMember = observeMember(parliamentdotuk)
-            profile = observeMemberProfile(parliamentdotuk)
-            addresses = observeAddresses(parliamentdotuk)
-            weblinks = observeWebAddresses(parliamentdotuk)
-            posts = observePosts(parliamentdotuk)
-            committeeMemberships = observeCommitteeMemberships(parliamentdotuk)
-            houseMemberships = observeHouseMemberships(parliamentdotuk)
-            financialInterests = observeFinancialInterests(parliamentdotuk)
-            experiences = observeExperiences(parliamentdotuk)
-            topicsOfInterest = observeTopicsOfInterest(parliamentdotuk)
-            historicalConstituencies = observeHistoricalConstituencies(parliamentdotuk)
-            partyAssociations = observePartyAssociations(parliamentdotuk)
-        }
-
-        livedataMediator.apply {
-            addSource(completeMember) {}
-            addSource(member.member) { value = it }
-            addSource(profile) { member.updateProfile(it) }
-            addSource(addresses) { member.updateAddresses(it) }
-            addSource(weblinks) { member.updateWeblinks(it) }
-            addSource(posts) { member.updatePosts(it) }
-            addSource(committeeMemberships) { member.updateCommitteeMemberships(it) }
-            addSource(houseMemberships) { member.updateHouses(it) }
-            addSource(financialInterests) { member.updateFinancialInterests(it) }
-            addSource(experiences) { member.updateExperiences(it) }
-            addSource(topicsOfInterest) { member.updateTopics(it) }
-            addSource(historicalConstituencies) { member.updateHistoricalConstituencies(it) }
-            addSource(partyAssociations) { member.updatePartyAssociations(it) }
-        }
-
-        livedataMediator.observeForever(snippetObserver)
+        memberLiveData = repository.observeMember(parliamentdotuk)
+        memberLiveData.observeForever(snippetObserver)
     }
 
     override fun onCleared() {
-        livedataMediator.removeObserver(snippetObserver)
+        memberLiveData.removeObserver(snippetObserver)
 
         super.onCleared()
     }
