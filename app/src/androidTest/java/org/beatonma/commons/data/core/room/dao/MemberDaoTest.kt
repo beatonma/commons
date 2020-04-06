@@ -1,25 +1,19 @@
 package org.beatonma.commons.data.core.room.dao
 
-import android.content.Context
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.LiveData
-import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.beatonma.commons.androidTest.getOrAwaitValue
-import org.beatonma.commons.data.core.room.CommonsDatabase
+import org.beatonma.commons.data.BaseRoomDaoTest
 import org.beatonma.commons.data.core.room.dao.testdata.API_MEMBER
-import org.beatonma.commons.data.core.room.dao.testdata.PUK
-import org.beatonma.commons.data.core.room.entities.HouseMembership
-import org.beatonma.commons.data.core.room.entities.Post
+import org.beatonma.commons.data.core.room.dao.testdata.MEMBER_PUK
+import org.beatonma.commons.data.core.room.entities.member.HouseMembership
+import org.beatonma.commons.data.core.room.entities.member.Post
 import org.beatonma.lib.testing.kotlin.extensions.assertions.shouldbe
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Suite
-import java.util.concurrent.Executors
 
 @RunWith(Suite::class)
 @Suite.SuiteClasses(
@@ -27,41 +21,29 @@ import java.util.concurrent.Executors
 )
 class MemberDaoTestSuite
 
-class MemberDaoInsertApiCompleteMemberTest {
-    private lateinit var db: CommonsDatabase
-    private lateinit var memberDao: MemberDao
-
-    @get:Rule
-    val instantTaskExecutorRule = InstantTaskExecutorRule()
+class MemberDaoInsertApiCompleteMemberTest: BaseRoomDaoTest<MemberDao>() {
+    override val dao: MemberDao
+        get() = db.memberDao()
 
     /**
-     * Run the given function on the memberDao with the standard PUK as used in API_MEMBER
+     * Run the given function on the dao with the standard PUK as used in API_MEMBER
      */
     private fun <T> daoTest(func: MemberDao.(Int) -> LiveData<T>, testBlock: T.() -> Unit) =
-        memberDao.func(PUK).getOrAwaitValue { testBlock(this) }
+        dao.func(MEMBER_PUK).getOrAwaitValue { testBlock(this) }
 
     @Before
-    fun setUp() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        db = Room.inMemoryDatabaseBuilder(
-                context,
-                CommonsDatabase::class.java
-            )
-            .allowMainThreadQueries()
-            .setTransactionExecutor(Executors.newSingleThreadExecutor())
-            .build()
-
-        memberDao = db.memberDao()
+    override fun setUp() {
+        super.setUp()
 
         runBlocking(Dispatchers.Main) {
-            memberDao.insertCompleteMember(PUK, API_MEMBER)
+            dao.insertCompleteMember(MEMBER_PUK, API_MEMBER)
         }
     }
 
     @Test
     fun ensure_MemberProfile_is_written_and_retrieved_correctly() {
         daoTest(MemberDao::getMemberProfile) {
-            parliamentdotuk shouldbe PUK
+            parliamentdotuk shouldbe MEMBER_PUK
             name shouldbe "Boris Johnson"
             isMp shouldbe true
             isLord shouldbe false
