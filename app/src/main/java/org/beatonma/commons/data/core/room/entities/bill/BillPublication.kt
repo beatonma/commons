@@ -24,6 +24,6 @@ private const val TAG = "BillPublication"
 )
 data class BillPublication(
     @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = "bill_pub_parliamentdotuk") @PrimaryKey val parliamentdotuk: Int,
-    @ColumnInfo(name = "bill_pub_bill_id") var billId: Int,
+    @ColumnInfo(name = "bill_pub_bill_id") val billId: Int,
     @field:Json(name = "title") @ColumnInfo(name = "bill_pub_title") val title: String,
 )

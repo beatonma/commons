@@ -21,7 +21,7 @@ import org.beatonma.commons.data.PARLIAMENTDOTUK
 )
 data class BillStageSitting(
     @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = "billstagesitting_$PARLIAMENTDOTUK") @PrimaryKey val parliamentdotuk: Int,
-    @ColumnInfo(name = "billstagesitting_bill_stage_id") var billStageId: Int,
+    @ColumnInfo(name = "billstagesitting_bill_stage_id") val billStageId: Int,
     @field:Json(name = "date") @ColumnInfo(name = "billstagesitting_date") val date: String,
     @field:Json(name = "formal") @ColumnInfo(name = "billstagesitting_formal") val isFormal: Boolean,
     @field:Json(name = "provisional") @ColumnInfo(name = "billstagesitting_provisional") val isProvisional: Boolean,
