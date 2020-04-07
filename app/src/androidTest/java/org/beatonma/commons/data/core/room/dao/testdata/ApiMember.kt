@@ -1,10 +1,9 @@
 package org.beatonma.commons.data.core.room.dao.testdata
 
 import org.beatonma.commons.data.core.ApiCompleteMember
-import org.beatonma.commons.data.core.room.entities.*
+import org.beatonma.commons.data.core.room.entities.member.*
 
-
-const val PUK = 1423
+const val MEMBER_PUK = 1423
 
 /**
  * Edited API response - items have been added/removed for usefulness, compiled from several
@@ -12,17 +11,21 @@ const val PUK = 1423
  */
 val API_MEMBER = ApiCompleteMember(
     profile = MemberProfile(
-        parliamentdotuk = PUK,
+        parliamentdotuk = MEMBER_PUK,
         name = "Boris Johnson",
-        party = Party(name = "Conservative", parliamentdotuk = 4),
-        constituency = Constituency(name = "Uxbridge and South Ruislip",
+        party = Party(name = "Conservative",
+            parliamentdotuk = 4),
+        constituency = Constituency(
+            name = "Uxbridge and South Ruislip",
             parliamentdotuk = 147277),
         isMp = true,
         isLord = false,
         dateOfBirth = "1964-06-19", dateOfDeath = null,
         age = 55,
         gender = "M",
-        placeOfBirth = Town(town = "New York", country = "USA"),
+        placeOfBirth = Town(
+            town = "New York",
+            country = "USA"),
         portraitUrl = "https://members-api.parliament.uk/api/members/1423/Portrait?cropType=OneOne",
         currentPost = "Prime Minister",
     ),
@@ -35,16 +38,18 @@ val API_MEMBER = ApiCompleteMember(
                 phone = "+442072194682",
                 fax = "+442072194683",
                 email = "boris.johnson.mp@parliament.uk",
-                memberId = PUK
+                memberId = MEMBER_PUK
             ),
         ),
         web = listOf(
-            WebAddress("https://twitter.com/borisjohnson", "Twitter", memberId = PUK),
+            WebAddress("https://twitter.com/borisjohnson",
+                "Twitter",
+                memberId = MEMBER_PUK),
         )
     ),
     committees = listOf(
         ApiCommittee(
-            memberId = PUK,
+            memberId = MEMBER_PUK,
             parliamentdotuk = 2,
             name = "Administration Committee",
             start = "2015-07-21",
@@ -52,7 +57,7 @@ val API_MEMBER = ApiCompleteMember(
             chairs = listOf(
                 CommitteeChairship(
                     committeeId = 2,
-                    memberId = PUK,
+                    memberId = MEMBER_PUK,
                     start = "2015-07-21",
                     end = "2017-05-03",
                 )
@@ -61,7 +66,8 @@ val API_MEMBER = ApiCompleteMember(
     ),
     constituencies = listOf(
         ApiHistoricalConstituency(
-            constituency = Constituency(name = "Uxbridge and South Ruislip",
+            constituency = Constituency(
+                name = "Uxbridge and South Ruislip",
                 parliamentdotuk = 147277),
             start = "2019-12-12",
             end = null,
@@ -73,7 +79,8 @@ val API_MEMBER = ApiCompleteMember(
             ),
         ),
         ApiHistoricalConstituency(
-            constituency = Constituency(name = "Uxbridge and South Ruislip",
+            constituency = Constituency(
+                name = "Uxbridge and South Ruislip",
                 parliamentdotuk = 147277),
             start = "2017-06-08",
             end = "2019-11-06",
@@ -87,7 +94,7 @@ val API_MEMBER = ApiCompleteMember(
     ),
     experiences = listOf(
         Experience(
-            memberId = PUK,
+            memberId = MEMBER_PUK,
             category = "Political",
             organisation = "Liberal Democrats",
             title = "National Treasurer",
@@ -100,18 +107,18 @@ val API_MEMBER = ApiCompleteMember(
             house = HouseMembership.House.Commons,
             start = "2001-06-07",
             end = "2008-06-04",
-            memberId = PUK,
+            memberId = MEMBER_PUK,
         ),
         HouseMembership(
             house = HouseMembership.House.Commons,
             start = "2015-05-07",
             end = null,
-            memberId = PUK,
+            memberId = MEMBER_PUK,
         )
     ),
     financialInterests = listOf(
         FinancialInterest(
-            memberId = PUK,
+            memberId = MEMBER_PUK,
             interestId = 12485,
             category = "Category 1: Directorships",
             description = "Director, Durham Group Estates Ltd",
@@ -123,12 +130,16 @@ val API_MEMBER = ApiCompleteMember(
     ),
     parties = listOf(
         ApiPartyAssociation(
-            party = Party(name = "Conservative", parliamentdotuk = 4),
+            party = Party(
+                name = "Conservative",
+                parliamentdotuk = 4),
             start = "2019-12-12",
             end = null,
         ),
         ApiPartyAssociation(
-            party = Party(name = "Conservative", parliamentdotuk = 4),
+            party = Party(
+                name = "Conservative",
+                parliamentdotuk = 4),
             start = "2017-06-08",
             end = "2019-11-06",
         ),
@@ -136,7 +147,7 @@ val API_MEMBER = ApiCompleteMember(
     posts = ApiPosts(
         governmental = listOf(
             Post(
-                memberId = PUK,
+                memberId = MEMBER_PUK,
                 parliamentdotuk = 661,
                 name = "Prime Minister, First Lord of the Treasury and Minister for the Civil Service",
                 start = "2019-07-24",
@@ -146,7 +157,7 @@ val API_MEMBER = ApiCompleteMember(
         ),
         parliamentary = listOf(
             Post(
-                memberId = PUK,
+                memberId = MEMBER_PUK,
                 parliamentdotuk = 787,
                 name = "Leader of the Conservative Party",
                 start = "2019-07-23",
@@ -156,7 +167,7 @@ val API_MEMBER = ApiCompleteMember(
         ),
         opposition = listOf(
             Post(
-                memberId = PUK,
+                memberId = MEMBER_PUK,
                 parliamentdotuk = 15,
                 name = "Shadow Minister (Business, Innovation and Skills)",
                 start = "2005-12-09",
@@ -167,7 +178,7 @@ val API_MEMBER = ApiCompleteMember(
     ),
     topicsOfInterest = listOf(
         TopicOfInterest(
-            memberId = PUK,
+            memberId = MEMBER_PUK,
             category = "Countries of Interest",
             topic = "Australia, Fiji, New Zealand, Samoa",
         ),
