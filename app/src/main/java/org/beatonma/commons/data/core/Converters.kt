@@ -2,8 +2,10 @@ package org.beatonma.commons.data.core
 
 import androidx.room.TypeConverter
 import com.squareup.moshi.Moshi
-import org.beatonma.commons.data.core.room.entities.member.*
-import java.util.*
+import org.beatonma.commons.data.core.room.entities.member.Constituency
+import org.beatonma.commons.data.core.room.entities.member.HouseMembership
+import org.beatonma.commons.data.core.room.entities.member.Party
+import org.beatonma.commons.data.core.room.entities.member.Post
 
 object Converters {
     private val moshi = Moshi.Builder().build()
@@ -28,23 +30,6 @@ object Converters {
     fun deserializeConstituency(key: Int?): Constituency? = key?.let {
         Constituency(parliamentdotuk = key, name = "")
     }
-
-    @TypeConverter
-    @JvmStatic
-    fun serializeTown(town: Town?): String = town.toJson()
-
-    @TypeConverter
-    @JvmStatic
-    fun deserializeTown(json: String): Town? = json.fromJson(
-        Town::class.java)
-
-    @TypeConverter
-    @JvmStatic
-    fun fromTimestamp(value: Long?): Date? = value?.let { Date(it) }
-
-    @TypeConverter
-    @JvmStatic
-    fun dateToTimestamp(date: Date?): Long? = date?.time
 
     @TypeConverter
     @JvmStatic
