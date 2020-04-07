@@ -8,8 +8,13 @@ import org.beatonma.commons.data.CommonsRemoteDataSource
 import org.beatonma.commons.data.IoResult
 import org.beatonma.commons.data.core.room.dao.BillDao
 import org.beatonma.commons.data.core.room.dao.MemberDao
-import org.beatonma.commons.data.core.room.entities.*
+import org.beatonma.commons.data.core.room.entities.bill.CompleteBill
+import org.beatonma.commons.data.core.room.entities.bill.FeaturedBill
+import org.beatonma.commons.data.core.room.entities.bill.FeaturedBillWithBill
+import org.beatonma.commons.data.core.room.entities.member.FeaturedMember
+import org.beatonma.commons.data.core.room.entities.member.FeaturedMemberProfile
 import org.beatonma.commons.data.resultLiveData
+import org.beatonma.lib.util.kotlin.extensions.dump
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -20,7 +25,7 @@ class CommonsRepository @Inject constructor(
     val context: Context,
     private val commonsRemoteDataSource: CommonsRemoteDataSource,
     private val memberDao: MemberDao,
-    private val billDao: BillDao
+    private val billDao: BillDao,
 ) {
     fun observeFeaturedPeople(): LiveData<IoResult<List<FeaturedMemberProfile>>> = resultLiveData(
         databaseQuery = { memberDao.getFeaturedProfiles() },
@@ -34,10 +39,32 @@ class CommonsRepository @Inject constructor(
 
                 insertProfiles(profiles)
                 insertFeaturedPeople(
-                    profiles.map { profile -> FeaturedMember(profile.parliamentdotuk) }
+                    profiles.map { profile ->
+                        FeaturedMember(profile.parliamentdotuk)
+                    }
                 )
             }
         }
+    )
+
+    fun observeFeaturedBills(): LiveData<IoResult<List<FeaturedBillWithBill>>> = resultLiveData(
+        databaseQuery = { billDao.getFeaturedBills() },
+        networkCall = { commonsRemoteDataSource.getFeaturedBills() },
+        saveCallResult = { bills ->
+            bills.dump()
+            billDao.insertBills(bills)
+
+            billDao.insertFeaturedBills(
+                bills.map {
+                    FeaturedBill(it.parliamentdotuk)
+                })
+        }
+    )
+
+    fun observeBill(parliamentdotuk: Int): LiveData<IoResult<CompleteBill>> = resultLiveData(
+        databaseQuery = { observeCompleteBill(parliamentdotuk) },
+        networkCall = { commonsRemoteDataSource.getBill(parliamentdotuk) },
+        saveCallResult = { bill -> billDao.insertCompleteBill(parliamentdotuk, bill) }
     )
 
     fun observeMember(parliamentdotuk: Int): LiveData<IoResult<CompleteMember>> = resultLiveData(
@@ -46,113 +73,98 @@ class CommonsRepository @Inject constructor(
         saveCallResult = { member -> memberDao.insertCompleteMember(parliamentdotuk, member) }
     )
 
-    fun observeMemberProfile(parliamentdotuk: Int): LiveData<MemberProfile> =
-        memberDao.getMemberProfile(parliamentdotuk)
-
-    fun observeAddresses(parliamentdotuk: Int): LiveData<List<PhysicalAddress>> =
-        memberDao.getPhysicalAddresses(parliamentdotuk)
-
-    fun observeWebAddresses(parliamentdotuk: Int): LiveData<List<WebAddress>> =
-        memberDao.getWebAddresses(parliamentdotuk)
-
-    fun observePosts(parliamentdotuk: Int): LiveData<List<Post>> =
-        memberDao.getPosts(parliamentdotuk)
-
-    fun observeCommitteeMemberships(parliamentdotuk: Int): LiveData<List<CommitteeMemberWithChairs>> =
-        memberDao.getCommitteeMembershipWithChairship(parliamentdotuk)
-
-    fun observeHouseMemberships(parliamentdotuk: Int): LiveData<List<HouseMembership>> =
-        memberDao.getHouseMemberships(parliamentdotuk)
-
-    fun observeFinancialInterests(parliamentdotuk: Int): LiveData<List<FinancialInterest>> =
-        memberDao.getFinancialInterests(parliamentdotuk)
-
-    fun observeExperiences(parliamentdotuk: Int): LiveData<List<Experience>> =
-        memberDao.getExperiences(parliamentdotuk)
-
-    fun observeTopicsOfInterest(parliamentdotuk: Int): LiveData<List<TopicOfInterest>> =
-        memberDao.getTopicsOfInterest(parliamentdotuk)
-
-    fun observeHistoricalConstituencies(parliamentdotuk: Int): LiveData<List<HistoricalConstituencyWithElection>> =
-        memberDao.getHistoricalConstituencies(parliamentdotuk)
-
-    fun observePartyAssociations(parliamentdotuk: Int): LiveData<List<PartyAssociationWithParty>> =
-        memberDao.getPartyAssociations(parliamentdotuk)
-
-    fun observeCompleteMember(parliamentdotuk: Int): LiveData<CompleteMember> {
-        val profile = observeMemberProfile(parliamentdotuk)
-        val addresses = observeAddresses(parliamentdotuk)
-        val weblinks = observeWebAddresses(parliamentdotuk)
-        val posts = observePosts(parliamentdotuk)
-        val committeeMemberships = observeCommitteeMemberships(parliamentdotuk)
-        val houseMemberships = observeHouseMemberships(parliamentdotuk)
-        val financialInterests = observeFinancialInterests(parliamentdotuk)
-        val experiences = observeExperiences(parliamentdotuk)
-        val topicsOfInterest = observeTopicsOfInterest(parliamentdotuk)
-        val historicalConstituencies = observeHistoricalConstituencies(parliamentdotuk)
-        val partyAssociations = observePartyAssociations(parliamentdotuk)
-
+    private fun observeCompleteMember(parliamentdotuk: Int): LiveData<CompleteMember> {
         val member = MutableCompleteMember()
+
         return MediatorLiveData<CompleteMember>().apply {
-            addSource(member.member) { value = it }
-            addSource(profile) { member.updateProfile(it) }
-            addSource(addresses) { member.updateAddresses(it) }
-            addSource(weblinks) { member.updateWeblinks(it) }
-            addSource(posts) { member.updatePosts(it) }
-            addSource(committeeMemberships) { member.updateCommitteeMemberships(it) }
-            addSource(houseMemberships) { member.updateHouses(it) }
-            addSource(financialInterests) { member.updateFinancialInterests(it) }
-            addSource(experiences) { member.updateExperiences(it) }
-            addSource(topicsOfInterest) { member.updateTopics(it) }
-            addSource(historicalConstituencies) { member.updateHistoricalConstituencies(it) }
-            addSource(partyAssociations) { member.updatePartyAssociations(it) }
+            addSource(member.value) {
+                // Propagate changes from mutable member to observer
+                value = it
+            }
+
+            addSource(memberDao.getMemberProfile(parliamentdotuk)) {
+                member.update { copy(profile = it) }
+            }
+            addSource(memberDao.getPhysicalAddresses(parliamentdotuk)) {
+                member.update { copy(addresses = it) }
+            }
+            addSource(memberDao.getWebAddresses(parliamentdotuk)) {
+                member.update { copy(weblinks = it) }
+            }
+            addSource(memberDao.getPosts(parliamentdotuk)) {
+                member.update { copy(posts = it) }
+            }
+            addSource(memberDao.getCommitteeMembershipWithChairship(parliamentdotuk)) {
+                member.update { copy(committees = it) }
+            }
+            addSource(memberDao.getHouseMemberships(parliamentdotuk)) {
+                member.update { copy(houses = it) }
+            }
+            addSource(memberDao.getFinancialInterests(parliamentdotuk)) {
+                member.update { copy(financialInterests = it) }
+            }
+            addSource(memberDao.getExperiences(parliamentdotuk)) {
+                member.update { copy(experiences = it) }
+            }
+            addSource(memberDao.getTopicsOfInterest(parliamentdotuk)) {
+                member.update { copy(topicsOfInterest = it) }
+            }
+            addSource(memberDao.getHistoricalConstituencies(parliamentdotuk)) {
+                member.update { copy(historicConstituencies = it) }
+            }
+            addSource(memberDao.getPartyAssociations(parliamentdotuk)) {
+                member.update { copy(parties = it) }
+            }
+        }
+    }
+
+    private fun observeCompleteBill(parliamentdotuk: Int): LiveData<CompleteBill> {
+        val bill = MutableCompleteBill()
+
+        return MediatorLiveData<CompleteBill>().apply {
+            addSource(bill.value) {
+                // Propagate changes from mutable bill to observer
+                value = it
+            }
+
+            addSource(billDao.getBill(parliamentdotuk)) { _bill ->
+                bill.update { copy(bill = _bill) }
+            }
+            addSource(billDao.getBillType(parliamentdotuk)) { type ->
+                bill.update { copy(type = type) }
+            }
+            addSource(billDao.getBillSession(parliamentdotuk)) { session ->
+                bill.update { copy(session = session) }
+            }
+            addSource(billDao.getBillPublications(parliamentdotuk)) { publications ->
+                bill.update { copy(publications = publications) }
+            }
+            addSource(billDao.getBillSponsors(parliamentdotuk)) { sponsors ->
+                bill.update { copy(sponsors = sponsors) }
+            }
+            addSource(billDao.getBillStages(parliamentdotuk)) { stages ->
+                bill.update { copy(stages = stages) }
+            }
         }
     }
 }
 
 
-private class MutableCompleteMember {
-    val member: MutableLiveData<CompleteMember> = MutableLiveData()
-    private var _member = CompleteMember()
+private class MutableCompleteBill: Mutator<CompleteBill>() {
+    override var _mutable: CompleteBill = CompleteBill()
+}
 
-    fun updateProfile(profile: MemberProfile?) =
-        update(profile) { copy(profile = it) }
+private class MutableCompleteMember: Mutator<CompleteMember>() {
+    override var _mutable: CompleteMember = CompleteMember()
+}
 
-    fun updateAddresses(addresses: List<PhysicalAddress>?) =
-        update(addresses) { copy(addresses = it) }
+private abstract class Mutator<D> {
+    val value: MutableLiveData<D> = MutableLiveData()
+    protected abstract var _mutable: D
 
-    fun updateWeblinks(weblinks: List<WebAddress>?) =
-        update(weblinks) { copy(weblinks = it) }
-
-    fun updatePosts(posts: List<Post>?) =
-        update(posts) { copy(posts = it) }
-
-    fun updateCommitteeMemberships(committees: List<CommitteeMemberWithChairs>?) =
-        update(committees) { copy(committees = it) }
-
-    fun updateTopics(topics: List<TopicOfInterest>?) =
-        update(topics) { copy(topicsOfInterest = it) }
-
-    fun updateHouses(houses: List<HouseMembership>?) =
-        update(houses) { copy(houses = it) }
-
-    fun updateFinancialInterests(interests: List<FinancialInterest>?) =
-        update(interests) { copy(financialInterests = it) }
-
-    fun updateExperiences(experiences: List<Experience>?) =
-        update(experiences) { copy(experiences = it) }
-
-    fun updateHistoricalConstituencies(constituencies: List<HistoricalConstituencyWithElection>) =
-        update(constituencies) { copy(historicConstituencies = it) }
-
-    fun updatePartyAssociations(associations: List<PartyAssociationWithParty>?) =
-        update(associations) { copy(parties = it) }
-
-    private inline fun <reified T> update(obj: T, block: CompleteMember.(T) -> CompleteMember): CompleteMember {
-        if (obj != null) {
-            _member = block.invoke(_member, obj)
-            member.value = _member
-        }
-        return _member
+    inline fun update(block: D.() -> D): D {
+        _mutable = block.invoke(_mutable)
+        value.value = _mutable
+        return _mutable
     }
 }

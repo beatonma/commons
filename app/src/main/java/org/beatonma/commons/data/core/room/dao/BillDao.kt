@@ -26,6 +26,17 @@ interface BillDao {
     @Query("""SELECT * FROM bill_stages WHERE billstage_bill_parliamentdotuk = :parliamentdotuk""")
     fun getBillStages(parliamentdotuk: Int): LiveData<List<BillStageWithSittings>>
 
+    @Query("""SELECT * FROM parliamentary_sessions 
+        LEFT JOIN bills ON bills.bill_session_id = session_parliamentdotuk
+        WHERE bills.bill_parliamentdotuk = :parliamentdotuk
+        """)
+    fun getBillSession(parliamentdotuk: Int): LiveData<ParliamentarySession>
+
+    @Query("""SELECT * FROM bill_types
+        LEFT JOIN bills ON bills.bill_type_id = billtype_name
+        WHERE bills.bill_parliamentdotuk = :parliamentdotuk""")
+    fun getBillType(parliamentdotuk: Int): LiveData<BillType>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBills(bills: List<Bill>)
 
@@ -55,8 +66,12 @@ interface BillDao {
 
     @Transaction
     suspend fun insertCompleteBill(parliamentdotuk: Int, bill: ApiBill) {
-        insertBillType(bill.type)
-        insertParliamentarySession(bill.session)
+        if (bill.type != null) {
+            insertBillType(bill.type)
+        }
+        if (bill.session != null) {
+            insertParliamentarySession(bill.session)
+        }
 
         insertBill(Bill(
             parliamentdotuk = parliamentdotuk,
@@ -71,8 +86,8 @@ interface BillDao {
             isPrivate = bill.isPrivate,
             isMoneyBill = bill.isMoneyBill,
             publicInvolvementAllowed = bill.publicInvolvementAllowed,
-            sessionId = bill.session.parliamentdotuk,
-            typeId = bill.type.name
+            sessionId = bill.session?.parliamentdotuk,
+            typeId = bill.type?.name
         ))
 
         insertBillStages(bill.stages.map { apiStage ->

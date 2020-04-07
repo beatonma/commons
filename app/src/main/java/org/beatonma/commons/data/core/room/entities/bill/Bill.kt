@@ -23,8 +23,8 @@ data class Bill(
     @field:Json(name = "is_private") @ColumnInfo(name = "bill_private") val isPrivate: Boolean,
     @field:Json(name = "is_money_bill") @ColumnInfo(name = "bill_money_bill") val isMoneyBill: Boolean,
     @field:Json(name = "public_involvement_allowed") @ColumnInfo(name = "bill_public_involvement_allowed") val publicInvolvementAllowed: Boolean,
-    @field:Json(name = "session") @ColumnInfo(name = "bill_session_id") val sessionId: Int,
-    @field:Json(name = "type") @ColumnInfo(name = "bill_type_id") val typeId: String,
+    @field:Json(name = "session") @ColumnInfo(name = "bill_session_id") val sessionId: Int?,
+    @field:Json(name = "type") @ColumnInfo(name = "bill_type_id") val typeId: String?,
 )
 
 
@@ -38,16 +38,16 @@ data class ApiBill(
     @field:Json(name = "date") @ColumnInfo(name = "bill_date") val date: String,
     @field:Json(name = "ballot_number") @ColumnInfo(name = "bill_ballot_number") val ballotNumber: Int?,
     @field:Json(name = "bill_chapter") @ColumnInfo(name = "bill_bill_chapter") val billChapter: String?,
-    @field:Json(name = "is_private") @ColumnInfo(name = "bill_private") val isPrivate: Boolean,
-    @field:Json(name = "is_money_bill") @ColumnInfo(name = "bill_money_bill") val isMoneyBill: Boolean,
-    @field:Json(name = "public_involvement_allowed") @ColumnInfo(name = "bill_public_involvement_allowed") val publicInvolvementAllowed: Boolean,
-    @field:Json(name = "publications") @ColumnInfo(name = "bill_publications") val publications: List<BillPublication>,
-    @field:Json(name = "session") @ColumnInfo(name = "bill_session") val session: ParliamentarySession,
-    @field:Json(name = "type") @ColumnInfo(name = "bill_type") val type: BillType,
+    @field:Json(name = "is_private") @ColumnInfo(name = "bill_private") val isPrivate: Boolean = false,
+    @field:Json(name = "is_money_bill") @ColumnInfo(name = "bill_money_bill") val isMoneyBill: Boolean = false,
+    @field:Json(name = "public_involvement_allowed") @ColumnInfo(name = "bill_public_involvement_allowed") val publicInvolvementAllowed: Boolean = false,
+    @field:Json(name = "publications") @ColumnInfo(name = "bill_publications") val publications: List<BillPublication> = listOf(),
+    @field:Json(name = "session") @ColumnInfo(name = "bill_session") val session: ParliamentarySession?,
+    @field:Json(name = "type") @ColumnInfo(name = "bill_type") val type: BillType?,
 //    @field:Json(name = "sponsors") @ColumnInfo(name = "sponsors") val sponsors: List<BillSponsor>,
 //    @field:Json(name = "stages") @ColumnInfo(name = "stages") val stages: List<BillStage>,
-    @field:Json(name = "sponsors") @Ignore val sponsors: List<BillSponsor>,
-    @field:Json(name = "stages") @Ignore val stages: List<ApiBillStage>,
+    @field:Json(name = "sponsors") @Ignore val sponsors: List<BillSponsor> = listOf(),
+    @field:Json(name = "stages") @Ignore val stages: List<ApiBillStage> = listOf(),
 )
 
 
@@ -66,4 +66,14 @@ data class BillWithSessionAndType(
 
     @Relation(parentColumn = "bill_type_id", entityColumn = "billtype_name")
     val type: BillType
+)
+
+
+data class CompleteBill(
+    @Embedded val bill: Bill? = null,
+    @Ignore val session: ParliamentarySession? = null,
+    @Ignore val type: BillType? = null,
+    @Ignore val publications: List<BillPublication>? = null,
+    @Ignore val sponsors: List<BillSponsor>? = null,
+    @Ignore val stages: List<BillStageWithSittings>? = null,
 )
