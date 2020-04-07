@@ -2,6 +2,8 @@ package org.beatonma.commons.androidTest
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import org.beatonma.lib.util.kotlin.extensions.dump
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -26,17 +28,19 @@ fun <T> LiveData<T>.getOrAwaitValue(
     val latch = CountDownLatch(1)
     val observer = object : Observer<T> {
         override fun onChanged(o: T?) {
+            val self = this
             o.dump("onChanged: ")
             data = o
             latch.countDown()
-            this@getOrAwaitValue.removeObserver(this)
+            runBlocking(Dispatchers.Main) { this@getOrAwaitValue.removeObserver(self) }
         }
     }
-    this.observeForever(observer)
+
+    this@getOrAwaitValue.observeForever(observer)
 
     // Don't wait indefinitely if the LiveData is not set.
     if (!latch.await(time, timeUnit)) {
-        this.removeObserver(observer)
+        this@getOrAwaitValue.removeObserver(observer)
         throw TimeoutException("LiveData value was never set.")
     }
 
