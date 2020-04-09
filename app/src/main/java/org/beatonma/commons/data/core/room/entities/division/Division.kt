@@ -27,7 +27,17 @@ data class ApiDivision(
     @field:Json(name = "noes") @ColumnInfo(name = "noes") val noes: Int,
     @field:Json(name = "house") @ColumnInfo(name = "house") val house: House,
     @field:Json(name = "votes") @Ignore val votes: List<ApiVote>,
-)
+) {
+    fun toDivision() = Division(
+        parliamentdotuk = parliamentdotuk,
+        title = title,
+        date = date,
+        passed = passed,
+        ayes = ayes,
+        noes = noes,
+        house = house
+    )
+}
 
 data class DivisionWithVotes(
     @Embedded val division: Division,
