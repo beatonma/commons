@@ -10,6 +10,7 @@ import org.beatonma.commons.data.core.CommonsRepository
 import org.beatonma.commons.data.core.room.COMMONS_DB_FILENAME
 import org.beatonma.commons.data.core.room.CommonsDatabase
 import org.beatonma.commons.data.core.room.dao.BillDao
+import org.beatonma.commons.data.core.room.dao.DivisionDao
 import org.beatonma.commons.data.core.room.dao.MemberDao
 import org.beatonma.commons.network.HttpClientModule
 import org.beatonma.commons.network.dagger.MoshiModule
@@ -27,7 +28,6 @@ import javax.inject.Singleton
     ]
 )
 class CommonsDataModule(val application: CommonsApplication) {
-
 
     @Provides
     fun providesContext(): Context = application.applicationContext
@@ -48,9 +48,11 @@ class CommonsDataModule(val application: CommonsApplication) {
     @Provides
     fun providesCommonsRepository(
         context: Context,
-        commonsDatabase: CommonsDatabase,
-        commonsRemoteDataSource: CommonsRemoteDataSource
-    ): CommonsRepository = CommonsRepository(context, commonsRemoteDataSource, commonsDatabase)
+        commonsRemoteDataSource: CommonsRemoteDataSource,
+        memberDao: MemberDao,
+        billDao: BillDao,
+        divisionDao: DivisionDao,
+    ): CommonsRepository = CommonsRepository(context, commonsRemoteDataSource, memberDao, billDao, divisionDao)
 
     @Singleton
     @Provides
@@ -65,4 +67,8 @@ class CommonsDataModule(val application: CommonsApplication) {
     @Singleton
     @Provides
     fun providesBillDao(commonsDatabase: CommonsDatabase): BillDao = commonsDatabase.billDao()
+
+    @Singleton
+    @Provides
+    fun provideDivisionDao(commonsDatabase: CommonsDatabase): DivisionDao = commonsDatabase.divisionDao()
 }
