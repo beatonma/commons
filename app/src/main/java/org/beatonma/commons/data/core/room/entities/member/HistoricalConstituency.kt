@@ -55,4 +55,12 @@ data class ApiHistoricalConstituency(
     @field:Json(name = "start") val start: String,
     @field:Json(name = "end") val end: String?,
     @field:Json(name = "election") val election: Election
-)
+) {
+    fun toHistoricalConstituency(member: Int) = HistoricalConstituency(
+        memberId = member,
+        constituencyId = constituency.parliamentdotuk,
+        start = start,
+        end = end,
+        electionId = election.parliamentdotuk
+    )
+}

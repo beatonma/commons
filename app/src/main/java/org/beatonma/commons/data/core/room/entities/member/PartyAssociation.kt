@@ -48,4 +48,11 @@ data class ApiPartyAssociation(
     @field:Json(name = "party") val party: Party,
     @field:Json(name = "start") val start: String,
     @field:Json(name = "end") val end: String?
-)
+) {
+    fun toPartyAssocation(member: Int) = PartyAssociation(
+        memberId = member,
+        partyId = party.parliamentdotuk,
+        start = start,
+        end = end,
+    )
+}

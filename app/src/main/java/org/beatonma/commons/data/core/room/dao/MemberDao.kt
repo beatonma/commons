@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import org.beatonma.commons.data.core.ApiCompleteMember
 import org.beatonma.commons.data.core.CompleteMember
-import org.beatonma.commons.data.core.room.entities.*
+import org.beatonma.commons.data.core.room.entities.member.*
 
 @Dao
 interface MemberDao {
@@ -147,18 +147,13 @@ interface MemberDao {
         })
 
         insertCommitteeMemberships(member.committees.map { membership ->
-            CommitteeMembership(
-                membership.parliamentdotuk,
-                memberId = parliamentdotuk,
-                name = membership.name,
-                start = membership.start,
-                end = membership.end
-            )
+            membership.toCommitteeMembership(parliamentdotuk)
         })
 
         member.committees.forEach { committee ->
             insertCommitteeChairships(committee.chairs.map { chair ->
-                chair.copy(committeeId = committee.parliamentdotuk,
+                chair.copy(
+                    committeeId = committee.parliamentdotuk,
                     memberId = parliamentdotuk)
             })
         }
@@ -173,22 +168,9 @@ interface MemberDao {
 
         insertElections(member.constituencies.map { it.election })
         insertMemberForConstituencies(member.constituencies.map {
-            HistoricalConstituency(
-                memberId = parliamentdotuk,
-                constituencyId = it.constituency.parliamentdotuk,
-                electionId = it.election.parliamentdotuk,
-                start = it.start,
-                end = it.end
-            )
-        })
+            it.toHistoricalConstituency(parliamentdotuk)
+        } )
 
-        insertPartyAssociations(member.parties.map {
-            PartyAssociation(
-                memberId = parliamentdotuk,
-                partyId = it.party.parliamentdotuk,
-                start = it.start,
-                end = it.end
-            )
-        })
+        insertPartyAssociations(member.parties.map {it.toPartyAssocation(parliamentdotuk) })
     }
 }

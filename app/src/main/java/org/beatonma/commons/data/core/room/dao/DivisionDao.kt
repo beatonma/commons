@@ -19,6 +19,9 @@ interface DivisionDao {
     suspend fun insertFeaturedDivisions(featuredDivisions: List<FeaturedDivision>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertDivisions(divisions: List<Division>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertDivision(division: Division)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
