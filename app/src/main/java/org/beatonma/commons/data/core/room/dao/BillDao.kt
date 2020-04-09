@@ -65,47 +65,26 @@ interface BillDao {
     suspend fun insertParliamentarySession(parliamentarySession: ParliamentarySession)
 
     @Transaction
-    suspend fun insertCompleteBill(parliamentdotuk: Int, bill: ApiBill) {
-        if (bill.type != null) {
-            insertBillType(bill.type)
+    suspend fun insertCompleteBill(parliamentdotuk: Int, apiBill: ApiBill) {
+        if (apiBill.type != null) {
+            insertBillType(apiBill.type)
         }
-        if (bill.session != null) {
-            insertParliamentarySession(bill.session)
+        if (apiBill.session != null) {
+            insertParliamentarySession(apiBill.session)
         }
 
-        insertBill(Bill(
-            parliamentdotuk = parliamentdotuk,
-            title = bill.title,
-            description = bill.description,
-            actName = bill.actName,
-            label = bill.label,
-            homepage = bill.homepage,
-            date = bill.date,
-            ballotNumber = bill.ballotNumber,
-            billChapter = bill.billChapter,
-            isPrivate = bill.isPrivate,
-            isMoneyBill = bill.isMoneyBill,
-            publicInvolvementAllowed = bill.publicInvolvementAllowed,
-            sessionId = bill.session?.parliamentdotuk,
-            typeId = bill.type?.name
-        ))
+        insertBill(apiBill.toBill())
 
-        insertBillStages(bill.stages.map { apiStage ->
-            BillStage(
-                billId = parliamentdotuk,
-                parliamentdotuk = apiStage.parliamentdotuk,
-                type = apiStage.type
-            )
-        })
+        insertBillStages(apiBill.stages.map { apiStage -> apiStage.toBillStage(parliamentdotuk) })
 
         insertBillStageSittings(
-        bill.stages.map { stage ->
+        apiBill.stages.map { stage ->
             stage.sittings.map { sitting ->
                 sitting.copy(billStageId = stage.parliamentdotuk)
             }
         }.flatten())
 
-        insertBillSponsors(bill.sponsors.map { it.copy(billId = parliamentdotuk) })
-        insertBillPublications(bill.publications.map { it.copy(billId = parliamentdotuk) })
+        insertBillSponsors(apiBill.sponsors.map { it.copy(billId = parliamentdotuk) })
+        insertBillPublications(apiBill.publications.map { it.copy(billId = parliamentdotuk) })
     }
 }
