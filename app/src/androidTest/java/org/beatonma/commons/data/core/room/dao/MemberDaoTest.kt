@@ -1,14 +1,12 @@
 package org.beatonma.commons.data.core.room.dao
 
-import androidx.lifecycle.LiveData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import org.beatonma.commons.androidTest.getOrAwaitValue
 import org.beatonma.commons.data.BaseRoomDaoTest
-import org.beatonma.commons.data.core.room.dao.testdata.API_MEMBER
-import org.beatonma.commons.data.core.room.dao.testdata.MEMBER_PUK
-import org.beatonma.commons.data.core.room.entities.member.HouseMembership
+import org.beatonma.commons.data.core.room.entities.member.House
 import org.beatonma.commons.data.core.room.entities.member.Post
+import org.beatonma.commons.data.testdata.API_MEMBER
+import org.beatonma.commons.data.testdata.MEMBER_PUK
 import org.beatonma.lib.testing.kotlin.extensions.assertions.shouldbe
 import org.junit.Before
 import org.junit.Test
@@ -25,11 +23,7 @@ class MemberDaoInsertApiCompleteMemberTest: BaseRoomDaoTest<MemberDao>() {
     override val dao: MemberDao
         get() = db.memberDao()
 
-    /**
-     * Run the given function on the dao with the standard PUK as used in API_MEMBER
-     */
-    private fun <T> daoTest(func: MemberDao.(Int) -> LiveData<T>, testBlock: T.() -> Unit) =
-        dao.func(MEMBER_PUK).getOrAwaitValue { testBlock(this) }
+    override val testPukId: Int = MEMBER_PUK
 
     @Before
     override fun setUp() {
@@ -142,7 +136,7 @@ class MemberDaoInsertApiCompleteMemberTest: BaseRoomDaoTest<MemberDao>() {
         daoTest(MemberDao::getHouseMemberships) {
             size shouldbe 2
             first { it.start == "2001-06-07" }.run {
-                house shouldbe HouseMembership.House.Commons
+                house shouldbe House.Commons
                 end shouldbe "2008-06-04"
             }
         }

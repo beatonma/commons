@@ -1,11 +1,9 @@
 package org.beatonma.commons.data.core.room.dao
 
-import androidx.lifecycle.LiveData
 import kotlinx.coroutines.runBlocking
-import org.beatonma.commons.androidTest.getOrAwaitValue
 import org.beatonma.commons.data.BaseRoomDaoTest
-import org.beatonma.commons.data.core.room.dao.testdata.API_BILL
-import org.beatonma.commons.data.core.room.dao.testdata.BILL_PUK
+import org.beatonma.commons.data.testdata.API_BILL
+import org.beatonma.commons.data.testdata.BILL_PUK
 import org.beatonma.lib.testing.kotlin.extensions.assertions.shouldbe
 import org.junit.Before
 import org.junit.Test
@@ -22,6 +20,8 @@ class BillDaoInsertCompleteBillTest: BaseRoomDaoTest<BillDao>() {
     override val dao: BillDao
         get() = db.billDao()
 
+    override val testPukId: Int = BILL_PUK
+
     @Before
     override fun setUp() {
         super.setUp()
@@ -29,9 +29,6 @@ class BillDaoInsertCompleteBillTest: BaseRoomDaoTest<BillDao>() {
             dao.insertCompleteBill(BILL_PUK, API_BILL)
         }
     }
-
-    private fun <T> daoTest(func: BillDao.(Int) -> LiveData<T>, testBlock: T.() -> Unit) =
-        dao.func(BILL_PUK).getOrAwaitValue { testBlock(this) }
 
     @Test
     fun ensure_Bill_is_written_and_retrieved_correctly() {
