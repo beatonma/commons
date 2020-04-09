@@ -5,8 +5,12 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import org.beatonma.commons.data.core.Converters
 import org.beatonma.commons.data.core.room.dao.BillDao
+import org.beatonma.commons.data.core.room.dao.DivisionDao
 import org.beatonma.commons.data.core.room.dao.MemberDao
 import org.beatonma.commons.data.core.room.entities.bill.*
+import org.beatonma.commons.data.core.room.entities.division.Division
+import org.beatonma.commons.data.core.room.entities.division.FeaturedDivision
+import org.beatonma.commons.data.core.room.entities.division.Vote
 import org.beatonma.commons.data.core.room.entities.member.*
 
 const val COMMONS_DB_FILENAME = "commons.db"
@@ -41,6 +45,12 @@ const val COMMONS_DB_FILENAME = "commons.db"
         BillType::class,
         FeaturedBill::class,
 
+        // Divisions
+        Division::class,
+        FeaturedDivision::class,
+        Vote::class,
+
+
         // Common/Generic
         ParliamentarySession::class,
     ],
@@ -48,7 +58,7 @@ const val COMMONS_DB_FILENAME = "commons.db"
 )
 @TypeConverters(Converters::class)
 abstract class CommonsDatabase : RoomDatabase() {
-
     abstract fun memberDao(): MemberDao
     abstract fun billDao(): BillDao
+    abstract fun divisionDao(): DivisionDao
 }

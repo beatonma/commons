@@ -2,8 +2,9 @@ package org.beatonma.commons.data.core
 
 import androidx.room.TypeConverter
 import com.squareup.moshi.Moshi
+import org.beatonma.commons.data.core.room.entities.division.VoteType
 import org.beatonma.commons.data.core.room.entities.member.Constituency
-import org.beatonma.commons.data.core.room.entities.member.HouseMembership
+import org.beatonma.commons.data.core.room.entities.member.House
 import org.beatonma.commons.data.core.room.entities.member.Party
 import org.beatonma.commons.data.core.room.entities.member.Post
 
@@ -16,9 +17,7 @@ object Converters {
 
     @TypeConverter
     @JvmStatic
-    fun deserializeParty(key: Int): Party? =
-        Party(parliamentdotuk = key,
-            name = "")
+    fun deserializeParty(key: Int): Party? = Party(parliamentdotuk = key, name = "")
 
     @TypeConverter
     @JvmStatic
@@ -41,8 +40,11 @@ object Converters {
 
     @TypeConverter
     @JvmStatic
-    fun deserializeHouse(ordinal: Int): HouseMembership.House? =
-        ordinal.toEnum<HouseMembership.House>()
+    fun deserializeHouse(ordinal: Int): House? = ordinal.toEnum<House>()
+
+    @TypeConverter
+    @JvmStatic
+    fun deserializeDivisionVoteType(ordinal: Int): VoteType? = ordinal.toEnum<VoteType>()
 
     private inline fun <reified T : Enum<T>> Int.toEnum(): T = enumValues<T>()[this]
 

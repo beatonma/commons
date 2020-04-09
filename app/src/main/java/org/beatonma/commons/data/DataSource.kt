@@ -1,5 +1,6 @@
 package org.beatonma.commons.data
 
+import org.beatonma.commons.data.core.room.entities.member.House
 import org.beatonma.commons.network.retrofit.CommonsService
 import retrofit2.Response
 import javax.inject.Inject
@@ -40,5 +41,25 @@ class CommonsRemoteDataSource @Inject constructor(
 
     suspend fun getBill(parliamentdotuk: Int) = getResult {
         service.getBill(parliamentdotuk)
+    }
+
+    suspend fun getFeaturedDivisions() = getResult {
+        service.getFeaturedDivisions()
+    }
+
+    suspend fun getDivision(house: String, parliamentdotuk: Int) =
+        if (house == House.Lords.name) {
+            getLordsDivision(parliamentdotuk)
+        }
+        else {
+            getCommonsDivision(parliamentdotuk)
+        }
+
+    suspend fun getCommonsDivision(parliamentdotuk: Int) = getResult {
+        service.getCommonsDivision(parliamentdotuk)
+    }
+
+    suspend fun getLordsDivision(parliamentdotuk: Int) = getResult {
+        service.getLordsDivision(parliamentdotuk)
     }
 }
