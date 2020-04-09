@@ -7,14 +7,16 @@ import androidx.lifecycle.MutableLiveData
 import org.beatonma.commons.data.CommonsRemoteDataSource
 import org.beatonma.commons.data.IoResult
 import org.beatonma.commons.data.core.room.dao.BillDao
+import org.beatonma.commons.data.core.room.dao.DivisionDao
 import org.beatonma.commons.data.core.room.dao.MemberDao
 import org.beatonma.commons.data.core.room.entities.bill.CompleteBill
 import org.beatonma.commons.data.core.room.entities.bill.FeaturedBill
 import org.beatonma.commons.data.core.room.entities.bill.FeaturedBillWithBill
+import org.beatonma.commons.data.core.room.entities.division.FeaturedDivision
+import org.beatonma.commons.data.core.room.entities.division.FeaturedDivisionWithDivision
 import org.beatonma.commons.data.core.room.entities.member.FeaturedMember
 import org.beatonma.commons.data.core.room.entities.member.FeaturedMemberProfile
 import org.beatonma.commons.data.resultLiveData
-import org.beatonma.lib.util.kotlin.extensions.dump
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -26,6 +28,7 @@ class CommonsRepository @Inject constructor(
     private val commonsRemoteDataSource: CommonsRemoteDataSource,
     private val memberDao: MemberDao,
     private val billDao: BillDao,
+    private val divisionDao: DivisionDao
 ) {
     fun observeFeaturedPeople(): LiveData<IoResult<List<FeaturedMemberProfile>>> = resultLiveData(
         databaseQuery = { memberDao.getFeaturedProfiles() },
@@ -39,9 +42,7 @@ class CommonsRepository @Inject constructor(
 
                 insertProfiles(profiles)
                 insertFeaturedPeople(
-                    profiles.map { profile ->
-                        FeaturedMember(profile.parliamentdotuk)
-                    }
+                    profiles.map { profile -> FeaturedMember(profile.parliamentdotuk) }
                 )
             }
         }
@@ -51,13 +52,22 @@ class CommonsRepository @Inject constructor(
         databaseQuery = { billDao.getFeaturedBills() },
         networkCall = { commonsRemoteDataSource.getFeaturedBills() },
         saveCallResult = { bills ->
-            bills.dump()
             billDao.insertBills(bills)
 
             billDao.insertFeaturedBills(
-                bills.map {
-                    FeaturedBill(it.parliamentdotuk)
-                })
+                bills.map { FeaturedBill(it.parliamentdotuk) }
+            )
+        }
+    )
+
+    fun observeFeaturedDivisions(): LiveData<IoResult<List<FeaturedDivisionWithDivision>>> = resultLiveData(
+        databaseQuery = { divisionDao.getFeaturedDivisions() },
+        networkCall = { commonsRemoteDataSource.getFeaturedDivisions() },
+        saveCallResult = { divisions ->
+            divisionDao.insertDivisions(divisions.map { it.toDivision() })
+            divisionDao.insertFeaturedDivisions(
+                divisions.map { FeaturedDivision(it.parliamentdotuk) }
+            )
         }
     )
 
