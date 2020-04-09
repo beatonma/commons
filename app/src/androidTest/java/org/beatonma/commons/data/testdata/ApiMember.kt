@@ -1,4 +1,4 @@
-package org.beatonma.commons.data.core.room.dao.testdata
+package org.beatonma.commons.data.testdata
 
 import org.beatonma.commons.data.core.ApiCompleteMember
 import org.beatonma.commons.data.core.room.entities.member.*
@@ -104,13 +104,13 @@ val API_MEMBER = ApiCompleteMember(
     ),
     houses = listOf(
         HouseMembership(
-            house = HouseMembership.House.Commons,
+            house = House.Commons,
             start = "2001-06-07",
             end = "2008-06-04",
             memberId = MEMBER_PUK,
         ),
         HouseMembership(
-            house = HouseMembership.House.Commons,
+            house = House.Commons,
             start = "2015-05-07",
             end = null,
             memberId = MEMBER_PUK,

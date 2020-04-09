@@ -1,4 +1,4 @@
-package org.beatonma.commons.data.core.room.dao.testdata
+package org.beatonma.commons.data.testdata
 
 import org.beatonma.commons.data.core.room.entities.bill.*
 
