@@ -1,60 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    style="@style/Card"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/card"
+    style="@style/Card.FullWidthOnSmall"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/portrait"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:contentDescription="TODO"
-        android:src="@mipmap/ic_launcher"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <include layout="@layout/item_wide_image_title_subtitle_description"/>
 
-    <TextView
-        android:id="@+id/name"
-        style="@style/Text.Primary"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:text="Name" />
+<!--    <ImageView-->
+<!--        android:id="@+id/portrait"-->
+<!--        android:layout_width="64dp"-->
+<!--        android:layout_height="64dp"-->
+<!--        android:src="@mipmap/ic_launcher"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        tools:src="@tools:sample/avatars"/>-->
 
-    <TextView
-        android:id="@+id/constituency"
-        style="@style/Text.Primary"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="72dp"
-        tools:text="Constituency" />
+<!--    <View-->
+<!--        android:layout_width="4dp"-->
+<!--        android:layout_height="0dp"-->
+<!--        android:id="@+id/accent_line"-->
+<!--        app:layout_constraintTop_toTopOf="@id/portrait"-->
+<!--        app:layout_constraintBottom_toBottomOf="@id/portrait"-->
+<!--        app:layout_constraintStart_toEndOf="@id/portrait"-->
+<!--        android:layout_marginStart="4dp"-->
+<!--        tools:background="@color/party_labour"/>-->
 
-    <TextView
-        android:id="@+id/party"
-        style="@style/Text.Primary"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="48dp"
-        tools:text="Party" />
+<!--    <TextView-->
+<!--        android:id="@+id/name"-->
+<!--        style="@style/Text.Primary"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        tools:text="@tools:sample/full_names" />-->
 
-    <androidx.constraintlayout.helper.widget.Flow
-        android:id="@+id/flow"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:orientation="vertical"
-        app:constraint_referenced_ids="name,party,constituency"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@id/portrait"
-        tools:layout_editor_absoluteY="16dp" />
+<!--    <TextView-->
+<!--        android:id="@+id/constituency_and_party"-->
+<!--        style="@style/Text.Primary"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        tools:text="constituency" />-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/current_post"-->
+<!--        style="@style/Text.Primary"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        tools:text="party" />-->
+
+<!--    <androidx.constraintlayout.helper.widget.Flow-->
+<!--        android:id="@+id/flow"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginStart="8dp"-->
+<!--        android:orientation="vertical"-->
+<!--        app:constraint_referenced_ids="name,current_post,constituency_and_party"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.0"-->
+<!--        app:layout_constraintStart_toEndOf="@id/accent_line" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
