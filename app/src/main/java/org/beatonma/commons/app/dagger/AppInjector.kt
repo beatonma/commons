@@ -6,6 +6,8 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
+import dagger.android.AndroidInjection
+import dagger.android.HasAndroidInjector
 import dagger.android.support.AndroidSupportInjection
 import org.beatonma.commons.CommonsApplication
 import org.beatonma.commons.data.core.dagger.CommonsDataModule
@@ -14,9 +16,7 @@ object AppInjector {
     fun init(application: CommonsApplication) {
         DaggerCommonsAppComponent.builder()
             .commonsDataModule(
-                CommonsDataModule(
-                    application
-                )
+                CommonsDataModule(application)
             )
             .build()
             .inject(application)
@@ -29,7 +29,6 @@ object AppInjector {
             override fun onActivityDestroyed(activity: Activity) {}
             override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle?) {}
             override fun onActivityStopped(activity: Activity) {}
-
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
                 handleActivity(
                     activity
@@ -39,9 +38,10 @@ object AppInjector {
     }
 
     private fun handleActivity(activity: Activity) {
-//        if (activity is HasAndroidInjector) {
-//            AndroidInjection.inject(activity)
-//        }
+        if (activity is HasAndroidInjector) {
+            AndroidInjection.inject(activity)
+        }
+
         if (activity is FragmentActivity) {
             activity.supportFragmentManager.registerFragmentLifecycleCallbacks(
                 object : FragmentManager.FragmentLifecycleCallbacks() {

@@ -7,6 +7,7 @@ import dagger.MapKey
 import dagger.Module
 import dagger.multibindings.IntoMap
 import org.beatonma.commons.app.bill.BillProfileViewModel
+import org.beatonma.commons.app.division.DivisionProfileViewModel
 import org.beatonma.commons.app.featured.FeaturedContentViewModel
 import org.beatonma.commons.app.memberprofile.MemberProfileViewModel
 import javax.inject.Inject
@@ -52,4 +53,9 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(BillProfileViewModel::class)
     internal abstract fun bindBillProfileViewModel(viewModel: BillProfileViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DivisionProfileViewModel::class)
+    internal abstract fun bindDivisionProfileViewModel(viewModel: DivisionProfileViewModel): ViewModel
 }

@@ -10,6 +10,7 @@ import org.beatonma.commons.CommonsApplication
 import org.beatonma.commons.app.ExperimentalFrontPageFragment
 import org.beatonma.commons.app.MainActivity
 import org.beatonma.commons.app.bill.BillProfileFragment
+import org.beatonma.commons.app.division.DivisionProfileFragment
 import org.beatonma.commons.app.memberprofile.MemberProfileFragment
 import org.beatonma.commons.data.CommonsRemoteDataSource
 import org.beatonma.commons.data.core.CommonsRepository
@@ -69,4 +70,8 @@ abstract class FragmentsModule {
     @FragmentScope
     @ContributesAndroidInjector
     abstract fun providesBillProfileFragment(): BillProfileFragment
+
+    @FragmentScope
+    @ContributesAndroidInjector
+    abstract fun providesDivisionProfileFragment(): DivisionProfileFragment
 }
