@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import org.beatonma.commons.data.core.ApiCompleteMember
 import org.beatonma.commons.data.core.CompleteMember
+import org.beatonma.commons.data.core.room.entities.division.VoteWithDivision
 import org.beatonma.commons.data.core.room.entities.member.*
 
 @Dao
@@ -54,6 +55,12 @@ interface MemberDao {
 
     @Query("""SELECT * FROM party_associations WHERE partyacc_member_id = :parliamentdotuk""")
     fun getPartyAssociations(parliamentdotuk: Int): LiveData<List<PartyAssociationWithParty>>
+
+    @Query("""SELECT * FROM division_votes WHERE dvote_member_id = :parliamentdotuk""")
+    fun getCommonsVotesForMember(parliamentdotuk: Int): LiveData<List<VoteWithDivision>>
+
+    @Query("""SELECT * FROM division_votes WHERE dvote_member_id = :parliamentdotuk""")
+    fun getLordsVotesForMember(parliamentdotuk: Int): LiveData<List<VoteWithDivision>>
 
     // Insert operations
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -125,7 +132,14 @@ interface MemberDao {
     @Transaction
     suspend fun insertCompleteMember(parliamentdotuk: Int, member: ApiCompleteMember) {
         insertParties(member.parties.map { it.party })
-        insertConstituencies(member.constituencies.map { it.constituency })
+        insertParty(member.profile.party)
+        insertConstituencies(
+            member.constituencies.map { it.constituency }
+        )
+        if (member.profile.constituency != null) {
+            // Not necessarily included in member.constituencies list.
+            insertConstituency(member.profile.constituency)
+        }
 
         insertProfile(member.profile)
 

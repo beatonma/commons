@@ -12,10 +12,10 @@ import org.beatonma.commons.data.core.room.dao.MemberDao
 import org.beatonma.commons.data.core.room.entities.bill.CompleteBill
 import org.beatonma.commons.data.core.room.entities.bill.FeaturedBill
 import org.beatonma.commons.data.core.room.entities.bill.FeaturedBillWithBill
-import org.beatonma.commons.data.core.room.entities.division.FeaturedDivision
-import org.beatonma.commons.data.core.room.entities.division.FeaturedDivisionWithDivision
+import org.beatonma.commons.data.core.room.entities.division.*
 import org.beatonma.commons.data.core.room.entities.member.FeaturedMember
 import org.beatonma.commons.data.core.room.entities.member.FeaturedMemberProfile
+import org.beatonma.commons.data.core.room.entities.member.House
 import org.beatonma.commons.data.resultLiveData
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -81,6 +81,30 @@ class CommonsRepository @Inject constructor(
         databaseQuery = { observeCompleteMember(parliamentdotuk) },
         networkCall = { commonsRemoteDataSource.getMember(parliamentdotuk) },
         saveCallResult = { member -> memberDao.insertCompleteMember(parliamentdotuk, member) }
+    )
+
+    fun observeDivision(house: House, parliamentdotuk: Int): LiveData<IoResult<DivisionWithVotes>> = resultLiveData(
+        databaseQuery = { divisionDao.getDivisionWithVotes(parliamentdotuk) },
+        networkCall = { commonsRemoteDataSource.getDivision(house, parliamentdotuk) },
+        saveCallResult = { division -> divisionDao.insertApiDivision(parliamentdotuk, division) }
+    )
+
+    fun observeCommonsVotesForMember(parliamentdotuk: Int): LiveData<IoResult<List<VoteWithDivision>>> = resultLiveData(
+        databaseQuery = { memberDao.getCommonsVotesForMember(parliamentdotuk) },
+        networkCall = { commonsRemoteDataSource.getCommonsVotesForMember(parliamentdotuk) },
+        saveCallResult = { memberVotes ->
+            divisionDao.insertDivisions(memberVotes.map {
+                it.division.copy(house = House.Commons)
+            })
+            divisionDao.insertVotes(memberVotes.map { memberVote ->
+                Vote(
+                    memberId = parliamentdotuk,
+                    divisionId = memberVote.division.parliamentdotuk,
+                    voteType = memberVote.voteType,
+                    memberName = ""
+                )
+            })
+        }
     )
 
     private fun observeCompleteMember(parliamentdotuk: Int): LiveData<CompleteMember> {
@@ -161,20 +185,20 @@ class CommonsRepository @Inject constructor(
 
 
 private class MutableCompleteBill: Mutator<CompleteBill>() {
-    override var _mutable: CompleteBill = CompleteBill()
+    override var mutable: CompleteBill = CompleteBill()
 }
 
 private class MutableCompleteMember: Mutator<CompleteMember>() {
-    override var _mutable: CompleteMember = CompleteMember()
+    override var mutable: CompleteMember = CompleteMember()
 }
 
 private abstract class Mutator<D> {
     val value: MutableLiveData<D> = MutableLiveData()
-    protected abstract var _mutable: D
+    protected abstract var mutable: D
 
     inline fun update(block: D.() -> D): D {
-        _mutable = block.invoke(_mutable)
-        value.value = _mutable
-        return _mutable
+        mutable = block.invoke(mutable)
+        value.value = mutable
+        return mutable
     }
 }

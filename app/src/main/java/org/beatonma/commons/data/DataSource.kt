@@ -47,12 +47,18 @@ class CommonsRemoteDataSource @Inject constructor(
         service.getFeaturedDivisions()
     }
 
-    suspend fun getDivision(house: String, parliamentdotuk: Int) =
-        if (house == House.Lords.name) {
-            getLordsDivision(parliamentdotuk)
-        }
-        else {
-            getCommonsDivision(parliamentdotuk)
+    suspend fun getCommonsVotesForMember(parliamentdotuk: Int) = getResult {
+        service.getCommonsVotesForMember(parliamentdotuk)
+    }
+
+    suspend fun getLordsVotesForMember(parliamentdotuk: Int) = getResult {
+        service.getLordsVotesForMember(parliamentdotuk)
+    }
+
+    suspend fun getDivision(house: House, parliamentdotuk: Int) =
+        when (house) {
+            House.Lords -> getLordsDivision(parliamentdotuk)
+            else -> getCommonsDivision(parliamentdotuk)
         }
 
     suspend fun getCommonsDivision(parliamentdotuk: Int) = getResult {
