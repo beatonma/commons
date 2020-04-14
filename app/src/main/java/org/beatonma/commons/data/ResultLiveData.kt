@@ -17,7 +17,12 @@ fun <T, N> resultLiveData(
     val response = networkCall.invoke()
     if (response.status == IoResult.Status.SUCCESS) {
         if (response.data != null) {
-            saveCallResult(response.data)
+            try {
+                saveCallResult(response.data)
+            }
+            catch (e: Exception) {
+                emit(IoResult.error<T>("Unable to save network result: $e"))
+            }
         }
         else {
             emit(IoResult.error<T>("Null data: ${response.message}"))

@@ -9,6 +9,10 @@ data class IoResult<out T>(
     val data: T?,
     val message: String?
 ) {
+    val hasNetworkError get() = status == Status.NETWORK_ERROR
+    val hasError get() = status == Status.ERROR || status == Status.NETWORK_ERROR
+    val isLoading get() = status == Status.LOADING
+    val isSuccessful get() = status == Status.SUCCESS
 
     enum class Status {
         SUCCESS,
@@ -19,7 +23,7 @@ data class IoResult<out T>(
 
     companion object {
         fun <T> success(data: T, message: String? = null): IoResult<T> {
-            Log.d(TAG, "SUCCESS: ${message ?: ""}$data")
+//            Log.d(TAG, "SUCCESS: ${message ?: ""}$data")
             return IoResult(Status.SUCCESS, data, message)
         }
 

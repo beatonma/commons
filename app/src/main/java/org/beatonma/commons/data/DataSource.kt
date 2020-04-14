@@ -15,8 +15,9 @@ abstract class BaseDataSource {
                     return IoResult.success(body, message = "Network OK ")
                 }
             }
-            return IoResult.error("Network error: [${response.code()}] ${response.message()}")
-        } catch (e: Exception) {
+            return IoResult.networkError("[${response.code()}] ${response.message()}")
+        }
+        catch (e: Exception) {
             return IoResult.error("getResult error: ${e.message ?: e}")
         }
     }
@@ -67,5 +68,9 @@ class CommonsRemoteDataSource @Inject constructor(
 
     suspend fun getLordsDivision(parliamentdotuk: Int) = getResult {
         service.getLordsDivision(parliamentdotuk)
+    }
+
+    suspend fun registerUser(googleToken: String) = getResult {
+        service.registerGoogleSignIn(googleToken)
     }
 }

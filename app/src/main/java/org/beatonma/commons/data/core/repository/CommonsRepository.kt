@@ -1,4 +1,4 @@
-package org.beatonma.commons.data.core
+package org.beatonma.commons.data.core.repository
 
 import android.content.Context
 import androidx.lifecycle.LiveData
@@ -6,6 +6,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import org.beatonma.commons.data.CommonsRemoteDataSource
 import org.beatonma.commons.data.IoResult
+import org.beatonma.commons.data.core.CompleteMember
 import org.beatonma.commons.data.core.room.dao.BillDao
 import org.beatonma.commons.data.core.room.dao.DivisionDao
 import org.beatonma.commons.data.core.room.dao.MemberDao
@@ -28,7 +29,7 @@ class CommonsRepository @Inject constructor(
     private val commonsRemoteDataSource: CommonsRemoteDataSource,
     private val memberDao: MemberDao,
     private val billDao: BillDao,
-    private val divisionDao: DivisionDao
+    private val divisionDao: DivisionDao,
 ) {
     fun observeFeaturedPeople(): LiveData<IoResult<List<FeaturedMemberProfile>>> = resultLiveData(
         databaseQuery = { memberDao.getFeaturedProfiles() },
@@ -108,7 +109,8 @@ class CommonsRepository @Inject constructor(
     )
 
     private fun observeCompleteMember(parliamentdotuk: Int): LiveData<CompleteMember> {
-        val member = MutableCompleteMember()
+        val member =
+            MutableCompleteMember()
 
         return MediatorLiveData<CompleteMember>().apply {
             addSource(member.value) {
@@ -153,7 +155,8 @@ class CommonsRepository @Inject constructor(
     }
 
     private fun observeCompleteBill(parliamentdotuk: Int): LiveData<CompleteBill> {
-        val bill = MutableCompleteBill()
+        val bill =
+            MutableCompleteBill()
 
         return MediatorLiveData<CompleteBill>().apply {
             addSource(bill.value) {
@@ -189,7 +192,8 @@ private class MutableCompleteBill: Mutator<CompleteBill>() {
 }
 
 private class MutableCompleteMember: Mutator<CompleteMember>() {
-    override var mutable: CompleteMember = CompleteMember()
+    override var mutable: CompleteMember =
+        CompleteMember()
 }
 
 private abstract class Mutator<D> {
