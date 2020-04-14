@@ -8,7 +8,7 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import org.beatonma.commons.app.dagger.AppInjector
-import org.beatonma.commons.data.core.CommonsRepository
+import org.beatonma.commons.data.core.repository.CommonsRepository
 import javax.inject.Inject
 
 class CommonsApplication : Application(), HasAndroidInjector {

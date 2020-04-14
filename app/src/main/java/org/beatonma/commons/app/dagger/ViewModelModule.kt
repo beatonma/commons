@@ -10,6 +10,7 @@ import org.beatonma.commons.app.bill.BillProfileViewModel
 import org.beatonma.commons.app.division.DivisionProfileViewModel
 import org.beatonma.commons.app.featured.FeaturedContentViewModel
 import org.beatonma.commons.app.memberprofile.MemberProfileViewModel
+import org.beatonma.commons.app.signin.SignInViewModel
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
@@ -58,4 +59,9 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(DivisionProfileViewModel::class)
     internal abstract fun bindDivisionProfileViewModel(viewModel: DivisionProfileViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(SignInViewModel::class)
+    internal abstract fun bindSignInViewModel(viewModel: SignInViewModel): ViewModel
 }

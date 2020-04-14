@@ -7,11 +7,13 @@ import org.beatonma.commons.data.core.Converters
 import org.beatonma.commons.data.core.room.dao.BillDao
 import org.beatonma.commons.data.core.room.dao.DivisionDao
 import org.beatonma.commons.data.core.room.dao.MemberDao
+import org.beatonma.commons.data.core.room.dao.UserDao
 import org.beatonma.commons.data.core.room.entities.bill.*
 import org.beatonma.commons.data.core.room.entities.division.Division
 import org.beatonma.commons.data.core.room.entities.division.FeaturedDivision
 import org.beatonma.commons.data.core.room.entities.division.Vote
 import org.beatonma.commons.data.core.room.entities.member.*
+import org.beatonma.commons.data.core.room.entities.user.UserToken
 
 const val COMMONS_DB_FILENAME = "commons.db"
 
@@ -50,9 +52,11 @@ const val COMMONS_DB_FILENAME = "commons.db"
         FeaturedDivision::class,
         Vote::class,
 
-
         // Common/Generic
         ParliamentarySession::class,
+
+        // User
+        UserToken::class,
     ],
     version = 1
 )
@@ -61,4 +65,5 @@ abstract class CommonsDatabase : RoomDatabase() {
     abstract fun memberDao(): MemberDao
     abstract fun billDao(): BillDao
     abstract fun divisionDao(): DivisionDao
+    abstract fun userDao(): UserDao
 }

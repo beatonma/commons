@@ -12,9 +12,10 @@ import org.beatonma.commons.app.MainActivity
 import org.beatonma.commons.app.bill.BillProfileFragment
 import org.beatonma.commons.app.division.DivisionProfileFragment
 import org.beatonma.commons.app.memberprofile.MemberProfileFragment
+import org.beatonma.commons.app.signin.SignInFragment
 import org.beatonma.commons.data.CommonsRemoteDataSource
-import org.beatonma.commons.data.core.CommonsRepository
 import org.beatonma.commons.data.core.dagger.CommonsDataModule
+import org.beatonma.commons.data.core.repository.CommonsRepository
 import org.beatonma.commons.data.core.room.CommonsDatabase
 import org.beatonma.commons.network.retrofit.CommonsService
 import org.beatonma.commons.network.retrofit.GenericUrlService
@@ -26,6 +27,7 @@ import javax.inject.Singleton
     modules = [
         AndroidSupportInjectionModule::class,
         CommonsDataModule::class,
+        UserModule::class,
         MainActivityModule::class,
         ViewModelModule::class
     ]
@@ -74,4 +76,8 @@ abstract class FragmentsModule {
     @FragmentScope
     @ContributesAndroidInjector
     abstract fun providesDivisionProfileFragment(): DivisionProfileFragment
+
+    @FragmentScope
+    @ContributesAndroidInjector
+    abstract fun providesSignInFragment(): SignInFragment
 }

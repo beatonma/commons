@@ -7,10 +7,10 @@ import org.beatonma.commons.data.core.room.entities.bill.Bill
 import org.beatonma.commons.data.core.room.entities.division.ApiDivision
 import org.beatonma.commons.data.core.room.entities.division.ApiMemberVote
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
+import org.beatonma.commons.data.core.room.entities.user.ApiUserToken
 import org.beatonma.commons.network.retrofit.converters.EnvelopePayload
 import retrofit2.Response
-import retrofit2.http.GET
-import retrofit2.http.Path
+import retrofit2.http.*
 
 private const val API_PATH = "/api"
 private const val MEMBER_API_PATH = "$API_PATH/member"
@@ -84,4 +84,8 @@ interface CommonsService {
     // TODO: 06/04/2020
 //    @GET("$DIVISION_API_PATH/lords/")
 //    suspend fun getLordsDivisions()
+
+    @FormUrlEncoded
+    @POST("/auth/g/")
+    suspend fun registerGoogleSignIn(@Field("token") googleToken: String): Response<ApiUserToken>
 }
