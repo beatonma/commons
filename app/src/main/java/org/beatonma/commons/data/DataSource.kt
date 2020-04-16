@@ -1,6 +1,13 @@
 package org.beatonma.commons.data
 
+import org.beatonma.commons.data.core.ApiCompleteMember
+import org.beatonma.commons.data.core.room.entities.bill.ApiBill
+import org.beatonma.commons.data.core.room.entities.bill.Bill
+import org.beatonma.commons.data.core.room.entities.division.ApiDivision
+import org.beatonma.commons.data.core.room.entities.division.ApiMemberVote
 import org.beatonma.commons.data.core.room.entities.member.House
+import org.beatonma.commons.data.core.room.entities.member.MemberProfile
+import org.beatonma.commons.data.core.room.entities.user.ApiUserToken
 import org.beatonma.commons.network.retrofit.CommonsService
 import retrofit2.Response
 import javax.inject.Inject
@@ -24,53 +31,72 @@ abstract class BaseDataSource {
 }
 
 
-class CommonsRemoteDataSource @Inject constructor(
-    private val service: CommonsService
-) : BaseDataSource() {
+interface CommonsRemoteDataSource {
+    suspend fun getFeaturedPeople(): IoResult<List<MemberProfile>>
+    suspend fun getMember(parliamentdotuk: Int): IoResult<ApiCompleteMember>
 
-    suspend fun getFeaturedPeople() = getResult {
+    suspend fun getFeaturedBills(): IoResult<List<Bill>>
+    suspend fun getBill(parliamentdotuk: Int): IoResult<ApiBill>
+
+    suspend fun getCommonsVotesForMember(parliamentdotuk: Int): IoResult<List<ApiMemberVote>>
+    suspend fun getLordsVotesForMember(parliamentdotuk: Int): IoResult<List<ApiMemberVote>>
+
+    suspend fun getFeaturedDivisions(): IoResult<List<ApiDivision>>
+    suspend fun getDivision(house: House, parliamentdotuk: Int): IoResult<ApiDivision>
+    suspend fun getCommonsDivision(parliamentdotuk: Int): IoResult<ApiDivision>
+    suspend fun getLordsDivision(parliamentdotuk: Int): IoResult<ApiDivision>
+
+    suspend fun registerUser(googleToken: String): IoResult<ApiUserToken>
+}
+
+
+class CommonsRemoteDataSourceImpl @Inject constructor(
+    private val service: CommonsService
+) : BaseDataSource(), CommonsRemoteDataSource {
+
+    override suspend fun getFeaturedPeople() = getResult {
         service.getFeaturedPeople()
     }
 
-    suspend fun getMember(parliamentdotuk: Int) = getResult {
+    override suspend fun getMember(parliamentdotuk: Int) = getResult {
         service.getMember(parliamentdotuk)
     }
 
-    suspend fun getFeaturedBills() = getResult {
+    override suspend fun getFeaturedBills() = getResult {
         service.getFeaturedBills()
     }
 
-    suspend fun getBill(parliamentdotuk: Int) = getResult {
+    override suspend fun getBill(parliamentdotuk: Int) = getResult {
         service.getBill(parliamentdotuk)
     }
 
-    suspend fun getFeaturedDivisions() = getResult {
+    override suspend fun getFeaturedDivisions() = getResult {
         service.getFeaturedDivisions()
     }
 
-    suspend fun getCommonsVotesForMember(parliamentdotuk: Int) = getResult {
+    override suspend fun getCommonsVotesForMember(parliamentdotuk: Int) = getResult {
         service.getCommonsVotesForMember(parliamentdotuk)
     }
 
-    suspend fun getLordsVotesForMember(parliamentdotuk: Int) = getResult {
+    override suspend fun getLordsVotesForMember(parliamentdotuk: Int) = getResult {
         service.getLordsVotesForMember(parliamentdotuk)
     }
 
-    suspend fun getDivision(house: House, parliamentdotuk: Int) =
+    override suspend fun getDivision(house: House, parliamentdotuk: Int) =
         when (house) {
             House.Lords -> getLordsDivision(parliamentdotuk)
             else -> getCommonsDivision(parliamentdotuk)
         }
 
-    suspend fun getCommonsDivision(parliamentdotuk: Int) = getResult {
+    override suspend fun getCommonsDivision(parliamentdotuk: Int) = getResult {
         service.getCommonsDivision(parliamentdotuk)
     }
 
-    suspend fun getLordsDivision(parliamentdotuk: Int) = getResult {
+    override suspend fun getLordsDivision(parliamentdotuk: Int) = getResult {
         service.getLordsDivision(parliamentdotuk)
     }
 
-    suspend fun registerUser(googleToken: String) = getResult {
+    override suspend fun registerUser(googleToken: String) = getResult {
         service.registerGoogleSignIn(googleToken)
     }
 }

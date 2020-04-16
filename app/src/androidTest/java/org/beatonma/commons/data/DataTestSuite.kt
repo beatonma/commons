@@ -1,5 +1,6 @@
 package org.beatonma.commons.data
 
+import org.beatonma.commons.data.core.repository.CommonsRepositoryTestSuite
 import org.beatonma.commons.data.core.room.dao.BillDaoTestSuite
 import org.beatonma.commons.data.core.room.dao.DivisionDaoTestSuite
 import org.beatonma.commons.data.core.room.dao.MemberDaoTestSuite
@@ -13,5 +14,6 @@ import org.junit.runners.Suite
     DivisionDaoTestSuite::class,
     MemberDaoTestSuite::class,
     DeserializationTestSuite::class,
+    CommonsRepositoryTestSuite::class,
 )
 class DataTestSuite

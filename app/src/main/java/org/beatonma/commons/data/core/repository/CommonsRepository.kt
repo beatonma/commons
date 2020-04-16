@@ -1,6 +1,7 @@
 package org.beatonma.commons.data.core.repository
 
 import android.content.Context
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -108,9 +109,9 @@ class CommonsRepository @Inject constructor(
         }
     )
 
-    private fun observeCompleteMember(parliamentdotuk: Int): LiveData<CompleteMember> {
-        val member =
-            MutableCompleteMember()
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun observeCompleteMember(parliamentdotuk: Int): LiveData<CompleteMember> {
+        val member = MutableCompleteMember()
 
         return MediatorLiveData<CompleteMember>().apply {
             addSource(member.value) {
@@ -192,8 +193,7 @@ private class MutableCompleteBill: Mutator<CompleteBill>() {
 }
 
 private class MutableCompleteMember: Mutator<CompleteMember>() {
-    override var mutable: CompleteMember =
-        CompleteMember()
+    override var mutable: CompleteMember = CompleteMember()
 }
 
 private abstract class Mutator<D> {

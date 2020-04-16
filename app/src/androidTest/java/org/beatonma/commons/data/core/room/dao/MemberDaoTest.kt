@@ -74,7 +74,6 @@ class MemberDaoInsertApiCompleteMemberTest: BaseRoomDaoTest<MemberDao>() {
                 phone shouldbe "+442072194682"
                 fax shouldbe "+442072194683"
                 email shouldbe "boris.johnson.mp@parliament.uk"
-
             }
         }
     }
