@@ -122,6 +122,12 @@ class CommonsRepository @Inject constructor(
             addSource(memberDao.getMemberProfile(parliamentdotuk)) {
                 member.update { copy(profile = it) }
             }
+            addSource(memberDao.getParty(parliamentdotuk)) {
+                member.update { copy(party = it) }
+            }
+            addSource(memberDao.getConstituency(parliamentdotuk)) {
+                member.update { copy(constituency = it) }
+            }
             addSource(memberDao.getPhysicalAddresses(parliamentdotuk)) {
                 member.update { copy(addresses = it) }
             }
