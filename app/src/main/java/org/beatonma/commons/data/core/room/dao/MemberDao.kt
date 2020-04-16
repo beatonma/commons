@@ -22,6 +22,16 @@ interface MemberDao {
     @Query("""SELECT * FROM member_profiles WHERE member_profiles.parliamentdotuk = :parliamentdotuk""")
     fun getMemberProfile(parliamentdotuk: Int): LiveData<MemberProfile>
 
+    @Query("""SELECT * FROM constituencies
+        LEFT JOIN member_profiles ON constituency_id = constituency_parliamentdotuk 
+        WHERE parliamentdotuk = :parliamentdotuk""")
+    fun getConstituency(parliamentdotuk: Int): LiveData<Constituency>
+
+    @Query("""SELECT * FROM parties
+        LEFT JOIN member_profiles ON party_id = party_parliamentdotuk 
+        WHERE parliamentdotuk = :parliamentdotuk""")
+    fun getParty(parliamentdotuk: Int): LiveData<Party>
+
     @Query("""SELECT * FROM physical_addresses WHERE physical_addresses.paddr_member_id = :parliamentdotuk""")
     fun getPhysicalAddresses(parliamentdotuk: Int): LiveData<List<PhysicalAddress>>
 
