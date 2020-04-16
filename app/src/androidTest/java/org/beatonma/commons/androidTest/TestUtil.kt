@@ -22,17 +22,20 @@ import java.util.concurrent.TimeoutException
 fun <T> LiveData<T>.getOrAwaitValue(
     time: Long = 2,
     timeUnit: TimeUnit = TimeUnit.SECONDS,
+    latchCount: Int = 1,
     block: T.() -> Unit? = {},
 ): T {
     var data: T? = null
-    val latch = CountDownLatch(1)
+    val latch = CountDownLatch(latchCount)
     val observer = object : Observer<T> {
         override fun onChanged(o: T?) {
             val self = this
             o.dump("onChanged: ")
             data = o
             latch.countDown()
-            runBlocking(Dispatchers.Main) { this@getOrAwaitValue.removeObserver(self) }
+            if (latch.count == 0L) {
+                runBlocking(Dispatchers.Main) { this@getOrAwaitValue.removeObserver(self) }
+            }
         }
     }
 
