@@ -199,7 +199,8 @@ private class MutableCompleteBill: Mutator<CompleteBill>() {
 }
 
 private class MutableCompleteMember: Mutator<CompleteMember>() {
-    override var mutable: CompleteMember = CompleteMember()
+    override var mutable: CompleteMember =
+        CompleteMember()
 }
 
 private abstract class Mutator<D> {
