@@ -29,27 +29,10 @@ interface DivisionDao {
 
 
     @Transaction
-    suspend fun insertApiDivision(parliamentdotuk: Int, division: ApiDivision) {
-        insertDivision(
-            Division(
-                parliamentdotuk = division.parliamentdotuk,
-                title = division.title,
-                date = division.date,
-                ayes = division.ayes,
-                noes = division.noes,
-                passed = division.passed,
-                house = division.house
-        ))
-
+    suspend fun insertApiDivision(parliamentdotuk: Int, apiDivision: ApiDivision) {
+        insertDivision(apiDivision.toDivision())
         insertVotes(
-            division.votes.map { vote ->
-                Vote(
-                    divisionId = parliamentdotuk,
-                    memberId = vote.memberId,
-                    memberName = vote.memberName,
-                    voteType = vote.voteType
-                )
-            }
+            apiDivision.votes.map { apiVote -> apiVote.toVote(parliamentdotuk) }
         )
     }
 }
