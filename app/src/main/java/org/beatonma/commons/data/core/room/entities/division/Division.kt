@@ -9,24 +9,36 @@ import org.beatonma.commons.data.core.room.entities.member.House
     tableName = "divisions",
 )
 data class Division(
-    @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = "division_$PARLIAMENTDOTUK") @PrimaryKey val parliamentdotuk: Int,
-    @field:Json(name = "title") @ColumnInfo(name = "title") val title: String,
-    @field:Json(name = "date") @ColumnInfo(name = "date") val date: String,
-    @field:Json(name = "passed") @ColumnInfo(name = "passed") val passed: Boolean,
-    @field:Json(name = "ayes") @ColumnInfo(name = "ayes") val ayes: Int,
-    @field:Json(name = "noes") @ColumnInfo(name = "noes") val noes: Int,
-    @field:Json(name = "house") @ColumnInfo(name = "house") val house: House,
+    @ColumnInfo(name = "division_$PARLIAMENTDOTUK") @PrimaryKey val parliamentdotuk: Int,
+    @ColumnInfo(name = "title") val title: String,
+    @ColumnInfo(name = "date") val date: String,
+    @ColumnInfo(name = "house") val house: House,
+    @ColumnInfo(name = "passed") val passed: Boolean,
+    @ColumnInfo(name = "ayes") val ayes: Int,
+    @ColumnInfo(name = "noes") val noes: Int,
+    @ColumnInfo(name = "abstentions") val abstentions: Int,
+    @ColumnInfo(name = "did_not_vote") val didNotVote: Int,
+    @ColumnInfo(name = "non_eligible") val nonEligible: Int,
+    @ColumnInfo(name = "suspended_or_expelled") val suspendedOrExpelled: Int,
+    @ColumnInfo(name = "errors") val errors: Int,
+    @ColumnInfo(name = "deferred_vote") val deferredVote: Boolean,
 )
 
 data class ApiDivision(
-    @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = "division_$PARLIAMENTDOTUK") @PrimaryKey val parliamentdotuk: Int,
-    @field:Json(name = "title") @ColumnInfo(name = "title") val title: String,
-    @field:Json(name = "date") @ColumnInfo(name = "date") val date: String,
-    @field:Json(name = "passed") @ColumnInfo(name = "passed") val passed: Boolean,
-    @field:Json(name = "ayes") @ColumnInfo(name = "ayes") val ayes: Int,
-    @field:Json(name = "noes") @ColumnInfo(name = "noes") val noes: Int,
-    @field:Json(name = "house") @ColumnInfo(name = "house") val house: House,
-    @field:Json(name = "votes") @Ignore val votes: List<ApiVote>,
+    @field:Json(name = PARLIAMENTDOTUK) val parliamentdotuk: Int,
+    @field:Json(name = "title") val title: String,
+    @field:Json(name = "date") val date: String,
+    @field:Json(name = "house") val house: House,
+    @field:Json(name = "passed") val passed: Boolean,
+    @field:Json(name = "ayes") val ayes: Int,
+    @field:Json(name = "noes") val noes: Int,
+    @field:Json(name = "abstentions") val abstentions: Int,
+    @field:Json(name = "did_not_vote") val didNotVote: Int,
+    @field:Json(name = "non_eligible") val nonEligible: Int,
+    @field:Json(name = "suspended_or_expelled") val suspendedOrExpelled: Int,
+    @field:Json(name = "errors") val errors: Int,
+    @field:Json(name = "deferred_vote") val deferredVote: Boolean,
+    @field:Json(name = "votes") val votes: List<ApiVote>,
 ) {
     fun toDivision() = Division(
         parliamentdotuk = parliamentdotuk,
@@ -35,7 +47,13 @@ data class ApiDivision(
         passed = passed,
         ayes = ayes,
         noes = noes,
-        house = house
+        house = house,
+        abstentions = abstentions,
+        didNotVote = didNotVote,
+        nonEligible = nonEligible,
+        suspendedOrExpelled = suspendedOrExpelled,
+        deferredVote = deferredVote,
+        errors = errors
     )
 }
 
