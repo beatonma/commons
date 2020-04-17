@@ -39,7 +39,14 @@ data class ApiVote(
     @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = "dvote_member_id") val memberId: Int,
     @field:Json(name = "name") @ColumnInfo(name = "member_name") val memberName: String,
     @field:Json(name = "vote") @ColumnInfo(name = "vote") val voteType: VoteType,
-)
+) {
+    fun toVote(divisionId: Int) = Vote(
+            divisionId = divisionId,
+            memberId = memberId,
+            memberName = memberName,
+            voteType = voteType
+        )
+}
 
 data class VoteWithDivision(
     @Embedded val vote: Vote,
