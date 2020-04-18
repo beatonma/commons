@@ -11,19 +11,19 @@ import org.beatonma.commons.data.core.room.entities.member.House
 data class Division(
     @ColumnInfo(name = "division_$PARLIAMENTDOTUK") @PrimaryKey val parliamentdotuk: Int,
     @ColumnInfo(name = "title") val title: String,
-    @ColumnInfo(name = "description") val description: String?,
+    @ColumnInfo(name = "description") val description: String?, // Lords only
     @ColumnInfo(name = "date") val date: String,
     @ColumnInfo(name = "house") val house: House,
     @ColumnInfo(name = "passed") val passed: Boolean,
     @ColumnInfo(name = "ayes") val ayes: Int,
     @ColumnInfo(name = "noes") val noes: Int,
-    @ColumnInfo(name = "abstentions") val abstentions: Int,
-    @ColumnInfo(name = "did_not_vote") val didNotVote: Int,
-    @ColumnInfo(name = "non_eligible") val nonEligible: Int,
-    @ColumnInfo(name = "suspended_or_expelled") val suspendedOrExpelled: Int,
-    @ColumnInfo(name = "errors") val errors: Int,
+    @ColumnInfo(name = "abstentions") val abstentions: Int?,  // Commons only
+    @ColumnInfo(name = "did_not_vote") val didNotVote: Int?,  // Commons only
+    @ColumnInfo(name = "non_eligible") val nonEligible: Int?,  // Commons only
+    @ColumnInfo(name = "suspended_or_expelled") val suspendedOrExpelled: Int?,  // Commons only
+    @ColumnInfo(name = "errors") val errors: Int?,  // Commons only
     @ColumnInfo(name = "deferred_vote") val deferredVote: Boolean,
-    @ColumnInfo(name = "whipped_vote") val whippedVote: Boolean?,  // L
+    @ColumnInfo(name = "whipped_vote") val whippedVote: Boolean?,  // Lords only
 )
 
 data class ApiDivision(
@@ -35,11 +35,11 @@ data class ApiDivision(
     @field:Json(name = "passed") val passed: Boolean,
     @field:Json(name = "ayes") val ayes: Int,
     @field:Json(name = "noes") val noes: Int,
-    @field:Json(name = "abstentions") val abstentions: Int,
-    @field:Json(name = "did_not_vote") val didNotVote: Int,
-    @field:Json(name = "non_eligible") val nonEligible: Int,
-    @field:Json(name = "suspended_or_expelled") val suspendedOrExpelled: Int,
-    @field:Json(name = "errors") val errors: Int,
+    @field:Json(name = "abstentions") val abstentions: Int?,
+    @field:Json(name = "did_not_vote") val didNotVote: Int?,
+    @field:Json(name = "non_eligible") val nonEligible: Int?,
+    @field:Json(name = "suspended_or_expelled") val suspendedOrExpelled: Int?,
+    @field:Json(name = "errors") val errors: Int?,
     @field:Json(name = "deferred_vote") val deferredVote: Boolean,
     @field:Json(name = "whipped_vote") val whippedVote: Boolean?,
     @field:Json(name = "votes") val votes: List<ApiVote>,
