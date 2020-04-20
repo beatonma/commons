@@ -8,9 +8,15 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.View
 import androidx.annotation.ColorInt
+import androidx.annotation.FloatRange
 import androidx.core.content.withStyledAttributes
 import org.beatonma.commons.R
-import org.beatonma.lib.util.kotlin.extensions.colorCompat
+import org.beatonma.lib.graphic.core.utility.AnimationUtils
+import org.beatonma.lib.util.kotlin.extensions.boolean
+import org.beatonma.lib.util.kotlin.extensions.color
+import org.beatonma.lib.util.kotlin.extensions.enum
+import org.beatonma.lib.util.kotlin.extensions.long
+import java.lang.Float.min
 
 private const val TAG = "StackedBarChart"
 
@@ -19,10 +25,10 @@ data class BarChartCategory(
     val color: Int,
     val label: String?
 ) {
-    var normalisedValue: Float = 0F
+    @FloatRange(from = 0.0, to = 1.0) var normalisedValue: Float = 0F
 
     /**
-     * Set normalisedValue to a value in the range 0..1F
+     * Set normalisedValue to the fraction of the totalWidth that this category represents.
      */
     fun calculateNormalisedValue(totalWidth: Float) {
         if (totalWidth <= 0F) {
@@ -43,28 +49,17 @@ class StackedBarChart @JvmOverloads constructor(
     defStyleRes: Int = 0,
 ) : View(context, attrs, defStyleAttr, defStyleRes) {
 
-
     private val paint: Paint = Paint(ANTI_ALIAS_FLAG)
+    private val interpolator = AnimationUtils.getMotionInterpolator()
     private var actualWidth: Float = 0F
     private var actualHeight: Float = 0F
-    var animationDuration: Long = 800L
 
-    var animationTracker: AnimationTracker? = null
+    private var animationDuration: Long = 800L
+    private var animationTracker: AnimationTracker? = null
 
     var showCenter: Boolean = false
     @ColorInt var centerColor: Int = -1
-
-    init {
-        context.withStyledAttributes(attrs, R.styleable.StackedBarChart, defStyleAttr, defStyleRes) {
-            showCenter = getBoolean(R.styleable.StackedBarChart_showCenter, false)
-            val colorResId = getResourceId(R.styleable.StackedBarChart_centerColor, -1)
-            centerColor = if (colorResId != -1) {
-                context.colorCompat(colorResId)
-            } else {
-                getColor(R.styleable.StackedBarChart_centerColor, -1)
-            }
-        }
-    }
+    var animationStyle: AnimationStyle = AnimationStyle.Series
 
     var categories: List<BarChartCategory> = listOf()
         set(value) {
@@ -75,6 +70,15 @@ class StackedBarChart @JvmOverloads constructor(
             animationTracker = AnimationTracker(animationDuration)
             postInvalidateOnAnimation()
         }
+
+    init {
+        context.withStyledAttributes(attrs, R.styleable.StackedBarChart, defStyleAttr, defStyleRes) {
+            showCenter = boolean(context, R.styleable.StackedBarChart_showCenter, false)
+            centerColor = color(context, R.styleable.StackedBarChart_centerColor, -1)
+            animationDuration = long(context, R.styleable.StackedBarChart_animDuration, 800)
+            animationStyle = enum(context, R.styleable.StackedBarChart_animStyle, AnimationStyle.Series)
+        }
+    }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
@@ -101,18 +105,72 @@ class StackedBarChart @JvmOverloads constructor(
     }
 
     private fun drawCategories(canvas: Canvas, categories: List<BarChartCategory>, progress: Float) {
+        val func = when (animationStyle) {
+            AnimationStyle.Series -> ::drawCategoriesSeries
+            AnimationStyle.Parallel -> ::drawCategoriesParallel
+            AnimationStyle.MiddleOut -> ::drawCategoriesMiddleOut
+        }
+        func(canvas, categories, progress)
+    }
+
+    private fun drawCategoriesSeries(canvas: Canvas, categories: List<BarChartCategory>, progress: Float) {
         var xPosition = 0F
         val yPosition = actualHeight / 2F
+        val interpolatedProgress = interpolator.getInterpolation(progress)
+        val progressWidth = interpolatedProgress * actualWidth
+
         categories.forEach { item ->
             val itemWidth = item.scaledWidth(actualWidth)
+            val endOfLine = min(progressWidth, xPosition + itemWidth)
             canvas.drawLine(
                 xPosition,
                 yPosition,
-                xPosition + (itemWidth * progress),
+                endOfLine,
                 yPosition,
                 paint.apply { color = item.color }
             )
             xPosition += itemWidth
+            if (xPosition >= progressWidth) {
+                return
+            }
+        }
+    }
+
+    private fun drawCategoriesParallel(canvas: Canvas, categories: List<BarChartCategory>, progress: Float) {
+        var xPosition = 0F
+        val yPosition = actualHeight / 2F
+        val interpolatedProgress = interpolator.getInterpolation(progress)
+
+        categories.forEach { item ->
+            val itemWidth = item.scaledWidth(actualWidth) * progress
+            val endX = xPosition + (itemWidth * interpolatedProgress)
+            canvas.drawLine(
+                xPosition,
+                yPosition,
+                endX,
+                yPosition,
+                paint.apply { color = item.color }
+            )
+            xPosition = endX
+        }
+    }
+
+    private fun drawCategoriesMiddleOut(canvas: Canvas, categories: List<BarChartCategory>, progress: Float) {
+        var xPosition = 0F
+        val yPosition = actualHeight / 2F
+        val interpolatedProgress = interpolator.getInterpolation(progress)
+        val middleX = actualWidth / 2
+
+        categories.forEach { item ->
+            val itemWidth = item.scaledWidth(actualWidth)
+            canvas.drawLine(
+                middleX - (interpolatedProgress * middleX) + xPosition,
+                yPosition,
+                middleX - (interpolatedProgress * middleX) + xPosition + (itemWidth * interpolatedProgress),
+                yPosition,
+                paint.apply { color = item.color }
+            )
+            xPosition += (itemWidth * interpolatedProgress)
         }
     }
 
@@ -124,10 +182,17 @@ class StackedBarChart @JvmOverloads constructor(
             middle,
             actualHeight,
             paint.apply {
+                alpha = (progress * 255F).toInt()
                 color = centerColor
                 strokeWidth = actualHeight / 3
             }
         )
+    }
+
+    enum class AnimationStyle {
+        Series,
+        Parallel,
+        MiddleOut,
     }
 }
 
