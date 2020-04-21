@@ -8,6 +8,7 @@ import org.beatonma.commons.data.core.room.entities.division.ApiDivision
 import org.beatonma.commons.data.core.room.entities.division.ApiMemberVote
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 import org.beatonma.commons.data.core.room.entities.user.ApiUserToken
+import org.beatonma.commons.data.core.search.MemberSearchResult
 import org.beatonma.commons.network.retrofit.converters.EnvelopePayload
 import retrofit2.Response
 import retrofit2.http.*
@@ -20,7 +21,11 @@ private const val DIVISION_API_PATH = "$API_PATH/division"
 
 interface CommonsService {
     companion object {
-        const val ENDPOINT = "https://snommoc.org"
+        const val BASE_URL = "https://snommoc.org"
+
+        private fun getUrl(path: String) = "$BASE_URL$path"
+        fun getMemberUrl(parliamentdotuk: Int) = getUrl("$MEMBER_API_PATH/profile/$parliamentdotuk/")
+        fun getDivisionUrl(parliamentdotuk: Int) = getUrl("$DIVISION_API_PATH/$parliamentdotuk/")
     }
 
     @GET("$API_PATH/ping/")
@@ -44,12 +49,6 @@ interface CommonsService {
     @GET("$FEATURED_API_PATH/divisions/")
     suspend fun getFeaturedDivisions(): Response<List<ApiDivision>>
 
-//    /**
-//     * Votes by a particular member on all divisions
-//     */
-//    @GET("$MEMBER_API_PATH/votes/{$PARLIAMENTDOTUK}/")
-//    suspend fun getVotesForMember(@Path(PARLIAMENTDOTUK) parliamentdotuk: Int): Response<List<String>>
-
     /**
      * Votes by a particular member on all divisions
      */
@@ -57,19 +56,12 @@ interface CommonsService {
     @GET("$MEMBER_API_PATH/votes/commons/{$PARLIAMENTDOTUK}/")
     suspend fun getCommonsVotesForMember(@Path(PARLIAMENTDOTUK) parliamentdotuk: Int): Response<List<ApiMemberVote>>
 
-
     /**
      * Votes by a particular member on all divisions
      */
     @EnvelopePayload
     @GET("$MEMBER_API_PATH/votes/lords/{$PARLIAMENTDOTUK}/")
-    suspend fun getLordsVotesForMember(@Path(PARLIAMENTDOTUK) parliamentdotuk: Int): Response<String>
-
-    /**
-     * Data about a particular division including votes by all members.
-     */
-//    @GET("$DIVISION_API_PATH/{$PARLIAMENTDOTUK}/")
-//    suspend fun getDivision(@Path(PARLIAMENTDOTUK) parliamentdotuk: Int): Response<ApiDivision>
+    suspend fun getLordsVotesForMember(@Path(PARLIAMENTDOTUK) parliamentdotuk: Int): Response<List<ApiMemberVote>>
 
     @GET("$DIVISION_API_PATH/commons/{$PARLIAMENTDOTUK}/")
     suspend fun getCommonsDivision(@Path(PARLIAMENTDOTUK) parliamentdotuk: Int): Response<ApiDivision>
@@ -77,13 +69,12 @@ interface CommonsService {
     @GET("$DIVISION_API_PATH/lords/{$PARLIAMENTDOTUK}/")
     suspend fun getLordsDivision(@Path(PARLIAMENTDOTUK) parliamentdotuk: Int): Response<ApiDivision>
 
-    // TODO: 06/04/2020
-//    @GET("$DIVISION_API_PATH/commons/")
-//    suspend fun getCommonsDivisions()
-
-    // TODO: 06/04/2020
-//    @GET("$DIVISION_API_PATH/lords/")
-//    suspend fun getLordsDivisions()
+    /**
+     * Member search by name, constituency name, current post title.
+     */
+    @EnvelopePayload
+    @GET("$MEMBER_API_PATH/?page_size=5")
+    suspend fun getSearchResults(@Query("search") query: String): Response<List<MemberSearchResult>>
 
     @FormUrlEncoded
     @POST("/auth/g/")

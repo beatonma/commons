@@ -8,6 +8,7 @@ import org.beatonma.commons.data.core.room.entities.division.ApiMemberVote
 import org.beatonma.commons.data.core.room.entities.member.House
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 import org.beatonma.commons.data.core.room.entities.user.ApiUserToken
+import org.beatonma.commons.data.core.search.MemberSearchResult
 import org.beatonma.commons.network.retrofit.CommonsService
 import retrofit2.Response
 import javax.inject.Inject
@@ -45,6 +46,8 @@ interface CommonsRemoteDataSource {
     suspend fun getDivision(house: House, parliamentdotuk: Int): IoResult<ApiDivision>
     suspend fun getCommonsDivision(parliamentdotuk: Int): IoResult<ApiDivision>
     suspend fun getLordsDivision(parliamentdotuk: Int): IoResult<ApiDivision>
+
+    suspend fun getSearchResults(query: String): IoResult<List<MemberSearchResult>>
 
     suspend fun registerUser(googleToken: String): IoResult<ApiUserToken>
 }
@@ -94,6 +97,10 @@ class CommonsRemoteDataSourceImpl @Inject constructor(
 
     override suspend fun getLordsDivision(parliamentdotuk: Int) = getResult {
         service.getLordsDivision(parliamentdotuk)
+    }
+
+    override suspend fun getSearchResults(query: String) = getResult {
+        service.getSearchResults(query)
     }
 
     override suspend fun registerUser(googleToken: String) = getResult {
