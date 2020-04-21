@@ -10,25 +10,27 @@ fun <T, N> resultLiveData(
     networkCall: suspend () -> IoResult<N>,
     saveCallResult: suspend (N) -> Unit
 ): LiveData<IoResult<T>> = liveData(Dispatchers.IO) {
-    emit(IoResult.loading<T>())
-    val source = databaseQuery.invoke().map { IoResult.success(it, message = "DB read OK ") }
+    emit(LoadingResult<T>())
+    val source: LiveData<IoResult<T>> = databaseQuery.invoke().map {
+        SuccessResult(it, "DB read OK ")
+    }
     emitSource(source)
 
     val response = networkCall.invoke()
-    if (response.status == IoResult.Status.SUCCESS) {
+    if (response is SuccessResult) {
         if (response.data != null) {
             try {
                 saveCallResult(response.data)
             }
             catch (e: Exception) {
-                emit(IoResult.error<T>("Unable to save network result: $e"))
+                emit(LocalError<T>("Unable to save network result: $e"))
             }
         }
         else {
-            emit(IoResult.error<T>("Null data: ${response.message}"))
+            emit(UnexpectedValueError<T>("Null data: ${response.message}"))
         }
-    } else if (response.status == IoResult.Status.ERROR) {
-        emit(IoResult.networkError<T>(response.message))
+    } else if (response is IoError) {
+        emit(NetworkError<T>(response.message))
         emitSource(source)
     }
 }

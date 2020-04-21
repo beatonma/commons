@@ -1,45 +1,16 @@
 package org.beatonma.commons.data
 
-import android.util.Log
-
 private const val TAG = "IoResult"
 
-data class IoResult<out T>(
-    val status: Status,
+sealed class IoResult<out T>(
     val data: T?,
     val message: String?
-) {
-    val hasNetworkError get() = status == Status.NETWORK_ERROR
-    val hasError get() = status == Status.ERROR || status == Status.NETWORK_ERROR
-    val isLoading get() = status == Status.LOADING
-    val isSuccessful get() = status == Status.SUCCESS
+)
 
-    enum class Status {
-        SUCCESS,
-        ERROR,
-        NETWORK_ERROR,
-        LOADING
-    }
-
-    companion object {
-        fun <T> success(data: T, message: String? = null): IoResult<T> {
-//            Log.d(TAG, "SUCCESS: ${message ?: ""}$data")
-            return IoResult(Status.SUCCESS, data, message)
-        }
-
-        fun <T> networkError(message: String?, data: T? = null): IoResult<T> {
-            Log.e(TAG, "NETWORK ERROR: $message")
-            return IoResult(Status.NETWORK_ERROR, data, message)
-        }
-
-        fun <T> error(message: String?, data: T? = null): IoResult<T> {
-            Log.e(TAG, "ERROR: $message")
-            return IoResult(Status.ERROR, data, message)
-        }
-
-        fun <T> loading(data: T? = null): IoResult<T> {
-            Log.d(TAG, "LOADING")
-            return IoResult(Status.LOADING, data, null)
-        }
-    }
-}
+class SuccessResult<T>(data: T, message: String?): IoResult<T>(data, message)
+sealed class IoError<T>(data: T?, message: String?): IoResult<T>(data, message)
+class NetworkError<T>(message: String?): IoError<T>(null, message)
+class GenericError<T>(message: String?): IoError<T>(null, message)
+class LocalError<T>(message: String?): IoError<T>(null, message)
+class UnexpectedValueError<T>(message: String?): IoError<T>(null, message)
+class LoadingResult<T>(data: T? = null, message: String? = null): IoResult<T>(data, message)

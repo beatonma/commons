@@ -19,13 +19,13 @@ abstract class BaseDataSource {
             if (response.isSuccessful) {
                 val body = response.body()
                 if (body != null) {
-                    return IoResult.success(body, message = "Network OK ")
+                    return SuccessResult(body, message = "Network OK ")
                 }
             }
-            return IoResult.networkError("[${response.code()}] ${response.message()}")
+            return NetworkError("[${response.code()}] ${response.message()}")
         }
         catch (e: Exception) {
-            return IoResult.error("getResult error: ${e.message ?: e}")
+            return GenericError("getResult error: ${e.message ?: e}")
         }
     }
 }
