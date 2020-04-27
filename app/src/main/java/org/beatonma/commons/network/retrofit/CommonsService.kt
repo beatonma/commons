@@ -4,6 +4,7 @@ import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.core.ApiCompleteMember
 import org.beatonma.commons.data.core.room.entities.bill.ApiBill
 import org.beatonma.commons.data.core.room.entities.bill.Bill
+import org.beatonma.commons.data.core.room.entities.constituency.ApiConstituency
 import org.beatonma.commons.data.core.room.entities.division.ApiDivision
 import org.beatonma.commons.data.core.room.entities.division.ApiMemberVote
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
@@ -18,6 +19,7 @@ private const val MEMBER_API_PATH = "$API_PATH/member"
 private const val FEATURED_API_PATH = "$API_PATH/featured"
 private const val BILL_API_PATH = "$API_PATH/bill"
 private const val DIVISION_API_PATH = "$API_PATH/division"
+private const val CONSTITUENCY_API_PATH = "$API_PATH/constituency"
 
 interface CommonsService {
     companion object {
@@ -26,11 +28,14 @@ interface CommonsService {
         private fun getUrl(path: String) = "$BASE_URL$path"
         fun getMemberUrl(parliamentdotuk: Int) = getUrl("$MEMBER_API_PATH/profile/$parliamentdotuk/")
         fun getDivisionUrl(parliamentdotuk: Int) = getUrl("$DIVISION_API_PATH/$parliamentdotuk/")
+        fun getBillUrl(parliamentdotuk: Int) = getUrl("$BILL_API_PATH/$parliamentdotuk/")
+        fun getConstituencyUrl(parliamentdotuk: Int) = getUrl("$CONSTITUENCY_API_PATH/$parliamentdotuk/")
     }
 
     @GET("$API_PATH/ping/")
     suspend fun ping(): Response<String>
 
+    // Members
     @GET("$MEMBER_API_PATH/profile/{$PARLIAMENTDOTUK}/")
     suspend fun getMember(@Path(PARLIAMENTDOTUK) parliamentdotuk: Int): Response<ApiCompleteMember>
 
@@ -38,6 +43,7 @@ interface CommonsService {
     @GET("$FEATURED_API_PATH/members/")
     suspend fun getFeaturedPeople(): Response<List<MemberProfile>>
 
+    // Bills
     @EnvelopePayload
     @GET("$FEATURED_API_PATH/bills/")
     suspend fun getFeaturedBills(): Response<List<Bill>>
@@ -45,6 +51,7 @@ interface CommonsService {
     @GET("$BILL_API_PATH/{$PARLIAMENTDOTUK}/")
     suspend fun getBill(@Path(PARLIAMENTDOTUK) parliamentdotuk: Int): Response<ApiBill>
 
+    // Divisions
     @EnvelopePayload
     @GET("$FEATURED_API_PATH/divisions/")
     suspend fun getFeaturedDivisions(): Response<List<ApiDivision>>
@@ -68,6 +75,10 @@ interface CommonsService {
 
     @GET("$DIVISION_API_PATH/lords/{$PARLIAMENTDOTUK}/")
     suspend fun getLordsDivision(@Path(PARLIAMENTDOTUK) parliamentdotuk: Int): Response<ApiDivision>
+
+    // Constituencies
+    @GET("$CONSTITUENCY_API_PATH/{$PARLIAMENTDOTUK}/")
+    suspend fun getConstituency(@Path(PARLIAMENTDOTUK) parliamentdotuk: Int): Response<ApiConstituency>
 
     /**
      * Member search by name, constituency name, current post title.

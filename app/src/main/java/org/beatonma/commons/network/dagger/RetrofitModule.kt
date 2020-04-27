@@ -22,7 +22,7 @@ class RetrofitModule {
         @Named(WebService.COMMONS) httpClient: OkHttpClient
     ): Retrofit =
         Retrofit.Builder()
-            .baseUrl(CommonsService.ENDPOINT)
+            .baseUrl(CommonsService.BASE_URL)
             .client(httpClient)
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
@@ -42,7 +42,7 @@ class RetrofitModule {
     fun provideGenericRetrofit(@Named(WebService.GENERIC) httpClient: OkHttpClient): Retrofit =
         Retrofit.Builder()
             .client(httpClient)
-            .baseUrl(CommonsService.ENDPOINT)  // Service uses complete URLs so this is ignored.
+            .baseUrl(CommonsService.BASE_URL)  // Service uses complete URLs so this is ignored.
             .build()
 
     @Singleton
