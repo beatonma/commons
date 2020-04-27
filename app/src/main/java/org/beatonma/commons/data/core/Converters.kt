@@ -2,8 +2,8 @@ package org.beatonma.commons.data.core
 
 import androidx.room.TypeConverter
 import com.squareup.moshi.Moshi
+import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import org.beatonma.commons.data.core.room.entities.division.VoteType
-import org.beatonma.commons.data.core.room.entities.member.Constituency
 import org.beatonma.commons.data.core.room.entities.member.House
 import org.beatonma.commons.data.core.room.entities.member.Party
 import org.beatonma.commons.data.core.room.entities.member.Post

@@ -1,6 +1,7 @@
 package org.beatonma.commons.data.testdata
 
 import org.beatonma.commons.data.core.ApiCompleteMember
+import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import org.beatonma.commons.data.core.room.entities.member.*
 
 const val MEMBER_PUK = 1423

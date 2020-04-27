@@ -3,7 +3,7 @@ package org.beatonma.commons.data.core.room.entities.member
 import androidx.room.*
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
-
+import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 
 @Entity(
     indices = [
