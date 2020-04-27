@@ -43,7 +43,7 @@ const val PARTY_ULSTER_UNIONIST_PARTY = "party_ulster_unionist_party"
 const val PARTY_UNITED_KINGDOM_UNIONIST = "party_united_kingdom_unionist"
 const val PARTY_UNITED_ULSTER_UNIONIST_PARTY = "party_united_ulster_unionist_party"
 
-// Party IDs as used on data.parliament.uk
+// Party IDs as used on data.parliament.uk, injected into BuildConfig as PARTY_PARTYNAME_PARLIAMENTDOTUK
 val ParliamentDotUkPartyIDs = mapOf(
     PARTY_ALLIANCE to 1,
     PARTY_ANTI_H_BLOCK to 2,
