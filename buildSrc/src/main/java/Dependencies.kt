@@ -11,6 +11,15 @@ private fun dagger(artifact: String, version: String = Versions.DAGGER) =
 private fun glide(artifact: String, version: String = Versions.GLIDE) =
     dependency("com.github.bumptech.glide", artifact, version)
 
+private fun gms(artifact: String, version: String) =
+    dependency(group = "com.google.android.gms", artifact = artifact, version = version)
+
+private fun kotlin(artifact: String, version: String = Versions.KOTLIN) =
+    dependency(group = "org.jetbrains.kotlin", artifact = artifact, version = version)
+
+private fun kotlinx(artifact: String, version: String = Versions.KOTLIN) =
+    dependency(group = "org.jetbrains.kotlinx", artifact = artifact, version = version)
+
 private fun retrofit(artifact: String, version: String = Versions.RETROFIT) =
     dependency("com.squareup.retrofit2", artifact, version)
 
@@ -23,31 +32,31 @@ private fun moshi(artifact: String, version: String = Versions.MOSHI) =
 object Versions {
     const val BMA = "0.9.29"
     const val COMPOSE = "0.1.0-dev07"
-    const val COROUTINES = "1.3.4"
+//    const val COROUTINES = "1.3.5-1.4-M1"
+    const val COROUTINES = "1.3.5-2-native-mt-1.4-M1"
     const val DAGGER = "2.27"
-    const val GLIDE = "4.9.0"
+    const val GLIDE = "4.11.0"
     val JAVA = JavaVersion.VERSION_1_8
-    const val KOTLIN = "1.3.71"
-    const val RETROFIT = "2.6.0"
-    const val ROOM = "2.1.0-rc01"
+    const val KOTLIN = "1.4-M1"
+    const val RETROFIT = "2.8.1"
+    const val ROOM = "2.2.5"
     const val MOSHI = "1.9.2"
+    const val AX_NAVIGATION = "2.3.0-alpha05"
 }
 
 object Dependencies {
-    val GOOGLE_MATERIAL = dependency("com.google.android.material", "material", "1.1.0-alpha07")
-
     object AndroidX {
-        val APPCOMPAT = androidx("appcompat", version = "1.1.0-beta01")
+        val APPCOMPAT = androidx("appcompat", version = "1.2.0-beta01")
         val CONSTRAINTLAYOUT = androidx("constraintlayout", version = "2.0.0-beta4")
-        val CORE_KTX = androidx(group = "core", artifact = "core-ktx", version = "1.2.0-alpha01")
+        val CORE_KTX = androidx(group = "core", artifact = "core-ktx", version = "1.3.0-rc01")
         val LIFECYCLE_RUNTIME = androidx(group = "lifecycle", artifact = "lifecycle-runtime-ktx", version = "2.2.0")
         val LIVEDATA_KTX = androidx(group = "lifecycle", artifact = "lifecycle-livedata-ktx", version = "2.2.0")
         val VIEWMODEL_KTX = androidx(group = "lifecycle", artifact = "lifecycle-viewmodel-ktx", version = "2.2.0")
         val ANNOTATIONS = androidx("annotation", version = "1.1.0")
-        val RECYCLERVIEW = androidx(group="recyclerview", artifact = "recyclerview", version = "1.1.0")
+        val RECYCLERVIEW = androidx(group="recyclerview", artifact = "recyclerview", version = "1.2.0-alpha02")
 
-        val NAVIGATION_FRAGMENT = androidx(group = "navigation", artifact = "navigation-fragment-ktx", version = "2.3.0-alpha03")
-        val NAVIGATION_UI = androidx(group = "navigation", artifact = "navigation-ui-ktx", version = "2.3.0-alpha03")
+        val NAVIGATION_FRAGMENT = androidx(group = "navigation", artifact = "navigation-fragment-ktx", version = Versions.AX_NAVIGATION)
+        val NAVIGATION_UI = androidx(group = "navigation", artifact = "navigation-ui-ktx", version = Versions.AX_NAVIGATION)
 
         val COMPOSE_TOOLING = androidx(group = "ui", artifact = "ui-tooling", version = Versions.COMPOSE)
         val COMPOSE_LAYOUT = androidx(group = "ui", artifact = "ui-layout", version = Versions.COMPOSE)
@@ -87,14 +96,25 @@ object Dependencies {
         val RECYCLERVIEW = glide("recyclerview-integration")
     }
 
+    object Google {
+        val MATERIAL = dependency("com.google.android.material", "material", "1.2.0-alpha05")
+
+        object Play {
+            val AUTH = gms(artifact= "play-services-auth", version = "18.0.0")
+            val LOCATION = gms(artifact = "play-services-location", version = "17.0.0")
+            val MAPS = gms(artifact = "play-services-maps", version = "17.0.0")
+            val MAPS_UTIL = dependency("com.google.maps.android", artifact="android-maps-utils-sdk-v3-compat", version="0.1")
+        }
+    }
+
     object Kotlin {
-        val STDLIB = dependency("org.jetbrains.kotlin", "kotlin-stdlib-jdk8", Versions.KOTLIN)
-        val REFLECT = dependency("org.jetbrains.kotlin", "kotlin-reflect", Versions.KOTLIN)
+        val STDLIB = kotlin("kotlin-stdlib-jdk8")
+        val REFLECT = kotlin("kotlin-reflect")
 
         object Coroutines {
-            val CORE = dependency("org.jetbrains.kotlinx", "kotlinx-coroutines-core", Versions.COROUTINES)
-            val ANDROID =
-                dependency("org.jetbrains.kotlinx", "kotlinx-coroutines-android", Versions.COROUTINES)
+            val CORE = kotlinx("kotlinx-coroutines-core", Versions.COROUTINES)
+            val ANDROID = kotlinx("kotlinx-coroutines-android", Versions.COROUTINES)
+            val PLAY = kotlinx("kotlinx-coroutines-play-services", Versions.COROUTINES)
         }
     }
 
@@ -124,13 +144,15 @@ object Dependencies {
             val CORE = androidx(group = "test", artifact = "core", version = "1.2.0")
             val RUNNER = androidx(group = "test", artifact = "runner", version = "1.2.0")
             val ESPRESSO = androidx(group = "test.espresso", artifact = "espresso-core", version = "3.2.0")
+            val LIVEDATA = androidx(group = "arch.core", artifact = "core-testing", version = "2.1.0")
             val RULES = androidx(group = "test", artifact = "rules", version = "1.2.0")
         }
 
         val BMA_TESTING = bma("testing")
         val MOCKITO = dependency("org.mockito", "mockito-core", "3.3.3")
-        val JUNIT = dependency("junit", "junit", "4.13-beta-3")
+        val JUNIT = dependency("junit", "junit", "4.13")
         val RETROFIT_MOCK = retrofit("retrofit-mock")
-        val OKHTTP_MOCK_SERVER = dependency("com.squareup.okhttp3", "mockwebserver", "4.0.0-alpha02")
+        val ROOM = room("room-testing")
+        val OKHTTP_MOCK_SERVER = dependency("com.squareup.okhttp3", "mockwebserver", "4.5.0")
     }
 }
