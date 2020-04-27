@@ -20,9 +20,11 @@ interface BillDao {
     @Query("""SELECT * FROM bill_sponsors WHERE sponsor_bill_id = :parliamentdotuk""")
     fun getBillSponsors(parliamentdotuk: Int): LiveData<List<BillSponsor>>
 
+    @Transaction
     @Query("""SELECT * FROM bills WHERE bill_parliamentdotuk = :parliamentdotuk""")
     fun getBillWithRelations(parliamentdotuk: Int): LiveData<BillWithSessionAndType>
 
+    @Transaction
     @Query("""SELECT * FROM bill_stages WHERE billstage_bill_parliamentdotuk = :parliamentdotuk""")
     fun getBillStages(parliamentdotuk: Int): LiveData<List<BillStageWithSittings>>
 

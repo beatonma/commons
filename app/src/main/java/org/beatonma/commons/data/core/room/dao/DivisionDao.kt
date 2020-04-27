@@ -6,12 +6,14 @@ import org.beatonma.commons.data.core.room.entities.division.*
 
 @Dao
 interface DivisionDao {
+    @Transaction
     @Query("""SELECT * FROM featured_divisions""")
     fun getFeaturedDivisions(): LiveData<List<FeaturedDivisionWithDivision>>
 
     @Query("""SELECT * FROM divisions WHERE division_parliamentdotuk = :parliamentdotuk""")
     fun getDivision(parliamentdotuk: Int): LiveData<Division>
 
+    @Transaction
     @Query("""SELECT * FROM divisions WHERE division_parliamentdotuk = :parliamentdotuk""")
     fun getDivisionWithVotes(parliamentdotuk: Int): LiveData<DivisionWithVotes>
 
