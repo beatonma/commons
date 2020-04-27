@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import org.beatonma.commons.data.core.ApiCompleteMember
 import org.beatonma.commons.data.core.CompleteMember
+import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import org.beatonma.commons.data.core.room.entities.division.VoteWithDivision
 import org.beatonma.commons.data.core.room.entities.member.*
 
@@ -15,7 +16,7 @@ interface MemberDao {
     @Query("""SELECT * FROM featured_members""")
     fun getFeaturedProfiles(): LiveData<List<FeaturedMemberProfile>>
 
-//    @Transaction
+    @Transaction
     @Query("""SELECT * FROM member_profiles WHERE member_profiles.parliamentdotuk = :parliamentdotuk""")
     fun getCompleteMember(parliamentdotuk: Int): LiveData<CompleteMember>
 
@@ -60,15 +61,19 @@ interface MemberDao {
     @Query("""SELECT * FROM committee_memberships WHERE committee_member_id = :parliamentdotuk""")
     fun getCommitteeMembershipWithChairship(parliamentdotuk: Int): LiveData<List<CommitteeMemberWithChairs>>
 
+    @Transaction
     @Query("""SELECT * FROM historic_constituencies WHERE memberfor_member_id = :parliamentdotuk""")
     fun getHistoricalConstituencies(parliamentdotuk: Int): LiveData<List<HistoricalConstituencyWithElection>>
 
+    @Transaction
     @Query("""SELECT * FROM party_associations WHERE partyacc_member_id = :parliamentdotuk""")
     fun getPartyAssociations(parliamentdotuk: Int): LiveData<List<PartyAssociationWithParty>>
 
+    @Transaction
     @Query("""SELECT * FROM division_votes WHERE dvote_member_id = :parliamentdotuk""")
     fun getCommonsVotesForMember(parliamentdotuk: Int): LiveData<List<VoteWithDivision>>
 
+    @Transaction
     @Query("""SELECT * FROM division_votes WHERE dvote_member_id = :parliamentdotuk""")
     fun getLordsVotesForMember(parliamentdotuk: Int): LiveData<List<VoteWithDivision>>
 
