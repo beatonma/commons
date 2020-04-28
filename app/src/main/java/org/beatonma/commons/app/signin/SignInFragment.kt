@@ -1,18 +1,16 @@
 package org.beatonma.commons.app.signin
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import com.bumptech.glide.Glide
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.SignInButton
-import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.BaseViewmodelFragment
+import org.beatonma.commons.app.ui.ktx.load
 import org.beatonma.commons.data.core.repository.UserAccount
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.databinding.FragmentSigninBinding
@@ -115,10 +113,7 @@ class SignInFragment : BaseViewmodelFragment() {
                 accountUsername.text = token.username
                 accountId.text = token.snommocToken
 
-                Glide.with(root)
-                    .load(Uri.parse(token.photoUrl))
-                    .fallback(R.mipmap.ic_launcher)
-                    .into(accountAvatar)
+                accountAvatar.load(token.photoUrl)
 
                 signoutButton.show()
             }
