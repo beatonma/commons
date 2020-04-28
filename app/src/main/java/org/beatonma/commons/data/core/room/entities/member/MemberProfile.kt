@@ -3,7 +3,7 @@ package org.beatonma.commons.data.core.room.entities.member
 import androidx.room.*
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
-
+import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 
 @Entity(
     foreignKeys = [
@@ -39,4 +39,30 @@ data class MemberProfile(
     @Embedded(prefix = "birth_") @field:Json(name = "place_of_birth") val placeOfBirth: Town? = null,
     @field:Json(name = "portrait") @ColumnInfo(name = "portrait_url") val portraitUrl: String? = null,
     @field:Json(name = "current_post") @ColumnInfo(name = "current_post") val currentPost: String? = null
+)
+
+data class BasicProfile(
+    @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = PARLIAMENTDOTUK) val parliamentdotuk: Int,
+    @field:Json(name = "name") @ColumnInfo(name = "name") val name: String,
+    @field:Json(name = "portrait_url") @ColumnInfo(name = "portrait_url") val portraitUrl: String? = null,
+    @field:Json(name = "current_post") @ColumnInfo(name = "current_post") val currentPost: String? = null,
+    @field:Json(name = "party") @ColumnInfo(name = "party_id", index = true) val party: Party,  // Use Party object for api response, serialized to id for storage
+    @field:Json(name = "constituency") @ColumnInfo(name = "constituency_id", index = true) val constituency: Constituency?  // Use Constituency object for api response, serialized to id for storage
+) {
+    fun toMemberProfile() = MemberProfile(
+        parliamentdotuk = parliamentdotuk,
+        name = name,
+        portraitUrl = portraitUrl,
+        currentPost = currentPost,
+        party = party,
+        constituency = constituency
+    )
+}
+
+data class BasicProfileWithParty(
+    @Embedded
+    val profile: BasicProfile,
+
+    @Relation(parentColumn = "party_id", entityColumn = "party_$PARLIAMENTDOTUK")
+    val party: Party
 )

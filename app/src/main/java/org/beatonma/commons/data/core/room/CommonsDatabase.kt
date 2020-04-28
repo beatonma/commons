@@ -4,18 +4,15 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import org.beatonma.commons.data.core.Converters
-import org.beatonma.commons.data.core.room.dao.BillDao
-import org.beatonma.commons.data.core.room.dao.DivisionDao
-import org.beatonma.commons.data.core.room.dao.MemberDao
-import org.beatonma.commons.data.core.room.dao.UserDao
+import org.beatonma.commons.data.core.room.dao.*
 import org.beatonma.commons.data.core.room.entities.bill.*
+import org.beatonma.commons.data.core.room.entities.constituency.Constituency
+import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyBoundary
 import org.beatonma.commons.data.core.room.entities.division.Division
 import org.beatonma.commons.data.core.room.entities.division.FeaturedDivision
 import org.beatonma.commons.data.core.room.entities.division.Vote
 import org.beatonma.commons.data.core.room.entities.member.*
 import org.beatonma.commons.data.core.room.entities.user.UserToken
-
-const val COMMONS_DB_FILENAME = "commons.db"
 
 @Database(
     entities = [
@@ -23,13 +20,12 @@ const val COMMONS_DB_FILENAME = "commons.db"
         MemberProfile::class,
         CommitteeChairship::class,
         CommitteeMembership::class,
-        Constituency::class,
         Election::class,
         Experience::class,
         FeaturedMember::class,
         FinancialInterest::class,
-        HouseMembership::class,
         HistoricalConstituency::class,
+        HouseMembership::class,
         Party::class,
         PartyAssociation::class,
         PhysicalAddress::class,
@@ -46,6 +42,10 @@ const val COMMONS_DB_FILENAME = "commons.db"
         BillStageSitting::class,
         BillType::class,
         FeaturedBill::class,
+
+        // Constituency
+        Constituency::class,
+        ConstituencyBoundary::class,
 
         // Divisions
         Division::class,
@@ -64,6 +64,9 @@ const val COMMONS_DB_FILENAME = "commons.db"
 abstract class CommonsDatabase : RoomDatabase() {
     abstract fun memberDao(): MemberDao
     abstract fun billDao(): BillDao
+    abstract fun constituencyDao(): ConstituencyDao
     abstract fun divisionDao(): DivisionDao
     abstract fun userDao(): UserDao
 }
+
+const val COMMONS_DB_FILENAME = "commons.db"

@@ -1,6 +1,9 @@
+import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 import com.android.build.gradle.internal.dsl.DefaultConfig
 import data.ParliamentDotUkPartyIDs
 import local.LocalConfig
+import java.text.SimpleDateFormat
+import java.util.*
 
 plugins {
     id("com.android.application")
@@ -27,12 +30,18 @@ android {
             "TWFY_API_KEY" to LocalConfig.Api.Twfy.API_KEY,
             "USER_AGENT_APP" to LocalConfig.UserAgent.NAME,
             "USER_AGENT_WEBSITE" to LocalConfig.UserAgent.WEBSITE,
-            "USER_AGENT_EMAIL" to LocalConfig.UserAgent.EMAIL
+            "USER_AGENT_EMAIL" to LocalConfig.UserAgent.EMAIL,
+            "GOOGLE_SIGNIN_CLIENT_ID" to LocalConfig.OAuth.Google.WEB_CLIENT_ID,
+            "GOOGLE_MAPS_API_KEY" to LocalConfig.Api.Google.MAPS
         )
 
         buildConfigStrings.forEach { (key, value) ->
             buildConfigField("String", key, "\"$value\"")
         }
+
+        manifestPlaceholders = mapOf(
+            "googleMapsApiKey" to LocalConfig.Api.Google.MAPS
+        )
 
         // Party colors as @color resources and build config constants
         AllPartyThemes.forEach { (key, theme) ->
@@ -69,13 +78,25 @@ android {
             versionNameSuffix = "-dev"
         }
         getByName("release") {
-//            isMinifyEnabled = true
-            postprocessing.apply {
-                isOptimizeCode = true
-                isObfuscate = true
-                isRemoveUnusedCode = true
-                isRemoveUnusedResources = true
+            val date = SimpleDateFormat("yyyyMMddHHmmss").format(Date())
+            applicationVariants.all {
+                val variant = this
+                variant.outputs
+                    .map { it as BaseVariantOutputImpl }
+                    .forEach { output ->
+                        output.outputFileName = output.outputFileName
+                            .replace("app-", "commons-")
+                            .replace(
+                                "-release",
+                                "-release-$date-${Git.commitCount(project)}-${Git.tag(project)}-${Git.sha(project)}")
+                    }
             }
+//            postprocessing.apply {
+//                isOptimizeCode = true
+//                isObfuscate = true
+//                isRemoveUnusedCode = true
+//                isRemoveUnusedResources = true
+//            }
 //            proguardFile(getDefaultProguardFile("proguard-android-optimize.txt"))
             rootProject.file("proguard").listFiles()
                 ?.filter { it.name.startsWith("proguard") }
@@ -122,7 +143,8 @@ dependencies {
     val kotlin = arrayOf(
         Dependencies.Kotlin.STDLIB,
         Dependencies.Kotlin.Coroutines.CORE,
-        Dependencies.Kotlin.Coroutines.ANDROID
+        Dependencies.Kotlin.Coroutines.ANDROID,
+        Dependencies.Kotlin.Coroutines.PLAY
     )
 
     val annotationProcessors = arrayOf(
@@ -146,11 +168,15 @@ dependencies {
         Dependencies.AndroidX.APPCOMPAT,
         Dependencies.AndroidX.CONSTRAINTLAYOUT,
         Dependencies.AndroidX.CORE_KTX,
+        Dependencies.AndroidX.RECYCLERVIEW,
         Dependencies.AndroidX.LIFECYCLE_RUNTIME,
         Dependencies.AndroidX.LIVEDATA_KTX,
         Dependencies.AndroidX.VIEWMODEL_KTX,
         Dependencies.AndroidX.NAVIGATION_UI,
-        Dependencies.AndroidX.NAVIGATION_FRAGMENT,
+        Dependencies.AndroidX.NAVIGATION_FRAGMENT
+    )
+
+    val compose = arrayOf(
         Dependencies.AndroidX.COMPOSE_LAYOUT,
         Dependencies.AndroidX.COMPOSE_TOOLING,
         Dependencies.AndroidX.COMPOSE_MATERIAL
@@ -162,16 +188,25 @@ dependencies {
         Dependencies.Retrofit.Converter.TEXT
     )
 
-    val other = arrayOf(
-        Dependencies.Glide.CORE,
-        Dependencies.GOOGLE_MATERIAL
+    val glide = arrayOf(
+        Dependencies.Glide.CORE
+    )
+
+    val google = arrayOf(
+        Dependencies.Google.MATERIAL,
+        Dependencies.Google.Play.AUTH,
+        Dependencies.Google.Play.LOCATION,
+        Dependencies.Google.Play.MAPS,
+        Dependencies.Google.Play.MAPS_UTIL
     )
 
     val implementations = arrayOf(
         androidx,
+//        compose,
         dagger,
+        google,
         kotlin,
-        other,
+        glide,
         retrofit,
         room
     ).flatten()
@@ -188,7 +223,7 @@ dependencies {
     )
     bmalib.forEach { implementation(bmalib(it)) }
 
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
 }
 
 repositories {

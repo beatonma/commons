@@ -7,7 +7,8 @@ import dagger.MapKey
 import dagger.Module
 import dagger.multibindings.IntoMap
 import org.beatonma.commons.app.bill.BillProfileViewModel
-import org.beatonma.commons.app.division.DivisionProfileViewModel
+import org.beatonma.commons.app.constituency.ConstituencyDetailViewModel
+import org.beatonma.commons.app.division.DivisionDetailViewModel
 import org.beatonma.commons.app.featured.FeaturedContentViewModel
 import org.beatonma.commons.app.memberprofile.MemberProfileViewModel
 import org.beatonma.commons.app.search.SearchViewModel
@@ -58,8 +59,13 @@ abstract class ViewModelModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(DivisionProfileViewModel::class)
-    internal abstract fun bindDivisionProfileViewModel(viewModel: DivisionProfileViewModel): ViewModel
+    @ViewModelKey(DivisionDetailViewModel::class)
+    internal abstract fun bindDivisionProfileViewModel(viewModel: DivisionDetailViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ConstituencyDetailViewModel::class)
+    internal abstract fun bindConstituencyProfileViewModel(viewModel: ConstituencyDetailViewModel): ViewModel
 
     @Binds
     @IntoMap

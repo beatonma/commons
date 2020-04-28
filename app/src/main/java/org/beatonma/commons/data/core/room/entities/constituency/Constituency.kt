@@ -33,12 +33,15 @@ data class ApiConstituency(
     }
 }
 
+
 data class ConstituencyWithBoundary(
-    @Embedded val constituency: Constituency,
+    @Embedded
+    val constituency: Constituency,
 
     @Relation(parentColumn = "constituency_$PARLIAMENTDOTUK", entityColumn = "boundary_constituency_id")
     val boundary: ConstituencyBoundary?,
 )
+
 
 
 data class ConstituencyDetails(
@@ -46,4 +49,7 @@ data class ConstituencyDetails(
 
     @Relation(parentColumn = "constituency_id", entityColumn = "constituency_$PARLIAMENTDOTUK")
     val constituency: Constituency,
+
+    @Relation(parentColumn = "constituency_id", entityColumn = "boundary_constituency_id")
+    val boundary: ConstituencyBoundary?,
 )

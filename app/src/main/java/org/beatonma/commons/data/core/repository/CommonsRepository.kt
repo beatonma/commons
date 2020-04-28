@@ -9,12 +9,15 @@ import org.beatonma.commons.data.CommonsRemoteDataSource
 import org.beatonma.commons.data.IoResult
 import org.beatonma.commons.data.core.CompleteMember
 import org.beatonma.commons.data.core.room.dao.BillDao
+import org.beatonma.commons.data.core.room.dao.ConstituencyDao
 import org.beatonma.commons.data.core.room.dao.DivisionDao
 import org.beatonma.commons.data.core.room.dao.MemberDao
 import org.beatonma.commons.data.core.room.entities.bill.CompleteBill
 import org.beatonma.commons.data.core.room.entities.bill.FeaturedBill
 import org.beatonma.commons.data.core.room.entities.bill.FeaturedBillWithBill
+import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyWithBoundary
 import org.beatonma.commons.data.core.room.entities.division.*
+import org.beatonma.commons.data.core.room.entities.member.BasicProfileWithParty
 import org.beatonma.commons.data.core.room.entities.member.FeaturedMember
 import org.beatonma.commons.data.core.room.entities.member.FeaturedMemberProfile
 import org.beatonma.commons.data.core.room.entities.member.House
@@ -31,6 +34,7 @@ class CommonsRepository @Inject constructor(
     private val memberDao: MemberDao,
     private val billDao: BillDao,
     private val divisionDao: DivisionDao,
+    private val constituencyDao: ConstituencyDao,
 ) {
     fun observeFeaturedPeople(): LiveData<IoResult<List<FeaturedMemberProfile>>> = resultLiveData(
         databaseQuery = { memberDao.getFeaturedProfiles() },
@@ -109,6 +113,32 @@ class CommonsRepository @Inject constructor(
         }
     )
 
+    fun observeConstituency(parliamentdotuk: Int): LiveData<IoResult<ConstituencyWithBoundary>> = resultLiveData(
+        databaseQuery = { constituencyDao.getConstituencyDetails(parliamentdotuk) },
+        networkCall = { commonsRemoteDataSource.getConstituency(parliamentdotuk) },
+        saveCallResult = { apiConstituency ->
+            constituencyDao.insertConstituency(apiConstituency.toConstituency())
+
+            apiConstituency.boundary?.also { boundary ->
+                constituencyDao.insertBoundary(
+                    boundary.copy(constituencyId = apiConstituency.parliamentdotuk)
+                )
+            }
+        }
+    )
+
+    fun observeMemberForConstituency(parliamentdotuk: Int): LiveData<IoResult<BasicProfileWithParty>> = resultLiveData(
+        databaseQuery = { constituencyDao.getMemberForConstituency(parliamentdotuk) },
+        networkCall = { commonsRemoteDataSource.getMemberForConstituency(parliamentdotuk) },
+        saveCallResult = { basicProfile ->
+            if (basicProfile.constituency != null) {
+                constituencyDao.insertConstituencyIfNotExists(basicProfile.constituency)
+            }
+            memberDao.insertPartyIfNotExists((basicProfile.party))
+            memberDao.insertProfileIfNotExists(basicProfile.toMemberProfile())
+        }
+    )
+
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun observeCompleteMember(parliamentdotuk: Int): LiveData<CompleteMember> {
         val member = MutableCompleteMember()
@@ -162,8 +192,7 @@ class CommonsRepository @Inject constructor(
     }
 
     private fun observeCompleteBill(parliamentdotuk: Int): LiveData<CompleteBill> {
-        val bill =
-            MutableCompleteBill()
+        val bill = MutableCompleteBill()
 
         return MediatorLiveData<CompleteBill>().apply {
             addSource(bill.value) {

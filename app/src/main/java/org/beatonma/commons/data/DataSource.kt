@@ -6,6 +6,7 @@ import org.beatonma.commons.data.core.room.entities.bill.Bill
 import org.beatonma.commons.data.core.room.entities.constituency.ApiConstituency
 import org.beatonma.commons.data.core.room.entities.division.ApiDivision
 import org.beatonma.commons.data.core.room.entities.division.ApiMemberVote
+import org.beatonma.commons.data.core.room.entities.member.BasicProfile
 import org.beatonma.commons.data.core.room.entities.member.House
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 import org.beatonma.commons.data.core.room.entities.user.ApiUserToken
@@ -49,6 +50,7 @@ interface CommonsRemoteDataSource {
     suspend fun getLordsDivision(parliamentdotuk: Int): IoResult<ApiDivision>
 
     suspend fun getConstituency(parliamentdotuk: Int): IoResult<ApiConstituency>
+    suspend fun getMemberForConstituency(parliamentdotuk: Int): IoResult<BasicProfile>
 
     suspend fun getSearchResults(query: String): IoResult<List<MemberSearchResult>>
 
@@ -102,8 +104,12 @@ class CommonsRemoteDataSourceImpl @Inject constructor(
         service.getLordsDivision(parliamentdotuk)
     }
 
-    override suspend fun getConstituency(parliamentdotuk: Int): IoResult<ApiConstituency> = getResult {
+    override suspend fun getConstituency(parliamentdotuk: Int) = getResult {
         service.getConstituency(parliamentdotuk)
+    }
+
+    override suspend fun getMemberForConstituency(parliamentdotuk: Int) = getResult {
+        service.getMemberForConstituency(parliamentdotuk)
     }
 
     override suspend fun getSearchResults(query: String) = getResult {
