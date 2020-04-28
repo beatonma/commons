@@ -3,6 +3,7 @@ package org.beatonma.commons
 import android.app.Activity
 import android.app.Application
 import android.content.Context
+import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import dagger.android.AndroidInjector
@@ -42,6 +43,15 @@ class CommonsApplication : Application(), HasAndroidInjector {
             AppCompatDelegate.setDefaultNightMode(mode)
         }
     }
+
+    fun isNightMode(): Boolean {
+        val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        return when (currentNightMode) {
+            Configuration.UI_MODE_NIGHT_YES -> true
+            Configuration.UI_MODE_NIGHT_NO -> false
+            else -> false
+        }
+    }
 }
 
 val Activity.commonsApp: CommonsApplication
@@ -52,3 +62,5 @@ val Context.commonsApp: CommonsApplication?
 
 val Fragment.commonsApp: CommonsApplication?
     get() = context?.commonsApp
+
+fun Context.isNightMode() = commonsApp?.isNightMode() ?: false
