@@ -1,8 +1,28 @@
 package org.beatonma.commons.ui.colors
 
+import android.content.Context
 import org.beatonma.commons.BuildConfig.*
+import org.beatonma.commons.data.core.room.entities.member.Party
+import org.beatonma.commons.isNightMode
+import org.beatonma.commons.kotlin.data.Color
 
-fun getPartyTheme(partyID: Int): PartyColors = when (getCanonicalParty(partyID)) {
+interface Themed {
+    var theme: PartyColors?
+}
+
+fun Party.getTheme(context: Context?): PartyColors {
+    val theme = getPartyTheme(parliamentdotuk)
+    return if (context?.isNightMode() == true) theme.coerce(
+        minSaturation = .2F,
+        maxSaturation = .8F,
+        minLuminance = .2F,
+        maxLuminance = .8F
+    )
+    else theme
+
+}
+
+private fun getPartyTheme(partyID: Int): PartyColors = when (getCanonicalParty(partyID)) {
     // Alliance
     PARTY_ALLIANCE_PARLIAMENTDOTUK -> PartyColors(
         COLOR_PARTY_ALLIANCE_PRIMARY,
@@ -153,7 +173,19 @@ data class PartyColors(
     val accent: Int,
     val primaryText: Int,
     val accentText: Int
-)
+) {
+    fun coerce(
+        minSaturation: Float = 0F,
+        maxSaturation: Float = 1F,
+        minLuminance: Float = 0F,
+        maxLuminance: Float = 1F,
+    ): PartyColors = PartyColors(
+        Color(primary).coerce(minSaturation, maxSaturation, minLuminance, maxLuminance).color,
+        Color(accent).coerce(minSaturation, maxSaturation, minLuminance, maxLuminance).color,
+        primaryText,
+        accentText,
+    )
+}
 
 /**
  * Map small/historic/niche/relatively unestablished/loosely associated parties, or parties with that
