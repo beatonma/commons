@@ -11,6 +11,8 @@ import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyBou
 import org.beatonma.commons.data.core.room.entities.division.Division
 import org.beatonma.commons.data.core.room.entities.division.FeaturedDivision
 import org.beatonma.commons.data.core.room.entities.division.Vote
+import org.beatonma.commons.data.core.room.entities.election.ConstituencyResult
+import org.beatonma.commons.data.core.room.entities.election.Election
 import org.beatonma.commons.data.core.room.entities.member.*
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 
@@ -20,7 +22,6 @@ import org.beatonma.commons.data.core.room.entities.user.UserToken
         MemberProfile::class,
         CommitteeChairship::class,
         CommitteeMembership::class,
-        Election::class,
         Experience::class,
         FeaturedMember::class,
         FinancialInterest::class,
@@ -46,6 +47,10 @@ import org.beatonma.commons.data.core.room.entities.user.UserToken
         // Constituency
         Constituency::class,
         ConstituencyBoundary::class,
+
+        // Elections
+        Election::class,
+        ConstituencyResult::class,
 
         // Divisions
         Division::class,
