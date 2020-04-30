@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
+import java.util.*
 
 @Entity(
     foreignKeys = [
@@ -27,8 +28,8 @@ data class FinancialInterest(
     @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = "interest_id") val interestId: Int,
     @field:Json(name = "category") @ColumnInfo(name = "interest_category") val category: String,
     @field:Json(name = "description") @ColumnInfo(name = "interest_description") val description: String,
-    @field:Json(name = "created") @ColumnInfo(name = "interest_created") val dateCreated: String?,
-    @field:Json(name = "amended") @ColumnInfo(name = "interest_amended") val dateAmended: String?,
-    @field:Json(name = "deleted") @ColumnInfo(name = "interest_deleted") val dateDeleted: String?,
+    @field:Json(name = "created") @ColumnInfo(name = "interest_created") val dateCreated: Date?,
+    @field:Json(name = "amended") @ColumnInfo(name = "interest_amended") val dateAmended: Date?,
+    @field:Json(name = "deleted") @ColumnInfo(name = "interest_deleted") val dateDeleted: Date?,
     @field:Json(name = "registered_late") @ColumnInfo(name = "interest_registered_late") val registeredLate: Boolean
 )

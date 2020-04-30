@@ -3,7 +3,7 @@ package org.beatonma.commons.data.core.room.entities.member
 import androidx.room.*
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
-
+import java.util.*
 
 @Entity(
     foreignKeys = [
@@ -32,8 +32,8 @@ import org.beatonma.commons.data.PARLIAMENTDOTUK
 data class PartyAssociation(
     @ColumnInfo(name = "partyacc_member_id") val memberId: Int,
     @ColumnInfo(name = "partyacc_party_id") val partyId: Int,
-    @ColumnInfo(name = "partyacc_start") val start: String,
-    @ColumnInfo(name = "partyacc_end") val end: String?
+    @ColumnInfo(name = "partyacc_start") val start: Date,
+    @ColumnInfo(name = "partyacc_end") val end: Date?
 )
 
 data class PartyAssociationWithParty(
@@ -46,8 +46,8 @@ data class PartyAssociationWithParty(
 
 data class ApiPartyAssociation(
     @field:Json(name = "party") val party: Party,
-    @field:Json(name = "start") val start: String,
-    @field:Json(name = "end") val end: String?
+    @field:Json(name = "start") val start: Date,
+    @field:Json(name = "end") val end: Date?
 ) {
     fun toPartyAssocation(member: Int) = PartyAssociation(
         memberId = member,

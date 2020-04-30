@@ -4,6 +4,7 @@ import androidx.room.*
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.core.room.entities.member.House
+import java.util.*
 
 @Entity(
     tableName = "divisions",
@@ -12,7 +13,7 @@ data class Division(
     @ColumnInfo(name = "division_$PARLIAMENTDOTUK") @PrimaryKey val parliamentdotuk: Int,
     @ColumnInfo(name = "title") val title: String,
     @ColumnInfo(name = "description") val description: String?, // Lords only
-    @ColumnInfo(name = "date") val date: String,
+    @ColumnInfo(name = "date") val date: Date,
     @ColumnInfo(name = "house") val house: House,
     @ColumnInfo(name = "passed") val passed: Boolean,
     @ColumnInfo(name = "ayes") val ayes: Int,
@@ -30,7 +31,7 @@ data class ApiDivision(
     @field:Json(name = PARLIAMENTDOTUK) val parliamentdotuk: Int,
     @field:Json(name = "title") val title: String,
     @field:Json(name = "description") val description: String?,
-    @field:Json(name = "date") val date: String,
+    @field:Json(name = "date") val date: Date,
     @field:Json(name = "house") val house: House,
     @field:Json(name = "passed") val passed: Boolean,
     @field:Json(name = "ayes") val ayes: Int,

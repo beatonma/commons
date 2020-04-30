@@ -6,6 +6,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
+import java.util.*
 
 @Entity(
     foreignKeys = [
@@ -28,8 +29,8 @@ data class Post(
     @field:Json(name = "post_member_id") @ColumnInfo(name = "post_member_id", index = true) val memberId: Int,
     @field:Json(name = "name") @ColumnInfo(name = "post_name") val name: String,
     @ColumnInfo(name = "post_type") val postType: PostType,
-    @field:Json(name = "start") @ColumnInfo(name = "start") val start: String?,
-    @field:Json(name = "end") @ColumnInfo(name = "end") val end: String?
+    @field:Json(name = "start") @ColumnInfo(name = "start") val start: Date?,
+    @field:Json(name = "end") @ColumnInfo(name = "end") val end: Date?
 ) {
     enum class PostType {
         GOVERNMENTAL,

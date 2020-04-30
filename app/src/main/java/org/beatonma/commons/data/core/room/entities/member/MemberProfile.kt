@@ -4,6 +4,7 @@ import androidx.room.*
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
+import java.util.*
 
 @Entity(
     foreignKeys = [
@@ -33,8 +34,8 @@ data class MemberProfile(
     @field:Json(name = "is_mp") @ColumnInfo(name = "is_mp") val isMp: Boolean? = null,
     @field:Json(name = "is_lord") @ColumnInfo(name = "is_lord") val isLord: Boolean? = null,
     @field:Json(name = "age") @ColumnInfo(name = "age") val age: Int? = null,
-    @field:Json(name = "date_of_birth") @ColumnInfo(name = "date_of_birth") val dateOfBirth: String? = null,
-    @field:Json(name = "date_of_death") @ColumnInfo(name = "date_of_death") val dateOfDeath: String? = null,
+    @field:Json(name = "date_of_birth") @ColumnInfo(name = "date_of_birth") val dateOfBirth: Date? = null,
+    @field:Json(name = "date_of_death") @ColumnInfo(name = "date_of_death") val dateOfDeath: Date? = null,
     @field:Json(name = "gender") @ColumnInfo(name = "gender") val gender: String? = null,
     @Embedded(prefix = "birth_") @field:Json(name = "place_of_birth") val placeOfBirth: Town? = null,
     @field:Json(name = "portrait") @ColumnInfo(name = "portrait_url") val portraitUrl: String? = null,

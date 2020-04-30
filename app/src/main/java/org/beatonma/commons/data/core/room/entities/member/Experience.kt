@@ -3,6 +3,7 @@ package org.beatonma.commons.data.core.room.entities.member
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import com.squareup.moshi.Json
+import java.util.*
 
 @Entity(
     primaryKeys = [
@@ -16,6 +17,6 @@ data class Experience(
     @field:Json(name = "category") @ColumnInfo(name = "experience_category") val category: String,
     @field:Json(name = "organisation") @ColumnInfo(name = "organisation") val organisation: String?,
     @field:Json(name = "title") @ColumnInfo(name = "title") val title: String,
-    @field:Json(name = "start") @ColumnInfo(name = "start") val start: String?,
-    @field:Json(name = "end") @ColumnInfo(name = "end") val end: String?
+    @field:Json(name = "start") @ColumnInfo(name = "start") val start: Date?,
+    @field:Json(name = "end") @ColumnInfo(name = "end") val end: Date?
 )
