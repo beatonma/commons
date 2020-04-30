@@ -6,6 +6,7 @@ import org.beatonma.commons.data.core.ApiCompleteMember
 import org.beatonma.commons.data.core.CompleteMember
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import org.beatonma.commons.data.core.room.entities.division.VoteWithDivision
+import org.beatonma.commons.data.core.room.entities.election.Election
 import org.beatonma.commons.data.core.room.entities.member.*
 
 @Dao
