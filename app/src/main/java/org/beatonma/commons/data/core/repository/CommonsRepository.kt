@@ -3,8 +3,6 @@ package org.beatonma.commons.data.core.repository
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
 import org.beatonma.commons.data.CommonsRemoteDataSource
 import org.beatonma.commons.data.IoResult
 import org.beatonma.commons.data.core.CompleteMember
@@ -15,17 +13,15 @@ import org.beatonma.commons.data.core.room.dao.MemberDao
 import org.beatonma.commons.data.core.room.entities.bill.CompleteBill
 import org.beatonma.commons.data.core.room.entities.bill.FeaturedBill
 import org.beatonma.commons.data.core.room.entities.bill.FeaturedBillWithBill
-import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyWithBoundary
+import org.beatonma.commons.data.core.room.entities.constituency.CompleteConstituency
+import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import org.beatonma.commons.data.core.room.entities.division.*
-import org.beatonma.commons.data.core.room.entities.member.BasicProfileWithParty
-import org.beatonma.commons.data.core.room.entities.member.FeaturedMember
-import org.beatonma.commons.data.core.room.entities.member.FeaturedMemberProfile
-import org.beatonma.commons.data.core.room.entities.member.House
+import org.beatonma.commons.data.core.room.entities.member.*
+import org.beatonma.commons.data.livedata.observeComplete
 import org.beatonma.commons.data.resultLiveData
+import org.beatonma.commons.kotlin.extensions.allNotNull
 import javax.inject.Inject
 import javax.inject.Singleton
-
-private const val TAG = "CommonsRepo"
 
 @Singleton
 class CommonsRepository @Inject constructor(
@@ -40,13 +36,9 @@ class CommonsRepository @Inject constructor(
         databaseQuery = { memberDao.getFeaturedProfiles() },
         networkCall = { commonsRemoteDataSource.getFeaturedPeople() },
         saveCallResult = { profiles ->
-            memberDao.apply {
-                profiles.forEach { profile ->
-                    insertParty(profile.party)
-                    profile.constituency?.let { insertConstituency(it) }
-                }
+            saveProfiles(profiles)
 
-                insertProfiles(profiles)
+            memberDao.apply {
                 insertFeaturedPeople(
                     profiles.map { profile -> FeaturedMember(profile.parliamentdotuk) }
                 )
@@ -113,42 +105,35 @@ class CommonsRepository @Inject constructor(
         }
     )
 
-    fun observeConstituency(parliamentdotuk: Int): LiveData<IoResult<ConstituencyWithBoundary>> = resultLiveData(
-        databaseQuery = { constituencyDao.getConstituencyDetails(parliamentdotuk) },
+    fun observeConstituency(parliamentdotuk: Int): LiveData<IoResult<CompleteConstituency>> = resultLiveData(
+        databaseQuery = { observeConstituencyDetails(parliamentdotuk) },
         networkCall = { commonsRemoteDataSource.getConstituency(parliamentdotuk) },
         saveCallResult = { apiConstituency ->
             constituencyDao.insertConstituency(apiConstituency.toConstituency())
+
+            saveProfile(apiConstituency.memberProfile, ifNotExists = true)
 
             apiConstituency.boundary?.also { boundary ->
                 constituencyDao.insertBoundary(
                     boundary.copy(constituencyId = apiConstituency.parliamentdotuk)
                 )
             }
-        }
-    )
 
-    fun observeMemberForConstituency(parliamentdotuk: Int): LiveData<IoResult<BasicProfileWithParty>> = resultLiveData(
-        databaseQuery = { constituencyDao.getMemberForConstituency(parliamentdotuk) },
-        networkCall = { commonsRemoteDataSource.getMemberForConstituency(parliamentdotuk) },
-        saveCallResult = { basicProfile ->
-            if (basicProfile.constituency != null) {
-                constituencyDao.insertConstituencyIfNotExists(basicProfile.constituency)
-            }
-            memberDao.insertPartyIfNotExists((basicProfile.party))
-            memberDao.insertProfileIfNotExists(basicProfile.toMemberProfile())
+            memberDao.insertElections(apiConstituency.results.map { it.election })
+            saveProfiles(apiConstituency.results.map { it.member }, ifNotExists = true)
+
+            constituencyDao.insertElectionResults(apiConstituency.results.map { result ->
+                result.toConstituencyResult(parliamentdotuk)
+            })
         }
     )
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun observeCompleteMember(parliamentdotuk: Int): LiveData<CompleteMember> {
-        val member = MutableCompleteMember()
-
-        return MediatorLiveData<CompleteMember>().apply {
-            addSource(member.value) {
-                // Propagate changes from mutable member to observer
-                value = it
-            }
-
+    fun observeCompleteMember(parliamentdotuk: Int): LiveData<CompleteMember> =
+        observeComplete(
+            CompleteMember(),
+            updatePredicate = { m -> m.profile != null },
+        ) { member ->
             addSource(memberDao.getMemberProfile(parliamentdotuk)) {
                 member.update { copy(profile = it) }
             }
@@ -189,17 +174,12 @@ class CommonsRepository @Inject constructor(
                 member.update { copy(parties = it) }
             }
         }
-    }
 
-    private fun observeCompleteBill(parliamentdotuk: Int): LiveData<CompleteBill> {
-        val bill = MutableCompleteBill()
-
-        return MediatorLiveData<CompleteBill>().apply {
-            addSource(bill.value) {
-                // Propagate changes from mutable bill to observer
-                value = it
-            }
-
+    private fun observeCompleteBill(parliamentdotuk: Int): LiveData<CompleteBill> =
+        observeComplete(
+            CompleteBill(),
+            updatePredicate = { b -> b.bill != null },
+        ) { bill ->
             addSource(billDao.getBill(parliamentdotuk)) { _bill ->
                 bill.update { copy(bill = _bill) }
             }
@@ -219,25 +199,93 @@ class CommonsRepository @Inject constructor(
                 bill.update { copy(stages = stages) }
             }
         }
+
+    private fun observeConstituencyDetails(parliamentdotuk: Int): LiveData<CompleteConstituency> =
+        observeComplete(
+            CompleteConstituency(),
+            updatePredicate = { c -> allNotNull(c.boundary, c.constituency, c.electionResults) },
+        ) { constituency ->
+            addSource(constituencyDao.getConstituencyWithBoundary(parliamentdotuk)) {
+                constituency.update {
+                    copy(
+                        constituency = it.constituency,
+                        boundary = it.boundary,
+                    )
+                }
+            }
+            addSource(constituencyDao.getElectionResults(parliamentdotuk)) { results ->
+                constituency.update {
+                    copy(
+                        electionResults = results,
+                    )
+                }
+            }
+        }
+
+    private suspend fun saveProfile(profile: MemberProfile?, ifNotExists: Boolean = false) {
+        profile ?: return
+
+        // The embedded party/constituency are low-detail so we do not want to overwrite any
+        // high-detail records we might already hold.
+        saveConstituency(profile.constituency, true)
+        saveParty(profile.party, true)
+
+        if (ifNotExists) {
+            memberDao.insertProfileIfNotExists(profile)
+        }
+        else {
+            memberDao.insertProfile(profile)
+        }
     }
-}
 
+    private suspend fun saveProfiles(profiles: List<MemberProfile>, ifNotExists: Boolean = false) {
+        saveConstituencies(profiles.mapNotNull { it.constituency }, ifNotExists = true)
+        saveParties(profiles.map { it.party }, ifNotExists = true)
 
-private class MutableCompleteBill: Mutator<CompleteBill>() {
-    override var mutable: CompleteBill = CompleteBill()
-}
+        if (ifNotExists) {
+            memberDao.insertProfilesIfNotExists(profiles)
+        }
+        else {
+            memberDao.insertProfiles(profiles)
+        }
+    }
 
-private class MutableCompleteMember: Mutator<CompleteMember>() {
-    override var mutable: CompleteMember = CompleteMember()
-}
+    private suspend fun saveConstituency(constituency: Constituency?, ifNotExists: Boolean = false) {
+        constituency ?: return
 
-private abstract class Mutator<D> {
-    val value: MutableLiveData<D> = MutableLiveData()
-    protected abstract var mutable: D
+        if (ifNotExists) {
+            constituencyDao.insertConstituencyIfNotExists(constituency)
+        }
+        else {
+            constituencyDao.insertConstituency(constituency)
+        }
+    }
 
-    inline fun update(block: D.() -> D): D {
-        mutable = block.invoke(mutable)
-        value.value = mutable
-        return mutable
+    private suspend fun saveConstituencies(constituencies: List<Constituency>, ifNotExists: Boolean = false) {
+        if (ifNotExists) {
+            constituencyDao.insertConstituenciesIfNotExists(constituencies)
+        }
+        else {
+            constituencyDao.insertConstituencies(constituencies)
+        }
+    }
+
+    private suspend fun saveParty(party: Party?, ifNotExists: Boolean = false) {
+        party ?: return
+        if (ifNotExists) {
+            memberDao.insertPartyIfNotExists(party)
+        }
+        else {
+            memberDao.insertParty(party)
+        }
+    }
+
+    private suspend fun saveParties(parties: List<Party>, ifNotExists: Boolean = false) {
+        if (ifNotExists) {
+            memberDao.insertPartiesIfNotExists(parties)
+        }
+        else {
+            memberDao.insertParties(parties)
+        }
     }
 }
