@@ -4,8 +4,9 @@ import androidx.room.*
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.core.room.entities.election.ApiConstituencyResult
-import org.beatonma.commons.data.core.room.entities.election.ConstituencyResult
 import org.beatonma.commons.data.core.room.entities.election.ConstituencyResultWithDetails
+import org.beatonma.commons.data.core.room.entities.member.BasicProfileWithParty
+import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 import java.util.*
 
 @Entity(
@@ -24,6 +25,7 @@ data class ApiConstituency(
     @field:Json(name = "name") val name: String,
     @field:Json(name = "start") val start: Date?,
     @field:Json(name = "end") val end: Date?,
+    @field:Json(name = "mp") val memberProfile: MemberProfile?,
     @field:Json(name = "boundary") val boundary: ConstituencyBoundary?,
     @field:Json(name = "results") val results: List<ApiConstituencyResult>,
 ) {
@@ -38,13 +40,18 @@ data class ApiConstituency(
 }
 
 
-data class ConstituencyWithDetails(
+data class ConstituencyWithBoundary(
     @Embedded
     val constituency: Constituency,
 
     @Relation(parentColumn = "constituency_$PARLIAMENTDOTUK", entityColumn = "boundary_constituency_id")
     val boundary: ConstituencyBoundary?,
+)
 
-    @Relation(parentColumn = "constituency_$PARLIAMENTDOTUK", entityColumn = "result_constituency_id", entity = ConstituencyResult::class)
-    val electionResults: List<ConstituencyResultWithDetails>,
+
+data class CompleteConstituency(
+    val constituency: Constituency? = null,
+    val member: BasicProfileWithParty? = null,
+    val electionResults: List<ConstituencyResultWithDetails>? = null,
+    val boundary: ConstituencyBoundary? = null,
 )
