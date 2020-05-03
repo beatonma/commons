@@ -89,13 +89,16 @@ interface MemberDao {
     suspend fun insertFeaturedPeople(people: List<FeaturedMember>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertProfiles(people: List<MemberProfile>)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertProfile(profile: MemberProfile)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertProfileIfNotExists(profile: MemberProfile)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertProfiles(people: List<MemberProfile>)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertProfilesIfNotExists(people: List<MemberProfile>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertConstituency(constituency: Constituency)
@@ -111,6 +114,9 @@ interface MemberDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertParties(parties: List<Party>)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertPartiesIfNotExists(parties: List<Party>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPosts(posts: List<Post>)
