@@ -2,6 +2,7 @@ package org.beatonma.commons.data.core.room.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.room.entities.division.*
 
 @Dao
@@ -11,11 +12,11 @@ interface DivisionDao {
     fun getFeaturedDivisions(): LiveData<List<FeaturedDivisionWithDivision>>
 
     @Query("""SELECT * FROM divisions WHERE division_parliamentdotuk = :parliamentdotuk""")
-    fun getDivision(parliamentdotuk: Int): LiveData<Division>
+    fun getDivision(parliamentdotuk: ParliamentID): LiveData<Division>
 
     @Transaction
     @Query("""SELECT * FROM divisions WHERE division_parliamentdotuk = :parliamentdotuk""")
-    fun getDivisionWithVotes(parliamentdotuk: Int): LiveData<DivisionWithVotes>
+    fun getDivisionWithVotes(parliamentdotuk: ParliamentID): LiveData<DivisionWithVotes>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFeaturedDivisions(featuredDivisions: List<FeaturedDivision>)
@@ -31,7 +32,7 @@ interface DivisionDao {
 
 
     @Transaction
-    suspend fun insertApiDivision(parliamentdotuk: Int, apiDivision: ApiDivision) {
+    suspend fun insertApiDivision(parliamentdotuk: ParliamentID, apiDivision: ApiDivision) {
         insertDivision(apiDivision.toDivision())
         insertVotes(
             apiDivision.votes.map { apiVote -> apiVote.toVote(parliamentdotuk) }

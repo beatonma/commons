@@ -2,6 +2,7 @@ package org.beatonma.commons.data.core.room.entities.bill
 
 import androidx.room.*
 import org.beatonma.commons.data.PARLIAMENTDOTUK
+import org.beatonma.commons.data.ParliamentID
 
 @Entity(
     foreignKeys = [
@@ -16,7 +17,7 @@ import org.beatonma.commons.data.PARLIAMENTDOTUK
     tableName = "featured_bills"
 )
 data class FeaturedBill(
-    @ColumnInfo(name = "featured_bill_id") @PrimaryKey val billId: Int,
+    @ColumnInfo(name = "featured_bill_id") @PrimaryKey val billId: ParliamentID,
     @ColumnInfo(name = "featured_about") val about: String? = null
 )
 

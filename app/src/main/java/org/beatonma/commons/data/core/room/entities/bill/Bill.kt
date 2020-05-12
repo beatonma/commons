@@ -3,6 +3,7 @@ package org.beatonma.commons.data.core.room.entities.bill
 import androidx.room.*
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
+import org.beatonma.commons.data.ParliamentID
 import java.util.*
 
 /**
@@ -12,7 +13,7 @@ import java.util.*
     tableName = "bills"
 )
 data class Bill(
-    @ColumnInfo(name = "bill_$PARLIAMENTDOTUK") @PrimaryKey val parliamentdotuk: Int,
+    @ColumnInfo(name = "bill_$PARLIAMENTDOTUK") @PrimaryKey val parliamentdotuk: ParliamentID,
     @ColumnInfo(name = "bill_title") val title: String,
     @ColumnInfo(name = "bill_description") val description: String?,
     @ColumnInfo(name = "bill_act_name") val actName: String?,
@@ -24,13 +25,13 @@ data class Bill(
     @ColumnInfo(name = "bill_private") val isPrivate: Boolean,
     @ColumnInfo(name = "bill_money_bill") val isMoneyBill: Boolean,
     @ColumnInfo(name = "bill_public_involvement_allowed") val publicInvolvementAllowed: Boolean,
-    @ColumnInfo(name = "bill_session_id") val sessionId: Int?,
+    @ColumnInfo(name = "bill_session_id") val sessionId: ParliamentID?,
     @ColumnInfo(name = "bill_type_id") val typeId: String?,
 )
 
 
 data class ApiBill(
-    @field:Json(name = PARLIAMENTDOTUK) @PrimaryKey val parliamentdotuk: Int,
+    @field:Json(name = PARLIAMENTDOTUK) @PrimaryKey val parliamentdotuk: ParliamentID,
     @field:Json(name = "title") val title: String,
     @field:Json(name = "description") val description: String?,
     @field:Json(name = "act_name") val actName: String?,
@@ -68,7 +69,7 @@ data class ApiBill(
 
 
 data class MinimalBill(
-    @ColumnInfo(name = "bill_$PARLIAMENTDOTUK") val parliamentdotuk: Int,
+    @ColumnInfo(name = "bill_$PARLIAMENTDOTUK") val parliamentdotuk: ParliamentID,
     @ColumnInfo(name = "bill_title") val title: String,
     @ColumnInfo(name = "bill_description") val description: String?,
     @ColumnInfo(name = "bill_date") val date: Date?,

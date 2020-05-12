@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 import com.google.android.gms.maps.model.LatLng
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
+import org.beatonma.commons.data.ParliamentID
 
 private const val TAG = "ConstituencyBoundary"
 
@@ -23,7 +24,7 @@ private const val TAG = "ConstituencyBoundary"
     tableName = "constituency_boundaries"
 )
 data class ConstituencyBoundary(
-    @ColumnInfo(name = "boundary_constituency_id") @PrimaryKey val constituencyId: Int,
+    @ColumnInfo(name = "boundary_constituency_id") @PrimaryKey val constituencyId: ParliamentID,
     @field:Json(name = "kml") @ColumnInfo(name = "boundary_kml") val kml: String,
     @field:Json(name = "area") @ColumnInfo(name = "boundary_area") val area: String?,
     @field:Json(name = "boundary_length") @ColumnInfo(name = "boundary_length") val boundaryLength: String?,

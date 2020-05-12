@@ -3,6 +3,7 @@ package org.beatonma.commons.data.core.room.entities.division
 import androidx.room.*
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
+import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.room.entities.member.House
 import java.util.*
 
@@ -10,7 +11,7 @@ import java.util.*
     tableName = "divisions",
 )
 data class Division(
-    @ColumnInfo(name = "division_$PARLIAMENTDOTUK") @PrimaryKey val parliamentdotuk: Int,
+    @ColumnInfo(name = "division_$PARLIAMENTDOTUK") @PrimaryKey val parliamentdotuk: ParliamentID,
     @ColumnInfo(name = "title") val title: String,
     @ColumnInfo(name = "description") val description: String?, // Lords only
     @ColumnInfo(name = "date") val date: Date,
@@ -28,7 +29,7 @@ data class Division(
 )
 
 data class ApiDivision(
-    @field:Json(name = PARLIAMENTDOTUK) val parliamentdotuk: Int,
+    @field:Json(name = PARLIAMENTDOTUK) val parliamentdotuk: ParliamentID,
     @field:Json(name = "title") val title: String,
     @field:Json(name = "description") val description: String?,
     @field:Json(name = "date") val date: Date,

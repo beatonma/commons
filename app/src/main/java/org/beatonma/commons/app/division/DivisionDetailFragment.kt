@@ -9,17 +9,19 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.BaseViewmodelFragment
+import org.beatonma.commons.app.ui.colors.colorResId
 import org.beatonma.commons.data.NetworkError
 import org.beatonma.commons.data.PARLIAMENTDOTUK
+import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.room.entities.division.Division
 import org.beatonma.commons.data.core.room.entities.division.Vote
 import org.beatonma.commons.data.core.room.entities.member.House
 import org.beatonma.commons.databinding.FragmentDivisionProfileBinding
 import org.beatonma.commons.databinding.ItemWideTitleBinding
+import org.beatonma.commons.kotlin.extensions.formatted
 import org.beatonma.commons.kotlin.extensions.navigateTo
 import org.beatonma.commons.kotlin.extensions.networkErrorSnackbar
 import org.beatonma.commons.kotlin.extensions.stringCompat
-import org.beatonma.commons.ui.colors.colorResId
 import org.beatonma.lib.ui.recyclerview.BaseRecyclerViewAdapter
 import org.beatonma.lib.ui.recyclerview.BaseViewHolder
 import org.beatonma.lib.ui.recyclerview.kotlin.extensions.setupGrid
@@ -37,7 +39,7 @@ class DivisionDetailFragment : BaseViewmodelFragment() {
     private val viewmodel: DivisionDetailViewModel by viewModels { viewmodelFactory }
     private val adapter = VotesAdapter()
 
-    private fun getDivisionFromBundle(): Pair<House, Int>? {
+    private fun getDivisionFromBundle(): Pair<House, ParliamentID>? {
         val args = arguments ?: return null
         val house = enumValues<House>()[args.getInt(HOUSE)]
         val parliamentdotuk = args.getInt(PARLIAMENTDOTUK)
@@ -80,7 +82,7 @@ class DivisionDetailFragment : BaseViewmodelFragment() {
     private fun updateUI(division: Division, votes: List<Vote>) {
         binding.apply {
             title.text = division.title
-            date.text = division.date
+            date.text = division.date.formatted()
             house.text = division.house.name
             ayes.text = stringCompat(R.string.division_ayes, division.ayes)
             noes.text = stringCompat(R.string.division_noes, division.noes)

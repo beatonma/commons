@@ -3,6 +3,7 @@ package org.beatonma.commons.data.core.room.entities.division
 import androidx.room.*
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
+import org.beatonma.commons.data.ParliamentID
 
 enum class VoteType {
     AyeVote,
@@ -29,18 +30,18 @@ enum class VoteType {
     tableName = "division_votes",
 )
 data class Vote(
-    @ColumnInfo(name = "dvote_division_id") val divisionId: Int,
-    @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = "dvote_member_id") val memberId: Int,
+    @ColumnInfo(name = "dvote_division_id") val divisionId: ParliamentID,
+    @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = "dvote_member_id") val memberId: ParliamentID,
     @field:Json(name = "name") @ColumnInfo(name = "member_name") val memberName: String,
     @field:Json(name = "vote") @ColumnInfo(name = "vote") val voteType: VoteType,
 )
 
 data class ApiVote(
-    @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = "dvote_member_id") val memberId: Int,
+    @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = "dvote_member_id") val memberId: ParliamentID,
     @field:Json(name = "name") @ColumnInfo(name = "member_name") val memberName: String,
     @field:Json(name = "vote") @ColumnInfo(name = "vote") val voteType: VoteType,
 ) {
-    fun toVote(divisionId: Int) = Vote(
+    fun toVote(divisionId: ParliamentID) = Vote(
             divisionId = divisionId,
             memberId = memberId,
             memberName = memberName,

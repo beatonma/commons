@@ -6,6 +6,7 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
+import org.beatonma.commons.data.ParliamentID
 import java.util.*
 
 @Entity(
@@ -21,8 +22,8 @@ import java.util.*
     tableName = "bill_stage_sittings"
 )
 data class BillStageSitting(
-    @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = "billstagesitting_$PARLIAMENTDOTUK") @PrimaryKey val parliamentdotuk: Int,
-    @ColumnInfo(name = "billstagesitting_bill_stage_id") val billStageId: Int,
+    @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = "billstagesitting_$PARLIAMENTDOTUK") @PrimaryKey val parliamentdotuk: ParliamentID,
+    @ColumnInfo(name = "billstagesitting_bill_stage_id") val billStageId: ParliamentID,
     @field:Json(name = "date") @ColumnInfo(name = "billstagesitting_date") val date: Date,
     @field:Json(name = "formal") @ColumnInfo(name = "billstagesitting_formal") val isFormal: Boolean,
     @field:Json(name = "provisional") @ColumnInfo(name = "billstagesitting_provisional") val isProvisional: Boolean,

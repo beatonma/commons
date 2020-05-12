@@ -3,6 +3,7 @@ package org.beatonma.commons.data.core.room.entities.member
 import androidx.room.*
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
+import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import java.util.*
 
@@ -26,7 +27,7 @@ import java.util.*
     tableName = "member_profiles"
 )
 data class MemberProfile(
-    @PrimaryKey @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = PARLIAMENTDOTUK) val parliamentdotuk: Int,
+    @PrimaryKey @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = PARLIAMENTDOTUK) val parliamentdotuk: ParliamentID,
     @field:Json(name = "name") @ColumnInfo(name = "name") val name: String,
     @field:Json(name = "party") @ColumnInfo(name = "party_id", index = true) val party: Party,  // Use Party object for api response, serialized to id for storage
     @field:Json(name = "constituency") @ColumnInfo(name = "constituency_id", index = true) val constituency: Constituency?,  // Use Constituency object for api response, serialized to id for storage
@@ -43,7 +44,7 @@ data class MemberProfile(
 )
 
 data class BasicProfile(
-    @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = PARLIAMENTDOTUK) val parliamentdotuk: Int,
+    @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = PARLIAMENTDOTUK) val parliamentdotuk: ParliamentID,
     @field:Json(name = "name") @ColumnInfo(name = "name") val name: String,
     @field:Json(name = "portrait_url") @ColumnInfo(name = "portrait_url") val portraitUrl: String? = null,
     @field:Json(name = "current_post") @ColumnInfo(name = "current_post") val currentPost: String? = null,

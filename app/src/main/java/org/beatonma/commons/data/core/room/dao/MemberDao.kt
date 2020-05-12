@@ -2,6 +2,7 @@ package org.beatonma.commons.data.core.room.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.ApiCompleteMember
 import org.beatonma.commons.data.core.CompleteMember
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
@@ -19,64 +20,64 @@ interface MemberDao {
 
     @Transaction
     @Query("""SELECT * FROM member_profiles WHERE member_profiles.parliamentdotuk = :parliamentdotuk""")
-    fun getCompleteMember(parliamentdotuk: Int): LiveData<CompleteMember>
+    fun getCompleteMember(parliamentdotuk: ParliamentID): LiveData<CompleteMember>
 
     @Query("""SELECT * FROM member_profiles WHERE member_profiles.parliamentdotuk = :parliamentdotuk""")
-    fun getMemberProfile(parliamentdotuk: Int): LiveData<MemberProfile>
+    fun getMemberProfile(parliamentdotuk: ParliamentID): LiveData<MemberProfile>
 
     @Query("""SELECT * FROM constituencies
         LEFT JOIN member_profiles ON constituency_id = constituency_parliamentdotuk 
         WHERE parliamentdotuk = :parliamentdotuk""")
-    fun getConstituency(parliamentdotuk: Int): LiveData<Constituency>
+    fun getConstituency(parliamentdotuk: ParliamentID): LiveData<Constituency>
 
     @Query("""SELECT * FROM parties
         LEFT JOIN member_profiles ON party_id = party_parliamentdotuk 
         WHERE parliamentdotuk = :parliamentdotuk""")
-    fun getParty(parliamentdotuk: Int): LiveData<Party>
+    fun getParty(parliamentdotuk: ParliamentID): LiveData<Party>
 
     @Query("""SELECT * FROM physical_addresses WHERE physical_addresses.paddr_member_id = :parliamentdotuk""")
-    fun getPhysicalAddresses(parliamentdotuk: Int): LiveData<List<PhysicalAddress>>
+    fun getPhysicalAddresses(parliamentdotuk: ParliamentID): LiveData<List<PhysicalAddress>>
 
     @Query("""SELECT * FROM weblinks WHERE weblinks.waddr_member_id = :parliamentdotuk""")
-    fun getWebAddresses(parliamentdotuk: Int): LiveData<List<WebAddress>>
+    fun getWebAddresses(parliamentdotuk: ParliamentID): LiveData<List<WebAddress>>
 
     @Query("""SELECT * FROM posts WHERE post_member_id = :parliamentdotuk""")
-    fun getPosts(parliamentdotuk: Int): LiveData<List<Post>>
+    fun getPosts(parliamentdotuk: ParliamentID): LiveData<List<Post>>
 
     @Query("""SELECT * FROM committee_memberships WHERE committee_member_id = :parliamentdotuk""")
-    fun getCommitteeMemberships(parliamentdotuk: Int): LiveData<List<CommitteeMembership>>
+    fun getCommitteeMemberships(parliamentdotuk: ParliamentID): LiveData<List<CommitteeMembership>>
 
     @Query("""SELECT * FROM house_memberships WHERE house_member_id = :parliamentdotuk""")
-    fun getHouseMemberships(parliamentdotuk: Int): LiveData<List<HouseMembership>>
+    fun getHouseMemberships(parliamentdotuk: ParliamentID): LiveData<List<HouseMembership>>
 
     @Query("""SELECT * FROM financial_interests WHERE interest_member_id = :parliamentdotuk""")
-    fun getFinancialInterests(parliamentdotuk: Int): LiveData<List<FinancialInterest>>
+    fun getFinancialInterests(parliamentdotuk: ParliamentID): LiveData<List<FinancialInterest>>
 
     @Query("""SELECT * FROM experiences WHERE experience_member_id = :parliamentdotuk""")
-    fun getExperiences(parliamentdotuk: Int): LiveData<List<Experience>>
+    fun getExperiences(parliamentdotuk: ParliamentID): LiveData<List<Experience>>
 
     @Query("""SELECT * FROM topics_of_interest WHERE topic_member_id = :parliamentdotuk""")
-    fun getTopicsOfInterest(parliamentdotuk: Int): LiveData<List<TopicOfInterest>>
+    fun getTopicsOfInterest(parliamentdotuk: ParliamentID): LiveData<List<TopicOfInterest>>
 
     @Transaction
     @Query("""SELECT * FROM committee_memberships WHERE committee_member_id = :parliamentdotuk""")
-    fun getCommitteeMembershipWithChairship(parliamentdotuk: Int): LiveData<List<CommitteeMemberWithChairs>>
+    fun getCommitteeMembershipWithChairship(parliamentdotuk: ParliamentID): LiveData<List<CommitteeMemberWithChairs>>
 
     @Transaction
     @Query("""SELECT * FROM historic_constituencies WHERE memberfor_member_id = :parliamentdotuk""")
-    fun getHistoricalConstituencies(parliamentdotuk: Int): LiveData<List<HistoricalConstituencyWithElection>>
+    fun getHistoricalConstituencies(parliamentdotuk: ParliamentID): LiveData<List<HistoricalConstituencyWithElection>>
 
     @Transaction
     @Query("""SELECT * FROM party_associations WHERE partyacc_member_id = :parliamentdotuk""")
-    fun getPartyAssociations(parliamentdotuk: Int): LiveData<List<PartyAssociationWithParty>>
+    fun getPartyAssociations(parliamentdotuk: ParliamentID): LiveData<List<PartyAssociationWithParty>>
 
     @Transaction
     @Query("""SELECT * FROM division_votes WHERE dvote_member_id = :parliamentdotuk""")
-    fun getCommonsVotesForMember(parliamentdotuk: Int): LiveData<List<VoteWithDivision>>
+    fun getCommonsVotesForMember(parliamentdotuk: ParliamentID): LiveData<List<VoteWithDivision>>
 
     @Transaction
     @Query("""SELECT * FROM division_votes WHERE dvote_member_id = :parliamentdotuk""")
-    fun getLordsVotesForMember(parliamentdotuk: Int): LiveData<List<VoteWithDivision>>
+    fun getLordsVotesForMember(parliamentdotuk: ParliamentID): LiveData<List<VoteWithDivision>>
 
     // Insert operations
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -158,7 +159,7 @@ interface MemberDao {
     suspend fun deleteProfile(profile: MemberProfile)
 
     @Transaction
-    suspend fun insertCompleteMember(parliamentdotuk: Int, member: ApiCompleteMember) {
+    suspend fun insertCompleteMember(parliamentdotuk: ParliamentID, member: ApiCompleteMember) {
         insertParties(member.parties.map { it.party })
         insertParty(member.profile.party)
         insertConstituencies(

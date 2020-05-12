@@ -2,6 +2,7 @@ package org.beatonma.commons.data.core.room.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.room.entities.bill.*
 
 @Dao
@@ -12,32 +13,32 @@ interface BillDao {
     fun getFeaturedBills(): LiveData<List<FeaturedBillWithBill>>
 
     @Query("""SELECT * FROM bills WHERE bill_parliamentdotuk = :parliamentdotuk""")
-    fun getBill(parliamentdotuk: Int): LiveData<Bill>
+    fun getBill(parliamentdotuk: ParliamentID): LiveData<Bill>
 
     @Query("""SELECT * FROM bill_publications WHERE bill_pub_bill_id = :parliamentdotuk""")
-    fun getBillPublications(parliamentdotuk: Int): LiveData<List<BillPublication>>
+    fun getBillPublications(parliamentdotuk: ParliamentID): LiveData<List<BillPublication>>
 
     @Query("""SELECT * FROM bill_sponsors WHERE sponsor_bill_id = :parliamentdotuk""")
-    fun getBillSponsors(parliamentdotuk: Int): LiveData<List<BillSponsor>>
+    fun getBillSponsors(parliamentdotuk: ParliamentID): LiveData<List<BillSponsor>>
 
     @Transaction
     @Query("""SELECT * FROM bills WHERE bill_parliamentdotuk = :parliamentdotuk""")
-    fun getBillWithRelations(parliamentdotuk: Int): LiveData<BillWithSessionAndType>
+    fun getBillWithRelations(parliamentdotuk: ParliamentID): LiveData<BillWithSessionAndType>
 
     @Transaction
     @Query("""SELECT * FROM bill_stages WHERE billstage_bill_parliamentdotuk = :parliamentdotuk""")
-    fun getBillStages(parliamentdotuk: Int): LiveData<List<BillStageWithSittings>>
+    fun getBillStages(parliamentdotuk: ParliamentID): LiveData<List<BillStageWithSittings>>
 
     @Query("""SELECT * FROM parliamentary_sessions 
         LEFT JOIN bills ON bills.bill_session_id = session_parliamentdotuk
         WHERE bills.bill_parliamentdotuk = :parliamentdotuk
         """)
-    fun getBillSession(parliamentdotuk: Int): LiveData<ParliamentarySession>
+    fun getBillSession(parliamentdotuk: ParliamentID): LiveData<ParliamentarySession>
 
     @Query("""SELECT * FROM bill_types
         LEFT JOIN bills ON bills.bill_type_id = billtype_name
         WHERE bills.bill_parliamentdotuk = :parliamentdotuk""")
-    fun getBillType(parliamentdotuk: Int): LiveData<BillType>
+    fun getBillType(parliamentdotuk: ParliamentID): LiveData<BillType>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBills(bills: List<Bill>)
@@ -67,7 +68,7 @@ interface BillDao {
     suspend fun insertParliamentarySession(parliamentarySession: ParliamentarySession)
 
     @Transaction
-    suspend fun insertCompleteBill(parliamentdotuk: Int, apiBill: ApiBill) {
+    suspend fun insertCompleteBill(parliamentdotuk: ParliamentID, apiBill: ApiBill) {
         if (apiBill.type != null) {
             insertBillType(apiBill.type)
         }

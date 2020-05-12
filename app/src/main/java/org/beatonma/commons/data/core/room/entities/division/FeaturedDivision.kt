@@ -2,12 +2,13 @@ package org.beatonma.commons.data.core.room.entities.division
 
 import androidx.room.*
 import org.beatonma.commons.data.PARLIAMENTDOTUK
+import org.beatonma.commons.data.ParliamentID
 
 @Entity(
     tableName = "featured_divisions",
 )
 data class FeaturedDivision(
-    @ColumnInfo(name = "featured_division_id") @PrimaryKey val divisionId: Int,
+    @ColumnInfo(name = "featured_division_id") @PrimaryKey val divisionId: ParliamentID,
     @ColumnInfo(name = "featured_about") val about: String? = null,
 )
 

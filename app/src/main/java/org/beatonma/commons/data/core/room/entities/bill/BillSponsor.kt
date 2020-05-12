@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
+import org.beatonma.commons.data.ParliamentID
 
 /**
  * [parliamentdotuk] may be used to look up the member profile, but it may be null if the server
@@ -15,6 +16,6 @@ import org.beatonma.commons.data.PARLIAMENTDOTUK
 )
 data class BillSponsor(
     @field:Json(name = "name") @ColumnInfo(name = "sponsor_name") @PrimaryKey val name: String,
-    @ColumnInfo(name = "sponsor_bill_id") val billId: Int,
-    @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = "sponsor_$PARLIAMENTDOTUK") val parliamentdotuk: Int?,
+    @ColumnInfo(name = "sponsor_bill_id") val billId: ParliamentID,
+    @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = "sponsor_$PARLIAMENTDOTUK") val parliamentdotuk: ParliamentID?,
 )

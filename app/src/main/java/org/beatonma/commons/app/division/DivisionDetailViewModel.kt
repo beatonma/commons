@@ -10,6 +10,7 @@ import org.beatonma.commons.app.ui.Snippet
 import org.beatonma.commons.app.ui.SnippetGeneratorAndroidViewModel
 import org.beatonma.commons.app.ui.views.BarChartCategory
 import org.beatonma.commons.data.IoResult
+import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.repository.CommonsRepository
 import org.beatonma.commons.data.core.room.entities.division.Division
 import org.beatonma.commons.data.core.room.entities.division.DivisionWithVotes
@@ -32,7 +33,7 @@ class DivisionDetailViewModel @Inject constructor(
     }
     var voteLiveData: MutableLiveData<List<Vote>> = MutableLiveData()
 
-    fun forDivision(house: House, parliamentdotuk: Int) {
+    fun forDivision(house: House, parliamentdotuk: ParliamentID) {
         liveData = repository.observeDivision(house, parliamentdotuk)
         observe()
     }

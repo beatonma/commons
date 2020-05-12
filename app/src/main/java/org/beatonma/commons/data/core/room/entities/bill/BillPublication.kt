@@ -6,6 +6,7 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
+import org.beatonma.commons.data.ParliamentID
 
 private const val TAG = "BillPublication"
 
@@ -23,7 +24,7 @@ private const val TAG = "BillPublication"
     tableName = "bill_publications"
 )
 data class BillPublication(
-    @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = "bill_pub_parliamentdotuk") @PrimaryKey val parliamentdotuk: Int,
-    @ColumnInfo(name = "bill_pub_bill_id") val billId: Int,
+    @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = "bill_pub_parliamentdotuk") @PrimaryKey val parliamentdotuk: ParliamentID,
+    @ColumnInfo(name = "bill_pub_bill_id") val billId: ParliamentID,
     @field:Json(name = "title") @ColumnInfo(name = "bill_pub_title") val title: String,
 )
