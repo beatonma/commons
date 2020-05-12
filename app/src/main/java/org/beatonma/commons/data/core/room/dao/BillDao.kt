@@ -2,6 +2,7 @@ package org.beatonma.commons.data.core.room.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import org.beatonma.commons.data.LiveDataList
 import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.room.entities.bill.*
 
@@ -10,16 +11,16 @@ interface BillDao {
 
     @Transaction
     @Query("""SELECT * FROM featured_bills""")
-    fun getFeaturedBills(): LiveData<List<FeaturedBillWithBill>>
+    fun getFeaturedBills(): LiveDataList<FeaturedBillWithBill>
 
     @Query("""SELECT * FROM bills WHERE bill_parliamentdotuk = :parliamentdotuk""")
     fun getBill(parliamentdotuk: ParliamentID): LiveData<Bill>
 
     @Query("""SELECT * FROM bill_publications WHERE bill_pub_bill_id = :parliamentdotuk""")
-    fun getBillPublications(parliamentdotuk: ParliamentID): LiveData<List<BillPublication>>
+    fun getBillPublications(parliamentdotuk: ParliamentID): LiveDataList<BillPublication>
 
     @Query("""SELECT * FROM bill_sponsors WHERE sponsor_bill_id = :parliamentdotuk""")
-    fun getBillSponsors(parliamentdotuk: ParliamentID): LiveData<List<BillSponsor>>
+    fun getBillSponsors(parliamentdotuk: ParliamentID): LiveDataList<BillSponsor>
 
     @Transaction
     @Query("""SELECT * FROM bills WHERE bill_parliamentdotuk = :parliamentdotuk""")
@@ -27,7 +28,7 @@ interface BillDao {
 
     @Transaction
     @Query("""SELECT * FROM bill_stages WHERE billstage_bill_parliamentdotuk = :parliamentdotuk""")
-    fun getBillStages(parliamentdotuk: ParliamentID): LiveData<List<BillStageWithSittings>>
+    fun getBillStages(parliamentdotuk: ParliamentID): LiveDataList<BillStageWithSittings>
 
     @Query("""SELECT * FROM parliamentary_sessions 
         LEFT JOIN bills ON bills.bill_session_id = session_parliamentdotuk

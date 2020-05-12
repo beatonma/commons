@@ -2,6 +2,7 @@ package org.beatonma.commons.data.core.room.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import org.beatonma.commons.data.LiveDataList
 import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.ApiCompleteMember
 import org.beatonma.commons.data.core.CompleteMember
@@ -16,7 +17,7 @@ interface MemberDao {
     // Get operations
     @Transaction
     @Query("""SELECT * FROM featured_members""")
-    fun getFeaturedProfiles(): LiveData<List<FeaturedMemberProfile>>
+    fun getFeaturedProfiles(): LiveDataList<FeaturedMemberProfile>
 
     @Transaction
     @Query("""SELECT * FROM member_profiles WHERE member_profiles.parliamentdotuk = :parliamentdotuk""")
@@ -36,48 +37,48 @@ interface MemberDao {
     fun getParty(parliamentdotuk: ParliamentID): LiveData<Party>
 
     @Query("""SELECT * FROM physical_addresses WHERE physical_addresses.paddr_member_id = :parliamentdotuk""")
-    fun getPhysicalAddresses(parliamentdotuk: ParliamentID): LiveData<List<PhysicalAddress>>
+    fun getPhysicalAddresses(parliamentdotuk: ParliamentID): LiveDataList<PhysicalAddress>
 
     @Query("""SELECT * FROM weblinks WHERE weblinks.waddr_member_id = :parliamentdotuk""")
-    fun getWebAddresses(parliamentdotuk: ParliamentID): LiveData<List<WebAddress>>
+    fun getWebAddresses(parliamentdotuk: ParliamentID): LiveDataList<WebAddress>
 
     @Query("""SELECT * FROM posts WHERE post_member_id = :parliamentdotuk""")
-    fun getPosts(parliamentdotuk: ParliamentID): LiveData<List<Post>>
+    fun getPosts(parliamentdotuk: ParliamentID): LiveDataList<Post>
 
     @Query("""SELECT * FROM committee_memberships WHERE committee_member_id = :parliamentdotuk""")
-    fun getCommitteeMemberships(parliamentdotuk: ParliamentID): LiveData<List<CommitteeMembership>>
+    fun getCommitteeMemberships(parliamentdotuk: ParliamentID): LiveDataList<CommitteeMembership>
 
     @Query("""SELECT * FROM house_memberships WHERE house_member_id = :parliamentdotuk""")
-    fun getHouseMemberships(parliamentdotuk: ParliamentID): LiveData<List<HouseMembership>>
+    fun getHouseMemberships(parliamentdotuk: ParliamentID): LiveDataList<HouseMembership>
 
     @Query("""SELECT * FROM financial_interests WHERE interest_member_id = :parliamentdotuk""")
-    fun getFinancialInterests(parliamentdotuk: ParliamentID): LiveData<List<FinancialInterest>>
+    fun getFinancialInterests(parliamentdotuk: ParliamentID): LiveDataList<FinancialInterest>
 
     @Query("""SELECT * FROM experiences WHERE experience_member_id = :parliamentdotuk""")
-    fun getExperiences(parliamentdotuk: ParliamentID): LiveData<List<Experience>>
+    fun getExperiences(parliamentdotuk: ParliamentID): LiveDataList<Experience>
 
     @Query("""SELECT * FROM topics_of_interest WHERE topic_member_id = :parliamentdotuk""")
-    fun getTopicsOfInterest(parliamentdotuk: ParliamentID): LiveData<List<TopicOfInterest>>
+    fun getTopicsOfInterest(parliamentdotuk: ParliamentID): LiveDataList<TopicOfInterest>
 
     @Transaction
     @Query("""SELECT * FROM committee_memberships WHERE committee_member_id = :parliamentdotuk""")
-    fun getCommitteeMembershipWithChairship(parliamentdotuk: ParliamentID): LiveData<List<CommitteeMemberWithChairs>>
+    fun getCommitteeMembershipWithChairship(parliamentdotuk: ParliamentID): LiveDataList<CommitteeMemberWithChairs>
 
     @Transaction
     @Query("""SELECT * FROM historic_constituencies WHERE memberfor_member_id = :parliamentdotuk""")
-    fun getHistoricalConstituencies(parliamentdotuk: ParliamentID): LiveData<List<HistoricalConstituencyWithElection>>
+    fun getHistoricalConstituencies(parliamentdotuk: ParliamentID): LiveDataList<HistoricalConstituencyWithElection>
 
     @Transaction
     @Query("""SELECT * FROM party_associations WHERE partyacc_member_id = :parliamentdotuk""")
-    fun getPartyAssociations(parliamentdotuk: ParliamentID): LiveData<List<PartyAssociationWithParty>>
+    fun getPartyAssociations(parliamentdotuk: ParliamentID): LiveDataList<PartyAssociationWithParty>
 
     @Transaction
     @Query("""SELECT * FROM division_votes WHERE dvote_member_id = :parliamentdotuk""")
-    fun getCommonsVotesForMember(parliamentdotuk: ParliamentID): LiveData<List<VoteWithDivision>>
+    fun getCommonsVotesForMember(parliamentdotuk: ParliamentID): LiveDataList<VoteWithDivision>
 
     @Transaction
     @Query("""SELECT * FROM division_votes WHERE dvote_member_id = :parliamentdotuk""")
-    fun getLordsVotesForMember(parliamentdotuk: ParliamentID): LiveData<List<VoteWithDivision>>
+    fun getLordsVotesForMember(parliamentdotuk: ParliamentID): LiveDataList<VoteWithDivision>
 
     // Insert operations
     @Insert(onConflict = OnConflictStrategy.REPLACE)

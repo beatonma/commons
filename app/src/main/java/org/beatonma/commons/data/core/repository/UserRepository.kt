@@ -2,10 +2,9 @@ package org.beatonma.commons.data.core.repository
 
 import android.content.Context
 import android.util.Log
-import androidx.lifecycle.LiveData
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import org.beatonma.commons.data.CommonsRemoteDataSource
-import org.beatonma.commons.data.IoResult
+import org.beatonma.commons.data.LiveDataIoResult
 import org.beatonma.commons.data.core.room.dao.UserDao
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.data.resultLiveData
@@ -20,7 +19,7 @@ class UserRepository @Inject constructor(
     private val commonsRemoteDataSource: CommonsRemoteDataSource,
     private val userDao: UserDao,
 ) {
-    fun observeSignedInUser(account: UserAccount): LiveData<IoResult<UserToken>> = resultLiveData(
+    fun observeSignedInUser(account: UserAccount): LiveDataIoResult<UserToken> = resultLiveData(
         databaseQuery = { userDao.getUserToken(account.googleId) },
         networkCall = { commonsRemoteDataSource.registerUser(account.googleIdToken) },
         saveCallResult = { apiToken ->

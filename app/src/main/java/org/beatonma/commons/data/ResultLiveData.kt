@@ -9,9 +9,9 @@ fun <T, N> resultLiveData(
     databaseQuery: suspend () -> LiveData<T>,
     networkCall: suspend () -> IoResult<N>,
     saveCallResult: suspend (N) -> Unit
-): LiveData<IoResult<T>> = liveData(Dispatchers.IO) {
+): LiveDataIoResult<T> = liveData(Dispatchers.IO) {
     emit(LoadingResult<T>())
-    val source: LiveData<IoResult<T>> = databaseQuery.invoke().map {
+    val source: LiveDataIoResult<T> = databaseQuery.invoke().map {
         SuccessResult(it, "DB read OK ")
     }
     emitSource(source)

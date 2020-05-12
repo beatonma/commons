@@ -2,13 +2,13 @@ package org.beatonma.commons.app.signin
 
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import org.beatonma.commons.CommonsApplication
-import org.beatonma.commons.data.IoResult
+import org.beatonma.commons.commonsApp
+import org.beatonma.commons.data.LiveDataIoResult
 import org.beatonma.commons.data.core.repository.UserAccount
 import org.beatonma.commons.data.core.repository.UserRepository
 import org.beatonma.commons.data.core.repository.toUserAccount
@@ -29,13 +29,13 @@ class SignInViewModel @Inject constructor(
     private val app: CommonsApplication
         get() = getApplication()
 
-    var activeToken: LiveData<IoResult<UserToken>>? = null
+    var activeToken: LiveDataIoResult<UserToken>? = null
 
     /**
      * Return true if activeToken is observable
      */
-    fun getTokenForCurrentSignedInAccount(): LiveData<IoResult<UserToken>>? {
-        val currentGoogleAccount = GoogleSignIn.getLastSignedInAccount(app)
+    fun getTokenForCurrentSignedInAccount(): LiveDataIoResult<UserToken>? {
+        val currentGoogleAccount = GoogleSignIn.getLastSignedInAccount(commonsApp)
         val userAccount = currentGoogleAccount?.toUserAccount()
         if (userAccount != null) {
             return getTokenForAccount(userAccount)
@@ -44,7 +44,7 @@ class SignInViewModel @Inject constructor(
         return null
     }
 
-    fun getTokenForAccount(account: UserAccount): LiveData<IoResult<UserToken>>? {
+    fun getTokenForAccount(account: UserAccount): LiveDataIoResult<UserToken>? {
         activeToken = repository.observeSignedInUser(account)
         return activeToken
     }

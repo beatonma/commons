@@ -1,14 +1,9 @@
 package org.beatonma.commons.app.ui
 
 import android.app.Application
-import android.content.Context
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import org.beatonma.commons.data.IoResult
+import org.beatonma.commons.data.LiveDataIoResult
 
 abstract class BaseIoAndroidViewModel<D>(application: Application): AndroidViewModel(application) {
-    val context: Context
-        get() = getApplication()
-
-    lateinit var liveData: LiveData<IoResult<D>>
+    lateinit var liveData: LiveDataIoResult<D>
 }
