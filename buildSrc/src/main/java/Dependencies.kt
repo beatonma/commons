@@ -38,22 +38,23 @@ object Versions {
     const val GLIDE = "4.11.0"
     val JAVA = JavaVersion.VERSION_1_8
     const val KOTLIN = "1.4-M1"
-    const val RETROFIT = "2.8.1"
+    const val RETROFIT = "2.9.0"
     const val ROOM = "2.2.5"
     const val MOSHI = "1.9.2"
-    const val AX_NAVIGATION = "2.3.0-alpha05"
+    const val AX_NAVIGATION = "2.3.0-beta01"
 }
 
 object Dependencies {
     object AndroidX {
-        val APPCOMPAT = androidx("appcompat", version = "1.2.0-beta01")
-        val CONSTRAINTLAYOUT = androidx("constraintlayout", version = "2.0.0-beta4")
+        val APPCOMPAT = androidx("appcompat", version = "1.3.0-alpha01")
+        val CONSTRAINTLAYOUT = androidx("constraintlayout", version = "2.0.0-beta6")
         val CORE_KTX = androidx(group = "core", artifact = "core-ktx", version = "1.3.0-rc01")
-        val LIFECYCLE_RUNTIME = androidx(group = "lifecycle", artifact = "lifecycle-runtime-ktx", version = "2.2.0")
-        val LIVEDATA_KTX = androidx(group = "lifecycle", artifact = "lifecycle-livedata-ktx", version = "2.2.0")
-        val VIEWMODEL_KTX = androidx(group = "lifecycle", artifact = "lifecycle-viewmodel-ktx", version = "2.2.0")
+        val LIFECYCLE_RUNTIME = androidx(group = "lifecycle", artifact = "lifecycle-runtime-ktx", version = "2.3.0-alpha03")
+        val LIVEDATA_KTX = androidx(group = "lifecycle", artifact = "lifecycle-livedata-ktx", version = "2.3.0-alpha03")
+        val VIEWMODEL_KTX = androidx(group = "lifecycle", artifact = "lifecycle-viewmodel-ktx", version = "2.3.0-alpha03")
         val ANNOTATIONS = androidx("annotation", version = "1.1.0")
-        val RECYCLERVIEW = androidx(group="recyclerview", artifact = "recyclerview", version = "1.2.0-alpha02")
+        val RECYCLERVIEW = androidx(artifact = "recyclerview", version = "1.2.0-alpha03")
+        val SWIPE_REFRESH_LAYOUT = androidx(artifact = "swiperefreshlayout", version = "1.1.0-rc01")
 
         val NAVIGATION_FRAGMENT = androidx(group = "navigation", artifact = "navigation-fragment-ktx", version = Versions.AX_NAVIGATION)
         val NAVIGATION_UI = androidx(group = "navigation", artifact = "navigation-ui-ktx", version = Versions.AX_NAVIGATION)
@@ -61,6 +62,8 @@ object Dependencies {
         val COMPOSE_TOOLING = androidx(group = "ui", artifact = "ui-tooling", version = Versions.COMPOSE)
         val COMPOSE_LAYOUT = androidx(group = "ui", artifact = "ui-layout", version = Versions.COMPOSE)
         val COMPOSE_MATERIAL = androidx(group = "ui", artifact = "ui-material", version = Versions.COMPOSE)
+
+        val VIEWBINDING = androidx(group="databinding", artifact = "viewbinding", version = "4.1.0-alpha09")
     }
 
     object Bma {
@@ -97,7 +100,7 @@ object Dependencies {
     }
 
     object Google {
-        val MATERIAL = dependency("com.google.android.material", "material", "1.2.0-alpha05")
+        val MATERIAL = dependency("com.google.android.material", "material", "1.2.0-alpha06")
 
         object Play {
             val AUTH = gms(artifact= "play-services-auth", version = "18.0.0")
