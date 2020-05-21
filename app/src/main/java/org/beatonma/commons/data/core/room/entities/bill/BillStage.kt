@@ -4,6 +4,7 @@ import androidx.room.*
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.ParliamentID
+import org.beatonma.commons.data.Parliamentdotuk
 
 @Entity(
     foreignKeys = [
@@ -18,17 +19,17 @@ import org.beatonma.commons.data.ParliamentID
     tableName = "bill_stages"
 )
 data class BillStage(
-    @ColumnInfo(name = "billstage_$PARLIAMENTDOTUK") @PrimaryKey val parliamentdotuk: ParliamentID,
+    @ColumnInfo(name = "billstage_$PARLIAMENTDOTUK") @PrimaryKey override val parliamentdotuk: ParliamentID,
     @ColumnInfo(name = "billstage_bill_$PARLIAMENTDOTUK") val billId: ParliamentID = 0,
     @ColumnInfo(name = "billstage_type") val type: String,
-)
+): Parliamentdotuk
 
 
 data class ApiBillStage(
-    @field:Json(name = PARLIAMENTDOTUK) val parliamentdotuk: ParliamentID,
+    @field:Json(name = PARLIAMENTDOTUK) override val parliamentdotuk: ParliamentID,
     @field:Json(name = "type") val type: String,
     @field:Json(name = "sittings") val sittings: List<BillStageSitting>
-) {
+): Parliamentdotuk {
     fun toBillStage(billId: ParliamentID) = BillStage(
         parliamentdotuk = parliamentdotuk,
         billId = billId,

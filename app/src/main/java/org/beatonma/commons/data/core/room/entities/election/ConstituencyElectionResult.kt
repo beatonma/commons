@@ -3,15 +3,16 @@ package org.beatonma.commons.data.core.room.entities.election
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
-import androidx.room.Relation
 import com.squareup.moshi.Json
-import org.beatonma.commons.data.PARLIAMENTDOTUK
+import org.beatonma.commons.data.core.room.entities.member.BasicProfile
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
+import org.beatonma.commons.data.core.room.entities.member.Party
 
 @Entity(
     primaryKeys = [
         "result_member_id",
         "result_election_id",
+        "result_constituency_id",
     ],
     tableName = "constituency_results",
 )
@@ -35,11 +36,7 @@ data class ApiConstituencyResult(
 
 
 data class ConstituencyResultWithDetails(
-    @Embedded val result: ConstituencyResult,
-
-    @Relation(parentColumn = "result_election_id", entityColumn = "election_$PARLIAMENTDOTUK")
-    val election: Election,
-
-    @Relation(parentColumn = "result_member_id", entityColumn = PARLIAMENTDOTUK)
-    val profile: MemberProfile,
+    @Embedded val election: Election,
+    @Embedded val profile: BasicProfile,
+    @Embedded val party: Party,
 )

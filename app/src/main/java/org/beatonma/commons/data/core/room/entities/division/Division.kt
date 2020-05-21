@@ -2,8 +2,10 @@ package org.beatonma.commons.data.core.room.entities.division
 
 import androidx.room.*
 import com.squareup.moshi.Json
+import org.beatonma.commons.data.Dated
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.ParliamentID
+import org.beatonma.commons.data.Parliamentdotuk
 import org.beatonma.commons.data.core.room.entities.member.House
 import java.util.*
 
@@ -11,10 +13,10 @@ import java.util.*
     tableName = "divisions",
 )
 data class Division(
-    @ColumnInfo(name = "division_$PARLIAMENTDOTUK") @PrimaryKey val parliamentdotuk: ParliamentID,
+    @ColumnInfo(name = "division_$PARLIAMENTDOTUK") @PrimaryKey override val parliamentdotuk: ParliamentID,
     @ColumnInfo(name = "title") val title: String,
     @ColumnInfo(name = "description") val description: String?, // Lords only
-    @ColumnInfo(name = "date") val date: Date,
+    @ColumnInfo(name = "date") override val date: Date,
     @ColumnInfo(name = "house") val house: House,
     @ColumnInfo(name = "passed") val passed: Boolean,
     @ColumnInfo(name = "ayes") val ayes: Int,
@@ -26,13 +28,13 @@ data class Division(
     @ColumnInfo(name = "errors") val errors: Int?,  // Commons only
     @ColumnInfo(name = "deferred_vote") val deferredVote: Boolean,
     @ColumnInfo(name = "whipped_vote") val whippedVote: Boolean?,  // Lords only
-)
+): Parliamentdotuk, Dated
 
 data class ApiDivision(
-    @field:Json(name = PARLIAMENTDOTUK) val parliamentdotuk: ParliamentID,
+    @field:Json(name = PARLIAMENTDOTUK) override val parliamentdotuk: ParliamentID,
     @field:Json(name = "title") val title: String,
     @field:Json(name = "description") val description: String?,
-    @field:Json(name = "date") val date: Date,
+    @field:Json(name = "date") override val date: Date,
     @field:Json(name = "house") val house: House,
     @field:Json(name = "passed") val passed: Boolean,
     @field:Json(name = "ayes") val ayes: Int,
@@ -45,7 +47,7 @@ data class ApiDivision(
     @field:Json(name = "deferred_vote") val deferredVote: Boolean,
     @field:Json(name = "whipped_vote") val whippedVote: Boolean?,
     @field:Json(name = "votes") val votes: List<ApiVote>,
-) {
+): Parliamentdotuk, Dated {
     fun toDivision() = Division(
         parliamentdotuk = parliamentdotuk,
         title = title,

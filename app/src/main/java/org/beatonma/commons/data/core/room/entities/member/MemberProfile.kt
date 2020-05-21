@@ -4,6 +4,9 @@ import androidx.room.*
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.ParliamentID
+import org.beatonma.commons.data.Parliamentdotuk
+import org.beatonma.commons.data.core.Named
+import org.beatonma.commons.data.core.Periodic
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import java.util.*
 
@@ -27,8 +30,8 @@ import java.util.*
     tableName = "member_profiles"
 )
 data class MemberProfile(
-    @PrimaryKey @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = PARLIAMENTDOTUK) val parliamentdotuk: ParliamentID,
-    @field:Json(name = "name") @ColumnInfo(name = "name") val name: String,
+    @PrimaryKey @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = PARLIAMENTDOTUK) override val parliamentdotuk: ParliamentID,
+    @field:Json(name = "name") @ColumnInfo(name = "name") override val name: String,
     @field:Json(name = "party") @ColumnInfo(name = "party_id", index = true) val party: Party,  // Use Party object for api response, serialized to id for storage
     @field:Json(name = "constituency") @ColumnInfo(name = "constituency_id", index = true) val constituency: Constituency?,  // Use Constituency object for api response, serialized to id for storage
     @field:Json(name = "active") @ColumnInfo(name = "active") val active: Boolean? = null,
@@ -41,16 +44,19 @@ data class MemberProfile(
     @Embedded(prefix = "birth_") @field:Json(name = "place_of_birth") val placeOfBirth: Town? = null,
     @field:Json(name = "portrait") @ColumnInfo(name = "portrait_url") val portraitUrl: String? = null,
     @field:Json(name = "current_post") @ColumnInfo(name = "current_post") val currentPost: String? = null
-)
+) : Parliamentdotuk, Named, Periodic {
+    @Ignore override val start: Date? = dateOfBirth
+    @Ignore override val end: Date? = dateOfDeath
+}
 
 data class BasicProfile(
-    @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = PARLIAMENTDOTUK) val parliamentdotuk: ParliamentID,
-    @field:Json(name = "name") @ColumnInfo(name = "name") val name: String,
+    @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = PARLIAMENTDOTUK) override val parliamentdotuk: ParliamentID,
+    @field:Json(name = "name") @ColumnInfo(name = "name") override val name: String,
     @field:Json(name = "portrait_url") @ColumnInfo(name = "portrait_url") val portraitUrl: String? = null,
     @field:Json(name = "current_post") @ColumnInfo(name = "current_post") val currentPost: String? = null,
     @field:Json(name = "party") @ColumnInfo(name = "party_id", index = true) val party: Party,  // Use Party object for api response, serialized to id for storage
     @field:Json(name = "constituency") @ColumnInfo(name = "constituency_id", index = true) val constituency: Constituency?  // Use Constituency object for api response, serialized to id for storage
-) {
+): Parliamentdotuk, Named {
     fun toMemberProfile() = MemberProfile(
         parliamentdotuk = parliamentdotuk,
         name = name,

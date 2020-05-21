@@ -4,6 +4,9 @@ import androidx.room.*
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.ParliamentID
+import org.beatonma.commons.data.Parliamentdotuk
+import org.beatonma.commons.data.core.Named
+import org.beatonma.commons.data.core.Periodic
 import java.util.*
 
 @Entity(
@@ -15,12 +18,12 @@ import java.util.*
 )
 data class CommitteeMembership(
     @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = "committee_$PARLIAMENTDOTUK")
-    val parliamentdotuk: ParliamentID,
+    override val parliamentdotuk: ParliamentID,
     @ColumnInfo(name = "committee_member_id") val memberId: ParliamentID,
-    @field:Json(name = "name") @ColumnInfo(name = "committee_name") val name: String,
-    @field:Json(name = "start") @ColumnInfo(name = "committee_start") val start: Date?,
-    @field:Json(name = "end") @ColumnInfo(name = "committee_end") val end: Date?,
-)
+    @field:Json(name = "name") @ColumnInfo(name = "committee_name") override val name: String,
+    @field:Json(name = "start") @ColumnInfo(name = "committee_start") override val start: Date?,
+    @field:Json(name = "end") @ColumnInfo(name = "committee_end") override val end: Date?,
+): Parliamentdotuk, Named, Periodic
 
 @Entity(
     indices = [
@@ -45,9 +48,9 @@ data class CommitteeMembership(
 data class CommitteeChairship(
     @ColumnInfo(name = "committee_id") val committeeId: ParliamentID,
     @ColumnInfo(name = "chair_member_id") val memberId: ParliamentID,
-    @field:Json(name = "start") @ColumnInfo(name = "chair_start") val start: Date,
-    @field:Json(name = "end") @ColumnInfo(name = "chair_end") val end: Date?,
-)
+    @field:Json(name = "start") @ColumnInfo(name = "chair_start") override val start: Date,
+    @field:Json(name = "end") @ColumnInfo(name = "chair_end") override val end: Date?,
+): Periodic
 
 data class CommitteeMemberWithChairs(
     @Embedded val membership: CommitteeMembership,
@@ -60,13 +63,13 @@ data class CommitteeMemberWithChairs(
 )
 
 data class ApiCommittee(
-    @field:Json(name = PARLIAMENTDOTUK) val parliamentdotuk: ParliamentID,
+    @field:Json(name = PARLIAMENTDOTUK) override val parliamentdotuk: ParliamentID,
     val memberId: ParliamentID,
-    @field:Json(name = "name") val name: String,
-    @field:Json(name = "start") val start: Date?,
-    @field:Json(name = "end") val end: Date?,
+    @field:Json(name = "name") override val name: String,
+    @field:Json(name = "start") override val start: Date?,
+    @field:Json(name = "end") override val end: Date?,
     @field:Json(name = "chair") val chairs: List<CommitteeChairship>,
-) {
+): Parliamentdotuk, Named, Periodic {
 
     fun toCommitteeMembership(member: ParliamentID) = CommitteeMembership(
         parliamentdotuk = parliamentdotuk,
