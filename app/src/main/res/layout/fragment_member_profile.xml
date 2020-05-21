@@ -5,56 +5,127 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    tools:context=".app.MainActivity"
     app:layoutDescription="@xml/fragment_member_profile_scene"
-    tools:context=".app.MainActivity">
+    android:id="@+id/layout"
+    >
 
     <ImageView
         android:id="@+id/portrait"
         android:layout_width="0dp"
-        android:layout_height="100dp"
-        android:contentDescription="todo"
+        android:layout_height="0dp"
+        android:contentDescription="@string/placeholder_title"
         android:scaleType="centerCrop"
+        app:layout_constraintDimensionRatio="3:2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:src="@tools:sample/avatars" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@tools:sample/avatars"
+        />
 
-    <TextView
-        android:id="@+id/name"
-        style="@style/Text.Primary.Header"
-        android:text="Name"
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/portrait"
-        tools:text="@tools:sample/full_names" />
+        app:layout_constraintTop_toBottomOf="@id/accent"
+        >
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <androidx.constraintlayout.helper.widget.Flow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:constraint_referenced_ids="weblinks,snippet,address"
+                app:layout_constraintTop_toTopOf="parent"
+                />
+
+            <include
+                android:id="@+id/snippet"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/ProfileSnippet"
+                layout="@layout/fragment_member_profile_snippet"
+                />
+
+            <include
+                android:id="@+id/address"
+                layout="@layout/collection_title_recyclerview"
+                />
+
+            <include
+                android:id="@+id/weblinks"
+                layout="@layout/recyclerview"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
 
     <View
-        android:id="@+id/accent_line"
+        android:id="@+id/accent"
         android:layout_width="0dp"
         android:layout_height="@dimen/member_profile_accent_line_width"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/portrait"
-        tools:background="@color/party_labour"/>
+        tools:background="@color/party_accent_green"
+        />
 
-    <include
-        android:id="@+id/snippet"
-        style="@style/ProfileSnippet"
-        layout="@layout/fragment_member_profile_snippet"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/name" />
-
-    <androidx.recyclerview.widget.RecyclerView
+    <androidx.constraintlayout.helper.widget.Flow
+        android:id="@+id/header_flow"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:id="@+id/recyclerview"/>
-
-    <Button
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/load_member_votes"
-        android:text="Load member votes"
-        style="@style/Button.Raised"/>
+        android:orientation="vertical"
+        app:constraint_referenced_ids="titlebar,accent"
+        app:flow_horizontalStyle="packed"
+        app:flow_verticalStyle="packed"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/portrait"
+        />
 
+    <TextView
+        android:layout_width="0dp"
+        android:id="@+id/name"
+        android:elevation="4dp"
+        style="@style/Text.Primary.H1"
+        android:layout_marginHorizontal="@dimen/whitespace_edge"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="@tools:sample/full_names"
+        />
+
+    <TextView
+        android:layout_width="0dp"
+        android:id="@+id/current_position"
+        android:elevation="4dp"
+        android:layout_marginHorizontal="@dimen/whitespace_edge"
+        android:text="Prime Minister"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        style="@style/Text.Primary.H3"
+        />
+
+    <androidx.constraintlayout.helper.widget.Flow
+        android:id="@+id/titlebar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintHeight_min="72dp"
+        app:constraint_referenced_ids="name,current_position"
+        app:flow_firstHorizontalBias="0"
+        app:flow_horizontalAlign="start"
+        app:flow_horizontalStyle="packed"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:background="@color/party_green"
+        app:layout_constraintTop_toBottomOf="@+id/portrait"
+        />
 
 </androidx.constraintlayout.motion.widget.MotionLayout>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:motion="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <Transition
+        motion:constraintSetEnd="@+id/end"
+        motion:constraintSetStart="@id/start"
+        motion:duration="300">
+
+        <OnSwipe
+            motion:onTouchUp="autoComplete"
+            motion:dragDirection="dragUp"
+            motion:moveWhenScrollAtTop="false"
+            motion:touchAnchorId="@+id/header_flow"/>
+
+        <KeyFrameSet>
+<!--            <KeyAttribute-->
+<!--                motion:motionTarget="@+id/current_position"-->
+<!--                motion:framePosition="20"-->
+<!--                android:visibility="visible"/>-->
+<!--            <KeyAttribute-->
+<!--                motion:motionTarget="@+id/current_position"-->
+<!--                motion:framePosition="60"-->
+<!--                android:visibility="visible"/>-->
+
+<!--            <KeyAttribute-->
+<!--                motion:motionTarget="@+id/current_position"-->
+<!--                motion:framePosition="70"-->
+<!--                android:visibility="visible"/>-->
+
+<!--            <KeyAttribute-->
+<!--                motion:motionTarget="@+id/current_position"-->
+<!--                motion:framePosition="99"-->
+<!--                android:visibility="gone"/>-->
+
+       </KeyFrameSet>
+    </Transition>
+
+    <ConstraintSet android:id="@+id/start">
+<!--        <Constraint-->
+<!--            android:id="@+id/current_position"-->
+<!--            android:visibility="visible"-->
+<!--            motion:layout_constraintEnd_toEndOf="parent"-->
+<!--            motion:layout_constraintStart_toStartOf="parent">-->
+<!--        </Constraint>-->
+    </ConstraintSet>
+
+    <ConstraintSet android:id="@+id/end">
+        <Constraint
+            android:id="@+id/portrait"
+            app:layout_constraintDimensionRatio="null"
+            app:layout_constraintBottom_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <Constraint
+            android:id="@+id/titlebar"
+            motion:flow_firstHorizontalBias="0.5"
+            motion:flow_horizontalAlign="end"/>
+
+
+<!--        <Constraint-->
+<!--            android:id="@+id/current_position"-->
+<!--            motion:layout_constraintEnd_toEndOf="parent"-->
+<!--            motion:layout_constraintStart_toStartOf="parent"-->
+<!--            android:visibility="gone"-->
+<!--            >-->
+<!--        </Constraint>-->
+    </ConstraintSet>
+</MotionScene>
