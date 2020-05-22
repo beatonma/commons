@@ -2,6 +2,7 @@ package org.beatonma.commons.data.core.room.dao
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import org.beatonma.commons.androidTest.asDate
 import org.beatonma.commons.data.BaseRoomDaoTest
 import org.beatonma.commons.data.core.room.entities.member.House
 import org.beatonma.commons.data.core.room.entities.member.Post
@@ -42,7 +43,7 @@ class MemberDaoInsertApiCompleteMemberTest: BaseRoomDaoTest<MemberDao>() {
             isMp shouldbe true
             isLord shouldbe false
             age shouldbe 55
-            dateOfBirth shouldbe "1964-06-19"
+            dateOfBirth shouldbe "1964-06-19".asDate()
             dateOfDeath shouldbe null
             gender shouldbe "M"
             placeOfBirth!!.run {
@@ -85,14 +86,14 @@ class MemberDaoInsertApiCompleteMemberTest: BaseRoomDaoTest<MemberDao>() {
             first.membership.run {
                 parliamentdotuk shouldbe 2
                 name shouldbe "Administration Committee"
-                start shouldbe "2015-07-21"
-                end shouldbe "2017-05-03"
+                start shouldbe "2015-07-21".asDate()
+                end shouldbe "2017-05-03".asDate()
             }
 
             first.chairs.first().run {
                 committeeId shouldbe 2
-                start shouldbe "2015-07-21"
-                end shouldbe "2017-05-03"
+                start shouldbe "2015-07-21".asDate()
+                end shouldbe "2017-05-03".asDate()
             }
         }
     }
@@ -101,17 +102,17 @@ class MemberDaoInsertApiCompleteMemberTest: BaseRoomDaoTest<MemberDao>() {
     fun ensure_HistoricalConstituencies_ars_written_and_retrieved_correctly() {
         daoTest(MemberDao::getHistoricalConstituencies) {
             size shouldbe 2
-            val first = first { it.historicalConstituency.start == "2017-06-08" }
+            val first = first { it.historicalConstituency.start == "2017-06-08".asDate() }
             first.constituency.run {
                 name shouldbe "Uxbridge and South Ruislip"
                 parliamentdotuk shouldbe 147277
             }
             first.historicalConstituency.run {
-                end shouldbe "2019-11-06"
+                end shouldbe "2019-11-06".asDate()
             }
             first.election.run {
                 name shouldbe "2017 General Election"
-                date shouldbe "2017-06-08"
+                date shouldbe "2017-06-08".asDate()
                 electionType shouldbe "General Election"
             }
         }
@@ -124,8 +125,8 @@ class MemberDaoInsertApiCompleteMemberTest: BaseRoomDaoTest<MemberDao>() {
                 category shouldbe "Political"
                 organisation shouldbe "Liberal Democrats"
                 title shouldbe "National Treasurer"
-                start shouldbe "2012-12-25"
-                end shouldbe "2015-12-25"
+                start shouldbe "2012-12-25".asDate()
+                end shouldbe "2015-12-25".asDate()
             }
         }
     }
@@ -134,9 +135,9 @@ class MemberDaoInsertApiCompleteMemberTest: BaseRoomDaoTest<MemberDao>() {
     fun ensure_Houses_ars_written_and_retrieved_correctly() {
         daoTest(MemberDao::getHouseMemberships) {
             size shouldbe 2
-            first { it.start == "2001-06-07" }.run {
+            first { it.start == "2001-06-07".asDate() }.run {
                 house shouldbe House.Commons
-                end shouldbe "2008-06-04"
+                end shouldbe "2008-06-04".asDate()
             }
         }
     }
@@ -145,10 +146,10 @@ class MemberDaoInsertApiCompleteMemberTest: BaseRoomDaoTest<MemberDao>() {
     fun ensure_FinancialInterests_ars_written_and_retrieved_correctly() {
         daoTest(MemberDao::getFinancialInterests) {
             first().run {
-                interestId shouldbe 12485
+                parliamentdotuk shouldbe 12485
                 category shouldbe "Category 1: Directorships"
                 description shouldbe "Director, Durham Group Estates Ltd"
-                dateCreated shouldbe "2013-12-02"
+                dateCreated shouldbe "2013-12-02".asDate()
                 dateAmended shouldbe null
                 dateDeleted shouldbe null
                 registeredLate shouldbe false
@@ -160,9 +161,9 @@ class MemberDaoInsertApiCompleteMemberTest: BaseRoomDaoTest<MemberDao>() {
     fun ensure_PartyAssociations_ars_written_and_retrieved_correctly() {
         daoTest(MemberDao::getPartyAssociations) {
             size shouldbe 2
-            val first = first { it.partyAssocation.start == "2017-06-08" }
+            val first = first { it.partyAssocation.start == "2017-06-08".asDate() }
             first.partyAssocation.run {
-                end shouldbe "2019-11-06"
+                end shouldbe "2019-11-06".asDate()
             }
             first.party.run {
                 name shouldbe "Conservative"
@@ -178,20 +179,20 @@ class MemberDaoInsertApiCompleteMemberTest: BaseRoomDaoTest<MemberDao>() {
             first { it.postType == Post.PostType.GOVERNMENTAL }.run {
                 parliamentdotuk shouldbe 661
                 name shouldbe "Prime Minister, First Lord of the Treasury and Minister for the Civil Service"
-                start shouldbe "2019-07-24"
-                end shouldbe "2020-01-01"
+                start shouldbe "2019-07-24".asDate()
+                end shouldbe "2020-01-01".asDate()
             }
             first { it.postType == Post.PostType.PARLIAMENTARY }.run {
                 parliamentdotuk shouldbe 787
                 name shouldbe "Leader of the Conservative Party"
-                start shouldbe "2019-07-23"
-                end shouldbe "2020-01-02"
+                start shouldbe "2019-07-23".asDate()
+                end shouldbe "2020-01-02".asDate()
             }
             first { it.postType == Post.PostType.OPPOSITION }.run {
                 parliamentdotuk shouldbe 15
                 name shouldbe "Shadow Minister (Business, Innovation and Skills)"
-                start shouldbe "2005-12-09"
-                end shouldbe "2007-07-16"
+                start shouldbe "2005-12-09".asDate()
+                end shouldbe "2007-07-16".asDate()
             }
         }
     }

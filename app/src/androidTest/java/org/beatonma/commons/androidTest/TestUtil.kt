@@ -5,6 +5,7 @@ import androidx.lifecycle.Observer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.beatonma.lib.util.kotlin.extensions.dump
+import java.time.LocalDate
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
@@ -52,3 +53,6 @@ fun <T> LiveData<T>.getOrAwaitValue(
     @Suppress("UNCHECKED_CAST")
     return data as T
 }
+
+
+fun String.asDate(): LocalDate = LocalDate.parse(this)

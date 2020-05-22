@@ -1,5 +1,6 @@
 package org.beatonma.commons.data.testdata
 
+import org.beatonma.commons.androidTest.asDate
 import org.beatonma.commons.data.core.room.entities.bill.*
 
 // Mix of https://snommoc.org/api/bill/392545/ and https://snommoc.org/api/bill/393258/
@@ -12,7 +13,7 @@ val API_BILL = ApiBill(
     actName = "Deep Sea Mining Act",
     label = "Presumption of Death",
     homepage = "http://services.parliament.uk/bills/presumptionofdeath.html",
-    date = "2009-06-25",
+    date = "2009-06-25".asDate(),
     ballotNumber = 4,
     billChapter = "15",
     isPrivate = false,
@@ -43,7 +44,7 @@ val API_BILL = ApiBill(
                 BillStageSitting(
                     billStageId = 6697,
                     parliamentdotuk = 8684,
-                    date = "2014-05-14",
+                    date = "2014-05-14".asDate(),
                     isFormal = false,
                     isProvisional = true,
                 )

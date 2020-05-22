@@ -1,5 +1,6 @@
 package org.beatonma.commons.data.testdata
 
+import org.beatonma.commons.androidTest.asDate
 import org.beatonma.commons.data.core.room.entities.division.ApiDivision
 import org.beatonma.commons.data.core.room.entities.division.ApiVote
 import org.beatonma.commons.data.core.room.entities.division.VoteType
@@ -11,10 +12,16 @@ const val API_DIVISION_JSON = """{
     "parliamentdotuk": 229684,
     "title": "Statutory Instruments: Motion for Approval. That the draft Infrastructure Planning (Radioactive Waste Geological Disposal Facilities) Order 2015, which was laid before this House on 12 January, be approved. Q acc agreed to.",
     "date": "2015-03-25",
+    "house": "Commons",
     "passed": true,
     "ayes": 275,
     "noes": 33,
-    "house": "Commons",
+    "did_not_vote": 339,
+    "abstentions": 1,
+    "deferred_vote": true,
+    "errors": 0,
+    "non_eligible": 0,
+    "suspended_or_expelled": 0,
     "votes": [
         {
             "parliamentdotuk": 1609,
@@ -47,11 +54,17 @@ const val API_DIVISION_JSON = """{
 val API_DIVISION = ApiDivision(
     parliamentdotuk = 229684,
     title = "Statutory Instruments: Motion for Approval. That the draft Infrastructure Planning (Radioactive Waste Geological Disposal Facilities) Order 2015, which was laid before this House on 12 January, be approved. Q acc agreed to.",
-    date = "2015-03-25",
+    date = "2015-03-25".asDate(),
     passed = true,
     ayes = 275,
     noes = 33,
     house = House.Commons,
+    didNotVote = 339,
+    abstentions = 1,
+    deferredVote = true,
+    errors = 0,
+    nonEligible = 0,
+    suspendedOrExpelled = 0,
     votes = listOf(
         ApiVote(
             memberId = 1609,
@@ -78,5 +91,7 @@ val API_DIVISION = ApiDivision(
             memberName = "Fake Member",
             voteType = VoteType.SuspendedOrExpelledVote
         )
-    )
+    ),
+    description = null,
+    whippedVote = null,
 )

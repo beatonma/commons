@@ -8,4 +8,4 @@ import org.junit.runners.Suite
 @Suite.SuiteClasses(
     DataTestSuite::class,
 )
-class CommonsTestSuite
+class CommonsInstrumentationTestSuite

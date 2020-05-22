@@ -1,6 +1,7 @@
 package org.beatonma.commons.data.core.room.dao
 
 import kotlinx.coroutines.runBlocking
+import org.beatonma.commons.androidTest.asDate
 import org.beatonma.commons.data.BaseRoomDaoTest
 import org.beatonma.commons.data.testdata.API_BILL
 import org.beatonma.commons.data.testdata.BILL_PUK
@@ -39,7 +40,7 @@ class BillDaoInsertCompleteBillTest: BaseRoomDaoTest<BillDao>() {
             actName shouldbe "Deep Sea Mining Act"
             label shouldbe "Presumption of Death"
             homepage shouldbe "http://services.parliament.uk/bills/presumptionofdeath.html"
-            date shouldbe "2009-06-25"
+            date shouldbe "2009-06-25".asDate()
             ballotNumber shouldbe 4
             billChapter shouldbe "15"
             isPrivate shouldbe false
@@ -69,7 +70,7 @@ class BillDaoInsertCompleteBillTest: BaseRoomDaoTest<BillDao>() {
                 actName shouldbe "Deep Sea Mining Act"
                 label shouldbe "Presumption of Death"
                 homepage shouldbe "http://services.parliament.uk/bills/presumptionofdeath.html"
-                date shouldbe "2009-06-25"
+                date shouldbe "2009-06-25".asDate()
                 ballotNumber shouldbe 4
                 billChapter shouldbe "15"
                 isPrivate shouldbe false
@@ -109,7 +110,7 @@ class BillDaoInsertCompleteBillTest: BaseRoomDaoTest<BillDao>() {
             first.sittings.first().run {
                 billStageId shouldbe 6697
                 parliamentdotuk shouldbe 8684
-                date shouldbe "2014-05-14"
+                date shouldbe "2014-05-14".asDate()
                 isFormal shouldbe false
                 isProvisional shouldbe true
             }
