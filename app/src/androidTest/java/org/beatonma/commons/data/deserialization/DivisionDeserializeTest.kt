@@ -25,7 +25,6 @@ class DivisionDeserializeTest {
         // Mostly making sure that the voteType enum value is handled correctly
         val parsed = moshi.adapter(ApiDivision::class.java)
             .fromJson(API_DIVISION_JSON)
-        println(parsed)
         parsed shouldbe API_DIVISION
     }
 }
