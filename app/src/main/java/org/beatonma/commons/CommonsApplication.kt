@@ -6,13 +6,14 @@ import android.content.Context
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.AndroidViewModel
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import org.beatonma.commons.app.SystemTheme
 import org.beatonma.commons.app.dagger.AppInjector
 import org.beatonma.commons.data.core.repository.CommonsRepository
-import org.beatonma.lib.util.kotlin.extensions.getPrefs
+import org.beatonma.commons.kotlin.extensions.getPrefs
 import javax.inject.Inject
 
 
@@ -64,3 +65,9 @@ val Fragment.commonsApp: CommonsApplication?
     get() = context?.commonsApp
 
 fun Context.isNightMode() = commonsApp?.isNightMode() ?: false
+
+val AndroidViewModel.context: Context
+    get() = getApplication()
+
+val AndroidViewModel.commonsApp: CommonsApplication
+    get() = getApplication() as CommonsApplication
