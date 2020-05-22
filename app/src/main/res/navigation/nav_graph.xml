@@ -25,6 +25,10 @@
         <argument
             android:name="@string/parliamentdotuk"
             app:argType="integer" />
+        <deepLink
+            android:id="@+id/deeplink_frontpage"
+            android:autoVerify="true"
+            app:uri="https://snommoc.org/" />
     </fragment>
 
     <fragment
@@ -91,6 +95,25 @@
         <argument
             android:name="@string/parliamentdotuk"
             app:argType="integer" />
+        <action
+            android:id="@+id/action_constituencyDetailFragment_to_constituencyElectionResultsFragment"
+            app:destination="@id/constituencyElectionResultsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/constituencyElectionResultsFragment"
+        android:name="org.beatonma.commons.app.constituency.ConstituencyElectionResultsFragment"
+        android:label="ConstituencyElectionResultsFragment"
+        tools:layout="@layout/fragment_constituency_election_results">
+        <deepLink
+            android:id="@+id/deeplink_constituency_election_detail"
+            android:autoVerify="true"
+            app:uri="https://snommoc.org/api/constituency/{constituency_id}/election/{election_id}/"/>
+        <argument
+            android:name="constituency_id"
+            app:argType="integer"/>
+        <argument
+            android:name="election_id"
+            app:argType="integer"/>
     </fragment>
 
     <fragment
