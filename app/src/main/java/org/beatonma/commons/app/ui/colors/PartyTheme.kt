@@ -1,7 +1,8 @@
-package org.beatonma.commons.ui.colors
+package org.beatonma.commons.app.ui.colors
 
 import android.content.Context
 import org.beatonma.commons.BuildConfig.*
+import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.room.entities.member.Party
 import org.beatonma.commons.isNightMode
 import org.beatonma.commons.kotlin.data.Color
@@ -10,19 +11,16 @@ interface Themed {
     var theme: PartyColors?
 }
 
-fun Party.getTheme(context: Context?): PartyColors {
-    val theme = getPartyTheme(parliamentdotuk)
-    return if (context?.isNightMode() == true) theme.coerce(
-        minSaturation = .2F,
-        maxSaturation = .8F,
-        minLuminance = .2F,
-        maxLuminance = .8F
-    )
-    else theme
+fun Party.getTheme(context: Context?): PartyColors =
+    getPartyTheme(parliamentdotuk, context)
 
-}
+fun getPartyTheme(partyID: ParliamentID?, context: Context?) =
+    getPartyTheme(partyID, context?.isNightMode() == true)
 
-private fun getPartyTheme(partyID: Int): PartyColors = when (getCanonicalParty(partyID)) {
+fun getPartyTheme(
+    partyID: ParliamentID?,
+    nightMode: Boolean? = false,
+): PartyColors = when (getCanonicalParty(partyID)) {
     // Alliance
     PARTY_ALLIANCE_PARLIAMENTDOTUK -> PartyColors(
         COLOR_PARTY_ALLIANCE_PRIMARY,
@@ -166,25 +164,36 @@ private fun getPartyTheme(partyID: Int): PartyColors = when (getCanonicalParty(p
         COLOR_PARTY_DEFAULT_PRIMARY_TEXT,
         COLOR_PARTY_DEFAULT_ACCENT_TEXT
     )
+}.apply {
+    if (nightMode == true) {
+        return coerce(
+            minSaturation = .2F,
+            maxSaturation = .8F,
+            minLuminance = .2F,
+            maxLuminance = .8F
+        )
+    }
 }
 
 data class PartyColors(
     val primary: Int,
     val accent: Int,
     val primaryText: Int,
-    val accentText: Int
+    val accentText: Int,
 ) {
+
     fun coerce(
         minSaturation: Float = 0F,
         maxSaturation: Float = 1F,
         minLuminance: Float = 0F,
         maxLuminance: Float = 1F,
-    ): PartyColors = PartyColors(
-        Color(primary).coerce(minSaturation, maxSaturation, minLuminance, maxLuminance).color,
-        Color(accent).coerce(minSaturation, maxSaturation, minLuminance, maxLuminance).color,
-        primaryText,
-        accentText,
-    )
+    ): PartyColors =
+        PartyColors(
+            Color(primary).coerce(minSaturation, maxSaturation, minLuminance, maxLuminance).color,
+            Color(accent).coerce(minSaturation, maxSaturation, minLuminance, maxLuminance).color,
+            primaryText,
+            accentText,
+        )
 }
 
 /**
@@ -199,39 +208,39 @@ data class PartyColors(
  * Not trying to imply associations/endorsements. Feel free to make suggestions or pull requests
  * for anything you find questionable.
  */
-private fun getCanonicalParty(partyID: Int): Int = when (partyID) {
+private fun getCanonicalParty(partyID: ParliamentID?): ParliamentID? = when (partyID) {
     // Conservative
     PARTY_CONSERVATIVE_PARLIAMENTDOTUK,
     PARTY_CONSERVATIVE_INDEPENDENT_PARLIAMENTDOTUK,
     PARTY_INDEPENDENT_CONSERVATIVE_PARLIAMENTDOTUK,
-    PARTY_NATIONAL_LIBERAL_CONSERVATIVE_PARLIAMENTDOTUK
+    PARTY_NATIONAL_LIBERAL_CONSERVATIVE_PARLIAMENTDOTUK,
     -> PARTY_CONSERVATIVE_PARLIAMENTDOTUK
 
     // Labour
     PARTY_LABOUR_PARLIAMENTDOTUK,
     PARTY_INDEPENDENT_LABOUR_PARLIAMENTDOTUK,
-    PARTY_LABOUR_INDEPENDENT_PARLIAMENTDOTUK
+    PARTY_LABOUR_INDEPENDENT_PARLIAMENTDOTUK,
     -> PARTY_LABOUR_PARLIAMENTDOTUK
 
     // Liberal Democrats
     PARTY_LIBERAL_DEMOCRAT_INDEPENDENT_PARLIAMENTDOTUK,
-    PARTY_LIBERAL_PARLIAMENTDOTUK
+    PARTY_LIBERAL_PARLIAMENTDOTUK,
     -> PARTY_LIBERAL_DEMOCRAT_PARLIAMENTDOTUK
 
     // SDP
-    PARTY_INDEPENDENT_SOCIAL_DEMOCRAT_PARLIAMENTDOTUK
+    PARTY_INDEPENDENT_SOCIAL_DEMOCRAT_PARLIAMENTDOTUK,
     -> PARTY_SOCIAL_DEMOCRATIC_PARTY_PARLIAMENTDOTUK
 
     // Sinn Fein
     PARTY_ANTI_H_BLOCK_PARLIAMENTDOTUK -> PARTY_SINN_FEIN_PARLIAMENTDOTUK
 
     // Speakers
-    PARTY_LORD_SPEAKER_PARLIAMENTDOTUK
+    PARTY_LORD_SPEAKER_PARLIAMENTDOTUK,
     -> PARTY_SPEAKER_PARLIAMENTDOTUK
 
     // UUP
     PARTY_INDEPENDENT_ULSTER_UNIONIST_PARLIAMENTDOTUK,
-    PARTY_UNITED_KINGDOM_UNIONIST_PARLIAMENTDOTUK
+    PARTY_UNITED_KINGDOM_UNIONIST_PARLIAMENTDOTUK,
     -> PARTY_ULSTER_UNIONIST_PARTY_PARLIAMENTDOTUK
 
     else -> partyID
