@@ -5,7 +5,7 @@ import dagger.Module
 import dagger.Provides
 import org.beatonma.commons.network.retrofit.converters.DateAdapter
 import org.beatonma.commons.network.retrofit.converters.DeEnvelopeFactory
-import java.util.*
+import java.time.LocalDate
 import javax.inject.Singleton
 
 @Module
@@ -15,6 +15,6 @@ class MoshiModule {
     fun providesMoshi(): Moshi =
         Moshi.Builder()
             .add(DeEnvelopeFactory())
-            .add(Date::class.java, DateAdapter())
+            .add(LocalDate::class.java, DateAdapter())
             .build()
 }
