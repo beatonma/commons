@@ -125,20 +125,26 @@ dependencies {
 
     // Unit tests
     testAnnotationProcessors.forEach { kaptTest(it) }
-    testImplementation(bmalib("testing"))
-    testImplementation(Dependencies.Test.JUNIT)
-    testImplementation(Dependencies.Test.MOCKITO)
-    testImplementation(Dependencies.Kotlin.REFLECT)
-    testImplementation(Dependencies.Test.RETROFIT_MOCK)
-    testImplementation(Dependencies.Dagger.DAGGER)
-    testImplementation(Dependencies.Test.OKHTTP_MOCK_SERVER)
+    arrayOf(
+        bmalib("testing"),
+        Dependencies.Test.AndroidX.CORE,
+        Dependencies.Test.JUNIT,
+        Dependencies.Test.MOCKITO,
+        Dependencies.Kotlin.REFLECT,
+        Dependencies.Test.RETROFIT_MOCK,
+        Dependencies.Dagger.DAGGER,
+        Dependencies.Test.OKHTTP_MOCK_SERVER
+    ).forEach { testImplementation(it) }
 
     // Instrumentation tests
-    androidTestImplementation(bmalib("testing"))
-    androidTestImplementation(Dependencies.Test.AndroidX.CORE)
-    androidTestImplementation(Dependencies.Test.AndroidX.RUNNER)
-    androidTestImplementation(Dependencies.Test.AndroidX.ESPRESSO)
-    androidTestImplementation(Dependencies.Test.AndroidX.LIVEDATA)
+    testAnnotationProcessors.forEach { kaptAndroidTest(it) }
+    arrayOf(
+        bmalib("testing"),
+        Dependencies.Test.AndroidX.CORE,
+        Dependencies.Test.AndroidX.RUNNER,
+        Dependencies.Test.AndroidX.ESPRESSO,
+        Dependencies.Test.AndroidX.LIVEDATA
+    ).forEach { androidTestImplementation(it) }
 
     val kotlin = arrayOf(
         Dependencies.Kotlin.STDLIB,
@@ -150,7 +156,8 @@ dependencies {
     val annotationProcessors = arrayOf(
         Dependencies.Dagger.COMPILER,
         Dependencies.Dagger.ANNOTATION_PROCESSOR,
-        Dependencies.Room.AP
+        Dependencies.Room.AP,
+        Dependencies.Glide.COMPILER
     )
 
     val dagger = arrayOf(
@@ -218,8 +225,7 @@ dependencies {
         "graphic-core",
         "paintedview",
         "recyclerview",
-        "style",
-        "util"
+        "style"
     )
     bmalib.forEach { implementation(bmalib(it)) }
 
