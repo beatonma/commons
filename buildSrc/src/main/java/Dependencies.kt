@@ -144,9 +144,9 @@ object Dependencies {
 
     object Test {
         object AndroidX {
-            val CORE = androidx(group = "test", artifact = "core", version = "1.2.0")
-            val RUNNER = androidx(group = "test", artifact = "runner", version = "1.2.0")
-            val ESPRESSO = androidx(group = "test.espresso", artifact = "espresso-core", version = "3.2.0")
+            val CORE = androidx(group = "test", artifact = "core", version = "1.3.0-beta02")
+            val RUNNER = androidx(group = "test", artifact = "runner", version = "1.3.0-beta02")
+            val ESPRESSO = androidx(group = "test.espresso", artifact = "espresso-core", version = "3.3.0-beta02")
             val LIVEDATA = androidx(group = "arch.core", artifact = "core-testing", version = "2.1.0")
             val RULES = androidx(group = "test", artifact = "rules", version = "1.2.0")
         }
@@ -156,6 +156,6 @@ object Dependencies {
         val JUNIT = dependency("junit", "junit", "4.13")
         val RETROFIT_MOCK = retrofit("retrofit-mock")
         val ROOM = room("room-testing")
-        val OKHTTP_MOCK_SERVER = dependency("com.squareup.okhttp3", "mockwebserver", "4.5.0")
+        val OKHTTP_MOCK_SERVER = dependency("com.squareup.okhttp3", "mockwebserver", "4.7.2")
     }
 }
