@@ -8,6 +8,8 @@ import org.beatonma.commons.data.core.room.dao.*
 import org.beatonma.commons.data.core.room.entities.bill.*
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyBoundary
+import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyCandidate
+import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyElectionDetails
 import org.beatonma.commons.data.core.room.entities.division.Division
 import org.beatonma.commons.data.core.room.entities.division.FeaturedDivision
 import org.beatonma.commons.data.core.room.entities.division.Vote
@@ -47,6 +49,8 @@ import org.beatonma.commons.data.core.room.entities.user.UserToken
         // Constituency
         Constituency::class,
         ConstituencyBoundary::class,
+        ConstituencyElectionDetails::class,
+        ConstituencyCandidate::class,
 
         // Elections
         Election::class,
