@@ -1,4 +1,4 @@
-package org.beatonma.commons.app.ui.ktx
+package org.beatonma.commons.kotlin.extensions
 
 import android.net.Uri
 import android.widget.ImageView
