@@ -6,7 +6,7 @@ import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.core.Periodic
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import org.beatonma.commons.data.core.room.entities.election.Election
-import java.util.*
+import java.time.LocalDate
 
 @Entity(
     indices = [
@@ -37,8 +37,8 @@ import java.util.*
 data class HistoricalConstituency(
     @ColumnInfo(name = "memberfor_member_id") val memberId: Int,
     @field:Json(name = "constituency") @ColumnInfo(name = "memberfor_constituency_id") val constituencyId: Int,
-    @field:Json(name = "start") @ColumnInfo(name = "memberfor_start") override val start: Date,
-    @field:Json(name = "end") @ColumnInfo(name = "memberfor_end") override val end: Date?,
+    @field:Json(name = "start") @ColumnInfo(name = "memberfor_start") override val start: LocalDate,
+    @field:Json(name = "end") @ColumnInfo(name = "memberfor_end") override val end: LocalDate?,
     @field:Json(name = "election") @ColumnInfo(name = "memberfor_election_id") val electionId: Int
 ): Periodic
 
@@ -50,13 +50,16 @@ data class HistoricalConstituencyWithElection(
 
     @Relation(parentColumn = "memberfor_election_id", entityColumn = "election_$PARLIAMENTDOTUK")
     val election: Election
-)
+): Periodic {
+    override val start: LocalDate? get() = historicalConstituency.start
+    override val end: LocalDate? get() = historicalConstituency.end
+}
 
 
 data class ApiHistoricalConstituency(
     @field:Json(name = "constituency") val constituency: Constituency,
-    @field:Json(name = "start") override val start: Date,
-    @field:Json(name = "end") override val end: Date?,
+    @field:Json(name = "start") override val start: LocalDate,
+    @field:Json(name = "end") override val end: LocalDate?,
     @field:Json(name = "election") val election: Election
 ): Periodic {
     fun toHistoricalConstituency(member: Int) = HistoricalConstituency(

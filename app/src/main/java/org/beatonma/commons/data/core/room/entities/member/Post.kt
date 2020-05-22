@@ -7,10 +7,10 @@ import androidx.room.ForeignKey
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.ParliamentID
-import org.beatonma.commons.data.Parliamentdotuk
 import org.beatonma.commons.data.core.Named
+import org.beatonma.commons.data.core.Parliamentdotuk
 import org.beatonma.commons.data.core.Periodic
-import java.util.*
+import java.time.LocalDate
 
 @Entity(
     foreignKeys = [
@@ -33,8 +33,8 @@ data class Post(
     @field:Json(name = "post_member_id") @ColumnInfo(name = "post_member_id", index = true) val memberId: ParliamentID,
     @field:Json(name = "name") @ColumnInfo(name = "post_name") override val name: String,
     @ColumnInfo(name = "post_type") val postType: PostType,
-    @field:Json(name = "start") @ColumnInfo(name = "start") override val start: Date?,
-    @field:Json(name = "end") @ColumnInfo(name = "end") override val end: Date?
+    @field:Json(name = "start") @ColumnInfo(name = "start") override val start: LocalDate?,
+    @field:Json(name = "end") @ColumnInfo(name = "end") override val end: LocalDate?
 ): Parliamentdotuk, Named, Periodic {
     enum class PostType {
         GOVERNMENTAL,

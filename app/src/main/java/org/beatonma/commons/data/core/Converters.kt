@@ -7,18 +7,18 @@ import org.beatonma.commons.data.core.room.entities.division.VoteType
 import org.beatonma.commons.data.core.room.entities.member.House
 import org.beatonma.commons.data.core.room.entities.member.Party
 import org.beatonma.commons.data.core.room.entities.member.Post
-import java.util.*
+import java.time.LocalDate
 
 object Converters {
     private val moshi = Moshi.Builder().build()
 
     @TypeConverter
     @JvmStatic
-    fun serializeDate(date: Date?): Long? = date?.time
+    fun serializeDate(date: LocalDate?): Long? = date?.toEpochDay()
 
     @TypeConverter
     @JvmStatic
-    fun deserializeDate(time: Long?): Date? = if (time == null) null else Date(time)
+    fun deserializeDate(time: Long?): LocalDate? = if (time == null) null else LocalDate.ofEpochDay(time)
 
     @TypeConverter
     @JvmStatic

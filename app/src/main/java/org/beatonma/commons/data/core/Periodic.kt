@@ -1,11 +1,11 @@
 package org.beatonma.commons.data.core
 
-import java.util.*
+import java.time.LocalDate
 
 /**
  * Something with and start and/or end date
  */
 interface Periodic {
-    val start: Date?
-    val end: Date?
+    val start: LocalDate?
+    val end: LocalDate?
 }

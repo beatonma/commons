@@ -4,7 +4,7 @@ import androidx.room.*
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.ParliamentID
-import org.beatonma.commons.data.Parliamentdotuk
+import org.beatonma.commons.data.core.Parliamentdotuk
 
 @Entity(
     foreignKeys = [

@@ -4,11 +4,11 @@ import androidx.room.*
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.ParliamentID
-import org.beatonma.commons.data.Parliamentdotuk
 import org.beatonma.commons.data.core.Named
+import org.beatonma.commons.data.core.Parliamentdotuk
 import org.beatonma.commons.data.core.Periodic
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
-import java.util.*
+import java.time.LocalDate
 
 @Entity(
     foreignKeys = [
@@ -38,15 +38,15 @@ data class MemberProfile(
     @field:Json(name = "is_mp") @ColumnInfo(name = "is_mp") val isMp: Boolean? = null,
     @field:Json(name = "is_lord") @ColumnInfo(name = "is_lord") val isLord: Boolean? = null,
     @field:Json(name = "age") @ColumnInfo(name = "age") val age: Int? = null,
-    @field:Json(name = "date_of_birth") @ColumnInfo(name = "date_of_birth") val dateOfBirth: Date? = null,
-    @field:Json(name = "date_of_death") @ColumnInfo(name = "date_of_death") val dateOfDeath: Date? = null,
+    @field:Json(name = "date_of_birth") @ColumnInfo(name = "date_of_birth") val dateOfBirth: LocalDate? = null,
+    @field:Json(name = "date_of_death") @ColumnInfo(name = "date_of_death") val dateOfDeath: LocalDate? = null,
     @field:Json(name = "gender") @ColumnInfo(name = "gender") val gender: String? = null,
     @Embedded(prefix = "birth_") @field:Json(name = "place_of_birth") val placeOfBirth: Town? = null,
     @field:Json(name = "portrait") @ColumnInfo(name = "portrait_url") val portraitUrl: String? = null,
     @field:Json(name = "current_post") @ColumnInfo(name = "current_post") val currentPost: String? = null
 ) : Parliamentdotuk, Named, Periodic {
-    @Ignore override val start: Date? = dateOfBirth
-    @Ignore override val end: Date? = dateOfDeath
+    @Ignore override val start: LocalDate? = dateOfBirth
+    @Ignore override val end: LocalDate? = dateOfDeath
 }
 
 data class BasicProfile(
