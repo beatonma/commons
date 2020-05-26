@@ -6,7 +6,7 @@ import java.time.Period
 /**
  * Something with and start and/or end date
  */
-interface Periodic {
+interface Periodic: Temporal {
     val start: LocalDate?
     val end: LocalDate?
 }
@@ -30,7 +30,6 @@ suspend fun <T: Periodic> compressConsecutiveItems(
         val secondStart = b.start ?: return false
 
         val difference = Period.between(firstEnd, secondStart)
-        println("$firstEnd to $secondStart = ${difference.toTotalMonths()} months")
         return difference.toTotalMonths() < ifMonthsLessThan
     }
 
