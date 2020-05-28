@@ -3,7 +3,6 @@ package org.beatonma.commons.app.ui.views
 import android.content.Context
 import android.content.res.ColorStateList
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnClickListener
@@ -13,6 +12,9 @@ import androidx.annotation.StringRes
 import androidx.core.content.withStyledAttributes
 import org.beatonma.commons.R
 import org.beatonma.commons.databinding.ViewCollapsibleChipBinding
+import org.beatonma.commons.kotlin.extensions.dial
+import org.beatonma.commons.kotlin.extensions.sendMail
+import org.beatonma.commons.kotlin.extensions.stringCompat
 import org.beatonma.commons.kotlin.extensions.text
 
 private const val TAG = "CollapsibleChip"
@@ -29,8 +31,8 @@ class CollapsibleChip @JvmOverloads constructor(
 
     init {
         addView(binding.root)
-        binding.flow.setOnClickListener(getDefaultToggleClickListener())
-        binding.chipCancel.setOnClickListener { collapse() }
+        binding.motionLayout.setOnClickListener(getDefaultToggleClickListener())
+        binding.cancelIcon.setOnClickListener { collapse() }
 
         context.withStyledAttributes(attrs, R.styleable.CollapsibleChip, defStyleAttr = defStyleAttr, defStyleRes = defStyleRes) {
             binding.chipText.text = text(context, R.styleable.CollapsibleChip_chipText, "app:chipText")
@@ -67,19 +69,16 @@ class CollapsibleChip @JvmOverloads constructor(
     }
 
     override fun setOnClickListener(l: OnClickListener?) {
-        binding.flow.setOnClickListener { view ->
+        val wrappedListener = OnClickListener { view ->
             with(binding.motionLayout) {
-                Log.d(TAG, "onClick state=$currentState [$startState,$endState]")
                 when (currentState) {
-                    startState -> {
-                        Log.d(TAG, "transitionToEnd()")
-                        expand()
-                    }
-
+                    startState -> expand()
                     endState -> l?.onClick(view)
                 }
             }
         }
+        binding.motionLayout.setOnClickListener(wrappedListener)
+        binding.chipIcon.setOnClickListener(wrappedListener)
     }
 
     private fun getDefaultToggleClickListener() = OnClickListener {
@@ -99,4 +98,18 @@ data class ChipData(
     val iconTint: Int? = null,
     val backgroundTint: Int? = null,
     val action: ((View) -> Unit)?
-)
+) {
+    companion object {
+        fun forPhoneNumber(context: Context, phoneNumber: String) = ChipData(
+            text = context.stringCompat(R.string.action_dial_phonenumber, phoneNumber),
+            icon = R.drawable.ic_phone_call,
+            action = { view -> view.context.dial(phoneNumber) }
+        )
+
+        fun forEmail(context: Context, address: String) = ChipData(
+            text = context.stringCompat(R.string.action_write_email, address),
+            icon = R.drawable.ic_email,
+            action = { view -> view.context.sendMail(address) }
+        )
+    }
+}
