@@ -3,9 +3,9 @@ package org.beatonma.commons.data.core.repository
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
-import org.beatonma.commons.data.CommonsRemoteDataSource
-import org.beatonma.commons.data.IoResult
+import org.beatonma.commons.data.*
 import org.beatonma.commons.data.core.CompleteMember
+import org.beatonma.commons.data.core.MessageOfTheDay
 import org.beatonma.commons.data.core.room.dao.BillDao
 import org.beatonma.commons.data.core.room.dao.ConstituencyDao
 import org.beatonma.commons.data.core.room.dao.DivisionDao
@@ -15,10 +15,10 @@ import org.beatonma.commons.data.core.room.entities.bill.FeaturedBill
 import org.beatonma.commons.data.core.room.entities.bill.FeaturedBillWithBill
 import org.beatonma.commons.data.core.room.entities.constituency.CompleteConstituency
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
+import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyElectionDetailsWithExtras
 import org.beatonma.commons.data.core.room.entities.division.*
 import org.beatonma.commons.data.core.room.entities.member.*
 import org.beatonma.commons.data.livedata.observeComplete
-import org.beatonma.commons.data.resultLiveData
 import org.beatonma.commons.kotlin.extensions.allNotNull
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -32,7 +32,7 @@ class CommonsRepository @Inject constructor(
     private val divisionDao: DivisionDao,
     private val constituencyDao: ConstituencyDao,
 ) {
-    fun observeFeaturedPeople(): LiveData<IoResult<List<FeaturedMemberProfile>>> = resultLiveData(
+    fun observeFeaturedPeople(): LiveDataIoResultList<FeaturedMemberProfile> = resultLiveData(
         databaseQuery = { memberDao.getFeaturedProfiles() },
         networkCall = { commonsRemoteDataSource.getFeaturedPeople() },
         saveCallResult = { profiles ->
@@ -46,7 +46,7 @@ class CommonsRepository @Inject constructor(
         }
     )
 
-    fun observeFeaturedBills(): LiveData<IoResult<List<FeaturedBillWithBill>>> = resultLiveData(
+    fun observeFeaturedBills(): LiveDataIoResultList<FeaturedBillWithBill> = resultLiveData(
         databaseQuery = { billDao.getFeaturedBills() },
         networkCall = { commonsRemoteDataSource.getFeaturedBills() },
         saveCallResult = { bills ->
@@ -58,7 +58,7 @@ class CommonsRepository @Inject constructor(
         }
     )
 
-    fun observeFeaturedDivisions(): LiveData<IoResult<List<FeaturedDivisionWithDivision>>> = resultLiveData(
+    fun observeFeaturedDivisions(): LiveDataIoResultList<FeaturedDivisionWithDivision> = resultLiveData(
         databaseQuery = { divisionDao.getFeaturedDivisions() },
         networkCall = { commonsRemoteDataSource.getFeaturedDivisions() },
         saveCallResult = { divisions ->
@@ -69,25 +69,25 @@ class CommonsRepository @Inject constructor(
         }
     )
 
-    fun observeBill(parliamentdotuk: Int): LiveData<IoResult<CompleteBill>> = resultLiveData(
+    fun observeBill(parliamentdotuk: ParliamentID): LiveDataIoResult<CompleteBill> = resultLiveData(
         databaseQuery = { observeCompleteBill(parliamentdotuk) },
         networkCall = { commonsRemoteDataSource.getBill(parliamentdotuk) },
         saveCallResult = { bill -> billDao.insertCompleteBill(parliamentdotuk, bill) }
     )
 
-    fun observeMember(parliamentdotuk: Int): LiveData<IoResult<CompleteMember>> = resultLiveData(
+    fun observeMember(parliamentdotuk: ParliamentID): LiveDataIoResult<CompleteMember> = resultLiveData(
         databaseQuery = { observeCompleteMember(parliamentdotuk) },
         networkCall = { commonsRemoteDataSource.getMember(parliamentdotuk) },
         saveCallResult = { member -> memberDao.insertCompleteMember(parliamentdotuk, member) }
     )
 
-    fun observeDivision(house: House, parliamentdotuk: Int): LiveData<IoResult<DivisionWithVotes>> = resultLiveData(
+    fun observeDivision(house: House, parliamentdotuk: ParliamentID): LiveDataIoResult<DivisionWithVotes> = resultLiveData(
         databaseQuery = { divisionDao.getDivisionWithVotes(parliamentdotuk) },
         networkCall = { commonsRemoteDataSource.getDivision(house, parliamentdotuk) },
         saveCallResult = { division -> divisionDao.insertApiDivision(parliamentdotuk, division) }
     )
 
-    fun observeCommonsVotesForMember(parliamentdotuk: Int): LiveData<IoResult<List<VoteWithDivision>>> = resultLiveData(
+    fun observeCommonsVotesForMember(parliamentdotuk: ParliamentID): LiveDataIoResultList<VoteWithDivision> = resultLiveData(
         databaseQuery = { memberDao.getCommonsVotesForMember(parliamentdotuk) },
         networkCall = { commonsRemoteDataSource.getCommonsVotesForMember(parliamentdotuk) },
         saveCallResult = { memberVotes ->
@@ -105,7 +105,7 @@ class CommonsRepository @Inject constructor(
         }
     )
 
-    fun observeConstituency(parliamentdotuk: Int): LiveData<IoResult<CompleteConstituency>> = resultLiveData(
+    fun observeConstituency(parliamentdotuk: ParliamentID): LiveDataIoResult<CompleteConstituency> = resultLiveData(
         databaseQuery = { observeConstituencyDetails(parliamentdotuk) },
         networkCall = { commonsRemoteDataSource.getConstituency(parliamentdotuk) },
         saveCallResult = { apiConstituency ->
@@ -115,7 +115,7 @@ class CommonsRepository @Inject constructor(
 
             apiConstituency.boundary?.also { boundary ->
                 constituencyDao.insertBoundary(
-                    boundary.copy(constituencyId = apiConstituency.parliamentdotuk)
+                    boundary.copy(parliamentdotuk = apiConstituency.parliamentdotuk)
                 )
             }
 
@@ -128,8 +128,27 @@ class CommonsRepository @Inject constructor(
         }
     )
 
+    fun observeConstituencyResultsForElection(
+        constituencyId: Int,
+        electionId: Int
+    ): LiveDataIoResult<ConstituencyElectionDetailsWithExtras> = resultLiveData(
+        databaseQuery = { observeConstituencyElectionDetails(constituencyId, electionId) },
+        networkCall = { commonsRemoteDataSource.getConstituencyDetailsForElection(constituencyId, electionId) },
+        saveCallResult = { result ->
+            constituencyDao.insertConstituencyElectionDetails(result.toConstituencyElectionDetails())
+            constituencyDao.insertCandidates(
+                result.candidates.map { apiCandidate ->
+                    apiCandidate.toConstituencyCandidate(result.parliamentdotuk)
+                }
+            )
+        }
+    )
+
+    fun observeMotd(): LiveDataIoResultList<MessageOfTheDay> =
+        resultLiveDataNoCache { commonsRemoteDataSource.getMessageOfTheDay() }
+
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun observeCompleteMember(parliamentdotuk: Int): LiveData<CompleteMember> =
+    fun observeCompleteMember(parliamentdotuk: ParliamentID): LiveData<CompleteMember> =
         observeComplete(
             CompleteMember(),
             updatePredicate = { m -> m.profile != null },
@@ -175,7 +194,7 @@ class CommonsRepository @Inject constructor(
             }
         }
 
-    private fun observeCompleteBill(parliamentdotuk: Int): LiveData<CompleteBill> =
+    private fun observeCompleteBill(parliamentdotuk: ParliamentID): LiveData<CompleteBill> =
         observeComplete(
             CompleteBill(),
             updatePredicate = { b -> b.bill != null },
@@ -200,7 +219,7 @@ class CommonsRepository @Inject constructor(
             }
         }
 
-    private fun observeConstituencyDetails(parliamentdotuk: Int): LiveData<CompleteConstituency> =
+    private fun observeConstituencyDetails(parliamentdotuk: ParliamentID): LiveData<CompleteConstituency> =
         observeComplete(
             CompleteConstituency(),
             updatePredicate = { c -> allNotNull(c.boundary, c.constituency, c.electionResults) },
@@ -221,6 +240,32 @@ class CommonsRepository @Inject constructor(
                 }
             }
         }
+
+    private fun observeConstituencyElectionDetails(
+        constituencyId: ParliamentID,
+        electionId: ParliamentID
+    ): LiveData<ConstituencyElectionDetailsWithExtras> = observeComplete(
+        ConstituencyElectionDetailsWithExtras(),
+        updatePredicate = { c -> c.details != null },
+    ) { details ->
+        addSource(constituencyDao.getElection(electionId)) { election ->
+            details.update { copy(election = election) }
+        }
+
+        addSource(constituencyDao.getConstituency(constituencyId)) { constituency ->
+            details.update { copy(constituency = constituency) }
+        }
+
+        addSource(constituencyDao.getDetailsAndCandidatesForElection(constituencyId, electionId)) { result ->
+            result ?: return@addSource
+            details.update {
+                copy(
+                    details = result.details,
+                    candidates = result.candidates,
+                )
+            }
+        }
+    }
 
     private suspend fun saveProfile(profile: MemberProfile?, ifNotExists: Boolean = false) {
         profile ?: return
