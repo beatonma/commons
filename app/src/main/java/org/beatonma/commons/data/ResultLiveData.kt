@@ -34,3 +34,21 @@ fun <T, N> resultLiveData(
         emitSource(source)
     }
 }
+
+
+fun <T> resultLiveDataNoCache(
+    networkCall: suspend () -> IoResult<T>,
+): LiveDataIoResult<T> = liveData(Dispatchers.IO) {
+    emit(LoadingResult<T>())
+    val response = networkCall.invoke()
+    if (response is SuccessResult) {
+        if (response.data != null) {
+            emit(SuccessResult(response.data, "Network "))
+        }
+        else {
+            emit(UnexpectedValueError<T>("Null data: ${response.message}"))
+        }
+    } else if (response is IoError) {
+        emit(NetworkError<T>(response.message))
+    }
+}
