@@ -1,26 +1,20 @@
 package org.beatonma.commons.app.memberprofile.adapter
 
-import android.content.res.ColorStateList
 import android.view.ViewGroup
-import org.beatonma.commons.R
+import androidx.recyclerview.widget.RecyclerView
+
 import org.beatonma.commons.app.ui.data.WeblinkData
 import org.beatonma.commons.app.ui.recyclerview.ThemedAdapter
-import org.beatonma.commons.databinding.ItemWeblinkBinding
-import org.beatonma.commons.kotlin.extensions.inflate
+import org.beatonma.commons.app.ui.views.ChipData
+import org.beatonma.commons.app.ui.views.CollapsibleChipHolder
+
+private const val TAG = "WeblinkAdapter"
 
 class WeblinkAdapter: ThemedAdapter<WeblinkData>() {
-    override fun onCreateDefaultViewHolder(parent: ViewGroup) =
-        object : TypedViewHolder(parent.inflate(R.layout.item_weblink)) {
-            private val vh =
-                ItemWeblinkBinding.bind(itemView)
+    override fun onCreateDefaultViewHolder(parent: ViewGroup) = CollapsibleChipHolder(parent)
 
-            override fun bind(item: WeblinkData) {
-                item.bindTo(vh.chip)
-                val accent = theme?.accent
-                if (accent != null) {
-                    vh.chip.chipIconTint =
-                        ColorStateList.valueOf(accent)
-                }
-            }
-        }
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val item = items?.get(position) ?: return
+        (holder as CollapsibleChipHolder).bind(ChipData.forUrl(item))
+    }
 }
