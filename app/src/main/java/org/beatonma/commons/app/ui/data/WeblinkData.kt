@@ -1,6 +1,7 @@
 package org.beatonma.commons.app.ui.data
 
 import android.net.Uri
+import androidx.annotation.DrawableRes
 import com.google.android.material.chip.Chip
 import org.beatonma.commons.R
 import org.beatonma.commons.kotlin.extensions.drawableCompat
@@ -10,7 +11,7 @@ data class WeblinkData(
     val url: String
 ) {
     val displayText: String
-    private val icon: Int
+    val icon: Int
 
     fun bindTo(chip: Chip) {
         chip.apply {
@@ -64,9 +65,5 @@ data class WeblinkData(
             .removeSuffix("/")
     }
 
-    private fun getIcon(uri: Uri): Int = when(uri.scheme) {
-        "https" -> R.drawable.ic_https
-        "http" -> R.drawable.ic_http
-        else -> 0
-    }
+    @DrawableRes private fun getIcon(uri: Uri): Int = R.drawable.ic_link
 }
