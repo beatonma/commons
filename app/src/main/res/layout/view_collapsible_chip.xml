@@ -4,13 +4,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:minHeight="@dimen/chip_min_height"
-    android:minWidth="@dimen/chip_min_width"
-    android:background="@drawable/chip_outline"
+    android:layout_height="@dimen/chip_min_height"
+    android:minWidth="@dimen/chip_min_height"
+    android:id="@+id/motion"
     app:layoutDescription="@xml/view_collapsible_chip_scene"
-    android:id="@+id/motion_layout"
     >
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:id="@+id/background"
+        android:background="@drawable/chip_outline"/>
 
     <Space
         android:id="@+id/start_space"
@@ -21,7 +25,6 @@
         android:id="@+id/cancelIcon"
         android:layout_width="@dimen/chip_icon_size"
         android:layout_height="@dimen/chip_icon_size"
-        android:layout_marginStart="@dimen/chip_padding_horizontal"
         android:padding="@dimen/chip_icon_padding"
         android:tint="@color/Negative"
         app:srcCompat="@drawable/ic_close"
@@ -50,9 +53,8 @@
         android:layout_width="wrap_content"
         tools:text="Chip text"
         android:textSize="14sp"
-        android:gravity="center"
-        android:textAlignment="gravity"
         android:paddingEnd="@dimen/chip_padding_horizontal"
         style="@style/Text.Primary"
         />
+
 </androidx.constraintlayout.motion.widget.MotionLayout>
