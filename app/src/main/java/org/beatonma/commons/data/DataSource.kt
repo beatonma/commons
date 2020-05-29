@@ -1,6 +1,7 @@
 package org.beatonma.commons.data
 
 import org.beatonma.commons.data.core.ApiCompleteMember
+import org.beatonma.commons.data.core.MessageOfTheDay
 import org.beatonma.commons.data.core.room.entities.bill.ApiBill
 import org.beatonma.commons.data.core.room.entities.bill.Bill
 import org.beatonma.commons.data.core.room.entities.constituency.ApiConstituency
@@ -56,6 +57,7 @@ interface CommonsRemoteDataSource {
 
     suspend fun getSearchResults(query: String): IoResultList<MemberSearchResult>
 
+    suspend fun getMessageOfTheDay(): IoResultList<MessageOfTheDay>
     suspend fun registerUser(googleToken: String): IoResult<ApiUserToken>
 }
 
@@ -121,6 +123,10 @@ class CommonsRemoteDataSourceImpl @Inject constructor(
 
     override suspend fun getSearchResults(query: String) = getResult {
         service.getSearchResults(query)
+    }
+
+    override suspend fun getMessageOfTheDay() = getResult {
+        service.getMessageOfTheDay()
     }
 
     override suspend fun registerUser(googleToken: String) = getResult {
