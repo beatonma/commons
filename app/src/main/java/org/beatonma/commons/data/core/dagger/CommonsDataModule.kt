@@ -6,12 +6,11 @@ import dagger.Module
 import dagger.Provides
 import org.beatonma.commons.CommonsApplication
 import org.beatonma.commons.data.CommonsRemoteDataSource
-import org.beatonma.commons.data.core.CommonsRepository
+import org.beatonma.commons.data.CommonsRemoteDataSourceImpl
+import org.beatonma.commons.data.core.repository.*
 import org.beatonma.commons.data.core.room.COMMONS_DB_FILENAME
 import org.beatonma.commons.data.core.room.CommonsDatabase
-import org.beatonma.commons.data.core.room.dao.BillDao
-import org.beatonma.commons.data.core.room.dao.DivisionDao
-import org.beatonma.commons.data.core.room.dao.MemberDao
+import org.beatonma.commons.data.core.room.dao.*
 import org.beatonma.commons.network.HttpClientModule
 import org.beatonma.commons.network.dagger.MoshiModule
 import org.beatonma.commons.network.dagger.NetworkServiceModule
@@ -35,8 +34,7 @@ class CommonsDataModule(val application: CommonsApplication) {
     @Provides
     fun providesApplciation(): CommonsApplication = application
 
-    @Singleton
-    @Provides
+    @Singleton @Provides
     fun provideCommonsDatabase(context: Context): CommonsDatabase = Room.databaseBuilder(
             context.applicationContext,
             CommonsDatabase::class.java,
@@ -44,31 +42,67 @@ class CommonsDataModule(val application: CommonsApplication) {
         ).fallbackToDestructiveMigration()
         .build()
 
-    @Singleton
-    @Provides
-    fun providesCommonsRepository(
+    @Suppress("UNUSED_PARAMETER")  // context is used to retrieve DAO instances.
+    @Singleton @Provides
+    fun providesMemberRepository(
         context: Context,
         commonsRemoteDataSource: CommonsRemoteDataSource,
         memberDao: MemberDao,
-        billDao: BillDao,
+        divisionDao: DivisionDao
+    ): MemberRepository = MemberRepository(commonsRemoteDataSource, memberDao, divisionDao)
+
+    @Suppress("UNUSED_PARAMETER")  // context is used to retrieve DAO instances.
+    @Singleton @Provides
+    fun providesConstituencyRepository(
+        context: Context,
+        commonsRemoteDataSource: CommonsRemoteDataSource,
+        constituencyDao: ConstituencyDao,
+        memberDao: MemberDao
+    ): ConstituencyRepository = ConstituencyRepository(commonsRemoteDataSource, constituencyDao, memberDao)
+
+    @Suppress("UNUSED_PARAMETER")  // context is used to retrieve DAO instances.
+    @Singleton @Provides
+    fun providesDivisionRepository(
+        context: Context,
+        commonsRemoteDataSource: CommonsRemoteDataSource,
         divisionDao: DivisionDao,
-    ): CommonsRepository = CommonsRepository(context, commonsRemoteDataSource, memberDao, billDao, divisionDao)
+    ): DivisionRepository = DivisionRepository(commonsRemoteDataSource, divisionDao)
 
-    @Singleton
-    @Provides
+    @Suppress("UNUSED_PARAMETER")  // context is used to retrieve DAO instances.
+    @Singleton @Provides
+    fun providesBillRepository(
+        context: Context,
+        commonsRemoteDataSource: CommonsRemoteDataSource,
+        billDao: BillDao,
+    ): BillRepository = BillRepository(commonsRemoteDataSource, billDao)
+
+    @Suppress("UNUSED_PARAMETER")  // context is used to retrieve DAO instances.
+    @Singleton @Provides
+    fun providesUserRepository(
+        context: Context,
+        commonsRemoteDataSource: CommonsRemoteDataSource,
+        userDao: UserDao,
+    ): UserRepository = UserRepository(commonsRemoteDataSource, userDao)
+
+    @Singleton @Provides
     fun providesCommonsRemoteDataSource(
-        commonsService: CommonsService
-    ): CommonsRemoteDataSource = CommonsRemoteDataSource(commonsService)
+        commonsService: CommonsService,
+    ): CommonsRemoteDataSource = CommonsRemoteDataSourceImpl(commonsService)
 
-    @Singleton
-    @Provides
+    @Singleton @Provides
     fun providesPeopleDao(commonsDatabase: CommonsDatabase): MemberDao = commonsDatabase.memberDao()
 
-    @Singleton
-    @Provides
+    @Singleton @Provides
     fun providesBillDao(commonsDatabase: CommonsDatabase): BillDao = commonsDatabase.billDao()
 
-    @Singleton
-    @Provides
-    fun provideDivisionDao(commonsDatabase: CommonsDatabase): DivisionDao = commonsDatabase.divisionDao()
+    @Singleton @Provides
+    fun provideDivisionDao(commonsDatabase: CommonsDatabase): DivisionDao =
+        commonsDatabase.divisionDao()
+
+    @Singleton @Provides
+    fun provideConstituencyDao(commonsDatabase: CommonsDatabase): ConstituencyDao =
+        commonsDatabase.constituencyDao()
+
+    @Singleton @Provides
+    fun providesUserDao(commonsDatabase: CommonsDatabase): UserDao = commonsDatabase.userDao()
 }

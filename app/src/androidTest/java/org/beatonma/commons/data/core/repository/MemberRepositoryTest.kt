@@ -15,33 +15,21 @@ import org.beatonma.commons.data.testdata.MEMBER_PUK
 import org.beatonma.lib.testing.kotlin.extensions.assertions.shouldbe
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.Suite
 
-@RunWith(Suite::class)
-@Suite.SuiteClasses(
-    CommonsRepositoryTest::class,
-)
-class CommonsRepositoryTestSuite
-
-
-class CommonsRepositoryTest: BaseRoomTest() {
-    lateinit var repository: CommonsRepository
+class MemberRepositoryTest: BaseRoomTest() {
+    lateinit var repository: MemberRepository
     private val dao: MemberDao
         get() = db.memberDao()
 
     @Before
     override fun setUp() {
         super.setUp()
-        repository = CommonsRepository(
-            context,
+        repository = MemberRepository(
             fakeIt(CommonsRemoteDataSource::class, object {
 
             }),
             db.memberDao(),
-            db.billDao(),
             db.divisionDao(),
-            db.constituencyDao()
         )
         runBlocking(Dispatchers.Main) {
             dao.insertCompleteMember(MEMBER_PUK, API_MEMBER)

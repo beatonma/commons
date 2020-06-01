@@ -1,6 +1,5 @@
 package org.beatonma.commons.data.core.repository
 
-import android.content.Context
 import android.util.Log
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import org.beatonma.commons.data.CommonsRemoteDataSource
@@ -15,13 +14,12 @@ private const val TAG = "UserRepository"
 
 @Singleton
 class UserRepository @Inject constructor(
-    val context: Context,
-    private val commonsRemoteDataSource: CommonsRemoteDataSource,
+    private val remoteSource: CommonsRemoteDataSource,
     private val userDao: UserDao,
 ) {
     fun observeSignedInUser(account: UserAccount): LiveDataIoResult<UserToken> = resultLiveData(
         databaseQuery = { userDao.getUserToken(account.googleId) },
-        networkCall = { commonsRemoteDataSource.registerUser(account.googleIdToken) },
+        networkCall = { remoteSource.registerUser(account.googleIdToken) },
         saveCallResult = { apiToken ->
             val googleTokenStub = account.googleIdToken.substring(0..31)
             if (googleTokenStub == apiToken.googleTokenStub) {
