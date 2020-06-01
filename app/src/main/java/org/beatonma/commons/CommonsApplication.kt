@@ -12,16 +12,12 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import org.beatonma.commons.app.SystemTheme
 import org.beatonma.commons.app.dagger.AppInjector
-import org.beatonma.commons.data.core.repository.CommonsRepository
 import org.beatonma.commons.kotlin.extensions.getPrefs
 import javax.inject.Inject
 
 
 class CommonsApplication : Application(), HasAndroidInjector {
     @Inject lateinit var androidInjector: DispatchingAndroidInjector<Any>
-
-    @Inject
-    lateinit var repository: CommonsRepository
 
     override fun onCreate() {
         super.onCreate()
