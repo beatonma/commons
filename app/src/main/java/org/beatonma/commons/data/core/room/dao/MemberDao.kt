@@ -80,6 +80,7 @@ interface MemberDao {
     @Query("""SELECT * FROM division_votes WHERE dvote_member_id = :parliamentdotuk""")
     fun getLordsVotesForMember(parliamentdotuk: ParliamentID): LiveDataList<VoteWithDivision>
 
+
     // Insert operations
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPhysicalAddresses(webaddresses: List<PhysicalAddress>)
@@ -102,20 +103,14 @@ interface MemberDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertProfilesIfNotExists(people: List<MemberProfile>)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertConstituency(constituency: Constituency)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertConstituencyIfNotExists(constituency: Constituency)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertConstituencies(constituencies: List<Constituency>)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertParty(party: Party)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertConstituenciesIfNotExists(constituencies: List<Constituency>)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertPartyIfNotExists(party: Party)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertParties(parties: List<Party>)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertPartiesIfNotExists(parties: List<Party>)
@@ -161,14 +156,14 @@ interface MemberDao {
 
     @Transaction
     suspend fun insertCompleteMember(parliamentdotuk: ParliamentID, member: ApiCompleteMember) {
-        insertParties(member.parties.map { it.party })
-        insertParty(member.profile.party)
-        insertConstituencies(
+        insertPartiesIfNotExists(member.parties.map { it.party })
+        insertPartyIfNotExists(member.profile.party)
+        insertConstituenciesIfNotExists(
             member.constituencies.map { it.constituency }
         )
         if (member.profile.constituency != null) {
             // Not necessarily included in member.constituencies list.
-            insertConstituency(member.profile.constituency)
+            insertConstituencyIfNotExists(member.profile.constituency)
         }
 
         insertProfile(member.profile)
@@ -215,6 +210,36 @@ interface MemberDao {
             it.toHistoricalConstituency(parliamentdotuk)
         } )
 
-        insertPartyAssociations(member.parties.map {it.toPartyAssocation(parliamentdotuk) })
+        insertPartyAssociations(member.parties.map {it.toPartyAssociation(parliamentdotuk) })
+    }
+
+    suspend fun safeInsertProfile(profile: MemberProfile?, ifNotExists: Boolean = false) {
+        profile ?: return
+
+        // The embedded party/constituency are low-detail so we do not want to overwrite any
+        // high-detail records we might already hold.
+        if (profile.constituency != null) {
+            insertConstituencyIfNotExists(profile.constituency)
+        }
+        insertPartyIfNotExists(profile.party)
+
+        if (ifNotExists) {
+            insertProfileIfNotExists(profile)
+        }
+        else {
+            insertProfile(profile)
+        }
+    }
+
+    suspend fun safeInsertProfiles(profiles: List<MemberProfile>, ifNotExists: Boolean = false) {
+        insertConstituenciesIfNotExists(profiles.mapNotNull { it.constituency })
+        insertPartiesIfNotExists(profiles.map { it.party })
+
+        if (ifNotExists) {
+            insertProfilesIfNotExists(profiles)
+        }
+        else {
+            insertProfiles(profiles)
+        }
     }
 }
