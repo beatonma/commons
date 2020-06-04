@@ -7,9 +7,9 @@ import androidx.room.ForeignKey
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.ParliamentID
-import org.beatonma.commons.data.core.Named
-import org.beatonma.commons.data.core.Parliamentdotuk
-import org.beatonma.commons.data.core.Periodic
+import org.beatonma.commons.data.core.interfaces.Named
+import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
+import org.beatonma.commons.data.core.interfaces.Periodic
 import java.time.LocalDate
 
 @Entity(
@@ -35,7 +35,9 @@ data class Post(
     @ColumnInfo(name = "post_type") val postType: PostType,
     @field:Json(name = "start") @ColumnInfo(name = "start") override val start: LocalDate?,
     @field:Json(name = "end") @ColumnInfo(name = "end") override val end: LocalDate?
-): Parliamentdotuk, Named, Periodic {
+): Parliamentdotuk,
+    Named,
+    Periodic {
     enum class PostType {
         GOVERNMENTAL,
         PARLIAMENTARY,

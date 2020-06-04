@@ -7,8 +7,8 @@ import androidx.room.PrimaryKey
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.ParliamentID
-import org.beatonma.commons.data.core.Dated
-import org.beatonma.commons.data.core.Parliamentdotuk
+import org.beatonma.commons.data.core.interfaces.Dated
+import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
 import java.time.LocalDate
 
 @Entity(

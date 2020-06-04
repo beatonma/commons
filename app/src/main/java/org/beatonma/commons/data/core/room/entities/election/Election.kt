@@ -6,9 +6,9 @@ import androidx.room.PrimaryKey
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.ParliamentID
-import org.beatonma.commons.data.core.Dated
-import org.beatonma.commons.data.core.Named
-import org.beatonma.commons.data.core.Parliamentdotuk
+import org.beatonma.commons.data.core.interfaces.Dated
+import org.beatonma.commons.data.core.interfaces.Named
+import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
 import java.time.LocalDate
 
 @Entity(
@@ -19,5 +19,6 @@ data class Election(
     @field:Json(name = "name") @ColumnInfo(name = "election_name") override val name: String,
     @field:Json(name = "date") @ColumnInfo(name = "election_date") override val date: LocalDate,
     @field:Json(name = "election_type") @ColumnInfo(name = "election_type") val electionType: String
-): Parliamentdotuk, Named,
+): Parliamentdotuk,
+    Named,
     Dated

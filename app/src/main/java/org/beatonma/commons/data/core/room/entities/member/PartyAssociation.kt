@@ -3,8 +3,8 @@ package org.beatonma.commons.data.core.room.entities.member
 import androidx.room.*
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
-import org.beatonma.commons.data.core.Named
-import org.beatonma.commons.data.core.Periodic
+import org.beatonma.commons.data.core.interfaces.Named
+import org.beatonma.commons.data.core.interfaces.Periodic
 import java.time.LocalDate
 
 @Entity(
@@ -44,7 +44,8 @@ data class PartyAssociationWithParty(
 
     @Relation(parentColumn = "partyacc_party_id", entityColumn = "party_$PARLIAMENTDOTUK")
     val party: Party
-): Named, Periodic {
+): Named,
+    Periodic {
     override val name: String get() = party.name
     override val start: LocalDate get() = partyAssocation.start
     override val end: LocalDate? get() = partyAssocation.end

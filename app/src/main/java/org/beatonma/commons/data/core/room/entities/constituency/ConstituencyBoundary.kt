@@ -8,7 +8,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.ParliamentID
-import org.beatonma.commons.data.core.Parliamentdotuk
+import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
 
 private const val TAG = "ConstituencyBoundary"
 

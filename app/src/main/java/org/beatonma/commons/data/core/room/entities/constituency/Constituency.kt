@@ -4,9 +4,9 @@ import androidx.room.*
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.ParliamentID
-import org.beatonma.commons.data.core.Named
-import org.beatonma.commons.data.core.Parliamentdotuk
-import org.beatonma.commons.data.core.Periodic
+import org.beatonma.commons.data.core.interfaces.Named
+import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
+import org.beatonma.commons.data.core.interfaces.Periodic
 import org.beatonma.commons.data.core.room.entities.election.ApiConstituencyResult
 import org.beatonma.commons.data.core.room.entities.election.ConstituencyResultWithDetails
 import org.beatonma.commons.data.core.room.entities.member.BasicProfileWithParty
@@ -21,7 +21,9 @@ data class Constituency(
     @field:Json(name = "name") @ColumnInfo(name = "constituency_name") override val name: String,
     @ColumnInfo(name = "constituency_start") override val start: LocalDate? = null,
     @ColumnInfo(name = "constituency_end") override val end: LocalDate? = null,
-): Parliamentdotuk, Named, Periodic
+): Parliamentdotuk,
+    Named,
+    Periodic
 
 
 data class ApiConstituency(
@@ -32,7 +34,9 @@ data class ApiConstituency(
     @field:Json(name = "mp") val memberProfile: MemberProfile?,
     @field:Json(name = "boundary") val boundary: ConstituencyBoundary?,
     @field:Json(name = "results") val results: List<ApiConstituencyResult>,
-): Parliamentdotuk, Named, Periodic {
+): Parliamentdotuk,
+    Named,
+    Periodic {
     fun toConstituency(): Constituency {
         return Constituency(
             parliamentdotuk = parliamentdotuk,

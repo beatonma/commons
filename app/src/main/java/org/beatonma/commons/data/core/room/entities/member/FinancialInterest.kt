@@ -6,9 +6,9 @@ import androidx.room.ForeignKey
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.ParliamentID
-import org.beatonma.commons.data.core.Dated
-import org.beatonma.commons.data.core.Named
-import org.beatonma.commons.data.core.Parliamentdotuk
+import org.beatonma.commons.data.core.interfaces.Dated
+import org.beatonma.commons.data.core.interfaces.Named
+import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
 import java.time.LocalDate
 
 @Entity(
@@ -36,7 +36,8 @@ data class FinancialInterest(
     @field:Json(name = "amended") @ColumnInfo(name = "interest_amended") val dateAmended: LocalDate?,
     @field:Json(name = "deleted") @ColumnInfo(name = "interest_deleted") val dateDeleted: LocalDate?,
     @field:Json(name = "registered_late") @ColumnInfo(name = "interest_registered_late") val registeredLate: Boolean
-): Parliamentdotuk, Named,
+): Parliamentdotuk,
+    Named,
     Dated {
     override val name: String
         get() = description

@@ -5,8 +5,8 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
-import org.beatonma.commons.data.core.Named
-import org.beatonma.commons.data.core.Periodic
+import org.beatonma.commons.data.core.interfaces.Named
+import org.beatonma.commons.data.core.interfaces.Periodic
 import java.time.LocalDate
 
 enum class House {
@@ -37,6 +37,7 @@ data class HouseMembership(
     @ColumnInfo(name = "house_member_id", index = true) val memberId: Int,
     @field:Json(name = "start") @ColumnInfo(name = "house_start") override val start: LocalDate,
     @field:Json(name = "end") @ColumnInfo(name = "house_end") override val end: LocalDate?
-): Named, Periodic {
+): Named,
+    Periodic {
     override val name get() = house.name
 }

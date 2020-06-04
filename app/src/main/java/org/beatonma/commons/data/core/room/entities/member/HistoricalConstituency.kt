@@ -3,7 +3,8 @@ package org.beatonma.commons.data.core.room.entities.member
 import androidx.room.*
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
-import org.beatonma.commons.data.core.Periodic
+import org.beatonma.commons.data.core.interfaces.Named
+import org.beatonma.commons.data.core.interfaces.Periodic
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import org.beatonma.commons.data.core.room.entities.election.Election
 import java.time.LocalDate
@@ -50,9 +51,11 @@ data class HistoricalConstituencyWithElection(
 
     @Relation(parentColumn = "memberfor_election_id", entityColumn = "election_$PARLIAMENTDOTUK")
     val election: Election
-): Periodic {
+): Named,
+    Periodic {
     override val start: LocalDate? get() = historicalConstituency.start
     override val end: LocalDate? get() = historicalConstituency.end
+    override val name: String get() = constituency.name
 }
 
 

@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.squareup.moshi.Json
-import org.beatonma.commons.data.core.Named
+import org.beatonma.commons.data.core.interfaces.Named
 
 @Entity(
     tableName = "bill_types"

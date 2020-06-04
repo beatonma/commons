@@ -1,4 +1,4 @@
-package org.beatonma.commons.data.core
+package org.beatonma.commons.data.core.interfaces
 
 import java.time.LocalDate
 

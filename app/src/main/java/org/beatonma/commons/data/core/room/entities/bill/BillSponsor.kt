@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.ParliamentID
-import org.beatonma.commons.data.core.Named
+import org.beatonma.commons.data.core.interfaces.Named
 
 /**
  * [parliamentdotuk] may be used to look up the member profile, but it may be null if the server

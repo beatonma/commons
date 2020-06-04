@@ -4,10 +4,9 @@ import androidx.room.*
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.ParliamentID
-import org.beatonma.commons.data.core.Named
-import org.beatonma.commons.data.core.Parliamentdotuk
-import org.beatonma.commons.data.core.Periodic
+import org.beatonma.commons.data.core.interfaces.*
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
+import org.beatonma.commons.data.core.social.SocialContentTarget
 import java.time.LocalDate
 
 @Entity(
@@ -44,7 +43,15 @@ data class MemberProfile(
     @Embedded(prefix = "birth_") @field:Json(name = "place_of_birth") val placeOfBirth: Town? = null,
     @field:Json(name = "portrait") @ColumnInfo(name = "portrait_url") val portraitUrl: String? = null,
     @field:Json(name = "current_post") @ColumnInfo(name = "current_post") val currentPost: String? = null
-) : Parliamentdotuk, Named, Periodic {
+) : Parliamentdotuk,
+    Named,
+    Periodic,
+    Commentable,
+    Votable
+{
+
+    override fun getSocialContentTarget(): SocialContentTarget = SocialContentTarget.MEMBER
+
     @Ignore override val start: LocalDate? = dateOfBirth
     @Ignore override val end: LocalDate? = dateOfDeath
 }
@@ -56,7 +63,8 @@ data class BasicProfile(
     @field:Json(name = "current_post") @ColumnInfo(name = "current_post") val currentPost: String? = null,
     @field:Json(name = "party") @ColumnInfo(name = "party_id", index = true) val party: Party,  // Use Party object for api response, serialized to id for storage
     @field:Json(name = "constituency") @ColumnInfo(name = "constituency_id", index = true) val constituency: Constituency?  // Use Constituency object for api response, serialized to id for storage
-): Parliamentdotuk, Named {
+): Parliamentdotuk,
+    Named {
     fun toMemberProfile() = MemberProfile(
         parliamentdotuk = parliamentdotuk,
         name = name,

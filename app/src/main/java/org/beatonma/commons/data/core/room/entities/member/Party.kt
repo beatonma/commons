@@ -6,11 +6,12 @@ import androidx.room.PrimaryKey
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.ParliamentID
-import org.beatonma.commons.data.core.Named
-import org.beatonma.commons.data.core.Parliamentdotuk
+import org.beatonma.commons.data.core.interfaces.Named
+import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
 
 @Entity(tableName = "parties")
 data class Party(
     @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = "party_$PARLIAMENTDOTUK") @PrimaryKey override val parliamentdotuk: ParliamentID,
     @field:Json(name = "name") @ColumnInfo(name = "party_name") override val name: String
-): Parliamentdotuk, Named
+): Parliamentdotuk,
+    Named

@@ -4,9 +4,9 @@ import androidx.room.*
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.ParliamentID
-import org.beatonma.commons.data.core.Named
-import org.beatonma.commons.data.core.Parliamentdotuk
-import org.beatonma.commons.data.core.Periodic
+import org.beatonma.commons.data.core.interfaces.Named
+import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
+import org.beatonma.commons.data.core.interfaces.Periodic
 import java.time.LocalDate
 
 @Entity(
@@ -23,7 +23,9 @@ data class CommitteeMembership(
     @field:Json(name = "name") @ColumnInfo(name = "committee_name") override val name: String,
     @field:Json(name = "start") @ColumnInfo(name = "committee_start") override val start: LocalDate?,
     @field:Json(name = "end") @ColumnInfo(name = "committee_end") override val end: LocalDate?,
-): Parliamentdotuk, Named, Periodic
+): Parliamentdotuk,
+    Named,
+    Periodic
 
 @Entity(
     indices = [
@@ -60,7 +62,8 @@ data class CommitteeMemberWithChairs(
         entityColumn = "committee_id"
     )
     val chairs: List<CommitteeChairship>,
-): Named, Periodic {
+): Named,
+    Periodic {
     override val name: String
         get() = membership.name
     override val start: LocalDate?
@@ -76,7 +79,9 @@ data class ApiCommittee(
     @field:Json(name = "start") override val start: LocalDate?,
     @field:Json(name = "end") override val end: LocalDate?,
     @field:Json(name = "chair") val chairs: List<CommitteeChairship>,
-): Parliamentdotuk, Named, Periodic {
+): Parliamentdotuk,
+    Named,
+    Periodic {
 
     fun toCommitteeMembership(member: ParliamentID) = CommitteeMembership(
         parliamentdotuk = parliamentdotuk,
