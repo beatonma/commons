@@ -17,21 +17,25 @@ fun <T, N> resultLiveData(
     emitSource(source)
 
     val response = networkCall.invoke()
-    if (response is SuccessResult) {
-        if (response.data != null) {
-            try {
-                saveCallResult(response.data)
+    when (response) {
+        is SuccessResult -> {
+            if (response.data != null) {
+                try {
+                    saveCallResult(response.data)
+                }
+                catch (e: Exception) {
+                    emit(LocalError<T>("Unable to save network result: $e", e))
+                }
             }
-            catch (e: Exception) {
-                emit(LocalError<T>("Unable to save network result: $e"))
+            else {
+                emit(UnexpectedValueError<T>("Null data: ${response.message}", null))
             }
         }
-        else {
-            emit(UnexpectedValueError<T>("Null data: ${response.message}"))
+
+        is IoError -> {
+            emit(NetworkError<T>(response.message, response.error))
+            emitSource(source)
         }
-    } else if (response is IoError) {
-        emit(NetworkError<T>(response.message))
-        emitSource(source)
     }
 }
 
@@ -41,14 +45,18 @@ fun <T> resultLiveDataNoCache(
 ): LiveDataIoResult<T> = liveData(Dispatchers.IO) {
     emit(LoadingResult<T>())
     val response = networkCall.invoke()
-    if (response is SuccessResult) {
-        if (response.data != null) {
-            emit(SuccessResult(response.data, "Network "))
+    when (response) {
+        is SuccessResult -> {
+            if (response.data != null) {
+                emit(SuccessResult(response.data, "Network OK"))
+            }
+            else {
+                emit(UnexpectedValueError<T>("Null data: ${response.message}", null))
+            }
         }
-        else {
-            emit(UnexpectedValueError<T>("Null data: ${response.message}"))
+
+        is IoError -> {
+            emit(NetworkError<T>(response.message, response.error))
         }
-    } else if (response is IoError) {
-        emit(NetworkError<T>(response.message))
     }
 }
