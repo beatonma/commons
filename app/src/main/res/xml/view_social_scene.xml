@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:motion="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <Transition
+        motion:constraintSetStart="@+id/state_view_content"
+        motion:constraintSetEnd="@+id/state_compose_comment"
+        motion:duration="@integer/animation_window_duration">
+       <KeyFrameSet>
+           <KeyPosition
+               motion:motionTarget="@+id/create_comment_scrim"
+               motion:framePosition="1"
+               motion:percentHeight="1.0"/>
+           <KeyAttribute
+               motion:motionTarget="@+id/create_comment_scrim"
+               motion:framePosition="40"
+               android:alpha="0.0"/>
+       </KeyFrameSet>
+    </Transition>
+
+    <ConstraintSet android:id="@+id/state_view_content">
+        <Constraint
+            android:id="@+id/create_comment_scrim"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:alpha="0.0"
+            app:layout_constraintTop_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            >
+
+            <CustomAttribute
+                motion:customDimension="0dp"
+                motion:attributeName="elevation"/>
+        </Constraint>
+        <Constraint
+            android:id="@+id/create_comment_flow"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_marginVertical="@dimen/card_padding_vertical"
+            android:layout_marginHorizontal="@dimen/card_padding_horizontal"
+            app:layout_constraintTop_toBottomOf="@+id/flow"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            >
+            <CustomAttribute
+                motion:customDimension="0dp"
+                motion:attributeName="elevation"/>
+        </Constraint>
+        <Constraint
+            android:id="@+id/create_comment_background"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            >
+        </Constraint>
+
+        <Constraint
+            android:id="@+id/create_comment_layer"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleX="@fraction/transition_scale_start"
+            android:scaleY="@fraction/transition_scale_start"
+            >
+            <CustomAttribute
+                motion:customDimension="0dp"
+                motion:attributeName="elevation"/>
+        </Constraint>
+
+<!--        <Constraint-->
+<!--            android:id="@+id/create_comment_fab"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            android:layout_marginHorizontal="@dimen/fab_margin_horizontal"-->
+<!--            android:layout_marginVertical="@dimen/fab_margin_vertical"-->
+<!--            />-->
+    </ConstraintSet>
+
+    <ConstraintSet android:id="@+id/state_compose_comment">
+
+        <Constraint
+            android:id="@+id/create_comment_scrim"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:alpha="1.0"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            >
+
+            <CustomAttribute
+                motion:customDimension="32dp"
+                motion:attributeName="elevation"/>
+        </Constraint>
+
+        <Constraint
+            android:id="@+id/create_comment_flow"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/card_padding_vertical"
+            android:layout_marginHorizontal="@dimen/card_padding_horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            >
+        </Constraint>
+
+        <Constraint
+            android:id="@+id/create_comment_background"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toTopOf="@+id/create_comment_flow"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            >
+        </Constraint>
+
+        <Constraint
+            android:id="@+id/create_comment_layer"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            >
+            <CustomAttribute
+                motion:customDimension="64dp"
+                motion:attributeName="elevation"/>
+        </Constraint>
+
+<!--        <Constraint-->
+<!--            android:id="@+id/create_comment_fab"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            android:layout_marginHorizontal="@dimen/fab_margin_horizontal"-->
+<!--            android:layout_marginVertical="@dimen/fab_margin_vertical"-->
+<!--            />-->
+    </ConstraintSet>
+</MotionScene>
