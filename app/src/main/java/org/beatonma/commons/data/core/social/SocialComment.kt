@@ -1,9 +1,10 @@
 package org.beatonma.commons.data.core.social
 
 import com.squareup.moshi.Json
-import org.beatonma.commons.data.core.interfaces.Commentable
+import org.beatonma.commons.data.core.repository.SocialTarget
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 import java.time.LocalDateTime
+
 
 data class SocialComment(
     @field:Json(name = "username") val username: String,
@@ -12,8 +13,8 @@ data class SocialComment(
     @field:Json(name = "modified_on") val modified: LocalDateTime,
 )
 
-data class CreatedComment<T: Commentable>(
+data class CreatedComment(
     val userToken: UserToken,
+    val target: SocialTarget,
     val text: String,
-    val target: T,
 )

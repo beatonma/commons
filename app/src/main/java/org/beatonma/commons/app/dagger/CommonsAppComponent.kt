@@ -9,9 +9,12 @@ import org.beatonma.commons.app.ExperimentalFrontPageFragment
 import org.beatonma.commons.app.MainActivity
 import org.beatonma.commons.app.bill.BillDetailFragment
 import org.beatonma.commons.app.constituency.ConstituencyDetailFragment
+import org.beatonma.commons.app.constituency.ConstituencyElectionResultsFragment
 import org.beatonma.commons.app.division.DivisionDetailFragment
 import org.beatonma.commons.app.memberprofile.MemberProfileFragment
 import org.beatonma.commons.app.signin.SignInFragment
+import org.beatonma.commons.app.social.CompactSocialFragment
+import org.beatonma.commons.app.social.ExpandedSocialFragment
 import org.beatonma.commons.data.core.dagger.CommonsDataModule
 import javax.inject.Singleton
 
@@ -66,5 +69,17 @@ abstract class FragmentsModule {
 
     @FragmentScope
     @ContributesAndroidInjector
+    abstract fun providesConstituencyElectionResultsFragment(): ConstituencyElectionResultsFragment
+
+    @FragmentScope
+    @ContributesAndroidInjector
     abstract fun providesSignInFragment(): SignInFragment
+
+    @FragmentScope
+    @ContributesAndroidInjector
+    abstract fun providesCompactSocialFragment(): CompactSocialFragment
+
+    @FragmentScope
+    @ContributesAndroidInjector
+    abstract fun providesExpandedSocialFragment(): ExpandedSocialFragment
 }

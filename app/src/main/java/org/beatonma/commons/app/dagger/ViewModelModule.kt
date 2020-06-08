@@ -8,11 +8,13 @@ import dagger.Module
 import dagger.multibindings.IntoMap
 import org.beatonma.commons.app.bill.BillProfileViewModel
 import org.beatonma.commons.app.constituency.ConstituencyDetailViewModel
+import org.beatonma.commons.app.constituency.ConstituencyElectionResultsViewModel
 import org.beatonma.commons.app.division.DivisionDetailViewModel
 import org.beatonma.commons.app.featured.FeaturedContentViewModel
 import org.beatonma.commons.app.memberprofile.MemberProfileViewModel
 import org.beatonma.commons.app.search.SearchViewModel
 import org.beatonma.commons.app.signin.SignInViewModel
+import org.beatonma.commons.app.social.SocialViewModel
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
@@ -20,10 +22,11 @@ import kotlin.reflect.KClass
 
 @Singleton
 class ViewModelFactory @Inject constructor(
-    private val viewModels: MutableMap<Class<out ViewModel>, Provider<ViewModel>>
+    private val viewModels: MutableMap<Class<out ViewModel>, Provider<ViewModel>>,
 ) :
     ViewModelProvider.Factory {
 
+    @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T =
         viewModels[modelClass]?.get() as T
 }
@@ -39,6 +42,7 @@ internal annotation class ViewModelKey(val value: KClass<out ViewModel>)
 
 @Module
 abstract class ViewModelModule {
+
     @Binds
     internal abstract fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
 
@@ -69,6 +73,11 @@ abstract class ViewModelModule {
 
     @Binds
     @IntoMap
+    @ViewModelKey(ConstituencyElectionResultsViewModel::class)
+    internal abstract fun bindConstituencyElectionResultsViewModel(viewModel: ConstituencyElectionResultsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
     @ViewModelKey(SignInViewModel::class)
     internal abstract fun bindSignInViewModel(viewModel: SignInViewModel): ViewModel
 
@@ -76,4 +85,9 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(SearchViewModel::class)
     internal abstract fun bindSearchViewModel(viewModel: SearchViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(SocialViewModel::class)
+    internal abstract fun bindSocialViewModel(viewModel: SocialViewModel): ViewModel
 }
