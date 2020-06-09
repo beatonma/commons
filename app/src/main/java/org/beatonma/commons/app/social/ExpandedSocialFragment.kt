@@ -4,9 +4,11 @@ import android.animation.ObjectAnimator
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.ColorInt
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.Dispatchers
@@ -26,6 +28,7 @@ import org.beatonma.commons.data.core.social.SocialContent
 import org.beatonma.commons.data.core.social.SocialVoteType
 import org.beatonma.commons.databinding.FragmentSocialExpandedBinding
 import org.beatonma.commons.databinding.ItemSocialCommentBinding
+import org.beatonma.commons.kotlin.data.asStateList
 import org.beatonma.commons.kotlin.extensions.*
 import org.beatonma.lib.ui.recyclerview.kotlin.extensions.setup
 import java.time.LocalDate
@@ -36,11 +39,28 @@ class ExpandedSocialFragment: BaseSocialFragment(), OnBackPressed {
     private lateinit var binding: FragmentSocialExpandedBinding
     private val adapter = CommentAdapter()
 
+    @ColorInt
+    var colorControlNormal: Int = 0
+
+    @ColorInt
+    var colorControlActive: Int = 0
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
+
+        resolveColorAttributes(context)
+
         val args = arguments ?: return
         val target = SocialTarget(args)
-        viewmodel.forTarget(target)
+
+        forTarget(target)
+    }
+
+    override fun forTarget(target: SocialTarget) {
+        lifecycleScope.launch(Dispatchers.Main) {
+            viewmodel.forTarget(target)
+            viewmodel.livedata.observe(viewLifecycleOwner, observer)
+        }
     }
 
     override fun onCreateView(
@@ -55,10 +75,7 @@ class ExpandedSocialFragment: BaseSocialFragment(), OnBackPressed {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupClickListeners()
         binding.commentsRecyclerview.setup(adapter)
-
-        viewmodel.livedata.observe(viewLifecycleOwner, observer)
     }
 
     override fun onBackPressed(): Boolean {
@@ -71,6 +88,10 @@ class ExpandedSocialFragment: BaseSocialFragment(), OnBackPressed {
     }
 
     override fun updateUi(content: SocialContent?) {
+        if (content?.userVote != null) {
+            updateVoteUi(content.userVote)
+        }
+
         adapter.items = content?.comments ?: listOf()
         val numComments = content?.commentCount() ?: 0
         val numUpvotes = content?.ayeVotes() ?: 0
@@ -94,15 +115,15 @@ class ExpandedSocialFragment: BaseSocialFragment(), OnBackPressed {
 
     override fun setupClickListeners() {
         binding.apply {
-            upvotes.setOnClickListener { submitVote(SocialVoteType.AYE) }
-            downvotes.setOnClickListener { submitVote(SocialVoteType.NO) }
+            upvotes.setOnClickListener { onVoteClicked(SocialVoteType.aye) }
+            downvotes.setOnClickListener { onVoteClicked(SocialVoteType.no) }
 
             createCommentFab.setOnClickListener { showComposeCommentUi() }
             createCommentScrim.setOnClickListener { hideComposeCommentUi() }
 
             createCommentSubmit.setOnClickListener {
                 val comment = binding.createCommentEdittext.text.toString()
-                val validationResult = validateComment(comment)
+                val validationResult = viewmodel.validateComment(comment)
                 when (validationResult) {
                     CommentValidation.VALID -> submitComment(comment)
                     else -> notifyCommentIsInvalid(validationResult)
@@ -128,18 +149,6 @@ class ExpandedSocialFragment: BaseSocialFragment(), OnBackPressed {
     private fun composeCommentUiVisible() =
         binding.root.currentState == R.id.state_compose_comment
 
-            private fun validateComment(text: String): CommentValidation {
-        val length = text.length
-
-        return when {
-            length < 10 -> CommentValidation.INVALID_TOO_SHORT
-            length > SOCIAL_COMMENT_MAX_LENGTH -> CommentValidation.INVALID_TOO_LONG
-
-            // Further validation on server side
-            else -> CommentValidation.VALID
-        }
-    }
-
     private fun notifyCommentIsInvalid(result: CommentValidation) {
         when (result) {
             CommentValidation.INVALID_TOO_SHORT -> {
@@ -154,6 +163,7 @@ class ExpandedSocialFragment: BaseSocialFragment(), OnBackPressed {
 
         val shakeAmount = context.dp(8F)
 
+        // Shake the comment UI side to side
         ObjectAnimator.ofFloat(binding.createCommentAlphaLayer, View.TRANSLATION_X, 0F, shakeAmount, -shakeAmount, 0F)
             .setDuration(requireContext().resources.getInteger(R.integer.animation_duration).toLong())
             .start()
@@ -184,20 +194,38 @@ class ExpandedSocialFragment: BaseSocialFragment(), OnBackPressed {
     }
 
     override fun updateVoteUi(voteType: SocialVoteType) {
+        fun setIconColors(@ColorInt upvoteColor: Int, @ColorInt downvoteColor: Int) {
+            binding.voteUp.imageTintList = upvoteColor.asStateList()
+            binding.voteDown.imageTintList = downvoteColor.asStateList()
+        }
+
         when (voteType) {
-            SocialVoteType.AYE -> {
-
+            SocialVoteType.aye -> {
+                setIconColors(colorControlActive, colorControlNormal)
             }
-            SocialVoteType.NO -> {
-
+            SocialVoteType.no -> {
+                setIconColors(colorControlNormal, colorControlActive)
             }
             else -> {
-                Log.w(TAG, "Unhandled voteType: $voteType")
+                setIconColors(colorControlNormal, colorControlNormal)
             }
         }
     }
 
-    private inner class CommentAdapter: CommonsLoadingAdapter<SocialComment>() {
+    private fun resolveColorAttributes(context: Context) {
+        val typedValue = TypedValue()
+        val theme = context.theme
+
+        theme.resolveAttribute(R.attr.colorControlNormal, typedValue, true)
+        colorControlNormal = typedValue.data
+
+        theme.resolveAttribute(R.attr.colorControlActivated, typedValue, true)
+        colorControlActive = typedValue.data
+    }
+
+    private inner class CommentAdapter: CommonsLoadingAdapter<SocialComment>(
+        emptyLayoutID = R.layout.item_social_no_comments
+    ) {
         private val today = LocalDate.now()  // Used for time formatting
 
         override fun onCreateDefaultViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
@@ -215,12 +243,4 @@ class ExpandedSocialFragment: BaseSocialFragment(), OnBackPressed {
                 }
             }
     }
-
-
-}
-
-private enum class CommentValidation {
-    VALID,
-    INVALID_TOO_SHORT,
-    INVALID_TOO_LONG,
 }

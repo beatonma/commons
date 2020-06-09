@@ -1,7 +1,8 @@
 package org.beatonma.commons.app.social
 
+import android.os.Bundle
 import android.util.Log
-import androidx.annotation.MainThread
+import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
@@ -32,13 +33,19 @@ abstract class BaseSocialFragment: BaseViewmodelFragment() {
         }
     }
 
-
     fun <T: Sociable> forTarget(target: T) = forTarget(
         SocialTarget(target)
     )
 
     open fun forTarget(target: SocialTarget) {
-        viewmodel.forTarget(target)
+        lifecycleScope.launch(Dispatchers.Main) {
+            viewmodel.forTarget(target)
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupClickListeners()
     }
 
     protected abstract fun updateUi(content: SocialContent?)
@@ -46,15 +53,16 @@ abstract class BaseSocialFragment: BaseViewmodelFragment() {
 
     protected abstract fun setupClickListeners()
 
-    @MainThread
-    protected fun refreshAndObserveSocialContent() {
-        viewmodel.livedata.removeObserver(observer)
-        viewmodel.refresh()
-        viewmodel.livedata.observe(viewLifecycleOwner, observer)
+    protected suspend fun refreshAndObserveSocialContent() {
+        withContext(Dispatchers.Main) {
+            viewmodel.livedata.removeObserver(observer)
+            viewmodel.refresh()
+            viewmodel.livedata.observe(viewLifecycleOwner, observer)
+        }
     }
 
     @SignInRequired
-    protected fun submitVote(voteType: SocialVoteType) {
+    private fun submitVote(voteType: SocialVoteType) {
         updateVoteUi(voteType)
         lifecycleScope.launch(Dispatchers.IO) {
             val result = viewmodel.postVote(voteType)
@@ -69,10 +77,17 @@ abstract class BaseSocialFragment: BaseViewmodelFragment() {
         }
     }
 
-    protected open suspend fun onVoteSubmissionSuccessful() {
-        withContext(Dispatchers.Main) {
-            snackbar("Vote submitted!")
-            refreshAndObserveSocialContent()
+    protected fun onVoteClicked(voteType: SocialVoteType) {
+        if (viewmodel.shouldRemoveVote(voteType)) {
+            submitVote(SocialVoteType.NULL)
         }
+        else {
+            submitVote(voteType)
+        }
+    }
+
+    protected open suspend fun onVoteSubmissionSuccessful() {
+        snackbar("Vote submitted!")
+        refreshAndObserveSocialContent()
     }
 }

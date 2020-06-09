@@ -2,14 +2,15 @@ package org.beatonma.commons.app.social
 
 import androidx.lifecycle.AndroidViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import org.beatonma.commons.BuildConfig
 import org.beatonma.commons.CommonsApplication
 import org.beatonma.commons.annotations.SignInRequired
 import org.beatonma.commons.context
 import org.beatonma.commons.data.IoResult
 import org.beatonma.commons.data.LiveDataIoResult
 import org.beatonma.commons.data.NotSignedInError
-import org.beatonma.commons.data.core.interfaces.Sociable
 import org.beatonma.commons.data.core.repository.*
+import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.data.core.social.CreatedComment
 import org.beatonma.commons.data.core.social.CreatedVote
 import org.beatonma.commons.data.core.social.SocialContent
@@ -27,19 +28,18 @@ class SocialViewModel @Inject constructor(
     lateinit var livedata: LiveDataIoResult<SocialContent>
     lateinit var socialTarget: SocialTarget
 
-    fun forTarget(sociableTarget: Sociable) = forTarget(
-            SocialTarget(sociableTarget)
-        )
-
-    fun forTarget(target: SocialTarget) {
-//        if (socialTarget != null) return
-        livedata = socialRepository.observeSocialContent(target)
-        socialTarget = target
+    suspend fun forTarget(target: SocialTarget) {
+        withOptionalUserToken { token ->
+            livedata = socialRepository.observeSocialContent(target, token?.snommocToken )
+            socialTarget = target
+        }
     }
 
-    fun refresh() {
+    suspend fun refresh() {
         if (socialTarget != null) {
-            livedata = socialRepository.observeSocialContent(socialTarget)
+            withOptionalUserToken { token ->
+                livedata = socialRepository.observeSocialContent(socialTarget, token?.snommocToken )
+            }
         }
     }
 
@@ -63,7 +63,7 @@ class SocialViewModel @Inject constructor(
     suspend fun postVote(voteType: SocialVoteType): IoResult<*> {
         return withUserAccount { account ->
             val token = userRepository.getUserTokenSync(account)
-                ?: return NotSignedInError("", null)
+                ?: return NotSignedInError("User must be signed in to vote", null)
 
             val vote = CreatedVote(
                 userToken = token,
@@ -75,9 +75,32 @@ class SocialViewModel @Inject constructor(
         }
     }
 
-    private suspend inline fun withUserAccount(block: (UserAccount) -> IoResult<*>):IoResult<*> {
+    internal fun validateComment(text: String): CommentValidation {
+        val length = text.length
+
+        return when {
+            length < 10 -> CommentValidation.INVALID_TOO_SHORT
+            length > BuildConfig.SOCIAL_COMMENT_MAX_LENGTH -> CommentValidation.INVALID_TOO_LONG
+
+            // Further validation on server side
+            else -> CommentValidation.VALID
+        }
+    }
+
+    /**
+     * Called when a user submits a vote.
+     * Returns true if the voteType is the same as that already registered.
+     */
+    internal fun shouldRemoveVote(voteType: SocialVoteType) =
+        livedata.value?.data?.userVote == voteType
+
+    private fun getUserAccount(): UserAccount? {
         val currentGoogleAccount = GoogleSignIn.getLastSignedInAccount(context)
-        val userAccount = currentGoogleAccount?.toUserAccount()
+        return currentGoogleAccount?.toUserAccount()
+    }
+
+    private suspend inline fun withUserAccount(block: (UserAccount) -> IoResult<*>):IoResult<*> {
+        val userAccount = getUserAccount()
 
         return if (userAccount == null) {
             NotSignedInError("Current Google Account is null")
@@ -86,4 +109,27 @@ class SocialViewModel @Inject constructor(
             block.invoke(userAccount)
         }
     }
+
+    private suspend inline fun withOptionalUserAccount(block: (UserAccount?) -> IoResult<*>):IoResult<*> {
+        return block.invoke(getUserAccount())
+    }
+
+    private suspend inline fun withOptionalUserToken(block: (UserToken?) -> Unit) {
+        val account = getUserAccount()
+
+        if (account == null) {
+            block(null)
+        }
+        else {
+            val userToken = userRepository.getUserTokenSync(account)
+            block(userToken)
+        }
+    }
+}
+
+
+internal enum class CommentValidation {
+    VALID,
+    INVALID_TOO_SHORT,
+    INVALID_TOO_LONG,
 }
