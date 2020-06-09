@@ -1,10 +1,13 @@
 package org.beatonma.commons.network.retrofit
 
+import org.beatonma.commons.annotations.SignInRequired
 import org.beatonma.commons.data.ListResponse
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.ParliamentID
+import org.beatonma.commons.data.SnommocToken
 import org.beatonma.commons.data.core.ApiCompleteMember
 import org.beatonma.commons.data.core.MessageOfTheDay
+import org.beatonma.commons.data.core.repository.SocialTarget
 import org.beatonma.commons.data.core.room.entities.bill.ApiBill
 import org.beatonma.commons.data.core.room.entities.bill.Bill
 import org.beatonma.commons.data.core.room.entities.constituency.ApiConstituency
@@ -15,6 +18,8 @@ import org.beatonma.commons.data.core.room.entities.member.BasicProfile
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 import org.beatonma.commons.data.core.room.entities.user.ApiUserToken
 import org.beatonma.commons.data.core.search.MemberSearchResult
+import org.beatonma.commons.data.core.social.DeletedVote
+import org.beatonma.commons.data.core.social.SocialContent
 import org.beatonma.commons.network.retrofit.converters.EnvelopePayload
 import retrofit2.Response
 import retrofit2.http.*
@@ -25,8 +30,14 @@ private const val FEATURED_API_PATH = "$API_PATH/featured"
 private const val BILL_API_PATH = "$API_PATH/bill"
 private const val DIVISION_API_PATH = "$API_PATH/division"
 private const val CONSTITUENCY_API_PATH = "$API_PATH/constituency"
+private const val SOCIAL_API_PATH = "/social"
+private const val SOCIAL_TARGET_PATH = "$SOCIAL_API_PATH/{target_type}/{parliamentdotuk}"
 
-interface CommonsService {
+private const val TOKEN = "token"
+private const val TARGET_TYPE = "target_type"
+
+
+interface CommonsService: SocialCommonsService {
     companion object {
         const val BASE_URL = "https://snommoc.org"
 
@@ -35,6 +46,7 @@ interface CommonsService {
         fun getDivisionUrl(parliamentdotuk: ParliamentID) = getUrl("$DIVISION_API_PATH/$parliamentdotuk/")
         fun getBillUrl(parliamentdotuk: ParliamentID) = getUrl("$BILL_API_PATH/$parliamentdotuk/")
         fun getConstituencyUrl(parliamentdotuk: ParliamentID) = getUrl("$CONSTITUENCY_API_PATH/$parliamentdotuk/")
+        fun getSocialUrl(target: SocialTarget) = getUrl("$SOCIAL_API_PATH/${target.targetType}/${target.parliamentdotuk}/all/")
     }
 
     @GET("$API_PATH/ping/")
@@ -101,11 +113,51 @@ interface CommonsService {
     @GET("$MEMBER_API_PATH/?page_size=5")
     suspend fun getSearchResults(@Query("search") query: String): ListResponse<MemberSearchResult>
 
-    @FormUrlEncoded
-    @POST("/auth/g/")
-    suspend fun registerGoogleSignIn(@Field("token") googleToken: String): Response<ApiUserToken>
-
     @EnvelopePayload
     @GET("$API_PATH/motd/")
     suspend fun getMessageOfTheDay(): ListResponse<MessageOfTheDay>
+}
+
+
+interface SocialCommonsService {
+
+    @FormUrlEncoded
+    @POST("$SOCIAL_API_PATH/auth/g/")
+    suspend fun registerGoogleSignIn(@Field(TOKEN) googleToken: String): Response<ApiUserToken>
+
+    @GET("$SOCIAL_TARGET_PATH/all/")
+    suspend fun getSocialContentForTarget(
+        @Path(TARGET_TYPE) targetStr: String,
+        @Path(PARLIAMENTDOTUK) parliamentdotuk: ParliamentID,
+        @Query(TOKEN) snommocToken: SnommocToken?,
+    ): Response<SocialContent>
+
+    @SignInRequired
+    @FormUrlEncoded
+    @POST("$SOCIAL_TARGET_PATH/comments/")
+    suspend fun postComment(
+
+        @Path(TARGET_TYPE) targetStr: String,
+        @Path(PARLIAMENTDOTUK) parliamentdotuk: ParliamentID,
+        @Field(TOKEN) snommocToken: SnommocToken,
+        @Field("text") text: String,
+    ): Response<Void>
+
+    @SignInRequired
+    @FormUrlEncoded
+    @POST("$SOCIAL_TARGET_PATH/votes/")
+    suspend fun postVote(
+        @Path(TARGET_TYPE) targetStr: String,
+        @Path(PARLIAMENTDOTUK) parliamentdotuk: ParliamentID,
+        @Field(TOKEN) snommocToken: SnommocToken,
+        @Field("vote") voteType: String,
+    ): Response<Void>
+
+    @SignInRequired
+    @HTTP(method = "DELETE", path = "$SOCIAL_TARGET_PATH/votes/", hasBody = true)
+    suspend fun deleteVote(
+        @Path(TARGET_TYPE) targetStr: String,
+        @Path(PARLIAMENTDOTUK) parliamentdotuk: ParliamentID,
+        @Body snommocToken: DeletedVote,
+    ): Response<Void>
 }
