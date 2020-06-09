@@ -18,6 +18,7 @@ data class SocialContent(
     @field:Json(name = "title") val title: String?,
     @field:Json(name = "comments") val comments: List<SocialComment>,
     @field:Json(name = "votes") val votes: SocialVotes,
+    @field:Json(name = "vote") val userVote: SocialVoteType?,
 ) {
     fun commentCount(): Int = comments.size
     fun voteCount(): Int = votes.voteCount()
