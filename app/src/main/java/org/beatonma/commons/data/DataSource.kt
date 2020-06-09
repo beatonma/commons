@@ -1,5 +1,6 @@
 package org.beatonma.commons.data
 
+import org.beatonma.commons.annotations.SignInRequired
 import org.beatonma.commons.data.core.ApiCompleteMember
 import org.beatonma.commons.data.core.MessageOfTheDay
 import org.beatonma.commons.data.core.room.entities.bill.ApiBill
@@ -13,6 +14,7 @@ import org.beatonma.commons.data.core.room.entities.member.House
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 import org.beatonma.commons.data.core.room.entities.user.ApiUserToken
 import org.beatonma.commons.data.core.search.MemberSearchResult
+import org.beatonma.commons.data.core.social.*
 import org.beatonma.commons.network.retrofit.CommonsService
 import retrofit2.Response
 import javax.inject.Inject
@@ -23,20 +25,22 @@ abstract class BaseDataSource {
             val response = call()
             if (response.isSuccessful) {
                 val body = response.body()
-                if (body != null) {
-                    return SuccessResult(body, message = "Network OK ")
+                return when(body) {
+                    null -> NoBodySuccessResult(response.code(), message = "Network OK")
+                    else -> SuccessResult(body, message = "Network OK ")
                 }
             }
-            return NetworkError("[${response.code()}] ${response.message()}")
+            return NetworkError("[${response.code()}] ${response.message()}", null)
         }
         catch (e: Exception) {
-            return GenericError("getResult error: ${e.message ?: e}")
+            return GenericError("getResult error: ${e.message ?: e}", e)
         }
     }
 }
 
 
 interface CommonsRemoteDataSource {
+    // READ
     suspend fun getFeaturedPeople(): IoResultList<MemberProfile>
     suspend fun getMember(parliamentdotuk: ParliamentID): IoResult<ApiCompleteMember>
 
@@ -57,8 +61,23 @@ interface CommonsRemoteDataSource {
 
     suspend fun getSearchResults(query: String): IoResultList<MemberSearchResult>
 
+    suspend fun getSocialForTarget(
+        targetType: SocialTargetType,
+        parliamentdotuk: ParliamentID,
+        snommocToken: SnommocToken?,
+    ): IoResult<SocialContent>
+
     suspend fun getMessageOfTheDay(): IoResultList<MessageOfTheDay>
+
+    // WRITE
     suspend fun registerUser(googleToken: String): IoResult<ApiUserToken>
+
+    // Social
+    @SignInRequired
+    suspend fun postComment(comment: CreatedComment): IoResult<Void>
+
+    @SignInRequired
+    suspend fun postVote(vote: CreatedVote): IoResult<Void>
 }
 
 
@@ -129,7 +148,46 @@ class CommonsRemoteDataSourceImpl @Inject constructor(
         service.getMessageOfTheDay()
     }
 
+    override suspend fun getSocialForTarget(
+        targetType: SocialTargetType,
+        parliamentdotuk: ParliamentID,
+        snommocToken: SnommocToken?,
+    ) = getResult {
+        service.getSocialContentForTarget(targetType.name, parliamentdotuk, snommocToken)
+    }
+
     override suspend fun registerUser(googleToken: String) = getResult {
         service.registerGoogleSignIn(googleToken)
+    }
+
+    // Write
+
+    @SignInRequired
+    override suspend fun postComment(comment: CreatedComment) = getResult {
+        service.postComment(
+            comment.target.targetType.name,
+            comment.target.parliamentdotuk,
+            comment.userToken.snommocToken,
+            comment.text
+        )
+    }
+
+    @SignInRequired
+    override suspend fun postVote(vote: CreatedVote) = getResult {
+        if (vote.voteType == SocialVoteType.NULL) {
+            service.deleteVote(
+                vote.target.targetType.name,
+                vote.target.parliamentdotuk,
+                DeletedVote(vote.userToken.snommocToken)
+            )
+        }
+        else {
+            service.postVote(
+                vote.target.targetType.name,
+                vote.target.parliamentdotuk,
+                vote.userToken.snommocToken,
+                vote.voteType.apiName,
+            )
+        }
     }
 }
