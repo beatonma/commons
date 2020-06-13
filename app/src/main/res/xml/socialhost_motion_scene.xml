@@ -8,7 +8,7 @@
         android:id="@+id/transition_social_collapsed_expanded"
         motion:constraintSetStart="@id/state_collapsed"
         motion:constraintSetEnd="@+id/state_expanded"
-        motion:duration="1000">
+        motion:duration="@integer/animation_window_duration">
        <KeyFrameSet>
        </KeyFrameSet>
     </Transition>
@@ -17,7 +17,7 @@
         android:id="@+id/transition_social_expanded_compose"
         motion:constraintSetStart="@id/state_expanded"
         motion:constraintSetEnd="@+id/state_compose_comment"
-        motion:duration="1000">
+        motion:duration="@integer/animation_window_duration">
         <KeyFrameSet>
             <!-- Scrim -->
             <KeyPosition
@@ -140,20 +140,84 @@
         </Constraint>
 
         <Constraint
+            android:id="@+id/create_comment_alpha_layer"
+            android:visibility="gone"
+            android:alpha="0.0"/>
+
+        <Constraint
             android:id="@+id/expanded_alpha_layer"
             android:visibility="gone"
             android:alpha="0.0"/>
 
         <Constraint
-            android:id="@+id/create_comment_alpha_layer"
-            android:visibility="gone"
-            android:alpha="0.0"/>
+            android:id="@+id/social_summary_flow"
+            app:layout_constraintTop_toTopOf="@+id/social_parent_container"
+            app:layout_constraintBottom_toBottomOf="@+id/social_parent_container"
+            app:layout_constraintStart_toStartOf="@+id/social_parent_container"
+            app:layout_constraintEnd_toEndOf="@+id/social_parent_container"
+            app:constraint_referenced_ids="comments,upvotes,downvotes"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/social_compact_view_height"
+            android:orientation="horizontal"
+            app:flow_horizontalGap="@dimen/flow_gap_horizontal"
+            app:flow_horizontalStyle="spread"
+            app:flow_verticalAlign="center"
+            />
+
+        <Constraint
+            android:id="@+id/social_shared_background"
+            app:layout_constraintTop_toTopOf="@+id/social_parent_container"
+            app:layout_constraintBottom_toBottomOf="@+id/social_parent_container"
+            app:layout_constraintStart_toStartOf="@+id/social_parent_container"
+            app:layout_constraintEnd_toEndOf="@+id/social_parent_container"
+            >
+            <CustomAttribute
+                motion:attributeName="backgroundColor"
+                motion:customColorValue="@color/Transparent"/>
+        </Constraint>
 
     </ConstraintSet>
 
     <ConstraintSet
         android:id="@+id/state_expanded"
         >
+        <Constraint
+            android:id="@+id/social_summary_flow"
+            app:layout_constraintTop_toTopOf="@+id/social_summary_expanded_container"
+            app:layout_constraintBottom_toBottomOf="@+id/social_summary_expanded_container"
+            app:layout_constraintStart_toStartOf="@+id/social_summary_expanded_container"
+            app:layout_constraintEnd_toEndOf="@+id/social_summary_expanded_container"
+            app:constraint_referenced_ids="comments,upvotes,downvotes"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/social_compact_view_height"
+            android:orientation="horizontal"
+            app:flow_horizontalGap="@dimen/flow_gap_horizontal"
+            app:flow_horizontalStyle="spread"
+            app:flow_verticalAlign="center"
+            />
+
+        <Constraint
+            android:id="@+id/social_shared_background"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            >
+            <CustomAttribute
+                motion:attributeName="backgroundColor"
+                motion:customColorValue="@color/Tabletop"/>
+        </Constraint>
+
+        <Constraint
+            android:id="@+id/social_expanded_flow"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:constraint_referenced_ids="title,social_summary_expanded_container,comments_recyclerview"
+            app:flow_verticalAlign="top"
+            app:flow_verticalBias="0.0"
+            app:flow_verticalGap="@dimen/flow_gap_large"
+            app:flow_verticalStyle="packed"
+            />
 
         <Constraint
             android:id="@+id/comment_count_icon"
@@ -233,9 +297,53 @@
             android:id="@+id/expanded_alpha_layer"
             android:visibility="visible"
             android:alpha="1.0"/>
+
+        <Constraint
+            android:id="@+id/create_comment_alpha_layer"
+            android:visibility="gone"
+            android:alpha="0.0"/>
     </ConstraintSet>
 
     <ConstraintSet android:id="@+id/state_compose_comment">
+
+        <Constraint
+            android:id="@+id/social_summary_flow"
+            app:layout_constraintTop_toTopOf="@+id/social_summary_expanded_container"
+            app:layout_constraintBottom_toBottomOf="@+id/social_summary_expanded_container"
+            app:layout_constraintStart_toStartOf="@+id/social_summary_expanded_container"
+            app:layout_constraintEnd_toEndOf="@+id/social_summary_expanded_container"
+            app:constraint_referenced_ids="comments,upvotes,downvotes"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/social_compact_view_height"
+            android:orientation="horizontal"
+            app:flow_horizontalGap="@dimen/flow_gap_horizontal"
+            app:flow_horizontalStyle="spread"
+            app:flow_verticalAlign="center"
+            />
+
+        <Constraint
+            android:id="@+id/social_shared_background"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            >
+            <CustomAttribute
+                motion:attributeName="backgroundColor"
+                motion:customColorValue="@color/Tabletop"/>
+        </Constraint>
+
+        <Constraint
+            android:id="@+id/social_expanded_flow"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:constraint_referenced_ids="title,social_summary_expanded_container,comments_recyclerview"
+            app:flow_verticalAlign="top"
+            app:flow_verticalBias="0.0"
+            app:flow_verticalGap="@dimen/flow_gap_large"
+            app:flow_verticalStyle="packed"
+            />
+
         <Constraint
             android:id="@+id/create_comment_scrim"
             android:layout_width="0dp"
@@ -290,5 +398,10 @@
             android:layout_height="0dp"
             android:alpha="1.0"
             />
+
+        <Constraint
+            android:id="@+id/expanded_alpha_layer"
+            android:visibility="visible"
+            android:alpha="1.0"/>
     </ConstraintSet>
 </MotionScene>
