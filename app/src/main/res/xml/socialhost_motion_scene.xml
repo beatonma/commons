@@ -2,14 +2,42 @@
 <MotionScene 
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:motion="http://schemas.android.com/apk/res-auto"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    motion:defaultDuration="@integer/animation_window_duration">
 
     <Transition
         android:id="@+id/transition_social_collapsed_expanded"
         motion:constraintSetStart="@id/state_collapsed"
         motion:constraintSetEnd="@+id/state_expanded"
-        motion:duration="@integer/animation_window_duration">
+        >
        <KeyFrameSet>
+           <KeyPosition
+               motion:motionTarget="@+id/vote_up_count"
+               motion:framePosition="50"
+               motion:percentX="-.5"
+               motion:pathMotionArc="startVertical"
+               />
+
+           <KeyPosition
+               motion:motionTarget="@+id/vote_down_count"
+               motion:framePosition="50"
+               motion:percentX="-.1"
+               motion:pathMotionArc="startVertical"
+               />
+
+           <KeyPosition
+               motion:motionTarget="@+id/comment_count_icon"
+               motion:framePosition="50"
+               motion:percentX="-.1"
+               motion:pathMotionArc="startVertical"
+               />
+
+           <KeyAttribute
+               motion:motionTarget="@+id/social_shared_background"
+               motion:framePosition="1"
+               android:alpha="1.0"
+               />
+
        </KeyFrameSet>
     </Transition>
 
@@ -17,7 +45,7 @@
         android:id="@+id/transition_social_expanded_compose"
         motion:constraintSetStart="@id/state_expanded"
         motion:constraintSetEnd="@+id/state_compose_comment"
-        motion:duration="@integer/animation_window_duration">
+        >
         <KeyFrameSet>
             <!-- Scrim -->
             <KeyPosition
@@ -170,11 +198,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/social_parent_container"
             app:layout_constraintStart_toStartOf="@+id/social_parent_container"
             app:layout_constraintEnd_toEndOf="@+id/social_parent_container"
-            >
-            <CustomAttribute
-                motion:attributeName="backgroundColor"
-                motion:customColorValue="@color/Transparent"/>
-        </Constraint>
+            />
 
     </ConstraintSet>
 
@@ -202,11 +226,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            >
-            <CustomAttribute
-                motion:attributeName="backgroundColor"
-                motion:customColorValue="@color/Tabletop"/>
-        </Constraint>
+            android:alpha="1.0"
+            />
 
         <Constraint
             android:id="@+id/social_expanded_flow"
@@ -327,11 +348,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            >
-            <CustomAttribute
-                motion:attributeName="backgroundColor"
-                motion:customColorValue="@color/Tabletop"/>
-        </Constraint>
+            android:alpha="1.0"
+            />
 
         <Constraint
             android:id="@+id/social_expanded_flow"
