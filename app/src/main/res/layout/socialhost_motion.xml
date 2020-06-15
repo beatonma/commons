@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--<androidx.constraintlayout.motion.widget.MotionLayout-->
 <merge
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:showIn="@layout/debug_activity_social_motion"
     >
 
     <View
@@ -15,6 +13,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        style="@style/Social.Background"
         />
 
     <TextView
@@ -46,97 +45,49 @@
         tools:text="23"
         />
 
-    <TextView
-        android:id="@+id/create_comment_title"
-        android:layout_width="0dp"
-        android:paddingTop="@dimen/card_header_padding_top"
-        android:text="@string/social_compose_comment"
-        style="@style/Text.Primary.H2"
-        />
-
-    <View
-        android:id="@+id/create_comment_scrim"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@color/DialogOverlay"
-        android:elevation="32dp"
-        android:visibility="gone"
-        />
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/create_comment_submit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/social_comment_post"
-        style="@style/Button.Flat"
-        app:layout_constraintEnd_toEndOf="parent"
-        />
-
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/comment_count_icon"
-        android:layout_width="@dimen/icon_size_large"
-        android:layout_height="@dimen/icon_size_large"
         android:contentDescription="@string/content_description_social_comment_count"
-        android:transitionName="@string/transition_comment"
-        android:padding="@dimen/touchable_icon_padding"
         app:srcCompat="@drawable/ic_comment"
+        style="@style/Social.Expanded.Count.Icon"
         />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/vote_up"
-        android:layout_width="@dimen/icon_size_large"
-        android:layout_height="@dimen/icon_size_large"
         android:contentDescription="@string/content_description_social_votes_count_for"
-        android:minHeight="@dimen/min_touch_target_size"
-        android:padding="@dimen/touchable_icon_padding"
         app:srcCompat="@drawable/ic_thumb_up"
+        style="@style/Social.Expanded.Count.Icon"
         />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/vote_down"
-        android:layout_width="@dimen/icon_size_large"
-        android:layout_height="@dimen/icon_size_large"
         android:contentDescription="@string/content_description_social_votes_count_against"
-        android:padding="@dimen/touchable_icon_padding"
         app:srcCompat="@drawable/ic_thumb_down"
+        style="@style/Social.Expanded.Count.Icon"
         />
 
     <androidx.constraintlayout.helper.widget.Flow
         android:id="@+id/comments"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/round_selector"
-        android:minWidth="@dimen/min_touch_target_size"
-        android:minHeight="@dimen/min_touch_target_size"
-        android:orientation="vertical"
         app:constraint_referenced_ids="comment_count_icon,comment_count"
-        app:flow_horizontalStyle="packed"
-        app:layout_constraintDimensionRatio="1:1"
+        style="@style/Social.Expanded.Count"
         />
 
     <androidx.constraintlayout.helper.widget.Flow
         android:id="@+id/upvotes"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/round_selector"
-        android:minWidth="@dimen/min_touch_target_size"
-        android:minHeight="@dimen/min_touch_target_size"
-        android:orientation="vertical"
         app:constraint_referenced_ids="vote_up,vote_up_count"
-        app:flow_horizontalStyle="packed"
-        app:layout_constraintDimensionRatio="1:1"
+        style="@style/Social.Expanded.Count"
         />
 
     <androidx.constraintlayout.helper.widget.Flow
         android:id="@+id/downvotes"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/round_selector"
-        android:orientation="vertical"
-        android:padding="64dp"
         app:constraint_referenced_ids="vote_down,vote_down_count"
-        app:flow_horizontalStyle="packed"
-        app:layout_constraintDimensionRatio="1:1"
+        style="@style/Social.Expanded.Count"
         />
 
     <androidx.constraintlayout.helper.widget.Flow
@@ -160,7 +111,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:orientation="vertical"
-        app:constraint_referenced_ids="title,comments_recyclerview"
+        app:constraint_referenced_ids="title,social_summary_expanded_container,comments_recyclerview"
         app:flow_horizontalBias="0"
         app:flow_horizontalGap="@dimen/flow_gap_horizontal"
         app:flow_horizontalStyle="spread"
@@ -172,17 +123,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
-
-    <androidx.constraintlayout.helper.widget.Flow
-        android:id="@+id/create_comment_flow"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:constraint_referenced_ids="create_comment_title,create_comment_edittext_wrapper,create_comment_submit"
-        app:flow_lastHorizontalBias="1.0"
-        app:flow_verticalAlign="baseline"
-        app:flow_verticalGap="@dimen/flow_gap_large"
-        />
 
     <androidx.constraintlayout.utils.widget.ImageFilterView
         android:id="@+id/create_comment_background"
@@ -212,11 +152,33 @@
         app:layout_constraintEnd_toEndOf="parent"
         />
 
+    <View
+        android:id="@+id/create_comment_scrim"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/DialogOverlay"
+        android:elevation="32dp"
+        android:visibility="gone"
+        />
+
+    <TextView
+        android:id="@+id/create_comment_title"
+        android:layout_width="0dp"
+        android:paddingTop="@dimen/card_header_padding_top"
+        android:paddingHorizontal="@dimen/whitespace_edge"
+        android:paddingBottom="@dimen/flow_gap_large"
+        android:text="@string/social_compose_comment"
+        app:layout_constraintBottom_toTopOf="@+id/create_comment_edittext_wrapper"
+        style="@style/Text.Primary.H2"
+        />
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/create_comment_edittext_wrapper"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="@string/social_compose_comment"
+        android:paddingHorizontal="@dimen/whitespace_edge"
+        android:paddingBottom="@dimen/flow_gap_large"
         app:boxBackgroundMode="outline"
         app:boxStrokeColor="@color/TextTertiary"
         app:boxStrokeErrorColor="@color/Negative"
@@ -227,6 +189,7 @@
         app:endIconMode="none"
         app:hintEnabled="false"
         app:hintTextColor="@color/TextPrimary"
+        app:layout_constraintBottom_toTopOf="@+id/create_comment_submit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         >
@@ -241,6 +204,18 @@
             />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/create_comment_submit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/social_comment_post"
+        android:layout_marginHorizontal="@dimen/whitespace_edge"
+        android:layout_marginBottom="@dimen/flow_gap_large"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        style="@style/Button.Flat"
+        />
+
     <org.beatonma.commons.app.ui.motionlayout.AlphaLayer
         android:id="@+id/expanded_alpha_layer"
         android:layout_width="0dp"
@@ -253,8 +228,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:elevation="64dp"
-        app:constraint_referenced_ids="create_comment_title,create_comment_edittext_wrapper,create_comment_submit,create_comment_flow"
+        app:constraint_referenced_ids="create_comment_title,create_comment_edittext_wrapper,create_comment_submit"
         />
-
 
 </merge>
