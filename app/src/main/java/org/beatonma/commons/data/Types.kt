@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import retrofit2.Response
 
 typealias ParliamentID = Int
+typealias SnommocToken = String
 
 // Wrappers to reduce deep nesting of type definitions <<<>>>
 typealias IoResultList<T> = IoResult<List<T>>
