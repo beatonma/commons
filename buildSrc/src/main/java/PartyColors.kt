@@ -10,10 +10,13 @@ private fun String.toColorInt(): Int {
     return color.toInt()
 }
 
-private val DARK_PRIMARY: @HexColor String = "#D8000000"
-private val DARK_SECONDARY: @HexColor String = "#89000000"
-private val LIGHT_PRIMARY: @HexColor String = "#D8FFFFFF"
-private val LIGHT_SECONDARY: @HexColor String = "#89FFFFFF"
+const val TEXT_DARK = 1
+const val TEXT_LIGHT = 2
+
+//private val DARK_PRIMARY: @HexColor String = "#D8000000"
+//private val DARK_SECONDARY: @HexColor String = "#89000000"
+//private val LIGHT_PRIMARY: @HexColor String = "#D8FFFFFF"
+//private val LIGHT_SECONDARY: @HexColor String = "#89FFFFFF"
 
 private val RED: @HexColor String = "#F44336"
 private val AMBER: @HexColor String = "#FFC107"
@@ -44,137 +47,137 @@ val AllPartyThemes = mapOf(
 abstract class PartyColors(
     val primary: String,
     val accent: String,
-    val primaryText: String = LIGHT_PRIMARY,
-    val accentText: String = LIGHT_PRIMARY
+    val primaryText: Int = TEXT_LIGHT,
+    val accentText: Int = TEXT_LIGHT
 ) {
     val _primaryInt: Int get() = primary.toColorInt()
     val _accentInt: Int get() = accent.toColorInt()
-    val _primaryTextInt: Int get() = primaryText.toColorInt()
-    val _accentTextInt: Int get() = accentText.toColorInt()
+//    val _primaryTextInt: Int get() = primaryText.toColorInt()
+//    val _accentTextInt: Int get() = accentText.toColorInt()
 }
 
 object DefaultColors : PartyColors(
     primary = "#6f6f6f",
     accent = "#E57373",
-    primaryText = LIGHT_PRIMARY,
-    accentText = LIGHT_PRIMARY
+    primaryText = TEXT_LIGHT,
+    accentText = TEXT_LIGHT
 )
 
 object AllianceColors : PartyColors(
     primary = "#F4C72E",
     accent = "#000000",
-    primaryText = LIGHT_PRIMARY,
-    accentText = LIGHT_PRIMARY
+    primaryText = TEXT_LIGHT,
+    accentText = TEXT_LIGHT
 )
 
 object ChangeUkColors : PartyColors(
     primary = "#ffffff",
     accent = "#222221",
-    primaryText = LIGHT_PRIMARY,
-    accentText = LIGHT_PRIMARY
+    primaryText = TEXT_LIGHT,
+    accentText = TEXT_LIGHT
 )
 
 object ConservativeColors : PartyColors(
     primary = "#11437D",
     accent = RED,
-    primaryText = LIGHT_PRIMARY,
-    accentText = LIGHT_PRIMARY
+    primaryText = TEXT_LIGHT,
+    accentText = TEXT_LIGHT
 )
 
 object DupColors : PartyColors(
     primary = "#343067",
     accent = RED,
-    primaryText = LIGHT_PRIMARY,
-    accentText = LIGHT_PRIMARY
+    primaryText = TEXT_LIGHT,
+    accentText = TEXT_LIGHT
 )
 
 object GreenColors : PartyColors(
     primary = "#538C6B",
     accent = "#8BC34A",
-    primaryText = LIGHT_PRIMARY,
-    accentText = LIGHT_PRIMARY
+    primaryText = TEXT_LIGHT,
+    accentText = TEXT_LIGHT
 )
 
 object LabourColors : PartyColors(
     primary = "#C41230",
     accent = AMBER,
-    primaryText = LIGHT_PRIMARY,
-    accentText = LIGHT_PRIMARY
+    primaryText = TEXT_LIGHT,
+    accentText = TEXT_LIGHT
 )
 
 object LabourCoopColors : PartyColors(
     primary = "#711F8E",
     accent = RED,
-    primaryText = LIGHT_PRIMARY,
-    accentText = LIGHT_PRIMARY
+    primaryText = TEXT_LIGHT,
+    accentText = TEXT_LIGHT
 )
 
 object LibDemColors : PartyColors(
     primary = "#FDBB30",
     accent = BLUE,
-    primaryText = DARK_PRIMARY,
-    accentText = LIGHT_PRIMARY
+    primaryText = TEXT_DARK,
+    accentText = TEXT_LIGHT
 )
 
 object PlaidCymruColors : PartyColors(
     primary = "#008142",
     accent = AMBER,
-    primaryText = LIGHT_PRIMARY,
-    accentText = LIGHT_PRIMARY
+    primaryText = TEXT_LIGHT,
+    accentText = TEXT_LIGHT
 )
 
 object RespectColors : PartyColors(
     primary = "#9B0103",
     accent = "#028C3E",
-    primaryText = LIGHT_PRIMARY,
-    accentText = LIGHT_PRIMARY
+    primaryText = TEXT_LIGHT,
+    accentText = TEXT_LIGHT
 )
 
 object SdlpColors : PartyColors(
     primary = "#0B694D",
     accent = AMBER,
-    primaryText = LIGHT_PRIMARY,
-    accentText = LIGHT_PRIMARY
+    primaryText = TEXT_LIGHT,
+    accentText = TEXT_LIGHT
 )
 
 object SinnFeinColors : PartyColors(
     primary = "#086723",
     accent = "#FF5722",
-    primaryText = LIGHT_PRIMARY,
-    accentText = LIGHT_PRIMARY
+    primaryText = TEXT_LIGHT,
+    accentText = TEXT_LIGHT
 )
 
 object SnpColors : PartyColors(
     primary = "#FFF95D",
     accent = "#333333",
-    primaryText = DARK_PRIMARY,
-    accentText = LIGHT_PRIMARY
+    primaryText = TEXT_DARK,
+    accentText = TEXT_LIGHT
 )
 
 object SdpColors : PartyColors(
     primary = "#004377",
     accent = "#CA3349",
-    primaryText = LIGHT_PRIMARY,
-    accentText = LIGHT_PRIMARY
+    primaryText = TEXT_LIGHT,
+    accentText = TEXT_LIGHT
 )
 
 object UkipColors : PartyColors(
     primary = "#702F85",
     accent = AMBER,
-    primaryText = LIGHT_PRIMARY,
-    accentText = LIGHT_PRIMARY
+    primaryText = TEXT_LIGHT,
+    accentText = TEXT_LIGHT
 )
 
 object UupColors : PartyColors(
     primary = "#1D2F5D",
     accent = BLUE,
-    primaryText = LIGHT_PRIMARY,
-    accentText = LIGHT_PRIMARY
+    primaryText = TEXT_LIGHT,
+    accentText = TEXT_LIGHT
 )
 
 object SpeakerColors : PartyColors(
     primary = "#37712C",
     accent = BLUE,
-    primaryText = LIGHT_PRIMARY,
-    accentText = LIGHT_PRIMARY
+    primaryText = TEXT_LIGHT,
+    accentText = TEXT_LIGHT
 )
