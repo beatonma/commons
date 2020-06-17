@@ -6,8 +6,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:id="@+id/root"
     app:layoutDescription="@xml/fragment_member_profile_scene"
     >
+
+    <androidx.constraintlayout.widget.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/inset_start"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="@dimen/whitespace_edge"
+        />
+    <androidx.constraintlayout.widget.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/inset_end"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="@dimen/whitespace_edge"
+        />
 
     <!--    app:layoutDescription="@xml/socialhost_motion_scene"-->
     <!--    app:layoutDescription="@xml/fragment_member_profile_scene"-->
