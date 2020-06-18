@@ -1,7 +1,6 @@
 package org.beatonma.commons.app.social
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -21,9 +20,8 @@ import org.beatonma.commons.data.core.social.SocialVoteType
 import org.beatonma.commons.kotlin.extensions.networkErrorSnackbar
 import org.beatonma.commons.kotlin.extensions.snackbar
 
-private const val TAG = "BaseSocialFrag"
-
-abstract class BaseSocialFragment: BaseViewmodelFragment() {
+@Deprecated("Use [SocialViewHost] and [SocialViewController] instead for usable transition animations.")
+abstract class BaseSocialFragment: BaseViewmodelFragment(), SocialUiComponent {
     protected val viewmodel: SocialViewModel by activityViewModels { viewmodelFactory }
 
     protected val observer = Observer<IoResult<SocialContent>> { result ->
@@ -37,7 +35,7 @@ abstract class BaseSocialFragment: BaseViewmodelFragment() {
         SocialTarget(target)
     )
 
-    open fun forTarget(target: SocialTarget) {
+    override fun forTarget(target: SocialTarget) {
         lifecycleScope.launch(Dispatchers.Main) {
             viewmodel.forTarget(target)
         }
@@ -48,11 +46,6 @@ abstract class BaseSocialFragment: BaseViewmodelFragment() {
         setupClickListeners()
     }
 
-    protected abstract fun updateUi(content: SocialContent?)
-    protected abstract fun updateVoteUi(voteType: SocialVoteType)
-
-    protected abstract fun setupClickListeners()
-
     protected suspend fun refreshAndObserveSocialContent() {
         withContext(Dispatchers.Main) {
             viewmodel.livedata.removeObserver(observer)
@@ -62,7 +55,7 @@ abstract class BaseSocialFragment: BaseViewmodelFragment() {
     }
 
     @SignInRequired
-    private fun submitVote(voteType: SocialVoteType) {
+    override fun submitVote(voteType: SocialVoteType) {
         updateVoteUi(voteType)
         lifecycleScope.launch(Dispatchers.IO) {
             val result = viewmodel.postVote(voteType)
@@ -70,14 +63,13 @@ abstract class BaseSocialFragment: BaseViewmodelFragment() {
                 is NetworkError -> networkErrorSnackbar(result.error)
                 is NoBodySuccessResult -> onVoteSubmissionSuccessful()
                 else -> {
-                    Log.w(TAG, result.toString())
                     snackbar(result.message ?: result.toString())
                 }
             }
         }
     }
 
-    protected fun onVoteClicked(voteType: SocialVoteType) {
+    override fun onVoteClicked(voteType: SocialVoteType) {
         if (viewmodel.shouldRemoveVote(voteType)) {
             submitVote(SocialVoteType.NULL)
         }
@@ -86,7 +78,7 @@ abstract class BaseSocialFragment: BaseViewmodelFragment() {
         }
     }
 
-    protected open suspend fun onVoteSubmissionSuccessful() {
+    override suspend fun onVoteSubmissionSuccessful() {
         snackbar("Vote submitted!")
         refreshAndObserveSocialContent()
     }

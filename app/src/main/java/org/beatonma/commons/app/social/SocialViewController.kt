@@ -1,27 +1,17 @@
 package org.beatonma.commons.app.social
 
 import android.animation.ObjectAnimator
-import android.content.Context
-import android.util.Log
-import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.annotation.CallSuper
 import androidx.annotation.ColorInt
 import androidx.constraintlayout.motion.widget.MotionLayout
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.beatonma.commons.R
-import org.beatonma.commons.annotations.SignInRequired
 import org.beatonma.commons.app.ui.navigation.OnBackPressed
 import org.beatonma.commons.app.ui.recyclerview.CommonsLoadingAdapter
-import org.beatonma.commons.data.NoBodySuccessResult
 import org.beatonma.commons.data.core.social.SocialComment
 import org.beatonma.commons.data.core.social.SocialContent
 import org.beatonma.commons.data.core.social.SocialVoteType
@@ -69,14 +59,31 @@ private const val TAG = "SocialViewController"
 class SocialViewController(
     private val host: SocialViewHost,
     private val layout: MotionLayout,
-    var collapsedTheme: SocialViewTheme,
-    var expandedTheme: SocialViewTheme,
+    _collapsedTheme: SocialViewTheme,
+    _expandedTheme: SocialViewTheme = _collapsedTheme,
+    val defaultTransition: Int? = null,
 ): OnBackPressed {
+    var collapsedTheme: SocialViewTheme = _collapsedTheme
+        set(value) {
+            field = value
+            updateVoteUi(currentVote)
+        }
+    var expandedTheme: SocialViewTheme = _expandedTheme
+        set(value) {
+            field = value
+            updateVoteUi(currentVote)
+        }
+
     private val context = layout.context
     private val adapter = CommentAdapter()
 
     private val title: TextView = layout.findViewById(R.id.title)
 
+    private val commentTouchTarget: View = layout.findViewById(R.id.comments)
+    private val upvoteTouchTarget: View = layout.findViewById(R.id.upvotes)
+    private val downvoteTouchTarget: View = layout.findViewById(R.id.downvotes)
+
+    private val commentIcon: ImageView = layout.findViewById(R.id.comment_count_icon)
     private val upvoteIcon: ImageView = layout.findViewById(R.id.vote_up)
     private val downvoteIcon: ImageView = layout.findViewById(R.id.vote_down)
 
@@ -85,6 +92,8 @@ class SocialViewController(
     private val voteDownCount: TextView = layout.findViewById(R.id.vote_down_count)
 
     private val commentAnimationLayer: View = layout.findViewById(R.id.create_comment_alpha_layer)
+
+    private var currentVote: SocialVoteType? = null
 
     private val currentState: State
         get() = when(layout.currentState) {
@@ -103,24 +112,32 @@ class SocialViewController(
         layout.findViewById<RecyclerView>(R.id.comments_recyclerview).setup(adapter)
 
         setupTransitionClickListeners(layout, mapOf(
-            R.id.social_parent_container to R.id.state_expanded,
-            R.id.create_comment_scrim to R.id.state_expanded,
-            R.id.create_comment_fab to R.id.state_compose_comment,
+            R.id.social_parent_container to State.EXPANDED,
+            R.id.create_comment_scrim to State.EXPANDED,
+            R.id.create_comment_fab to State.COMPOSE_COMMENT,
         ))
         setupSocialClickListeners()
     }
 
     override fun onBackPressed(): Boolean {
-        when (layout.currentState) {
-            R.id.state_compose_comment -> transitionTo(State.EXPANDED)
-            R.id.state_expanded -> transitionTo(State.COLLAPSED)
+        val targetState = when (layout.currentState) {
+            R.id.state_compose_comment -> State.EXPANDED
+            R.id.state_expanded -> State.COLLAPSED
             else -> return false
         }
+
+//        if (targetState == State.COLLAPSED && defaultTransition != null) {
+//            layout.onTransitionEnd { layout, _ ->
+//                layout?.setTransition(defaultTransition)
+//            }
+//        }
+        transitionTo(targetState)
 
         return true
     }
 
-    fun updateUi(content: SocialContent?, layout: MotionLayout) {
+    fun updateUi(content: SocialContent?) {
+        currentVote = content?.userVote
         adapter.items = content?.comments ?: listOf()
 
         val numComments = content?.commentCount() ?: 0
@@ -129,9 +146,15 @@ class SocialViewController(
 
         bindText(
             title to (content?.title ?: "<Title>"),
-            commentCount to layout.context.stringCompat(R.string.integer, numComments),
-            voteUpCount to layout.context.stringCompat(R.string.integer, numUpvotes),
-            voteDownCount to layout.context.stringCompat(R.string.integer, numDownvotes),
+            commentCount to stringCompat(R.string.integer, numComments),
+            voteUpCount to stringCompat(R.string.integer, numUpvotes),
+            voteDownCount to stringCompat(R.string.integer, numDownvotes),
+        )
+
+        bindContentDescription(
+            commentTouchTarget to stringCompat(R.string.content_description_social_comment_count, numComments),
+            upvoteTouchTarget to stringCompat(R.string.content_description_social_votes_count_for, numUpvotes),
+            downvoteTouchTarget to stringCompat(R.string.content_description_social_votes_count_against, numDownvotes),
         )
     }
 
@@ -143,12 +166,19 @@ class SocialViewController(
         transitionTo(State.EXPANDED)
     }
 
-    internal fun updateVoteUi(voteType: SocialVoteType) {
+    internal fun updateVoteUi(voteType: SocialVoteType?) {
         val theme = this.theme
         fun setIconColors(@ColorInt upvoteColor: Int, @ColorInt downvoteColor: Int) {
             upvoteIcon.imageTintList = upvoteColor.asStateList()
             downvoteIcon.imageTintList = downvoteColor.asStateList()
         }
+
+        applyColor(theme.colorControlNormal,
+            commentIcon,
+            commentCount,
+            voteUpCount,
+            voteDownCount
+        )
 
         when (voteType) {
             SocialVoteType.aye -> {
@@ -193,116 +223,51 @@ class SocialViewController(
             }
     }
 
-    private fun transitionTo(state: State) = layout.transitionToState(
-        when (state) {
-            State.COLLAPSED -> R.id.state_collapsed
-            State.EXPANDED -> R.id.state_expanded
-            State.COMPOSE_COMMENT -> R.id.state_compose_comment
-        }
-    )
+    private fun transitionTo(state: State){
+        layout.transitionToState(
+            when (state) {
+                State.COLLAPSED -> R.id.state_collapsed
+                State.EXPANDED -> R.id.state_expanded
+                State.COMPOSE_COMMENT -> R.id.state_compose_comment
+            }
+        )
+
+        updateVoteUi(currentVote)
+    }
 
     private fun setupSocialClickListeners() {
-        layout.findViewById<View>(R.id.upvotes).setOnClickListener { host.onVoteClicked(SocialVoteType.aye) }
-        layout.findViewById<View>(R.id.downvotes).setOnClickListener { host.onVoteClicked(SocialVoteType.no) }
+        commentTouchTarget.setOnClickListener {
+            if (currentState == State.COLLAPSED) transitionTo(State.EXPANDED)
+        }
+        upvoteTouchTarget.setOnClickListener { onVoteClicked(SocialVoteType.aye) }
+        downvoteTouchTarget.setOnClickListener { onVoteClicked(SocialVoteType.no) }
         layout.findViewById<View>(R.id.create_comment_submit).setOnClickListener {
             val editText: EditText = layout.findViewById(R.id.create_comment_edittext)
             val comment = editText.text.toString()
             host.validateComment(comment)
         }
     }
-}
 
-
-
-private fun setupTransitionClickListeners(layout: MotionLayout, map: Map<Int, Int>) {
-    map.forEach { (layoutId, stateId) ->
-        layout.findViewById<View>(layoutId).setOnClickListener { layout.transitionToState(stateId) }
-    }
-}
-
-
-interface SocialViewHost: LifecycleOwner, OnBackPressed {
-    val socialViewModel: SocialViewModel
-    val socialViewController: SocialViewController
-
-    fun setupViewController(
-        layout: MotionLayout,
-        collapsedTheme: SocialViewTheme? = null
-    ): SocialViewController {
-        val expandedTheme = resolveColorAttributes(layout.context)
-        return SocialViewController(this, layout, collapsedTheme ?: expandedTheme, expandedTheme)
-    }
-
-    fun onVoteSubmissionSuccessful() {
-        socialViewController.onVoteSubmissionSuccessful()
-    }
-
-    @CallSuper
-    fun onCommentSubmissionSuccessful() {
-        socialViewController.onCommentSubmissionSuccessful()
-    }
-
-    fun onVoteClicked(voteType: SocialVoteType) {
-        if (socialViewModel.shouldRemoveVote(voteType)) {
-            submitVote(SocialVoteType.NULL)
+    private fun onVoteClicked(voteType: SocialVoteType) {
+        if (currentState == State.COLLAPSED) {
+            transitionTo(State.EXPANDED)
         }
         else {
-            submitVote(voteType)
+            host.onVoteClicked(voteType)
         }
     }
 
-    @SignInRequired
-    fun submitVote(voteType: SocialVoteType) {
-        socialViewController.updateVoteUi(voteType)
-        lifecycleScope.launch {
-            val result = socialViewModel.postVote(voteType)
-            when (result) {
-                is NoBodySuccessResult -> onVoteSubmissionSuccessful()
-                else -> {
-                    Log.w(TAG, result.toString())
-                }
-            }
+    private fun setupTransitionClickListeners(layout: MotionLayout, map: Map<Int, State>) {
+        map.forEach { (layoutId, stateId) ->
+            layout.findViewById<View>(layoutId).setOnClickListener { transitionTo(stateId) }
         }
     }
 
-    @SignInRequired
-    private fun submitComment(text: String) {
-        lifecycleScope.launch(Dispatchers.IO) {
-            val result = socialViewModel.postComment(text)
-            when (result) {
-                is NoBodySuccessResult -> onCommentSubmissionSuccessful()
-                else -> {
-                    Log.w(TAG, result.toString())
-                }
-            }
-        }
-    }
-
-    fun validateComment(comment: String) {
-        val result = socialViewModel.validateComment(comment)
-        when (result) {
-            CommentValidation.VALID -> submitComment(comment)
-            else -> socialViewController.notifyInvalidComment(result)
-        }
-    }
-
-    override fun onBackPressed(): Boolean {
-        return socialViewController.onBackPressed()
-    }
-
-    fun resolveColorAttributes(context: Context): SocialViewTheme {
-        val typedValue = TypedValue()
-        val theme = context.theme
-
-        theme.resolveAttribute(R.attr.colorControlNormal, typedValue, true)
-        val colorControlNormal = typedValue.data
-
-        theme.resolveAttribute(R.attr.colorControlActivated, typedValue, true)
-        val colorControlActive = typedValue.data
-
-        return SocialViewTheme(colorControlNormal, colorControlActive)
-    }
+    private fun stringCompat(resId: Int, vararg formatArgs: Any?) = layout.context.stringCompat(resId, *formatArgs)
 }
+
+
+
 
 data class SocialViewTheme(
     val colorControlNormal: Int,

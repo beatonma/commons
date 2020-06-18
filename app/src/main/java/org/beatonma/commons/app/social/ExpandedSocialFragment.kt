@@ -3,7 +3,6 @@ package org.beatonma.commons.app.social
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -33,8 +32,7 @@ import org.beatonma.commons.kotlin.extensions.*
 import org.beatonma.lib.ui.recyclerview.kotlin.extensions.setup
 import java.time.LocalDate
 
-private const val TAG = "ExpandedSocialFrag"
-
+@Deprecated("Use SocialViewController with SocialViewHost instead")
 class ExpandedSocialFragment: BaseSocialFragment(), OnBackPressed {
     private lateinit var binding: FragmentSocialExpandedBinding
     private val adapter = CommentAdapter()
@@ -178,7 +176,6 @@ class ExpandedSocialFragment: BaseSocialFragment(), OnBackPressed {
                 is NoBodySuccessResult -> onCommentSubmissionSuccessful()
 
                 else -> {
-                    Log.w(TAG, result.toString())
                     snackbar(result.message ?: result.toString())
                 }
             }
