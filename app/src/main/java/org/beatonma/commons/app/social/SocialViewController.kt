@@ -11,7 +11,7 @@ import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.recyclerview.widget.RecyclerView
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.navigation.OnBackPressed
-import org.beatonma.commons.app.ui.recyclerview.CommonsLoadingAdapter
+import org.beatonma.commons.app.ui.recyclerview.LoadingAdapter
 import org.beatonma.commons.app.ui.recyclerview.setup
 import org.beatonma.commons.data.core.social.SocialComment
 import org.beatonma.commons.data.core.social.SocialContent
@@ -204,7 +204,7 @@ class SocialViewController(
             .start()
     }
 
-    private inner class CommentAdapter: CommonsLoadingAdapter<SocialComment>(
+    private inner class CommentAdapter: LoadingAdapter<SocialComment>(
         emptyLayoutID = R.layout.item_social_no_comments
     ) {
         private val today = LocalDate.now()  // Used for time formatting

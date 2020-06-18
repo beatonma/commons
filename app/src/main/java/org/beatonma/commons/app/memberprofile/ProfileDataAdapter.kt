@@ -49,7 +49,7 @@ internal enum class LayoutType {
  * Top level adapter - many child RecyclerViews for [ProfileData] types.
  */
 
-class ProfileDataAdapter: CommonsLoadingAdapter<ProfileData<Any>>(), Themed {
+class ProfileDataAdapter: LoadingAdapter<ProfileData<Any>>(), Themed {
 
     override var theme: PartyColors? = null
 
@@ -115,7 +115,7 @@ private fun createFinancialInterestsHolder(parent: ViewGroup): AbstractProfileDa
 internal abstract class AbstractProfileDataHolder<D>(
     parent: ViewGroup,
     @LayoutRes layoutId: Int,
-    val adapter: TypedRecyclerViewAdapter<D>
+    val adapter: TypedAdapter<D>
 ): RecyclerView.ViewHolder(parent.inflate(layoutId)) {
 
     @Suppress("UNCHECKED_CAST")

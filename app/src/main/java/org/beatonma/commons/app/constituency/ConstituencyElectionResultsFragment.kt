@@ -11,7 +11,7 @@ import androidx.fragment.app.viewModels
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.BaseViewmodelFragment
 import org.beatonma.commons.app.ui.colors.getPartyTheme
-import org.beatonma.commons.app.ui.recyclerview.CommonsLoadingAdapter
+import org.beatonma.commons.app.ui.recyclerview.LoadingAdapter
 import org.beatonma.commons.app.ui.recyclerview.setup
 import org.beatonma.commons.app.ui.recyclerview.viewholder.StaticViewHolder
 import org.beatonma.commons.app.ui.views.BarChartCategory
@@ -110,7 +110,7 @@ class ConstituencyElectionResultsFragment : BaseViewmodelFragment() {
         adapter.items = viewmodel.composeCandidateData(data)
     }
 
-    private inner class CandidatesAdapter: CommonsLoadingAdapter<CandidateData>(null) {
+    private inner class CandidatesAdapter: LoadingAdapter<CandidateData>(null) {
         var winningVoteCount: Int = 0  // For normalising bar charts
         var totalVotes: Int = 0  // For calculating percentages
 

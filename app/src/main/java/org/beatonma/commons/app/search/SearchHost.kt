@@ -2,7 +2,7 @@ package org.beatonma.commons.app.search
 
 import android.Manifest
 import androidx.appcompat.widget.SearchView
-import org.beatonma.commons.app.ui.recyclerview.TypedRecyclerViewAdapter
+import org.beatonma.commons.app.ui.recyclerview.TypedAdapter
 import org.beatonma.commons.data.core.search.SearchResult
 import org.beatonma.commons.kotlin.extensions.PermissionResults
 
@@ -15,7 +15,7 @@ interface SearchHost {
     }
 
     val searchViewModel: SearchViewModel
-    val searchAdapter: TypedRecyclerViewAdapter<SearchResult>
+    val searchAdapter: TypedAdapter<SearchResult>
     var searchView: SearchView
 
     fun findMemberForCurrentLocation()

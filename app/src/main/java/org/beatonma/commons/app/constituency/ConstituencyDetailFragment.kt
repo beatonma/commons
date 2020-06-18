@@ -18,7 +18,7 @@ import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.BaseViewmodelFragment
 import org.beatonma.commons.app.ui.colors.PartyColors
 import org.beatonma.commons.app.ui.colors.getTheme
-import org.beatonma.commons.app.ui.recyclerview.CommonsLoadingAdapter
+import org.beatonma.commons.app.ui.recyclerview.LoadingAdapter
 import org.beatonma.commons.app.ui.recyclerview.setup
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.ParliamentID
@@ -190,7 +190,7 @@ class ConstituencyDetailFragment : BaseViewmodelFragment(), ViewTreeObserver.OnG
         moveCamera(CameraUpdateFactory.newLatLngBounds(boundary, context.dp(CAMERA_PADDING_DP)))
     }
 
-    private inner class ElectionResultsAdapter: CommonsLoadingAdapter<ConstituencyDataHolder>() {
+    private inner class ElectionResultsAdapter: LoadingAdapter<ConstituencyDataHolder>() {
         override fun getItemViewType(position: Int): Int {
             return when {
                 items?.isEmpty() != false -> super.getItemViewType(position)

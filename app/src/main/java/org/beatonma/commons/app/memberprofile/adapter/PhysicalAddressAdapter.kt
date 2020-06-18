@@ -13,7 +13,7 @@ import org.beatonma.commons.kotlin.extensions.context
 import org.beatonma.commons.kotlin.extensions.inflate
 
 class PhysicalAddressAdapter: ThemedCollapsibleAdapter<PhysicalAddress>() {
-    override fun onCreateDefaultViewHolder(parent: ViewGroup): TypedRecyclerViewAdapter<PhysicalAddress>.TypedViewHolder =
+    override fun onCreateDefaultViewHolder(parent: ViewGroup): TypedAdapter<PhysicalAddress>.TypedViewHolder =
         object: TypedViewHolder(parent.inflate(R.layout.item_member_physical_address)) {
             private val vh = ItemMemberPhysicalAddressBinding.bind(itemView)
             private val adapter = ActionAdapter()

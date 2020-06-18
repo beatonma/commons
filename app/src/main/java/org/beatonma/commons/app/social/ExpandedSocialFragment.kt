@@ -17,7 +17,7 @@ import org.beatonma.commons.BuildConfig.SOCIAL_COMMENT_MAX_LENGTH
 import org.beatonma.commons.R
 import org.beatonma.commons.annotations.SignInRequired
 import org.beatonma.commons.app.ui.navigation.OnBackPressed
-import org.beatonma.commons.app.ui.recyclerview.CommonsLoadingAdapter
+import org.beatonma.commons.app.ui.recyclerview.LoadingAdapter
 import org.beatonma.commons.app.ui.recyclerview.setup
 import org.beatonma.commons.app.ui.transition.onTransitionEnd
 import org.beatonma.commons.data.NetworkError
@@ -220,7 +220,7 @@ class ExpandedSocialFragment: BaseSocialFragment(), OnBackPressed {
         colorControlActive = typedValue.data
     }
 
-    private inner class CommentAdapter: CommonsLoadingAdapter<SocialComment>(
+    private inner class CommentAdapter: LoadingAdapter<SocialComment>(
         emptyLayoutID = R.layout.item_social_no_comments
     ) {
         private val today = LocalDate.now()  // Used for time formatting

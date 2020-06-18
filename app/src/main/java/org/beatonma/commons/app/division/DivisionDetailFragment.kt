@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.BaseViewmodelFragment
 import org.beatonma.commons.app.ui.colors.colorResId
-import org.beatonma.commons.app.ui.recyclerview.CommonsLoadingAdapter
+import org.beatonma.commons.app.ui.recyclerview.LoadingAdapter
 import org.beatonma.commons.app.ui.recyclerview.RvSpacing
 import org.beatonma.commons.app.ui.recyclerview.setupGrid
 import org.beatonma.commons.data.NetworkError
@@ -93,7 +93,7 @@ class DivisionDetailFragment : BaseViewmodelFragment() {
     }
 }
 
-private class VotesAdapter : CommonsLoadingAdapter<Vote>() {
+private class VotesAdapter : LoadingAdapter<Vote>() {
     override fun onCreateDefaultViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
         object: TypedViewHolder(parent.inflate(R.layout.item_wide_title)) {
             private val vh = ItemWideTitleBinding.bind(itemView)
