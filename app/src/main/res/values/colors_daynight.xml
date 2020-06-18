@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- These colors change depending on day/night app theme -->
+    <color name="Card">@color/White</color>
+    <color name="Tabletop">#eeeeee</color>
+    <color name="CardHeader">#BDBDBD</color>
+
+    <color name="Ripple">#12000000</color>
+
+    <color name="TextPrimary">@color/TextPrimaryDark</color>
+    <color name="TextPrimaryInverted">@color/TextPrimaryLight</color>
+    <color name="TextSecondary">@color/TextSecondaryDark</color>
+    <color name="TextSecondaryInverted">@color/TextSecondaryLight</color>
+    <color name="TextTertiary">@color/TextTertiaryDark</color>
+    <color name="TextTertiaryInverted">@color/TextTertiaryLight</color>
+</resources>

@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#444444</color>
-    <color name="colorPrimaryDark">#333333</color>
-    <color name="colorAccent">#2680D0</color>
-    <color name="Accent">@color/colorAccent</color>
+    <color name="Black">#000000</color>
+    <color name="White">#ffffff</color>
+    <color name="Transparent">#00000000</color>
+    <color name="DialogOverlay">#bc000000</color>
 
-    <color name="SearchBar">#2d4051</color>
+    <color name="TextPrimaryDark">#D8000000</color>
+    <color name="TextPrimaryLight">#D8FFFFFF</color>
+    <color name="TextSecondaryDark">#89000000</color>
+    <color name="TextSecondaryLight">#89FFFFFF</color>
+    <color name="TextTertiaryDark">#3A000000</color>
+    <color name="TextTertiaryLight">#3AFFFFFF</color>
 
-    <color name="Positive">@color/Green500</color>
-    <color name="Negative">@color/Red500</color>
-
-    <color name="colorControlLight">@color/TextSecondaryLight</color>
-    <color name="colorControlDark">@color/TextSecondaryDark</color>
-
-    <color name="menu_action_icon">@color/TextPrimary</color>
+    <color name="Debug">#33ff0000</color>
 </resources>
