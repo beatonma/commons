@@ -46,9 +46,6 @@
             android:id="@+id/deeplink_member_profile"
             android:autoVerify="true"
             app:uri="https://snommoc.org/api/member/{content}/{parliamentdotuk}/" />
-        <action
-            android:id="@+id/action_memberProfileFragment_to_expandedSocialFragment"
-            app:destination="@id/expandedSocialFragment" />
     </fragment>
 
     <fragment
@@ -63,9 +60,6 @@
             android:id="@+id/deeplink_bill_detail"
             android:autoVerify="true"
             app:uri="https://snommoc.org/api/bill/{parliamentdotuk}/" />
-        <action
-            android:id="@+id/action_billFragment_to_expandedSocialFragment"
-            app:destination="@id/expandedSocialFragment" />
     </fragment>
 
     <fragment
@@ -87,9 +81,6 @@
             android:id="@+id/deeplink_division_lords"
             android:autoVerify="true"
             app:uri="https://snommoc.org/api/division/lords/{parliamentdotuk}/" />
-        <action
-            android:id="@+id/action_divisionProfileFragment_to_expandedSocialFragment"
-            app:destination="@id/expandedSocialFragment" />
     </fragment>
 
     <fragment
@@ -134,21 +125,5 @@
             android:id="@+id/deeplink_signin"
             android:autoVerify="true"
             app:uri="https://snommoc.org/signin/" />
-    </fragment>
-    <fragment
-        android:id="@+id/expandedSocialFragment"
-        android:name="org.beatonma.commons.app.social.ExpandedSocialFragment"
-        android:label="ExpandedSocialFragment"
-        tools:layout="@layout/fragment_social_expanded" >
-        <deepLink
-            android:id="@+id/deeplink_social"
-            android:autoVerify="true"
-            app:uri="https://snommoc.org/social/{target_type}/{parliamentdotuk}/all/"/>
-        <argument
-            android:name="@string/parliamentdotuk"
-            app:argType="integer" />
-        <argument
-            android:name="target_type"
-            app:argType="org.beatonma.commons.data.core.social.SocialTargetType" />
     </fragment>
 </navigation>
