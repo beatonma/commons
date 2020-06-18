@@ -24,7 +24,7 @@ android {
         minSdkVersion(Commons.Sdk.MIN)
         targetSdkVersion(Commons.Sdk.TARGET)
 
-        val buildConfigStrings = mapOf(
+        injectStrings(mapOf(
             "COMMONS_API_KEY" to LocalConfig.Api.Commons.API_KEY,
             "GIT_SHA" to Git.sha(project),
             "TWFY_API_KEY" to LocalConfig.Api.Twfy.API_KEY,
@@ -33,11 +33,13 @@ android {
             "USER_AGENT_EMAIL" to LocalConfig.UserAgent.EMAIL,
             "GOOGLE_SIGNIN_CLIENT_ID" to LocalConfig.OAuth.Google.WEB_CLIENT_ID,
             "GOOGLE_MAPS_API_KEY" to LocalConfig.Api.Google.MAPS
-        )
+        ), asBuildConfig = true, asResValue = true)
 
-        buildConfigStrings.forEach { (key, value) ->
-            buildConfigField("String", key, "\"$value\"")
-        }
+        injectInts(mapOf(
+            "SOCIAL_COMMENT_MAX_LENGTH" to Commons.Social.MAX_COMMENT_LENGTH,
+            "THEME_TEXT_DARK" to TEXT_DARK,
+            "THEME_TEXT_LIGHT" to TEXT_LIGHT
+        ), asBuildConfig = true, asResValue = true)
 
         manifestPlaceholders = mapOf(
             "googleMapsApiKey" to LocalConfig.Api.Google.MAPS
@@ -111,6 +113,9 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
         languageVersion = "1.4"
+
+        freeCompilerArgs = listOf("-XXLanguage:+InlineClasses")
+
     }
     composeOptions {
         kotlinCompilerExtensionVersion = Versions.COMPOSE
@@ -141,6 +146,7 @@ dependencies {
     arrayOf(
         bmalib("testing"),
         Dependencies.Test.AndroidX.CORE,
+        Dependencies.Test.AndroidX.RULES,
         Dependencies.Test.AndroidX.RUNNER,
         Dependencies.Test.AndroidX.ESPRESSO,
         Dependencies.Test.AndroidX.LIVEDATA
@@ -243,14 +249,36 @@ fun DefaultConfig.injectPartyTheme(name: String, theme: PartyColors) {
     buildConfigField("int", "COLOR_PARTY_${name}_ACCENT".toUpperCase(), "${theme._accentInt}")
     buildConfigField("int",
         "COLOR_PARTY_${name}_PRIMARY_TEXT".toUpperCase(),
-        "${theme._primaryTextInt}")
+        "${theme.primaryText}")
     buildConfigField("int",
         "COLOR_PARTY_${name}_ACCENT_TEXT".toUpperCase(),
-        "${theme._accentTextInt}")
+        "${theme.accentText}")
     resValue("color", "party_${name}_primary", theme.primary.toString())
     resValue("color", "party_${name}_accent", theme.accent.toString())
-    resValue("color", "party_${name}_primary", theme.primaryText.toString())
-    resValue("color", "party_${name}_accent", theme.accentText.toString())
+//    resValue("int", "party_${name}_primary_text", theme.primaryText.toString())
+//    resValue("int", "party_${name}_accent_text", theme.accentText.toString())
+}
+
+fun DefaultConfig.injectStrings(mapping: Map<String, String>, asBuildConfig: Boolean, asResValue: Boolean) {
+    mapping.forEach { (key, value) ->
+        if (asBuildConfig) {
+            buildConfigField("String", key.toUpperCase(), "\"$value\"")
+        }
+        if (asResValue) {
+            resValue("string", key.toLowerCase(), value)
+        }
+    }
+}
+
+fun DefaultConfig.injectInts(mapping: Map<String, Int>, asBuildConfig: Boolean, asResValue: Boolean) {
+    mapping.forEach { (key, value) ->
+        if (asBuildConfig) {
+            buildConfigField("int", key.toUpperCase(), "$value")
+        }
+        if (asResValue) {
+            resValue("integer", key.toLowerCase(), "$value")
+        }
+    }
 }
 
 fun bmalib(artifact: String) = project(":bmalib:$artifact")
