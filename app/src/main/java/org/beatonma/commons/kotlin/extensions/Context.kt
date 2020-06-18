@@ -3,9 +3,14 @@ package org.beatonma.commons.kotlin.extensions
 import android.annotation.TargetApi
 import android.app.Application
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Build.VERSION_CODES.LOLLIPOP
+import android.text.Html
+import android.text.Spanned
+import android.text.SpannedString
 import android.util.TypedValue
 import android.view.View
 import android.widget.Toast
@@ -56,6 +61,14 @@ fun Context?.stringCompat(@StringRes resId: Int, vararg formatArgs: Any?): Strin
     }
 
 @Suppress("DEPRECATION")
+fun Context?.htmlCompat(@StringRes resId: Int, vararg formatArgs: Any?): Spanned =
+    when {
+        this == null -> SpannedString("")
+        Sdk.isNougat -> Html.fromHtml(getString(resId, *formatArgs))
+        else -> Html.fromHtml(resources.getString(resId, *formatArgs), Html.FROM_HTML_MODE_LEGACY)
+    }
+
+@Suppress("DEPRECATION")
 @ColorInt
 fun Context?.colorCompat(@ColorRes resId: Int): Int =
     when {
@@ -64,11 +77,20 @@ fun Context?.colorCompat(@ColorRes resId: Int): Int =
     }
 
 @Suppress("DEPRECATION")
-fun Context?.drawableCompat(@DrawableRes resId: Int): Drawable? =
+fun Context?.drawableCompat(@DrawableRes resId: Int, tint: Int? = null): Drawable? =
     when {
         this == null -> null
         resId == 0 -> null
-        else -> ContextCompat.getDrawable(this, resId)
+        else -> {
+            if (tint == null) {
+                ContextCompat.getDrawable(this, resId)
+            }
+            else {
+                ContextCompat.getDrawable(this, resId)?.mutate()?.apply {
+                    setTint(tint)
+                }
+            }
+        }
     }
 
 /**
@@ -79,7 +101,7 @@ fun Context?.dimenCompat(@DimenRes resId: Int): Int = this?.resources?.getDimens
 
 @ColorInt
 fun View?.colorCompat(@ColorRes resId: Int): Int = this?.context?.colorCompat(resId) ?: 0
-fun View?.drawableCompat(@DrawableRes resId: Int): Drawable? = this?.context?.drawableCompat(resId)
+fun View?.drawableCompat(@DrawableRes resId: Int, tint: Int? = null): Drawable? = this?.context?.drawableCompat(resId, tint)
 fun View?.stringCompat(@StringRes resId: Int, vararg formatArgs: Any): String =
     this?.context?.stringCompat(resId, *formatArgs) ?: ""
 fun View?.dimenCompat(@DimenRes resId: Int) = this?.context?.dimenCompat(resId) ?: 0
@@ -100,6 +122,9 @@ fun Fragment.colorCompat(@ColorRes resId: Int): Int = context.colorCompat(resId)
 fun Fragment.dimenCompat(@DimenRes resId: Int): Int =
     context?.resources?.getDimensionPixelSize(resId) ?: 0
 
+fun Fragment.htmlCompat(@StringRes resId: Int, vararg formatArgs: Any?): Spanned =
+    context.htmlCompat(resId, *formatArgs)
+
 fun RecyclerView.ViewHolder.stringCompat(@StringRes resId: Int, vararg formatArgs: Any): String =
     itemView.context.stringCompat(resId, *formatArgs)
 
@@ -108,6 +133,14 @@ fun RecyclerView.ViewHolder.colorCompat(@ColorRes resId: Int): Int =
 
 fun RecyclerView.ViewHolder.dimenCompat(@DimenRes resId: Int): Int =
     itemView.context.resources.getDimensionPixelSize(resId)
+
+fun RecyclerView.ViewHolder.htmlCompat(@StringRes resId: Int, vararg formatArgs: Any?): Spanned =
+    itemView.context.htmlCompat(resId, *formatArgs)
+
+fun RecyclerView.ViewHolder.drawableCompat(@DrawableRes resId: Int, tint: Int? = null): Drawable? =
+    itemView.context.drawableCompat(resId, tint)
+
+val RecyclerView.ViewHolder.context: Context get() = itemView.context
 
 
 
@@ -149,11 +182,40 @@ val Context.deviceHeightDp: Int
 fun Context.pxToDp(px: Int): Int = (px / resources.displayMetrics.density).toInt()
 
 fun Context?.openUrl(url: String) {
-//    this?.startActivity(
-//        Intent(Intent.ACTION_VIEW).apply { data = Uri.parse(url) }
-//    )
-    this?.toast("url $url", Toast.LENGTH_SHORT)
+    this?.tryStartActivity(
+        Intent(Intent.ACTION_VIEW).apply {
+            data = Uri.parse(url)
+        }
+    )
+}
+
+fun Context?.dial(phoneNumber: String) {
+    this?.tryStartActivity(
+        Intent(Intent.ACTION_DIAL).apply {
+            data = Uri.parse("tel:$phoneNumber")
+        }
+    )
+}
+
+fun Context?.sendMail(emailAddress: String) {
+    this?.tryStartActivity(
+        Intent(Intent.ACTION_SENDTO).apply {
+            data = Uri.parse("mailto:$emailAddress")
+            putExtra(Intent.EXTRA_EMAIL, arrayOf(emailAddress))
+        }
+    )
 }
 
 fun Fragment.openUrl(url: String) = context?.openUrl(url)
 fun RecyclerView.ViewHolder.openUrl(url: String) = itemView.context?.openUrl(url)
+
+
+fun Context.tryStartActivity(intent: Intent, otherwise: (() -> Unit)? = null) {
+    if (intent.resolveActivity(packageManager) != null) {
+        toast(intent.dataString ?: "NO DATA", Toast.LENGTH_SHORT)
+//        startActivity(intent)
+    }
+    else {
+        otherwise?.invoke()
+    }
+}
