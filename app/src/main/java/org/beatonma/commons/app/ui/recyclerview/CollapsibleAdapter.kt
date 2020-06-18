@@ -2,11 +2,15 @@ package org.beatonma.commons.app.ui.recyclerview
 
 import org.beatonma.commons.R
 
+/**
+ * An adapter for datasets that may be large but of perhaps not of great general interest.
+ * Shows a preview of the first few items until the user wants to see more.
+ */
 abstract class CollapsibleAdapter<T>(
     collapsed: Boolean = false,
     items: List<T>? = null,
     emptyLayoutID: Int = R.layout.vh_empty_results,
-): CommonsShowWhenEmptyAdapter<T>(items, emptyLayoutID = emptyLayoutID) {
+): ShowWhenEmptyAdapter<T>(items, emptyLayoutID = emptyLayoutID) {
 
     private var _collapsed = false
     var collapsed: Boolean = collapsed

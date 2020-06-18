@@ -9,18 +9,23 @@ import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.recyclerview.viewholder.StaticViewHolder
 import org.beatonma.commons.kotlin.extensions.inflate
 
-abstract class CommonsShowWhenEmptyAdapter<T>(
+/**
+ * Shows a view when items is empty, but not when null.
+ * Intended for use when many views are loading - instead of each showing its own loading
+ * indicator you should just show one for the whole group.
+ */
+abstract class ShowWhenEmptyAdapter<T>(
     items: List<T>? = null,
     diffCallback: DiffUtil.Callback? = null,
     private val emptyLayoutID: Int = R.layout.vh_empty_results,
-) : TypedRecyclerViewAdapter<T>(
+) : TypedAdapter<T>(
     items,
     diffCallback,
 ) {
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is CommonsShowWhenEmptyAdapter<*> -> Unit
+            is ShowWhenEmptyAdapter<*> -> Unit
         }
 
         if (position < items?.size ?: 0) {

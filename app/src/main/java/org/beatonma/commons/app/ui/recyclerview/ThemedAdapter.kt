@@ -6,7 +6,7 @@ import org.beatonma.commons.app.ui.colors.Themed
 
 abstract class ThemedAdapter<T>(
     emptyLayoutID: Int = R.layout.vh_empty_results,
-): CommonsShowWhenEmptyAdapter<T>(emptyLayoutID = emptyLayoutID), Themed {
+): ShowWhenEmptyAdapter<T>(emptyLayoutID = emptyLayoutID), Themed {
     override var theme: PartyColors? = null
 }
 

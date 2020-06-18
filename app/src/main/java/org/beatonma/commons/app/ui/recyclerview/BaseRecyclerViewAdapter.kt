@@ -11,7 +11,11 @@ import org.beatonma.commons.app.ui.recyclerview.viewholder.StaticViewHolder
 
 const val VIEW_TYPE_DEFAULT = 0
 
-abstract class BaseRecyclerViewAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+/**
+ * Generally you should extend [TypedAdapter] or preferably one of its child classes:
+ * [LoadingAdapter] or [ShowWhenEmptyAdapter]
+ */
+abstract class BaseRecyclerViewAdapter internal constructor(): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     init {
         stateRestorationPolicy = StateRestorationPolicy.ALLOW
     }
@@ -20,7 +24,11 @@ abstract class BaseRecyclerViewAdapter: RecyclerView.Adapter<RecyclerView.ViewHo
         LayoutInflater.from(parent.context).inflate(layoutID, parent, attachToRoot)
 }
 
-abstract class TypedRecyclerViewAdapter<T>(
+/**
+ * In most cases you should extend one of the child classes [LoadingAdapter] or [ShowWhenEmptyAdapter]
+ * rather than extending this directly.
+ */
+abstract class TypedAdapter<T> internal constructor(
     items: List<T>? = null,
     diffCallback: DiffUtil.Callback? = null
 ): BaseRecyclerViewAdapter() {
@@ -51,9 +59,9 @@ abstract class TypedRecyclerViewAdapter<T>(
     @Suppress("UNCHECKED_CAST")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is TypedRecyclerViewAdapter<*>.TypedViewHolder -> {
+            is TypedAdapter<*>.TypedViewHolder -> {
                 val item = items?.get(position) ?: return
-                (holder as? TypedRecyclerViewAdapter<T>.TypedViewHolder)?.bind(item)
+                (holder as? TypedAdapter<T>.TypedViewHolder)?.bind(item)
             }
 
             is StaticViewHolder -> holder.bind()

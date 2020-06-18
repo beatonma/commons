@@ -14,12 +14,12 @@ import org.beatonma.commons.R
 const val VIEW_TYPE_LOADING = 123
 const val VIEW_TYPE_EMPTY = 321
 
-abstract class LoadingRecyclerViewAdapter<T>(
-    items: List<T>?,
+abstract class LoadingAdapter<T> internal constructor(
+    items: List<T>? = null,
     diffCallback: DiffUtil.Callback? = null,
-    private val nullLayoutID: Int = R.layout.item_loading_custom,
-    private val emptyLayoutID: Int = R.layout.invisible
-): TypedRecyclerViewAdapter<T>(items) {
+    private val nullLayoutID: Int = R.layout.item_loading,
+    private val emptyLayoutID: Int = R.layout.invisible,
+): TypedAdapter<T>(items) {
 
     override val diffCallback: DiffUtil.Callback = diffCallback ?: defaultDiffCallback()
 
@@ -88,7 +88,7 @@ abstract class LoadingRecyclerViewAdapter<T>(
         }
     }
 
-    private inner class LoadingViewHolder internal constructor(v: View) : RecyclerView.ViewHolder(v)
+    private class LoadingViewHolder constructor(v: View) : RecyclerView.ViewHolder(v)
 
-    private class InvisibleViewHolder internal constructor(v: View) : RecyclerView.ViewHolder(v)
+    private class InvisibleViewHolder constructor(v: View) : RecyclerView.ViewHolder(v)
 }
