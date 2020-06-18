@@ -13,7 +13,7 @@ import org.beatonma.commons.data.core.repository.UserAccount
 import org.beatonma.commons.data.core.repository.UserRepository
 import org.beatonma.commons.data.core.repository.toUserAccount
 import org.beatonma.commons.data.core.room.entities.user.UserToken
-import org.beatonma.lib.util.kotlin.extensions.dump
+import org.beatonma.commons.kotlin.extensions.dump
 import javax.inject.Inject
 
 private const val TAG = "SignInViewModel"
@@ -26,14 +26,9 @@ class SignInViewModel @Inject constructor(
     private val repository: UserRepository,
     application: CommonsApplication,
 ): AndroidViewModel(application) {
-    private val app: CommonsApplication
-        get() = getApplication()
 
     var activeToken: LiveDataIoResult<UserToken>? = null
 
-    /**
-     * Return true if activeToken is observable
-     */
     fun getTokenForCurrentSignedInAccount(): LiveDataIoResult<UserToken>? {
         val currentGoogleAccount = GoogleSignIn.getLastSignedInAccount(commonsApp)
         val userAccount = currentGoogleAccount?.toUserAccount()

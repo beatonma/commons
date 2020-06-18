@@ -4,7 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import androidx.core.content.edit
 import dagger.android.support.DaggerAppCompatActivity
-import org.beatonma.lib.util.kotlin.extensions.getPrefs
+import org.beatonma.commons.kotlin.extensions.getPrefs
 
 object SystemTheme {
     const val THEME_PREFS = "theme"
