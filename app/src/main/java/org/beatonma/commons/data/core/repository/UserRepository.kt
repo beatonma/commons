@@ -6,7 +6,7 @@ import org.beatonma.commons.data.CommonsRemoteDataSource
 import org.beatonma.commons.data.LiveDataIoResult
 import org.beatonma.commons.data.core.room.dao.UserDao
 import org.beatonma.commons.data.core.room.entities.user.UserToken
-import org.beatonma.commons.data.resultLiveData
+import org.beatonma.commons.data.resultLiveDataLocalPreferred
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -17,7 +17,7 @@ class UserRepository @Inject constructor(
     private val remoteSource: CommonsRemoteDataSource,
     private val userDao: UserDao,
 ) {
-    fun observeSignedInUser(account: UserAccount): LiveDataIoResult<UserToken> = resultLiveData(
+    fun observeSignedInUser(account: UserAccount): LiveDataIoResult<UserToken> = resultLiveDataLocalPreferred(
         databaseQuery = { userDao.getUserToken(account.googleId) },
         networkCall = { remoteSource.registerUser(account.googleIdToken) },
         saveCallResult = { apiToken ->
@@ -30,6 +30,9 @@ class UserRepository @Inject constructor(
             }
         }
     )
+
+    suspend fun getUserTokenSync(account: UserAccount): UserToken? =
+        userDao.getUserTokenSync(account.googleId)
 }
 
 
