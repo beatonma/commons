@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <TextView
+        android:id="@+id/election_name"
+        android:layout_width="0dp"
+        android:layout_marginBottom="@dimen/whitespace_primary_paragraph"
+        tools:text="@string/constituency_election_header"
+        style="@style/Text.Primary.H1"
+        />
+
+    <TextView
+        android:id="@+id/constituency_name"
+        android:layout_width="0dp"
+        android:layout_marginTop="0dp"
+        style="@style/Text.Primary.H2"
+        />
+
+    <TextView
+        android:id="@+id/election_date"
+        android:layout_width="0dp"
+        style="@style/Text.Primary"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="election date"
+        />
+
+    <TextView
+        android:id="@+id/turnout"
+        android:layout_width="0dp"
+        style="@style/Text.Primary"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="turnout: xxxx of yyyyy"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/candidates"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:listitem="@layout/item_constituency_candidate"
+        />
+
+    <androidx.constraintlayout.helper.widget.Flow
+        android:id="@+id/flow3"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:constraint_referenced_ids="election_name,constituency_name,election_date,turnout,candidates"
+        style="@style/Commons.Flow.Vertical.AlignStart"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

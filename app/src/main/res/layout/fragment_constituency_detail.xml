@@ -19,19 +19,14 @@
 
     <TextView
         android:id="@+id/constituency_name"
-        style="@style/Text.Primary.Header"
+        style="@style/Text.Primary.H1"
         tools:text="ConstituencyName"
         />
 
-    <TextView
-        android:id="@+id/center"
-        android:text="center"
-        style="@style/Text.Primary"/>
-
-
-    <include
-        android:id="@+id/mp"
-        layout="@layout/item_wide_image_title_subtitle_description"
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/election_results_recyclerview"
         />
 
     <androidx.constraintlayout.helper.widget.Flow
@@ -39,15 +34,17 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:orientation="vertical"
-        app:constraint_referenced_ids="mapview,constituency_name,center,mp"
+        app:constraint_referenced_ids="mapview,constituency_name,election_results_recyclerview"
         app:flow_firstVerticalBias="0"
         app:flow_firstVerticalStyle="packed"
         app:flow_verticalAlign="top"
         app:flow_verticalBias="0"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
