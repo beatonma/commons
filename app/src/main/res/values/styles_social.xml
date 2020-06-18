@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Social">
+
+    </style>
+
+    <style name="Social.Background" parent="">
+        <item name="android:background">@color/Tabletop</item>
+    </style>
+
+    <style name="Social.Comments" parent="">
+
+    </style>
+
+    <style name="Social.Comment.Text" parent="Text.Primary">
+
+    </style>
+
+    <style name="Social.Comment.Username" parent="Text.Secondary">
+        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:textColor">?attr/colorAccent</item>
+    </style>
+
+    <style name="Social.Comment.Timestamp" parent="Text.Secondary">
+        <item name="android:fontFamily">sans-serif-condensed</item>
+    </style>
+
+    <style name="Social.Compact.Container" parent="">
+        <item name="android:layout_width">@dimen/social_compact_view_width</item>
+        <item name="android:layout_height">@dimen/social_compact_view_height</item>
+        <item name="layout_constraintHorizontal_bias">0.0</item>
+        <item name="flow_horizontalBias">0.0</item>
+    </style>
+
+    <style name="Social.Expanded.Container" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">@dimen/social_expanded_view_height</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+
+    </style>
+
+
+    <style name="Social.Compact.Count" parent="">
+        <!-- NOT USED -->
+    </style>
+
+    <style name="Social.Expanded.Count" parent="">
+        <item name="android:background">@drawable/round_selector</item>
+        <item name="layout_constraintDimensionRatio">1:1</item>
+        <item name="flow_horizontalStyle">packed</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:elevation">@dimen/social_expanded_elevation</item>
+    </style>
+
+    <style name="Social.Compact.Count.Icon" parent="">
+        <!-- NOT USED -->
+    </style>
+
+    <style name="Social.Expanded.Count.Icon" parent="">
+        <item name="android:layout_width">@dimen/icon_size_large</item>
+        <item name="android:layout_height">@dimen/icon_size_large</item>
+        <item name="android:padding">@dimen/touchable_icon_padding</item>
+    </style>
+</resources>

@@ -3,9 +3,15 @@
     <color name="colorPrimary">#444444</color>
     <color name="colorPrimaryDark">#333333</color>
     <color name="colorAccent">#2680D0</color>
+    <color name="Accent">@color/colorAccent</color>
 
     <color name="SearchBar">#2d4051</color>
 
     <color name="Positive">@color/Green500</color>
     <color name="Negative">@color/Red500</color>
+
+    <color name="colorControlLight">@color/TextSecondaryLight</color>
+    <color name="colorControlDark">@color/TextSecondaryDark</color>
+
+    <color name="menu_action_icon">@color/TextPrimary</color>
 </resources>

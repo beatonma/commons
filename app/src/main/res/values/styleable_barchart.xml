@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="StackedBarChart">
+        <attr name="showCenter" format="boolean"/>
+        <attr name="centerColor" format="color|reference"/>
+        <attr name="animDuration" format="integer|reference"/>
+        <attr name="animStyle" format="enum">
+            <enum name="series" value="0"/>
+            <enum name="parallel" value="1"/>
+            <enum name="middleout" value="2"/>
+        </attr>
+    </declare-styleable>
+</resources>

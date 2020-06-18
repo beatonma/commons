@@ -7,8 +7,8 @@
     <dimen name="chip_padding_horizontal">16dp</dimen>
     <dimen name="chip_margin_horizontal">8dp</dimen>
     <dimen name="chip_margin_vertical">8dp</dimen>
-    <dimen name="chip_icon_size">34dp</dimen>
-    <dimen name="chip_icon_padding">8dp</dimen>
+    <dimen name="chip_icon_size">@dimen/touchable_icon_size</dimen>
+    <dimen name="chip_icon_padding">@dimen/touchable_icon_padding</dimen>
     <dimen name="chip_text_size">@dimen/text_size_chip</dimen>
     <dimen name="chip_elevation">@dimen/card_elevation</dimen>
 </resources>
