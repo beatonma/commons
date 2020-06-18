@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--
-        Text styles
-    -->
     <style name="Text">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -41,51 +38,36 @@
         <item name="android:textSize">@dimen/text_size_h3</item>
     </style>
 
-    <style name="Text.Primary.Header.NavigationView">
-        <item name="android:textStyle">bold</item>
-    </style>
-
     <style name="Text.Primary.Subheader">
         <item name="android:textSize">@dimen/text_size_subheader</item>
         <item name="android:maxLines">2</item>
     </style>
 
-    <style name="Text.Primary.Subheader.Single">
-        <item name="android:maxLines">1</item>
+    <style name="Text.Condensed" parent="Text.Primary">
+        <item name="android:fontFamily">sans-serif-condensed</item>
     </style>
 
-    <style name="Text.Primary.Single">
-        <item name="android:maxLines">1</item>
-    </style>
-
-    <style name="Text.Secondary.Single">
-        <item name="android:maxLines">1</item>
-    </style>
-
-    <style name="Text.Primary.Header.Card">
-        <item name="android:paddingTop">@dimen/card_header_padding_top</item>
-        <item name="android:paddingBottom">@dimen/whitespace_header_paragraph</item>
-    </style>
-
-    <style name="Text.Secondary.Preview">
-        <item name="android:maxLines">3</item>
-    </style>
 
     <style name="Text.Edit">
-        <item name="android:layout_width">match_parent</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:gravity">top|start</item>
         <item name="android:minWidth">@dimen/touchable_min_size</item>
         <item name="android:textColor">@color/TextPrimary</item>
         <item name="android:textColorHint">@color/TextSecondary</item>
         <item name="android:textSize">@dimen/text_size_edit</item>
+        <item name="android:textCursorDrawable">@null</item><!-- Use textColor for cursor -->
     </style>
 
-    <!-- A label for a view -->
-    <style name="Text.Primary.Label">
-        <item name="android:textSize">@dimen/text_size_label</item>
-        <item name="android:fontFamily">sans-serif-condensed</item>
-        <!--<item name="android:textAlignment">center</item>-->
+    <style name="Text.Edit.Wrapper" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        <item name="boxBackgroundMode">outline</item>
+        <item name="boxBackgroundColor">@color/TextField</item>
+        <item name="boxStrokeColor">@color/TextTertiary</item>
+        <item name="boxStrokeErrorColor">@color/Negative</item>
+        <item name="counterOverflowTextColor">@color/Negative</item>
+        <item name="counterTextColor">@color/TextPrimary</item>
+        <item name="endIconMode">none</item>
+        <item name="hintTextColor">@color/TextSecondary</item>
+        <item name="android:paddingBottom">@dimen/flow_gap_large</item>
+        <item name="android:paddingHorizontal">@dimen/whitespace_edge</item>
     </style>
-    <!--
-        End of Text styles
-    -->
 </resources>
