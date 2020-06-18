@@ -47,7 +47,7 @@ object Versions {
 object Dependencies {
     object AndroidX {
         val APPCOMPAT = androidx("appcompat", version = "1.3.0-alpha01")
-        val CONSTRAINTLAYOUT = androidx("constraintlayout", version = "2.0.0-beta6")
+        val CONSTRAINTLAYOUT = androidx("constraintlayout", version = "2.0.0-beta7")
         val CORE_KTX = androidx(group = "core", artifact = "core-ktx", version = "1.3.0-rc01")
         val LIFECYCLE_RUNTIME = androidx(group = "lifecycle", artifact = "lifecycle-runtime-ktx", version = "2.3.0-alpha03")
         val LIVEDATA_KTX = androidx(group = "lifecycle", artifact = "lifecycle-livedata-ktx", version = "2.3.0-alpha03")
@@ -118,6 +118,7 @@ object Dependencies {
             val CORE = kotlinx("kotlinx-coroutines-core", Versions.COROUTINES)
             val ANDROID = kotlinx("kotlinx-coroutines-android", Versions.COROUTINES)
             val PLAY = kotlinx("kotlinx-coroutines-play-services", Versions.COROUTINES)
+            val TEST = kotlinx("kotlinx-coroutines-test", Versions.COROUTINES)
         }
     }
 
