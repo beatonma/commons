@@ -5,15 +5,16 @@ import android.graphics.Point
 import android.graphics.Rect
 import android.graphics.RectF
 import android.text.TextUtils
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.View
-import android.view.ViewGroup
+import android.util.Log
+import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.LayoutRes
 import androidx.core.view.iterator
+import org.beatonma.commons.kotlin.data.asStateList
 
 val View.ratio: Float
     get() = width.toFloat() / height.toFloat()
@@ -101,12 +102,31 @@ fun setTextColor(textColor: Int, linkColor: Int, vararg textViews: TextView) {
     }
 }
 
-fun bindText(vararg pairs: Pair<TextView, String?>, textColor: Int? = null, linkColor: Int? = null, hideIfEmpty: Boolean = true) {
+fun bindText(vararg pairs: Pair<TextView, CharSequence?>, textColor: Int? = null, linkColor: Int? = null, hideIfEmpty: Boolean = true) {
     pairs.forEach { (view, text) ->
         view.text = text
         if (textColor != null) view.setTextColor(textColor)
         if (linkColor != null) view.setLinkTextColor(linkColor)
         if (hideIfEmpty) view.hideIfEmpty()
+    }
+}
+
+fun bindContentDescription(vararg pairs: Pair<View, CharSequence?>, tooltip: Boolean = true) {
+    pairs.forEach { (view, text) ->
+        view.contentDescription = text
+        if (tooltip) {
+            view.tooltipText = text
+        }
+    }
+}
+
+fun applyColor(tint: Int, vararg views: View) {
+    val tintList = tint.asStateList()
+    views.forEach { view ->
+        when (view) {
+            is ImageView -> view.imageTintList = tintList
+            is TextView -> view.setTextColor(tintList)
+        }
     }
 }
 
@@ -116,6 +136,87 @@ fun Menu.applyTint(color: Int) {
     }
 }
 
-fun ViewGroup.inflate(@LayoutRes layoutId: Int): View =
+fun ViewGroup.inflate(@LayoutRes layoutId: Int, attachToRoot: Boolean = false): View =
     LayoutInflater.from(context)
-        .inflate(layoutId, this, false)
+        .inflate(layoutId, this, attachToRoot)
+
+
+/**
+ * https://developer.squareup.com/blog/showing-the-android-keyboard-reliably/
+ */
+fun View.focusAndShowKeyboard() {
+    /**
+     * This is to be called when the window already has focus.
+     */
+    fun View.showKeyboardNow() {
+//        addImeWindowInsetsAnimation()
+        if (isFocused) {
+            post {
+                // We still post the call, just in case we are being notified of the windows focus
+                // but InputMethodManager didn't get properly setup yet.
+                val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
+            }
+        }
+    }
+
+    requestFocus()
+    if (hasWindowFocus()) {
+        // No need to wait for the window to get focus.
+        showKeyboardNow()
+    } else {
+        // We need to wait until the window gets focus.
+        viewTreeObserver.addOnWindowFocusChangeListener(
+            object : ViewTreeObserver.OnWindowFocusChangeListener {
+                override fun onWindowFocusChanged(hasFocus: Boolean) {
+                    // This notification will arrive just before the InputMethodManager gets set up.
+                    if (hasFocus) {
+                        this@focusAndShowKeyboard.showKeyboardNow()
+                        // It’s very important to remove this listener once we are done.
+                        viewTreeObserver.removeOnWindowFocusChangeListener(this)
+                    }
+                }
+            })
+    }
+}
+
+fun View.hideKeyboard() {
+    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.hideSoftInputFromWindow(this.windowToken, InputMethodManager.HIDE_IMPLICIT_ONLY)
+}
+
+/**
+ * Callbacks not being called? Try again with next release
+ */
+//fun View.addImeWindowInsetsAnimation() {
+////    if (!Sdk.isR) {
+////        Log.w(autotag, "IME animations not supported by sdk=${Sdk.version} (${Build.VERSION_CODES.R} required)")
+////        return
+////    }
+//
+//    Log.i(autotag, "Adding IME animation callback")
+//    val bottomMargin = this.marginBottom
+//
+//    (context as? Activity)?.window?.setDecorFitsSystemWindows(false)
+//    setWindowInsetsAnimationCallback(
+//        @RequiresApi(Build.VERSION_CODES.R) object: WindowInsetsAnimation.Callback(DISPATCH_MODE_STOP) {
+//            override fun onProgress(
+//                insets: WindowInsets,
+//                animations: MutableList<WindowInsetsAnimation>,
+//            ): WindowInsets {
+//                updateLayoutParams<ViewGroup.MarginLayoutParams> {
+//                    val margin = bottomMargin + insets.getInsets(WindowInsets.Type.ime()).bottom
+//                    updateMargins(bottom = margin.dump("Margin"))
+//                }
+//                return insets
+//            }
+//        }
+//    )
+//}
+
+fun View.debugShowClick() {
+    setOnClickListener {
+        Log.d(autotag, "CLICK $this")
+        Toast.makeText(context, "CLICK $this", Toast.LENGTH_SHORT).show()
+    }
+}
