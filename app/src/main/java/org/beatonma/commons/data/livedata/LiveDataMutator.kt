@@ -1,5 +1,6 @@
 package org.beatonma.commons.data.livedata
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -9,9 +10,17 @@ abstract class LiveDataMutator<D>(
 ) {
     val value: MutableLiveData<D> = MutableLiveData()
 
-    fun update(block: D.() -> D): D {
-        mutable = block.invoke(mutable)
-        value.value = mutable
+    fun update(
+        updatePredicate: ((D) -> Boolean) = { true },
+        block: D.() -> D,
+    ): D {
+        if (updatePredicate.invoke(mutable)) {
+            mutable = block.invoke(mutable)
+            value.value = mutable
+        }
+        else {
+            Log.v("LiveDataMutator", "Update with no diff skipped")
+        }
         return mutable
     }
 }
