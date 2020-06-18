@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="text_size_primary">18sp</dimen>
+    <dimen name="text_size_secondary">16sp</dimen>
+    <dimen name="text_size_header">24sp</dimen>
+    <dimen name="text_size_subheader">@dimen/text_size_primary</dimen>
+    <dimen name="text_size_edit">@dimen/text_size_primary</dimen>
+    <dimen name="text_size_label">14sp</dimen>
+    <dimen name="text_size_chip">13sp</dimen>
+
+    <dimen name="text_size_h1">28sp</dimen>
+    <dimen name="text_size_h2">24sp</dimen>
+    <dimen name="text_size_h3">20sp</dimen>
+
+    <!-- Whitespace -->
+    <dimen name="whitespace_header_subheader">12dp</dimen>
+    <dimen name="whitespace_header_paragraph">16dp</dimen>
+    <dimen name="whitespace_primary_paragraph">8dp</dimen>
+    <dimen name="whitespace_secondary_paragraph">8dp</dimen>
+</resources>

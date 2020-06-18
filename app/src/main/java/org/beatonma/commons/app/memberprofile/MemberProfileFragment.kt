@@ -5,60 +5,76 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.bumptech.glide.Glide
-import dagger.android.support.AndroidSupportInjection
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.beatonma.commons.R
-import org.beatonma.commons.app.dagger.Injectable
+import org.beatonma.commons.app.social.SocialViewController
+import org.beatonma.commons.app.social.SocialViewHost
+import org.beatonma.commons.app.social.SocialViewModel
+import org.beatonma.commons.app.social.SocialViewTheme
+import org.beatonma.commons.app.ui.BaseViewmodelFragment
+import org.beatonma.commons.app.ui.Snippet
+import org.beatonma.commons.app.ui.colors.PartyColors
+import org.beatonma.commons.app.ui.colors.Themed
+import org.beatonma.commons.app.ui.colors.getPartyTheme
+import org.beatonma.commons.app.ui.navigation.OnBackPressed
+import org.beatonma.commons.app.ui.recyclerview.RvSpacing
+import org.beatonma.commons.app.ui.recyclerview.setup
 import org.beatonma.commons.data.IoResult
+import org.beatonma.commons.data.NetworkError
 import org.beatonma.commons.data.PARLIAMENTDOTUK
-import org.beatonma.commons.data.core.room.entities.MemberProfile
+import org.beatonma.commons.data.ParliamentID
+import org.beatonma.commons.data.core.CompleteMember
+import org.beatonma.commons.data.core.room.entities.member.MemberProfile
+import org.beatonma.commons.data.core.social.SocialContent
 import org.beatonma.commons.databinding.FragmentMemberProfileBinding
 import org.beatonma.commons.databinding.FragmentMemberProfileSnippetBinding
-import org.beatonma.commons.kotlin.extensions.snackbar
-import org.beatonma.commons.ui.colors.PartyColors
-import org.beatonma.commons.ui.colors.getPartyTheme
-import org.beatonma.lib.ui.recyclerview.BaseRecyclerViewAdapter
-import org.beatonma.lib.ui.recyclerview.BaseViewHolder
-import org.beatonma.lib.ui.recyclerview.kotlin.extensions.setup
-import javax.inject.Inject
-
+import org.beatonma.commons.kotlin.extensions.*
 
 private const val TAG = "MemberProfileFrag"
 
+class MemberProfileFragment : BaseViewmodelFragment(),
+    Themed,
+    OnBackPressed,
+    SocialViewHost
+{
 
-@ExperimentalStdlibApi
-class MemberProfileFragment : Fragment(), Injectable {
     private lateinit var binding: FragmentMemberProfileBinding
 
-    @Inject
-    lateinit var viewmodelFactory: ViewModelProvider.Factory
     private val viewmodel: MemberProfileViewModel by viewModels { viewmodelFactory }
-    private var snippetIndex = 0;
-    private var snippetJob: Job? = null
-    private val adapter = SimpleProfileAdapter()
+    override val socialViewModel: SocialViewModel by activityViewModels{ viewmodelFactory }
 
-    private fun getMemberIdFromBundle(): Int = arguments?.getInt(PARLIAMENTDOTUK) ?: 0
+    override lateinit var socialViewController: SocialViewController
+
+    private val socialObserver = Observer<IoResult<SocialContent>> { result ->
+        socialViewController.updateUi(result.data)
+    }
+
+    override fun onVoteSubmissionSuccessful() {
+        observeSocialViewModel()
+    }
+
+    private val adapter = ProfileDataAdapter()
+
+    override var theme: PartyColors? = null
+    private val defaultTransition = R.id.transition_scroll
+
+    private fun getMemberIdFromBundle(): ParliamentID = arguments?.getInt(PARLIAMENTDOTUK) ?: 0
 
     override fun onAttach(context: Context) {
-        AndroidSupportInjection.inject(this)
-        viewmodel.forMember(getMemberIdFromBundle())
-
         super.onAttach(context)
+        viewmodel.forMember(getMemberIdFromBundle())
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         binding = FragmentMemberProfileBinding.inflate(inflater)
         return binding.root
@@ -66,101 +82,109 @@ class MemberProfileFragment : Fragment(), Injectable {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        socialViewController = setupViewController(binding.root, defaultTransition)
 
-        binding.recyclerview.setup(adapter)
-        binding.portrait.setImageResource(R.mipmap.ic_launcher)
+        binding.recyclerview.setup(
+            adapter,
+            space = RvSpacing(
+                topSpace = context.dp(16),
+                bottomSpace = dimenCompat(R.dimen.list_overscroll_padding),
+                verticalItemSpace = dimenCompat(R.dimen.flow_gap_vertical)
+            )
+        )
 
-        viewmodel.memberLiveData.observe(viewLifecycleOwner) { member ->
-            if (member.status == IoResult.Status.NETWORK_ERROR) {
-                snackbar(R.string.error_network)
+        viewmodel.liveData.observe(viewLifecycleOwner) { result ->
+            if (result is NetworkError) networkErrorSnackbar()
+
+            result.data?.let { member ->
+                updateUI(member)
+
+                val profile = member.profile
+                if (profile != null) {
+                    observeSocialContent(profile)
+                }
             }
-
-            member.data?.profile?.let { updateUI(it) }
         }
-
-        viewmodel.snippets.observe(viewLifecycleOwner, Observer { snippets ->
-            nextSnippet()
-            adapter.items = snippets.sortedBy { it.title }
-            adapter.notifyDataSetChanged()
-        })
     }
 
-    private fun updateUI(profile: MemberProfile) {
-        applyTheme(getPartyTheme(profile.party.parliamentdotuk))
+    private fun observeSocialContent(profile: MemberProfile) {
+        val target = profile.asSocialTarget()
+
+        lifecycleScope.launch(Dispatchers.Main) {
+            socialViewModel.run {
+                forTarget(target)
+                observeSocialViewModel()
+            }
+        }
+    }
+
+    private fun updateUI(member: CompleteMember) {
+        applyUiTheme(context?.getPartyTheme(member.party?.parliamentdotuk))
+//        applyUiTheme(member.party?.getTheme(context))
+
+        binding.portrait.load(member.profile?.portraitUrl)
+
+        lifecycleScope.launch(Dispatchers.Main) {
+            @Suppress("UNCHECKED_CAST")
+            adapter.items = viewmodel.toProfileData(member) as List<ProfileData<Any>>
+        }
+
+        updateUiToolbarText(member)
+    }
+
+    private fun observeSocialViewModel() {
+        socialViewModel.livedata.removeObserver(socialObserver)
+        lifecycleScope.launch(Dispatchers.IO) {
+            socialViewModel.refresh()
+            withContext(Dispatchers.Main) {
+                socialViewModel.livedata.observe(viewLifecycleOwner, socialObserver)
+            }
+        }
+    }
+
+    private fun updateUiToolbarText(member: CompleteMember) {
+        bindText(
+            binding.name to member.profile?.name,
+        )
+    }
+
+    private fun applyUiTheme(theme: PartyColors?) {
+        theme ?: return
+        this.theme = theme
+        adapter.theme = theme
         binding.apply {
-            name.text = profile.name
-
-            Glide.with(root)
-                .load(R.mipmap.politician_generic)
-//                .load(profile.portraitUrl)
-                .fallback(R.mipmap.ic_launcher)
-                .into(portrait)
+            setBackgroundColor(theme.primary, titlebarBackground)
+            setBackgroundColor(theme.accent, accent, portrait)
+            setTextColor(
+                theme.textPrimaryOnPrimary,
+                name,
+            )
         }
+
+        socialViewController.collapsedTheme = SocialViewTheme(theme.textSecondaryOnPrimary, theme.textPrimaryOnPrimary)
     }
 
-    private fun nextSnippet() {
-        snippetJob?.cancel()
+//    private fun setSnippet(snippet: Snippet) = bindSnippet(binding.snippet, snippet)
 
-        val snippets = viewmodel.snippets.value
-        if (snippets == null || snippets.isEmpty()) {
-            return
-        }
-
-        snippetIndex = (snippetIndex + 1) % snippets.size
-        setSnippet(snippets[snippetIndex])
-
-        snippetJob = lifecycleScope.launch(Dispatchers.Main) {
-            delay(2500)
-            nextSnippet()
-        }
-    }
-
-    private fun setSnippet(snippet: Snippet) = bindSnippet(binding.snippet, snippet)
-
-    private fun applyTheme(theme: PartyColors) {
-        binding.apply{
-            portrait.setBackgroundColor(theme.primary)
-            accentLine.setBackgroundColor(theme.primary)
-        }
-    }
+//    private fun observeMemberVotes() {
+//        // TODO load votes when user requests them and display soemwhere
+//        viewmodel.memberVoteLiveData.observe(viewLifecycleOwner) {
+//            it.data.dump()
+//        }
+//    }
 }
 
-
-class SimpleProfileAdapter(var items: List<Snippet>? = null): BaseRecyclerViewAdapter() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
-        return SimpleSnippetViewHolder(inflate(parent, R.layout.fragment_member_profile_snippet, false))
-    }
-
-    override fun getItemCount() = items?.size ?: 0
-
-    inner class SimpleSnippetViewHolder(v: View): BaseViewHolder(v) {
-        private val binding = FragmentMemberProfileSnippetBinding.bind(v)
-
-        override fun bind(position: Int) {
-            val snippet = items?.get(position) ?: return
-            bindSnippet(binding, snippet)
-        }
-    }
-}
 
 
 private fun bindSnippet(binding: FragmentMemberProfileSnippetBinding, snippet: Snippet) {
     binding.apply {
-        title.text = snippet.title
-        content.text = snippet.content
-        subtitle.text = snippet.subtitle
-        subcontent.text = snippet.subcontent
+        bindText(
+            title to snippet.title,
+            content to snippet.content,
+            subtitle to snippet.subtitle,
+            subcontent to snippet.subcontent,
+        )
 
-        action.apply {
-            setOnClickListener { view -> snippet.onclick?.invoke(view.context) }
-
-            if (snippet.onclick == null || snippet.clickActionText == null) {
-                visibility = View.GONE
-            }
-            else {
-                text = snippet.clickActionText
-                visibility = View.VISIBLE
-            }
-        }
+        binding.root.setOnClickListener { view -> snippet.onclick?.invoke(view.context) }
     }
 }

@@ -18,6 +18,7 @@ import org.beatonma.commons.R
 import org.beatonma.commons.annotations.SignInRequired
 import org.beatonma.commons.app.ui.navigation.OnBackPressed
 import org.beatonma.commons.app.ui.recyclerview.CommonsLoadingAdapter
+import org.beatonma.commons.app.ui.recyclerview.setup
 import org.beatonma.commons.app.ui.transition.onTransitionEnd
 import org.beatonma.commons.data.NetworkError
 import org.beatonma.commons.data.NoBodySuccessResult
@@ -29,7 +30,6 @@ import org.beatonma.commons.databinding.FragmentSocialExpandedBinding
 import org.beatonma.commons.databinding.ItemSocialCommentBinding
 import org.beatonma.commons.kotlin.data.asStateList
 import org.beatonma.commons.kotlin.extensions.*
-import org.beatonma.lib.ui.recyclerview.kotlin.extensions.setup
 import java.time.LocalDate
 
 @Deprecated("Use SocialViewController with SocialViewHost instead")

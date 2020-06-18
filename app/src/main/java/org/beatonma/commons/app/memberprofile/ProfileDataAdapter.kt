@@ -10,23 +10,14 @@ import org.beatonma.commons.app.memberprofile.adapter.*
 import org.beatonma.commons.app.ui.colors.PartyColors
 import org.beatonma.commons.app.ui.colors.Themed
 import org.beatonma.commons.app.ui.data.WeblinkData
-import org.beatonma.commons.app.ui.recyclerview.CollapsibleAdapter
-import org.beatonma.commons.app.ui.recyclerview.CommonsLoadingAdapter
-import org.beatonma.commons.app.ui.recyclerview.ThemedAdapter
-import org.beatonma.commons.app.ui.recyclerview.ThemedCollapsibleAdapter
+import org.beatonma.commons.app.ui.recyclerview.*
+import org.beatonma.commons.app.ui.recyclerview.viewholder.StaticViewHolder
 import org.beatonma.commons.data.core.room.entities.member.FinancialInterest
 import org.beatonma.commons.data.core.room.entities.member.PhysicalAddress
 import org.beatonma.commons.databinding.RecyclerviewBinding
 import org.beatonma.commons.databinding.ViewCollapsingGroupBinding
 import org.beatonma.commons.kotlin.extensions.*
 import org.beatonma.lib.graphic.core.utility.AnimationUtils
-import org.beatonma.lib.ui.recyclerview.BaseRecyclerViewAdapter
-import org.beatonma.lib.ui.recyclerview.StaticViewHolder
-import org.beatonma.lib.ui.recyclerview.TypedRecyclerViewAdapter
-import org.beatonma.lib.ui.recyclerview.kotlin.extensions.RvSpacing
-import org.beatonma.lib.ui.recyclerview.kotlin.extensions.horizontalLinearLayoutManager
-import org.beatonma.lib.ui.recyclerview.kotlin.extensions.setup
-import org.beatonma.lib.ui.recyclerview.kotlin.extensions.setupGrid
 
 private const val TAG = "ProfileDataAdapter"
 
@@ -74,7 +65,7 @@ class ProfileDataAdapter: CommonsLoadingAdapter<ProfileData<Any>>(), Themed {
             ?: super.onCreateViewHolder(parent, viewType)
 
     override fun onCreateDefaultViewHolder(parent: ViewGroup): RecyclerView.ViewHolder {
-        return object: StaticViewHolder(parent.inflate(R.layout.vh_invisible)) {}
+        return object: StaticViewHolder(parent.inflate(R.layout.invisible)) {}
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {

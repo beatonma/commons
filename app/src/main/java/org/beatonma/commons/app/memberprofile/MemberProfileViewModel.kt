@@ -1,69 +1,56 @@
 package org.beatonma.commons.app.memberprofile
 
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import androidx.annotation.StringRes
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import androidx.annotation.VisibleForTesting
 import org.beatonma.commons.CommonsApplication
 import org.beatonma.commons.R
-import org.beatonma.commons.app.ui.datarendering.formatDate
-import org.beatonma.commons.data.IoResult
-import org.beatonma.commons.data.core.CommonsRepository
+import org.beatonma.commons.app.ui.Snippet
+import org.beatonma.commons.app.ui.SnippetGeneratorAndroidViewModel
+import org.beatonma.commons.app.ui.data.WeblinkData
+import org.beatonma.commons.app.ui.toSnippets
+import org.beatonma.commons.data.LiveDataIoResultList
+import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.CompleteMember
-import org.beatonma.commons.data.core.room.entities.*
-import org.beatonma.lib.util.kotlin.extensions.stringCompat
-import java.util.*
+import org.beatonma.commons.data.core.interfaces.Dated
+import org.beatonma.commons.data.core.interfaces.Periodic
+import org.beatonma.commons.data.core.interfaces.Temporal
+import org.beatonma.commons.data.core.interfaces.compressConsecutiveItems
+import org.beatonma.commons.data.core.repository.MemberRepository
+import org.beatonma.commons.data.core.room.entities.division.VoteWithDivision
+import org.beatonma.commons.data.core.room.entities.member.*
+import org.beatonma.commons.kotlin.extensions.dateRange
+import org.beatonma.commons.kotlin.extensions.formatted
+import org.beatonma.commons.kotlin.extensions.openUrl
+import org.beatonma.commons.kotlin.extensions.stringCompat
+import java.time.LocalDate
 import javax.inject.Inject
 
-class MemberProfileViewModel @Inject constructor(
-    private val repository: CommonsRepository,
-    private val application: CommonsApplication,
-) : AndroidViewModel(application) {
+private const val TAG = "MemberProfViewModel"
 
-    lateinit var memberLiveData: LiveData<IoResult<CompleteMember>>
+class MemberProfileViewModel
+@Inject constructor(
+    private val repository: MemberRepository,
+    application: CommonsApplication,
+) : SnippetGeneratorAndroidViewModel<CompleteMember>(application) {
 
-    val snippets: MutableLiveData<List<Snippet>> = MutableLiveData()
+    lateinit var memberVoteLiveData: LiveDataIoResultList<VoteWithDivision>
 
-    private var snippetJob: Job? = null
-    private val snippetObserver = Observer<IoResult<CompleteMember>> {
-        it.data?.let { data -> generateSnippets(data) }
-    }
-    private val calendar: Calendar = Calendar.getInstance()
 
-    fun forMember(parliamentdotuk: Int) {
-        memberLiveData = repository.observeMember(parliamentdotuk)
-        memberLiveData.observeForever(snippetObserver)
+    fun forMember(parliamentdotuk: ParliamentID) {
+        liveData = repository.observeMember(parliamentdotuk)
+        memberVoteLiveData = repository.observeCommonsVotesForMember(parliamentdotuk)
+        observe()
     }
 
-    override fun onCleared() {
-        memberLiveData.removeObserver(snippetObserver)
-
-        super.onCleared()
-    }
-
-
-    private fun generateSnippets(member: CompleteMember) {
-        snippetJob?.cancel()
-        snippetJob = viewModelScope.launch {
-            snippets.value = listOfNotNull(
-                *profileSnippets(member.profile),
-                *webAddressSnippets(member.weblinks),
-                *postSnippets(member.posts),
-                *committeeMembershipSnippets(member.committees),
-                *houseMembershipSnippets(member.houses),
-                *financialInterestSnippets(member.financialInterests),
-                *experienceSnippets(member.experiences),
-                *topicOfInterestSnippets(member.topicsOfInterest)
-            ).shuffled()
-        }
-    }
+    override suspend fun generateSnippets(data: CompleteMember): List<Snippet> = listOfNotNull(
+        *profileSnippets(data.profile),
+        *webAddressSnippets(data.weblinks),
+        *postSnippets(data.posts),
+        *committeeMembershipSnippets(data.committees),
+        *houseMembershipSnippets(data.houses),
+        *financialInterestSnippets(data.financialInterests),
+        *experienceSnippets(data.experiences),
+        *topicOfInterestSnippets(data.topicsOfInterest)
+    ).shuffled()
 
     private fun profileSnippets(profile: MemberProfile?): Array<Snippet> {
         profile ?: return arrayOf()
@@ -73,19 +60,19 @@ class MemberProfileViewModel @Inject constructor(
     }
 
     private fun birthSnippet(profile: MemberProfile): Snippet? {
-        val dob: String? = profile.dateOfBirth?.let { formatDate(it) }
+        val dob: String? = profile.dateOfBirth?.formatted()
         val place: Town? = profile.placeOfBirth
         val age: Int? = profile.age
 
         return when {
             dob != null && place != null && age != null -> Snippet(
-                R.string.snippet_birth_date.formatted(dob),
-                R.string.snippet_birth_place.formatted(place.town, place.country),
-                subtitle = R.string.snippet_birth_age.formatted(age))
+                stringCompat(R.string.snippet_birth_date, dob),
+                stringCompat(R.string.snippet_birth_place, place.town, place.country),
+                subtitle = stringCompat(R.string.snippet_birth_age, age))
 
             dob != null && age != null -> Snippet(
-                R.string.snippet_birth_date.formatted(dob),
-                R.string.snippet_birth_age.formatted(age)
+                stringCompat(R.string.snippet_birth_date, dob),
+                stringCompat(R.string.snippet_birth_age, age)
             )
 
             else -> null
@@ -97,22 +84,19 @@ class MemberProfileViewModel @Inject constructor(
             Snippet(
                 address.description,
                 address.url,
-                clickActionText = R.string.action_open_url.formatted(),
+                clickActionText = stringCompat(R.string.action_open_url, ),
                 onclick = { context ->
-                    context.startActivity(
-                        Intent(Intent.ACTION_VIEW).apply {
-                            data = Uri.parse(address.url)
-                        })
+                    context.openUrl(address.url)
                 }
             )
         }
 
     private fun postSnippets(posts: List<Post>?): Array<Snippet> = posts.toSnippets { post ->
-        val postType: String = (when (post.postType) {
+        val postType: String = stringCompat(when (post.postType) {
             Post.PostType.GOVERNMENTAL -> R.string.snippet_post_type_governmental
             Post.PostType.PARLIAMENTARY -> R.string.snippet_post_type_parliamentary
             Post.PostType.OPPOSITION -> R.string.snippet_post_type_opposition
-        }).formatted()
+        })
 
         val dateRange = dateRange(post.start, post.end)
 
@@ -126,7 +110,7 @@ class MemberProfileViewModel @Inject constructor(
     private fun committeeMembershipSnippets(memberships: List<CommitteeMemberWithChairs>?): Array<Snippet> =
         memberships.toSnippets { membership ->
             Snippet(
-                R.string.snippet_member_of.formatted(membership.membership.name),
+                stringCompat(R.string.snippet_member_of, membership.membership.name),
                 "chairs: [${membership.chairs.firstOrNull()}]",
                 dateRange(membership.membership.start, membership.membership.end) ?: ""
             )
@@ -135,7 +119,7 @@ class MemberProfileViewModel @Inject constructor(
     private fun houseMembershipSnippets(memberships: List<HouseMembership>?): Array<Snippet> =
         memberships.toSnippets { membership ->
             Snippet(
-                R.string.snippet_member_of_house.formatted(membership.house),
+                stringCompat(R.string.snippet_member_of_house, membership.house),
                 dateRange(membership.start, membership.end) ?: ""
             )
         }
@@ -143,7 +127,7 @@ class MemberProfileViewModel @Inject constructor(
     private fun financialInterestSnippets(interests: List<FinancialInterest>?): Array<Snippet> =
         interests.toSnippets { interest ->
             Snippet(
-                R.string.snippet_financial_interest.formatted(interest.category),
+                stringCompat(R.string.snippet_financial_interest, interest.category),
                 interest.description
             )
         }
@@ -154,7 +138,7 @@ class MemberProfileViewModel @Inject constructor(
                 experience.title
             }
             else {
-                R.string.snippet_experience.formatted(experience.title, experience.organisation)
+                stringCompat(R.string.snippet_experience, experience.title, experience.organisation)
             }
 
             Snippet(
@@ -172,79 +156,101 @@ class MemberProfileViewModel @Inject constructor(
             )
         }
 
-    // Helpers
-    /**
-     * Generate an array of Snippets from a given list of objects
-     */
-    private fun <T> List<T>?.toSnippets(builder: ((T) -> Snippet?)): Array<Snippet> =
-        this?.mapNotNull { builder(it) }?.toTypedArray() ?: arrayOf()
+    suspend fun toProfileData(member: CompleteMember): List<ProfileData<*>> {
+        return listOf<ProfileData<*>>(
+            ProfileData.Weblinks(weblinksOf(member)),
+            ProfileData.Current(currentPositionsOf(member)),
+            ProfileData.History(constructHistoryOf(member)),
+            ProfileData.Addresses(member.addresses ?: listOf()),
+            ProfileData.FinancialInterests(financialInterestsOf(member)),
+        )
+    }
 
-    private fun @receiver:StringRes Int.formatted(vararg formatArgs: Any): String =
-        application.stringCompat(this, *formatArgs)
+    private suspend fun weblinksOf(member: CompleteMember): List<WeblinkData> =
+        member.weblinks?.map { WeblinkData(it.url) }
+            ?.sortedBy { it.displayText }
+            ?: listOf()
 
-    private fun date(yyyy_mm__dd: String) = formatDate(yyyy_mm__dd, calendar)
+    private suspend fun currentPositionsOf(member: CompleteMember): List<Any> {
+        val profile = member.profile ?: return listOf()
+        return listOfNotNull(
+            profile.currentPost,
+            if (profile.active == true) {
+                when {
+                    profile.isLord == true -> stringCompat(R.string.member_house_of_lords)
+                    profile.isMp == true -> member.constituency
+                    else -> null
+                }
+            } else {
+                stringCompat(R.string.member_inactive)
+            }
+        )
+    }
 
-    private fun dateRange(start: String?, end: String?): String? = when {
-        start == null -> null
-        end == null -> R.string.snippet_date_since.formatted(date(start))
-        else -> R.string.snippet_date_range.formatted(date(start), date(end))
+    private suspend fun financialInterestsOf(member:CompleteMember): List<FinancialInterest> =
+        member.financialInterests?.sortedBy { it.dateCreated }
+            ?: listOf()
+}
+
+
+private suspend fun constructHistoryOf(member: CompleteMember): List<HistoryItem<*>> {
+    fun <T : Temporal> MutableList<HistoryItem<*>>.addEvents(items: List<T>?) {
+        if (items != null) addAll(items.map { HistoryItem(it) })
+    }
+
+    return mutableListOf<HistoryItem<*>>().apply {
+        addEvents(member.posts)
+        addEvents(member.houses)
+        addEvents(member.experiences)
+        addEvents(compressConstituencies(member.historicConstituencies))
+        addEvents(compressParties(member.parties))
+        addEvents(member.committees)
+        addEvents(member.financialInterests)
+
+        sortBy { it.start }
     }
 }
 
-/**
- * Container for small chunks of information to display in
- */
-data class Snippet(
-    val title: String,
-    val content: String,
-    val subtitle: String? = null,
-    val subcontent: String? = null,
-    val clickActionText: String? = null, // If onclick is set this text will be displayed on the button
-    val onclick: ((Context) -> Unit)? = null,
-)
 
-private class InnerCompleteMember {
-    val member: MutableLiveData<CompleteMember> = MutableLiveData()
-    private var _member = CompleteMember()
-
-    fun updateProfile(profile: MemberProfile?) =
-        update(profile) { copy(profile = it) }
-
-    fun updateAddresses(addresses: List<PhysicalAddress>?) =
-        update(addresses) { copy(addresses = it) }
-
-    fun updateWeblinks(weblinks: List<WebAddress>?) =
-        update(weblinks) { copy(weblinks = it) }
-
-    fun updatePosts(posts: List<Post>?) =
-        update(posts) { copy(posts = it) }
-
-    fun updateCommitteeMemberships(committees: List<CommitteeMemberWithChairs>?) =
-        update(committees) { copy(committees = it) }
-
-    fun updateTopics(topics: List<TopicOfInterest>?) =
-        update(topics) { copy(topicsOfInterest = it) }
-
-    fun updateHouses(houses: List<HouseMembership>?) =
-        update(houses) { copy(houses = it) }
-
-    fun updateFinancialInterests(interests: List<FinancialInterest>?) =
-        update(interests) { copy(financialInterests = it) }
-
-    fun updateExperiences(experiences: List<Experience>?) =
-        update(experiences) { copy(experiences = it) }
-
-    fun updateHistoricalConstituencies(constituencies: List<HistoricalConstituencyWithElection>) =
-        update(constituencies) { copy(historicConstituencies = it) }
-
-    fun updatePartyAssociations(associations: List<PartyAssociationWithParty>?) =
-        update(associations) { copy(parties = it) }
-
-    private inline fun <reified T> update(obj: T, block: CompleteMember.(T) -> CompleteMember): CompleteMember {
-        if (obj != null) {
-            _member = block.invoke(_member, obj)
-            member.value = _member
+@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+suspend fun compressParties(parties: List<PartyAssociationWithParty>?) =
+    compressConsecutiveItems(
+        parties,
+        areItemsTheSame = { a, b -> a.party == b.party },
+        combineFunc = { a, b ->
+            a.copy(
+                partyAssocation = a.partyAssocation.copy(
+                    end = b.end
+                )
+            )
         }
-        return _member
+    )
+
+@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+suspend fun compressConstituencies(constituencies: List<HistoricalConstituencyWithElection>?) =
+    compressConsecutiveItems(
+        constituencies,
+        areItemsTheSame = { a, b ->
+            a.constituency == b.constituency
+        },
+        combineFunc = { a, b ->
+            a.copy(
+                historicalConstituency = a.historicalConstituency.copy(
+                    end = b.historicalConstituency.end
+                )
+            )
+        }
+    )
+
+data class HistoryItem<T: Temporal>(
+    val item: T,
+    override val start: LocalDate? = when (item) {
+        is Periodic -> item.start
+        is Dated -> item.date
+        else -> null
+    },
+    override val end: LocalDate? = when (item) {
+        is Periodic -> item.end
+        else -> null
     }
-}
+): Periodic

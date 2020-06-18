@@ -19,6 +19,7 @@ import org.beatonma.commons.app.ui.BaseViewmodelFragment
 import org.beatonma.commons.app.ui.colors.PartyColors
 import org.beatonma.commons.app.ui.colors.getTheme
 import org.beatonma.commons.app.ui.recyclerview.CommonsLoadingAdapter
+import org.beatonma.commons.app.ui.recyclerview.setup
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
@@ -28,7 +29,6 @@ import org.beatonma.commons.databinding.H2Binding
 import org.beatonma.commons.databinding.ItemWideImageTitleSubtitleDescriptionBinding
 import org.beatonma.commons.databinding.ItemWideTitleDescriptionBinding
 import org.beatonma.commons.kotlin.extensions.*
-import org.beatonma.lib.ui.recyclerview.kotlin.extensions.setup
 
 private const val TAG = "ConstitDetailFragment"
 private const val MAPVIEW_BUNDLE_KEY = "MapViewBundle"

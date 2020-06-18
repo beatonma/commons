@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="chip_min_height">@dimen/min_touch_target_size</dimen>
-    <dimen name="chip_min_width">@dimen/min_touch_target_size</dimen>
+    <dimen name="chip_min_height">@dimen/touchable_min_size</dimen>
+    <dimen name="chip_min_width">@dimen/touchable_min_size</dimen>
     <dimen name="chip_padding">12dp</dimen>
     <dimen name="chip_padding_vertical">12dp</dimen>
     <dimen name="chip_padding_horizontal">16dp</dimen>

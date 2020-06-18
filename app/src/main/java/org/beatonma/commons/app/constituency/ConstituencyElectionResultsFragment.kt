@@ -12,6 +12,8 @@ import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.BaseViewmodelFragment
 import org.beatonma.commons.app.ui.colors.getPartyTheme
 import org.beatonma.commons.app.ui.recyclerview.CommonsLoadingAdapter
+import org.beatonma.commons.app.ui.recyclerview.setup
+import org.beatonma.commons.app.ui.recyclerview.viewholder.StaticViewHolder
 import org.beatonma.commons.app.ui.views.BarChartCategory
 import org.beatonma.commons.data.NetworkError
 import org.beatonma.commons.data.ParliamentID
@@ -21,8 +23,6 @@ import org.beatonma.commons.databinding.FragmentConstituencyElectionResultsBindi
 import org.beatonma.commons.databinding.ItemConstituencyCandidateBinding
 import org.beatonma.commons.databinding.ItemConstituencyCandidateDepositSeparatorBinding
 import org.beatonma.commons.kotlin.extensions.*
-import org.beatonma.lib.ui.recyclerview.StaticViewHolder
-import org.beatonma.lib.ui.recyclerview.kotlin.extensions.setup
 
 private const val TAG = "ConstElectResFragment"
 private const val VIEW_TYPE_DEPOSIT_SEPARATOR = 1

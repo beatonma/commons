@@ -12,6 +12,8 @@ import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.BaseViewmodelFragment
 import org.beatonma.commons.app.ui.colors.colorResId
 import org.beatonma.commons.app.ui.recyclerview.CommonsLoadingAdapter
+import org.beatonma.commons.app.ui.recyclerview.RvSpacing
+import org.beatonma.commons.app.ui.recyclerview.setupGrid
 import org.beatonma.commons.data.NetworkError
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.ParliamentID
@@ -21,8 +23,6 @@ import org.beatonma.commons.data.core.room.entities.member.House
 import org.beatonma.commons.databinding.FragmentDivisionProfileBinding
 import org.beatonma.commons.databinding.ItemWideTitleBinding
 import org.beatonma.commons.kotlin.extensions.*
-import org.beatonma.lib.ui.recyclerview.kotlin.extensions.RvSpacing
-import org.beatonma.lib.ui.recyclerview.kotlin.extensions.setupGrid
 
 private const val TAG = "DivisionProfileFragment"
 

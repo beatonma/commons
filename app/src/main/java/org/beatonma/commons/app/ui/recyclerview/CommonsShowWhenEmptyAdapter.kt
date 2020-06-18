@@ -6,10 +6,8 @@ import androidx.annotation.CallSuper
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import org.beatonma.commons.R
+import org.beatonma.commons.app.ui.recyclerview.viewholder.StaticViewHolder
 import org.beatonma.commons.kotlin.extensions.inflate
-import org.beatonma.lib.ui.recyclerview.StaticViewHolder
-import org.beatonma.lib.ui.recyclerview.TypedRecyclerViewAdapter
-import org.beatonma.lib.ui.recyclerview.VIEW_TYPE_EMPTY
 
 abstract class CommonsShowWhenEmptyAdapter<T>(
     items: List<T>? = null,

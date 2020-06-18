@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="card_padding_default">16dp</dimen>
+    <dimen name="card_padding_horizontal">@dimen/card_padding_default</dimen>
+    <dimen name="card_max_width">450dp</dimen>
+    <dimen name="card_corner_radius">8dp</dimen>
+</resources>

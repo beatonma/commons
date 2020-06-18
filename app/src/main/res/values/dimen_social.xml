@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="social_compact_view_width">180dp</dimen>
-    <dimen name="social_compact_view_height">@dimen/min_touch_target_size</dimen>
+    <dimen name="social_compact_view_height">@dimen/touchable_min_size</dimen>
     <dimen name="social_expanded_view_height">96dp</dimen>
     <dimen name="social_expanded_elevation">2dp</dimen>
 </resources>

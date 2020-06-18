@@ -12,13 +12,13 @@ import androidx.recyclerview.widget.RecyclerView
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.navigation.OnBackPressed
 import org.beatonma.commons.app.ui.recyclerview.CommonsLoadingAdapter
+import org.beatonma.commons.app.ui.recyclerview.setup
 import org.beatonma.commons.data.core.social.SocialComment
 import org.beatonma.commons.data.core.social.SocialContent
 import org.beatonma.commons.data.core.social.SocialVoteType
 import org.beatonma.commons.databinding.ItemSocialCommentBinding
 import org.beatonma.commons.kotlin.data.asStateList
 import org.beatonma.commons.kotlin.extensions.*
-import org.beatonma.lib.ui.recyclerview.kotlin.extensions.setup
 import java.time.LocalDate
 
 private const val TAG = "SocialViewController"

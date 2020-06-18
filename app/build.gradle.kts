@@ -229,9 +229,7 @@ dependencies {
 
     val bmalib = arrayOf(
         "graphic-core",
-        "paintedview",
-        "recyclerview",
-        "style"
+        "paintedview"
     )
     bmalib.forEach { implementation(bmalib(it)) }
 

@@ -7,7 +7,7 @@
         <item name="chipIconSize">18dp</item>
         <item name="chipStartPadding">12dp</item>
         <item name="chipBackgroundColor">@color/Card</item>
-        <item name="chipMinTouchTargetSize">@dimen/min_touch_target_size</item>
+        <item name="chipMinTouchTargetSize">@dimen/touchable_min_size</item>
         <item name="android:textColorLink">@color/TextPrimary</item>
     </style>
 
@@ -17,9 +17,5 @@
         <item name="chipStrokeColor">@color/TextTertiary</item>
         <item name="chipStrokeWidth">2dp</item>
         <item name="android:textColorLink">@color/TextPrimary</item>
-    </style>
-
-    <style name="ChipGroup" parent="Widget.MaterialComponents.ChipGroup">
-        <item name="ChipStyle">@style/Chip.OnCard</item>
     </style>
 </resources>

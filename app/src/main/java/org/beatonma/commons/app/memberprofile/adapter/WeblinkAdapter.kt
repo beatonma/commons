@@ -14,6 +14,10 @@ class WeblinkAdapter: ThemedAdapter<WeblinkData>() {
     override fun onCreateDefaultViewHolder(parent: ViewGroup) = CollapsibleChipHolder(parent)
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        if (items?.size == 0 || position > items?.size ?: -1) {
+            super.onBindViewHolder(holder, position)
+            return
+        }
         val item = items?.get(position) ?: return
         (holder as CollapsibleChipHolder).bind(ChipData.forUrl(item))
     }

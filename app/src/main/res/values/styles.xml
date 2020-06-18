@@ -1,24 +1,24 @@
 <resources>
 
     <style name="Commons">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">@color/Primary</item>
+        <item name="colorPrimaryDark">@color/PrimaryDark</item>
+        <item name="colorAccent">@color/Accent</item>
 
-        <item name="BmaLoadingStyle">@style/CommonsLoadingStyle</item>
+        <item name="RecyclerViewLoadingStyle">@style/CommonsLoadingStyle</item>
     </style>
 
     <style name="Commons.AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
 
-        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimary">@color/Primary</item>
         <item name="colorPrimaryVariant">?attr/colorPrimary</item>
         <item name="colorOnPrimary">@color/TextPrimaryLight</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryDark">@color/PrimaryDark</item>
         
-        <item name="colorSecondary">@color/colorPrimaryDark</item>
+        <item name="colorSecondary">@color/PrimaryDark</item>
         <item name="colorSecondaryVariant">?attr/colorSecondary</item>
 
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">@color/Accent</item>
 
         <item name="colorError">@color/Negative</item>
         <item name="colorOnError">@color/TextPrimaryLight</item>
@@ -46,7 +46,6 @@
         <item name="android:textColorHint">@color/TextSecondary</item>
 
         <item name="android:popupTheme">@style/Commons.Popup</item>
-        <item name="ChipStyle">@style/Chip</item>
         <item name="extendedFloatingActionButtonStyle">@style/Commons.Fab</item>
 
     </style>
@@ -61,8 +60,8 @@
     </style>
 
     <style name="ActionIcon">
-        <item name="android:layout_width">@dimen/button_min</item>
-        <item name="android:layout_height">@dimen/button_min</item>
+        <item name="android:layout_width">@dimen/touchable_min_size</item>
+        <item name="android:layout_height">@dimen/touchable_min_size</item>
         <item name="android:background">@drawable/round_selector</item>
         <item name="android:padding">8dp</item>
         <item name="android:tint">@color/TextSecondary</item>

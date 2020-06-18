@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:color="@color/Ripple">
+  <item>
+    <selector>
+      <item>
+        <shape>
+          <corners
+            android:topLeftRadius="@dimen/card_corner_radius"
+            android:topRightRadius="@dimen/card_corner_radius"/>
+          <solid
+            android:color="@color/Card"/>
+        </shape>
+      </item>
+    </selector>
+  </item>
+</ripple>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="item_padding_default">4dp</dimen>
+    <dimen name="item_paddingTop">@dimen/item_padding_default</dimen>
+    <dimen name="item_paddingBottom">@dimen/item_padding_default</dimen>
+    <dimen name="item_paddingHorizontal">@dimen/item_padding_default</dimen>
+    <dimen name="item_height_single">48dp</dimen>
+    <dimen name="item_height_double">72dp</dimen>
+
+    <dimen name="selected_item_margin">@dimen/card_margin</dimen>
+    <dimen name="selected_item_raise_elevation">4dp</dimen>
+</resources>

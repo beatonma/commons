@@ -1,5 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="text_size_primary">18sp</dimen>
+    <dimen name="text_size_secondary">16sp</dimen>
+    <dimen name="text_size_header">20sp</dimen>
+    <dimen name="text_size_subheader">@dimen/text_size_primary</dimen>
+    <dimen name="text_size_edit">@dimen/text_size_primary</dimen>
+    <dimen name="text_size_label">14sp</dimen>
+    <dimen name="text_size_chip">13sp</dimen>
+
+    <dimen name="text_size_h1">24sp</dimen>
+    <dimen name="text_size_h2">22sp</dimen>
+    <dimen name="text_size_h3">20sp</dimen>
+
+    <!-- Whitespace -->
+    <dimen name="whitespace_header_above">18dp</dimen>
+    <dimen name="whitespace_header_below">12dp</dimen>
+    <dimen name="whitespace_header_subheader">8dp</dimen>
+    <dimen name="whitespace_header_paragraph">12dp</dimen>
+    <dimen name="whitespace_primary_paragraph">6dp</dimen>
+    <dimen name="whitespace_secondary_paragraph">6dp</dimen>
+    <dimen name="whitespace_around_text">@dimen/whitespace_primary_paragraph</dimen>
+    <dimen name="whitespace_edge">8dp</dimen><!-- start/end padding to keep text away from edge of display -->
+    <dimen name="whitespace_section">12dp</dimen>
+
     <dimen name="text_line_spacing">4dp</dimen>
     <dimen name="text_horizontal_item_spacing">6dp</dimen>
 </resources>

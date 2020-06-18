@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="card_header_padding_top">16dp</dimen>
+
+    <!-- Gap between content and any buttons at the bottom of the card -->
+    <!--<dimen name="card_bottom_controls_margin_top">24dp</dimen>-->
+
+    <dimen name="card_margin_top">@dimen/card_margin</dimen>
+    <dimen name="card_margin_bottom">@dimen/card_margin</dimen>
+
+    <dimen name="card_padding_top">@dimen/card_padding_default</dimen>
+    <dimen name="card_padding_bottom">@dimen/card_padding_default</dimen>
+</resources>

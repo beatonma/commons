@@ -4,5 +4,7 @@
         <item name="android:textColor">@color/fab_icon_text_color_selector</item>
         <item name="iconTint">@color/fab_icon_text_color_selector</item>
         <item name="backgroundTint">@color/fab_bg_color_selector</item>
+        <item name="android:layout_marginHorizontal">@dimen/fab_margin_horizontal</item>
+        <item name="android:layout_marginVertical">@dimen/fab_margin_vertical</item>
     </style>
 </resources>
