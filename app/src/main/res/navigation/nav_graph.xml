@@ -9,7 +9,7 @@
         android:id="@+id/frontPageFragment"
         android:name="org.beatonma.commons.app.ExperimentalFrontPageFragment"
         android:label="FrontPageFragment"
-        tools:layout="@layout/fragment_frontpage">
+        tools:layout="@layout/recyclerview">
         <action
             android:id="@+id/action_frontPageFragment_to_memberProfileFragment"
             app:destination="@id/memberProfileFragment" />
