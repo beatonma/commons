@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="@dimen/whitespace_primary_paragraph"
+    android:paddingVertical="@dimen/whitespace_primary_paragraph"
+    android:animateLayoutChanges="true">
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="4dp"
+        android:background="@color/Negative"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/constituency_candidate_deposit_info"
+        android:visibility="gone"
+        android:id="@+id/about"
+        android:background="@color/Negative"
+        android:paddingVertical="@dimen/card_padding_vertical"
+        android:paddingHorizontal="@dimen/card_padding_horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        style="@style/Text.Primary"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

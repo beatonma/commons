@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="@dimen/whitespace_around_text"
+    android:layout_marginTop="@dimen/flow_gap_vertical_half"
+    android:layout_marginBottom="@dimen/flow_gap_vertical_half"
+    >
+
+    <androidx.constraintlayout.helper.widget.Flow
+        android:id="@+id/flow"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/flow_gap_horizontal"
+        android:orientation="vertical"
+        android:padding="@dimen/whitespace_primary_paragraph"
+        app:constraint_referenced_ids="name,description"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/rank"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <androidx.constraintlayout.helper.widget.Layer
+        android:id="@+id/layer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="name,description"
+        app:layout_constraintStart_toEndOf="@+id/rank"
+        />
+
+    <org.beatonma.commons.app.ui.views.StackedBarChart
+        android:id="@+id/barchart"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/TextTertiary"
+        app:layout_constraintStart_toEndOf="@+id/rank"
+        app:layout_constraintBottom_toBottomOf="@+id/flow"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/flow"
+        app:showCenter="false"
+        />
+
+    <TextView
+        android:id="@+id/rank"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        style="@style/Text.Primary.H2"
+        app:layout_constraintBottom_toBottomOf="@+id/barchart"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/barchart"
+        tools:text="1"
+        />
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        style="@style/Text.Primary.H3"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="@tools:sample/full_names"
+        />
+
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        style="@style/Text.Primary"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="vote summary"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
