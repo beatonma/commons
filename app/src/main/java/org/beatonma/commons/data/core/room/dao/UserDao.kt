@@ -12,6 +12,9 @@ interface UserDao {
     @Query("""SELECT * FROM user_tokens WHERE google_id = :googleId""")
     fun getUserToken(googleId: String): LiveData<UserToken>
 
+    @Query("""SELECT * FROM user_tokens WHERE google_id = :googleId""")
+    suspend fun getUserTokenSync(googleId: String): UserToken?
+
     @Delete
     fun deleteUserTokens(vararg userTokens: UserToken)
 }
