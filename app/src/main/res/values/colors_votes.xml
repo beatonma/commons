@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="vote_aye">@color/Positive</color>
+    <color name="vote_no">@color/Negative</color>
+    <color name="vote_abstain">@color/Amber600</color>
+    <color name="vote_didnotvote">@color/Grey700</color>
+    <color name="vote_suspended_or_expelled">@color/Indigo600</color>
+</resources>

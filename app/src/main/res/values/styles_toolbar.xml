@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Commons.Toolbar" parent="Widget.MaterialComponents.Toolbar">
+        <item name="android:elevation">@dimen/toolbar_elevation</item>
+        <item name="background">@color/Positive</item>
+        <item name="popupTheme">@style/Commons.Popup</item>
+    </style>
+
+    <style name="Commons.Popup" parent="Widget.AppCompat.PopupMenu">
+        <item name="tint">@color/TextPrimaryLight</item>
+        <item name="android:textColor">@color/TextPrimaryLight</item>
+    </style>
+
+    <style name="Commons.SearchView" parent="Widget.AppCompat.SearchView">
+        <item name="searchIcon">@drawable/ic_search</item>
+        <item name="closeIcon">@drawable/ic_close</item>
+        <item name="hintTextColor">@color/TextSecondary</item>
+    </style>
+</resources>

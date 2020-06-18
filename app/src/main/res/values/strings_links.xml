@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="url_contact_faq_title">Who should I contact with my issue?</string>
+    <string name="url_contact_faq_about">Please check this page to make sure you are contacting the right person.</string>
+    <string name="url_contact_faq">https://members.parliament.uk/Help/WhoToContact</string>
+</resources>
