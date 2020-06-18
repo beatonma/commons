@@ -10,6 +10,7 @@ import org.beatonma.commons.data.core.room.entities.division.Vote
 import org.beatonma.commons.data.core.room.entities.division.VoteWithDivision
 import org.beatonma.commons.data.core.room.entities.member.House
 import org.beatonma.commons.data.livedata.observeComplete
+import org.beatonma.commons.kotlin.extensions.allNotNull
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -48,46 +49,60 @@ class MemberRepository @Inject constructor(
     fun observeCompleteMember(parliamentdotuk: ParliamentID): LiveData<CompleteMember> =
         observeComplete(
             CompleteMember(),
-            updatePredicate = { m -> m.profile != null },
+            updatePredicate = { m ->
+                allNotNull(
+                    m.profile,
+                    m.addresses,
+                    m.weblinks,
+                    m.posts,
+                    m.committees,
+                    m.houses,
+                    m.financialInterests,
+                    m.experiences,
+                    m.topicsOfInterest,
+                    m.historicConstituencies,
+                    m.parties,
+                )
+            },
         ) { member ->
-            addSource(memberDao.getMemberProfile(parliamentdotuk)) {
-                member.update { copy(profile = it) }
+            addSource(memberDao.getMemberProfile(parliamentdotuk)) { profile ->
+                member.update({ it.profile != profile }) { copy(profile = profile) }
             }
-            addSource(memberDao.getParty(parliamentdotuk)) {
-                member.update { copy(party = it) }
+            addSource(memberDao.getPhysicalAddresses(parliamentdotuk)) { addresses ->
+                member.update({ it.addresses != addresses }) { copy(addresses = addresses) }
             }
-            addSource(memberDao.getConstituency(parliamentdotuk)) {
-                member.update { copy(constituency = it) }
+            addSource(memberDao.getWebAddresses(parliamentdotuk)) { weblinks ->
+                member.update({ it.weblinks != weblinks }) { copy(weblinks = weblinks) }
             }
-            addSource(memberDao.getPhysicalAddresses(parliamentdotuk)) {
-                member.update { copy(addresses = it) }
+            addSource(memberDao.getPosts(parliamentdotuk)) {posts ->
+                member.update({ it.posts != posts }) { copy(posts = posts) }
             }
-            addSource(memberDao.getWebAddresses(parliamentdotuk)) {
-                member.update { copy(weblinks = it) }
+            addSource(memberDao.getCommitteeMembershipWithChairship(parliamentdotuk)) { committees ->
+                member.update({ it.committees != committees }) { copy(committees = committees) }
             }
-            addSource(memberDao.getPosts(parliamentdotuk)) {
-                member.update { copy(posts = it) }
+            addSource(memberDao.getHouseMemberships(parliamentdotuk)) { houses ->
+                member.update({ it.houses != houses }) { copy(houses = houses) }
             }
-            addSource(memberDao.getCommitteeMembershipWithChairship(parliamentdotuk)) {
-                member.update { copy(committees = it) }
+            addSource(memberDao.getFinancialInterests(parliamentdotuk)) { financialInterests ->
+                member.update({ it.financialInterests != financialInterests }) { copy(financialInterests = financialInterests) }
             }
-            addSource(memberDao.getHouseMemberships(parliamentdotuk)) {
-                member.update { copy(houses = it) }
+            addSource(memberDao.getExperiences(parliamentdotuk)) { experiences ->
+                member.update({ it.experiences != experiences }) { copy(experiences = experiences) }
             }
-            addSource(memberDao.getFinancialInterests(parliamentdotuk)) {
-                member.update { copy(financialInterests = it) }
+            addSource(memberDao.getTopicsOfInterest(parliamentdotuk)) { topicsOfInterest ->
+                member.update({ it.topicsOfInterest != topicsOfInterest }) { copy(topicsOfInterest = topicsOfInterest) }
             }
-            addSource(memberDao.getExperiences(parliamentdotuk)) {
-                member.update { copy(experiences = it) }
+            addSource(memberDao.getHistoricalConstituencies(parliamentdotuk)) { historicConstituencies ->
+                member.update({ it.historicConstituencies != historicConstituencies }) { copy(historicConstituencies = historicConstituencies) }
             }
-            addSource(memberDao.getTopicsOfInterest(parliamentdotuk)) {
-                member.update { copy(topicsOfInterest = it) }
+            addSource(memberDao.getPartyAssociations(parliamentdotuk)) { parties ->
+                member.update({ it.parties != parties }) { copy(parties = parties) }
             }
-            addSource(memberDao.getHistoricalConstituencies(parliamentdotuk)) {
-                member.update { copy(historicConstituencies = it) }
+            addSource(memberDao.getParty(parliamentdotuk)) { party ->
+                member.update({ it.party != party }) { copy(party = party) }
             }
-            addSource(memberDao.getPartyAssociations(parliamentdotuk)) {
-                member.update { copy(parties = it) }
+            addSource(memberDao.getConstituency(parliamentdotuk)) { constituency ->
+                member.update({ it.constituency != constituency }) { copy(constituency = constituency) }
             }
         }
 }
