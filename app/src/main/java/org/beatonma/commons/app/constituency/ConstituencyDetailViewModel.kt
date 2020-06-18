@@ -9,37 +9,40 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.beatonma.commons.CommonsApplication
 import org.beatonma.commons.R
+import org.beatonma.commons.app.ui.colors.PartyColors
+import org.beatonma.commons.app.ui.colors.getTheme
+import org.beatonma.commons.context
 import org.beatonma.commons.data.IoResult
-import org.beatonma.commons.data.core.repository.CommonsRepository
+import org.beatonma.commons.data.LiveDataIoResult
+import org.beatonma.commons.data.ParliamentID
+import org.beatonma.commons.data.core.repository.ConstituencyRepository
+import org.beatonma.commons.data.core.room.entities.constituency.CompleteConstituency
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyBoundary
-import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyWithBoundary
-import org.beatonma.commons.data.core.room.entities.member.BasicProfileWithParty
+import org.beatonma.commons.data.core.room.entities.election.ConstituencyResultWithDetails
+import org.beatonma.commons.data.core.room.entities.election.Election
+import org.beatonma.commons.data.core.room.entities.member.BasicProfile
+import org.beatonma.commons.data.core.room.entities.member.Party
 import org.beatonma.commons.data.parse.Geometry
 import org.beatonma.commons.data.parse.KmlParser
 import org.beatonma.commons.kotlin.data.Color
-import org.beatonma.commons.ui.colors.PartyColors
-import org.beatonma.commons.ui.colors.getTheme
-import org.beatonma.lib.util.kotlin.extensions.dp
+import org.beatonma.commons.kotlin.extensions.dp
+import org.beatonma.commons.kotlin.extensions.stringCompat
 import javax.inject.Inject
-
 
 private const val MAP_OUTLINE_WIDTH_DP = 2F
 
 class ConstituencyDetailViewModel @Inject constructor(
-    private val repository: CommonsRepository,
+    private val repository: ConstituencyRepository,
     application: CommonsApplication,
 ): AndroidViewModel(application) {
-    val context: Context
-        get() = getApplication()
 
-    private lateinit var constituencyLiveData: LiveData<IoResult<ConstituencyWithBoundary>>
-    private lateinit var memberLiveData: LiveData<IoResult<BasicProfileWithParty>>
+    private lateinit var constituencyLiveData: LiveDataIoResult<CompleteConstituency>
     private val geometryLiveData: MutableLiveData<Geometry> = MutableLiveData()
 
-    val liveData = MediatorLiveData<ConstituencyData>()
+    internal val liveData = MediatorLiveData<ConstituencyData>()
 
-    private val geometryObserver = Observer<IoResult<ConstituencyWithBoundary>> {
+    private val geometryObserver = Observer<IoResult<CompleteConstituency>> {
         buildGeometry(it.data?.boundary)
     }
 
@@ -50,25 +53,27 @@ class ConstituencyDetailViewModel @Inject constructor(
         }
 
 
-    fun forConstituency(parliamentdotuk: Int) {
+    fun forConstituency(parliamentdotuk: ParliamentID) {
         constituencyLiveData = repository.observeConstituency(parliamentdotuk)
-        memberLiveData = repository.observeMemberForConstituency(parliamentdotuk)
-
         constituencyLiveData.observeForever(geometryObserver)
 
         liveData.apply {
             addSource(constituencyLiveData) { result ->
-                constituencyData = constituencyData.copy(constituency = result?.data?.constituency)
-            }
+                val data = result.data ?: return@addSource
 
-            addSource(memberLiveData) { result ->
-                val theme = result.data?.party?.getTheme(context)?.also {
-                    constituencyData.geometry?.setStyle(it)
-                }
+                val electionResults = data.electionResults
+                    ?.sortedByDescending {
+                        it.election.date
+                    }
+
+                val party = electionResults?.firstOrNull()?.party
+                val theme = party?.getTheme(context)
 
                 constituencyData = constituencyData.copy(
-                    member = result.data,
-                    theme = theme
+                    constituency = data.constituency,
+                    party = party,
+                    theme = theme,
+                    electionResults = electionResults?.composeWithHeaders(context),
                 )
             }
 
@@ -91,8 +96,8 @@ class ConstituencyDetailViewModel @Inject constructor(
         MapStyleOptions.loadRawResourceStyle(context, R.raw.google_maps_style)
 
     fun getUkBounds(): LatLngBounds = LatLngBounds.Builder().apply {
-        include(LatLng(60.86, -8.45))
-        include(LatLng(49.86, 1.78))
+        include(LatLng(60.86, -8.45))  // North west 'corner', close to Faroe Islands
+        include(LatLng(49.86, 1.78))  // South east 'corner', near Amiens, France
     }.build()
 
 
@@ -105,13 +110,6 @@ class ConstituencyDetailViewModel @Inject constructor(
         }
     }
 
-    data class ConstituencyData(
-        val constituency: Constituency? = null,
-        val member: BasicProfileWithParty? = null,
-        val geometry: Geometry? = null,
-        val theme: PartyColors? = null,
-    )
-
     private fun Geometry.setStyle(theme: PartyColors) {
         setStyle(
             Color(theme.primary).alpha(.15F).color,
@@ -119,4 +117,53 @@ class ConstituencyDetailViewModel @Inject constructor(
             context.dp(MAP_OUTLINE_WIDTH_DP)
         )
     }
+}
+
+
+internal data class ConstituencyData(
+    val constituency: Constituency? = null,
+    val party: Party? = null,
+    val electionResults: List<ConstituencyDataHolder>? = null,
+    val geometry: Geometry? = null,
+    val theme: PartyColors? = null,
+)
+
+
+internal sealed class ConstituencyDataHolder
+
+internal data class ConstituencyResultData(
+    val election: Election,
+    val profile: BasicProfile,
+    val party: Party
+): ConstituencyDataHolder()
+
+internal data class ConstituencyFirstResultData(
+    val election: Election,
+    val profile: BasicProfile,
+    val party: Party
+): ConstituencyDataHolder()
+
+internal data class ConstituencyHeaderData(
+    val title: String
+): ConstituencyDataHolder()
+
+
+/**
+ * Rebuild the list with titles etc
+ */
+private fun List<ConstituencyResultWithDetails>.composeWithHeaders(
+    context: Context,
+): List<ConstituencyDataHolder> {
+    val currentMember = firstOrNull()?.let {
+        ConstituencyFirstResultData(it.election, it.profile, it.party)
+    } ?: return listOf()
+    val previousMembers = drop(1).map {
+        ConstituencyResultData(it.election, it.profile, it.party)
+    }
+
+    return mutableListOf(
+        ConstituencyHeaderData(context.stringCompat(R.string.constituency_current_member)),
+        currentMember,
+        ConstituencyHeaderData(context.stringCompat(R.string.constituency_previous_members)),
+    ).apply { addAll(previousMembers) }
 }

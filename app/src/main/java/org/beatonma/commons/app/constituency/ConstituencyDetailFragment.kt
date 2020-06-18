@@ -14,33 +14,41 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.LatLngBounds
+import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.BaseViewmodelFragment
-import org.beatonma.commons.app.ui.load
+import org.beatonma.commons.app.ui.colors.PartyColors
+import org.beatonma.commons.app.ui.colors.getTheme
+import org.beatonma.commons.app.ui.recyclerview.CommonsLoadingAdapter
 import org.beatonma.commons.data.PARLIAMENTDOTUK
+import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
-import org.beatonma.commons.data.core.room.entities.member.BasicProfileWithParty
 import org.beatonma.commons.data.parse.Geometry
 import org.beatonma.commons.databinding.FragmentConstituencyDetailBinding
-import org.beatonma.commons.ui.colors.PartyColors
-import org.beatonma.lib.util.kotlin.extensions.bindText
-import org.beatonma.lib.util.kotlin.extensions.dp
-import org.beatonma.lib.util.kotlin.extensions.ifPermissionAvailable
+import org.beatonma.commons.databinding.H2Binding
+import org.beatonma.commons.databinding.ItemWideImageTitleSubtitleDescriptionBinding
+import org.beatonma.commons.databinding.ItemWideTitleDescriptionBinding
+import org.beatonma.commons.kotlin.extensions.*
+import org.beatonma.lib.ui.recyclerview.kotlin.extensions.setup
 
-private const val TAG = "ConstituencyDetailFragment"
+private const val TAG = "ConstitDetailFragment"
 private const val MAPVIEW_BUNDLE_KEY = "MapViewBundle"
-private const val CAMERA_PADDING_DP = 32
+private const val CAMERA_PADDING_DP = 64
+private const val VIEW_TYPE_FIRST = 1
+private const val VIEW_TYPE_HEADER = 345
 
 class ConstituencyDetailFragment : BaseViewmodelFragment(), ViewTreeObserver.OnGlobalLayoutListener {
 
     private lateinit var binding: FragmentConstituencyDetailBinding
     private val viewmodel: ConstituencyDetailViewModel by viewModels { viewmodelFactory }
+    private var constituencyId: ParliamentID = 0
+
+    private val resultsAdapter = ElectionResultsAdapter()
 
     private val mapView: MapView? get() = binding.mapview
     private var gMap: GoogleMap? = null
 
-    private fun getConstituencyFromBundle(): Int? {
-        return arguments?.getInt(PARLIAMENTDOTUK)
-    }
+    private fun getConstituencyFromBundle(): ParliamentID? =
+        arguments?.getInt(PARLIAMENTDOTUK)
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -49,6 +57,7 @@ class ConstituencyDetailFragment : BaseViewmodelFragment(), ViewTreeObserver.OnG
             Log.w(TAG, "Failed to get constituency ID from bundle!")
             return
         }
+        constituencyId = parliamentdotuk
         viewmodel.forConstituency(parliamentdotuk)
     }
 
@@ -67,10 +76,12 @@ class ConstituencyDetailFragment : BaseViewmodelFragment(), ViewTreeObserver.OnG
 
         binding.mapview.viewTreeObserver.addOnGlobalLayoutListener(this)
 
+        binding.electionResultsRecyclerview.setup(resultsAdapter)
+
         viewmodel.liveData.observe(viewLifecycleOwner) {
             updateConstituencyUi(it.constituency, it.theme)
             updateGeometryUi(it.geometry, it.theme)
-            updateMemberUi(it.member, it.theme)
+            resultsAdapter.items = it.electionResults
         }
     }
 
@@ -111,22 +122,6 @@ class ConstituencyDetailFragment : BaseViewmodelFragment(), ViewTreeObserver.OnG
         updateMap(map, geometry, theme)
     }
 
-    private fun updateMemberUi(basicProfile: BasicProfileWithParty?, theme: PartyColors?) {
-        basicProfile ?: return
-
-        binding.mp.apply {
-            bindText(
-                title to basicProfile.profile.name,
-                subtitle to basicProfile.profile.currentPost,
-                description to basicProfile.profile.portraitUrl,
-            )
-            theme?.also {
-                accentLine.setBackgroundColor(it.primary)
-            }
-            portrait.load(basicProfile.profile.portraitUrl)
-        }
-    }
-
     private fun updateMap(gMap: GoogleMap, geometry: Geometry, theme: PartyColors) {
         gMap.apply {
             clear()
@@ -137,8 +132,9 @@ class ConstituencyDetailFragment : BaseViewmodelFragment(), ViewTreeObserver.OnG
         }
     }
 
-
-    // All lifecycle events must be passed to the MapView
+    /*
+     * All lifecycle events must be passed to the MapView
+     */
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         val mapState = savedInstanceState?.getBundle(MAPVIEW_BUNDLE_KEY)
@@ -185,8 +181,108 @@ class ConstituencyDetailFragment : BaseViewmodelFragment(), ViewTreeObserver.OnG
         super.onLowMemory()
         mapView?.onLowMemory()
     }
+    /*
+     * Lifecycle end
+     */
+
 
     private fun GoogleMap.moveCameraTo(boundary: LatLngBounds) {
         moveCamera(CameraUpdateFactory.newLatLngBounds(boundary, context.dp(CAMERA_PADDING_DP)))
     }
+
+    private inner class ElectionResultsAdapter: CommonsLoadingAdapter<ConstituencyDataHolder>() {
+        override fun getItemViewType(position: Int): Int {
+            return when {
+                items?.isEmpty() != false -> super.getItemViewType(position)
+                else -> when(items?.get(position)) {
+                    is ConstituencyFirstResultData -> VIEW_TYPE_FIRST
+                    is ConstituencyHeaderData -> VIEW_TYPE_HEADER
+                    else -> super.getItemViewType(position)
+                }
+            }
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when(viewType) {
+            VIEW_TYPE_HEADER -> HeaderViewHolder(parent.inflate(R.layout.h2))
+            VIEW_TYPE_FIRST -> LatestElectionResultViewHolder(parent.inflate(R.layout.item_wide_image_title_subtitle_description))
+            else -> super.onCreateViewHolder(parent, viewType)
+        }
+
+        override fun onCreateDefaultViewHolder(parent: ViewGroup): TypedViewHolder =
+            ElectionResultViewHolder(parent.inflate(R.layout.item_wide_title_description))
+
+        private inner class HeaderViewHolder(view: View) : TypedViewHolder(view) {
+            private val vh = H2Binding.bind(view)
+
+            override fun bind(item: ConstituencyDataHolder) {
+                val title = item as? ConstituencyHeaderData ?: return
+                vh.title.text = title.title
+            }
+        }
+
+        private inner class LatestElectionResultViewHolder(view: View) : TypedViewHolder(view) {
+            private val vh = ItemWideImageTitleSubtitleDescriptionBinding.bind(view)
+
+            override fun bind(item: ConstituencyDataHolder) {
+                val result = item as? ConstituencyFirstResultData ?: return
+
+                val profile = result.profile
+                val election = result.election
+                val theme = profile.party.getTheme(context)
+
+                vh.apply {
+                    bindText(
+                        title to profile.name,
+                        subtitle to election.name,
+                        description to profile.currentPost,
+                        linkColor = theme.accent,
+                    )
+
+                    portrait.load(profile.portraitUrl)
+                    theme.also { accent.setBackgroundColor(it.primary) }
+                }
+
+                itemView.setOnClickListener { view ->
+                    view.navigateToElectionDetails(constituencyId, election.parliamentdotuk)
+                }
+            }
+        }
+
+        private inner class ElectionResultViewHolder(view: View) : TypedViewHolder(view) {
+            private val vh = ItemWideTitleDescriptionBinding.bind(view)
+
+            override fun bind(item: ConstituencyDataHolder) {
+                val result = item as? ConstituencyResultData ?:return
+
+                val profile = result.profile
+                val election = result.election
+                val theme = profile.party.getTheme(context)
+
+                vh.apply {
+                    bindText(
+                        title to profile.name,
+                        description to election.name,
+                        linkColor = theme.accent,
+                    )
+
+                    theme.also { accent.setBackgroundColor(it.primary) }
+                }
+
+                itemView.setOnClickListener { view ->
+                    view.navigateToElectionDetails(constituencyId, election.parliamentdotuk)
+                }
+            }
+        }
+    }
+}
+
+
+private fun View.navigateToElectionDetails(constituencyId: ParliamentID, electionId: ParliamentID) {
+    navigateTo(
+        R.id.action_constituencyDetailFragment_to_constituencyElectionResultsFragment,
+        bundleOf(
+            CONSTITUENCY_ID to constituencyId,
+            ELECTION_ID to electionId,
+        )
+    )
 }
