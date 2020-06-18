@@ -46,43 +46,50 @@ class CommonsDataModule(val application: CommonsApplication) {
     @Singleton @Provides
     fun providesMemberRepository(
         context: Context,
-        commonsRemoteDataSource: CommonsRemoteDataSource,
+        remoteSource: CommonsRemoteDataSource,
         memberDao: MemberDao,
         divisionDao: DivisionDao
-    ): MemberRepository = MemberRepository(commonsRemoteDataSource, memberDao, divisionDao)
+    ): MemberRepository = MemberRepository(remoteSource, memberDao, divisionDao)
 
     @Suppress("UNUSED_PARAMETER")  // context is used to retrieve DAO instances.
     @Singleton @Provides
     fun providesConstituencyRepository(
         context: Context,
-        commonsRemoteDataSource: CommonsRemoteDataSource,
+        remoteSource: CommonsRemoteDataSource,
         constituencyDao: ConstituencyDao,
         memberDao: MemberDao
-    ): ConstituencyRepository = ConstituencyRepository(commonsRemoteDataSource, constituencyDao, memberDao)
+    ): ConstituencyRepository = ConstituencyRepository(remoteSource, constituencyDao, memberDao)
 
     @Suppress("UNUSED_PARAMETER")  // context is used to retrieve DAO instances.
     @Singleton @Provides
     fun providesDivisionRepository(
         context: Context,
-        commonsRemoteDataSource: CommonsRemoteDataSource,
+        remoteSource: CommonsRemoteDataSource,
         divisionDao: DivisionDao,
-    ): DivisionRepository = DivisionRepository(commonsRemoteDataSource, divisionDao)
+    ): DivisionRepository = DivisionRepository(remoteSource, divisionDao)
 
     @Suppress("UNUSED_PARAMETER")  // context is used to retrieve DAO instances.
     @Singleton @Provides
     fun providesBillRepository(
         context: Context,
-        commonsRemoteDataSource: CommonsRemoteDataSource,
+        remoteSource: CommonsRemoteDataSource,
         billDao: BillDao,
-    ): BillRepository = BillRepository(commonsRemoteDataSource, billDao)
+    ): BillRepository = BillRepository(remoteSource, billDao)
 
     @Suppress("UNUSED_PARAMETER")  // context is used to retrieve DAO instances.
     @Singleton @Provides
     fun providesUserRepository(
         context: Context,
-        commonsRemoteDataSource: CommonsRemoteDataSource,
+        remoteSource: CommonsRemoteDataSource,
         userDao: UserDao,
-    ): UserRepository = UserRepository(commonsRemoteDataSource, userDao)
+    ): UserRepository = UserRepository(remoteSource, userDao)
+
+    @Suppress("UNUSED_PARAMETER")  // context is used to retrieve DAO instances.
+    @Singleton @Provides
+    fun providesSocialRepository(
+        context: Context,
+        remoteSource: CommonsRemoteDataSource,
+    ): SocialRepository = SocialRepository(remoteSource)
 
     @Singleton @Provides
     fun providesCommonsRemoteDataSource(
