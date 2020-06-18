@@ -1,15 +1,17 @@
 package org.beatonma.commons.app.featured
 
 import androidx.lifecycle.ViewModel
-import org.beatonma.commons.data.core.repository.CommonsRepository
+import org.beatonma.commons.data.core.repository.FeaturedRepository
+import org.beatonma.commons.data.core.repository.SnommocRepository
 import javax.inject.Inject
 
 class FeaturedContentViewModel @Inject constructor(
-    repository: CommonsRepository
+    snommocRepository: SnommocRepository,
+    featuredRepository: FeaturedRepository,
 ): ViewModel() {
-    val featuredPeople = repository.observeFeaturedPeople()
-    val featuredBills = repository.observeFeaturedBills()
-    val featuredDivisions = repository.observeFeaturedDivisions()
+    val featuredPeople = featuredRepository.observeFeaturedPeople()
+    val featuredBills = featuredRepository.observeFeaturedBills()
+    val featuredDivisions = featuredRepository.observeFeaturedDivisions()
 
-    val motd = repository.observeMotd()
+    val motd = snommocRepository.observeMotd()
 }
