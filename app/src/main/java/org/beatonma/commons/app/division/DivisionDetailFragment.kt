@@ -7,9 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.RecyclerView
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.BaseViewmodelFragment
 import org.beatonma.commons.app.ui.colors.colorResId
+import org.beatonma.commons.app.ui.recyclerview.CommonsLoadingAdapter
 import org.beatonma.commons.data.NetworkError
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.ParliamentID
@@ -18,15 +20,9 @@ import org.beatonma.commons.data.core.room.entities.division.Vote
 import org.beatonma.commons.data.core.room.entities.member.House
 import org.beatonma.commons.databinding.FragmentDivisionProfileBinding
 import org.beatonma.commons.databinding.ItemWideTitleBinding
-import org.beatonma.commons.kotlin.extensions.formatted
-import org.beatonma.commons.kotlin.extensions.navigateTo
-import org.beatonma.commons.kotlin.extensions.networkErrorSnackbar
-import org.beatonma.commons.kotlin.extensions.stringCompat
-import org.beatonma.lib.ui.recyclerview.BaseRecyclerViewAdapter
-import org.beatonma.lib.ui.recyclerview.BaseViewHolder
+import org.beatonma.commons.kotlin.extensions.*
+import org.beatonma.lib.ui.recyclerview.kotlin.extensions.RvSpacing
 import org.beatonma.lib.ui.recyclerview.kotlin.extensions.setupGrid
-import org.beatonma.lib.util.kotlin.extensions.colorCompat
-import org.beatonma.lib.util.kotlin.extensions.dp
 
 private const val TAG = "DivisionProfileFragment"
 
@@ -65,7 +61,7 @@ class DivisionDetailFragment : BaseViewmodelFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.recyclerview.setupGrid(adapter, context.dp(160), columnSpace = context.dp(8))
+        binding.recyclerview.setupGrid(adapter, context.dp(160), space = RvSpacing(horizontalItemSpace = context.dp(16)))//  columnSpace = context.dp(8))
 
         viewmodel.liveData.observe(viewLifecycleOwner) { result ->
             if (result is NetworkError) networkErrorSnackbar()
@@ -97,29 +93,25 @@ class DivisionDetailFragment : BaseViewmodelFragment() {
     }
 }
 
-private class VotesAdapter(var items: List<Vote>? = null) : BaseRecyclerViewAdapter() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder =
-        VoteViewHolder(inflate(parent, R.layout.item_wide_title))
+private class VotesAdapter : CommonsLoadingAdapter<Vote>() {
+    override fun onCreateDefaultViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
+        object: TypedViewHolder(parent.inflate(R.layout.item_wide_title)) {
+            private val vh = ItemWideTitleBinding.bind(itemView)
 
-    override fun getItemCount(): Int = items?.size ?: 0
+            override fun bind(item: Vote) {
+                vh.apply {
+                    title.text = item.memberName
+                    accent.setBackgroundColor(root.colorCompat(item.voteType.colorResId))
+                }
 
-    private inner class VoteViewHolder(view: View) : BaseViewHolder(view) {
-        private val vh = ItemWideTitleBinding.bind(view)
-
-        override fun bind(position: Int) {
-            val vote = items?.get(position) ?: return
-            vh.apply {
-                title.text = vote.memberName
-                accent.setBackgroundColor(root.colorCompat(vote.voteType.colorResId))
-            }
-            itemView.setOnClickListener { view ->
-                view.navigateTo(
-                    R.id.action_divisionProfileFragment_to_memberProfileFragment,
-                    bundleOf(
-                        PARLIAMENTDOTUK to vote.memberId,
+                itemView.setOnClickListener { view ->
+                    view.navigateTo(
+                        R.id.action_divisionProfileFragment_to_memberProfileFragment,
+                        bundleOf(
+                            PARLIAMENTDOTUK to item.memberId,
+                        )
                     )
-                )
+                }
             }
         }
-    }
 }
