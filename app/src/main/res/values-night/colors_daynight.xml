@@ -13,4 +13,5 @@
     <color name="TextTertiaryInverted">@color/TextTertiaryDark</color>
 
     <color name="Ripple">#10ffffff</color>
+    <color name="TextField">@color/Ripple</color>
 </resources>

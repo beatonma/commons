@@ -5,12 +5,13 @@
     <color name="Tabletop">#eeeeee</color>
     <color name="CardHeader">#BDBDBD</color>
 
-    <color name="Ripple">#12000000</color>
-
     <color name="TextPrimary">@color/TextPrimaryDark</color>
     <color name="TextPrimaryInverted">@color/TextPrimaryLight</color>
     <color name="TextSecondary">@color/TextSecondaryDark</color>
     <color name="TextSecondaryInverted">@color/TextSecondaryLight</color>
     <color name="TextTertiary">@color/TextTertiaryDark</color>
     <color name="TextTertiaryInverted">@color/TextTertiaryLight</color>
+
+    <color name="Ripple">#12000000</color>
+    <color name="TextField">@color/Ripple</color>
 </resources>
