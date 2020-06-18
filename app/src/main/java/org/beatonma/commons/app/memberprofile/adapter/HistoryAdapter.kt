@@ -6,9 +6,9 @@ import android.view.ViewGroup
 import org.beatonma.commons.R
 import org.beatonma.commons.app.memberprofile.HistoryItem
 import org.beatonma.commons.app.ui.recyclerview.ThemedCollapsibleAdapter
-import org.beatonma.commons.data.core.Dated
-import org.beatonma.commons.data.core.Named
-import org.beatonma.commons.data.core.Periodic
+import org.beatonma.commons.data.core.interfaces.Dated
+import org.beatonma.commons.data.core.interfaces.Named
+import org.beatonma.commons.data.core.interfaces.Periodic
 import org.beatonma.commons.databinding.ItemWideTitleDescriptionBinding
 import org.beatonma.commons.kotlin.extensions.CommonsDateFormat
 import org.beatonma.commons.kotlin.extensions.dateRange
