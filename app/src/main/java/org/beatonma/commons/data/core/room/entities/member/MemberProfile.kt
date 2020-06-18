@@ -6,7 +6,7 @@ import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.interfaces.*
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
-import org.beatonma.commons.data.core.social.SocialContentTarget
+import org.beatonma.commons.data.core.social.SocialTargetType
 import java.time.LocalDate
 
 @Entity(
@@ -50,7 +50,7 @@ data class MemberProfile(
     Votable
 {
 
-    override fun getSocialContentTarget(): SocialContentTarget = SocialContentTarget.MEMBER
+    override fun getSocialContentTarget(): SocialTargetType = SocialTargetType.member
 
     @Ignore override val start: LocalDate? = dateOfBirth
     @Ignore override val end: LocalDate? = dateOfDeath
