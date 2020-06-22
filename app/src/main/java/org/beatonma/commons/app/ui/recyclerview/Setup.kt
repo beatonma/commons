@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import org.beatonma.commons.app.ui.recyclerview.itemanimator.FadeItemAnimator
+import org.beatonma.commons.app.ui.recyclerview.itemdecorator.CommonsDividerItemDecoration
 import java.lang.ref.WeakReference
 import kotlin.math.floor
 import kotlin.math.max
@@ -15,11 +16,20 @@ fun RecyclerView.setup(
     adapter: BaseRecyclerViewAdapter,
     layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(context),
     itemAnimator: RecyclerView.ItemAnimator = FadeItemAnimator(),
+    showSeparators: Boolean = false,
     space: RvSpacing? = null,
 ) {
     setAdapter(adapter)
     setLayoutManager(layoutManager)
     setItemAnimator(itemAnimator)
+
+    if (showSeparators) {
+        when (layoutManager) {
+            is LinearLayoutManager -> addItemDecoration(
+                CommonsDividerItemDecoration(context, layoutManager.orientation)
+            )
+        }
+    }
 
     if (space != null) addItemDecoration(space.linearDecorator())
 }
