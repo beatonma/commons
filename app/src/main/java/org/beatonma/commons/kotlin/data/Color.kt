@@ -49,6 +49,14 @@ inline class Color(val color: Int) {
         hsv[2] = 0f.coerceAtLeast(1f.coerceAtMost(hsv[2] - amount))   // brightness
         return PlatformColor.HSVToColor(hsv)
     }
+
+    fun add(hue: Float = 0F, saturation: Float = 0F, value: Float = 0F): Int {
+        val hsv = hsv()
+        hsv[0] = (hsv[0] + hue) % 360F
+        hsv[1] = (hsv[1] + saturation).coerceAtMost(1F)
+        hsv[2] = (hsv[2] + value).coerceAtMost(1F)
+        return PlatformColor.HSVToColor(hsv)
+    }
 }
 
 fun Int.asStateList() = ColorStateList.valueOf(this)
