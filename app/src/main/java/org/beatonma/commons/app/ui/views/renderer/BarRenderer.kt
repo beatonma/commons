@@ -4,7 +4,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 
 private const val TAG = "BarRenderer"
-private const val DEFAULT_WITH_OUTLINE = true
+private const val DEFAULT_WITH_OUTLINE = false
 
 private const val DEFAULT_STRIPE_GRADIENT = -1F
 
@@ -133,7 +133,7 @@ class StripeBarRenderer(
         var n = 0
         var done: Boolean
         do {
-            val x = startX + n++ * spacing
+            val x = startX + (n++ * spacing)
             canvas.drawLine(
                 x,
                 topY,
@@ -146,6 +146,17 @@ class StripeBarRenderer(
             )
             done = x + spacing > endX
         } while (!done)
+
+        canvas.drawLine(
+            endX,
+            topY,
+            endX,
+            bottomY,
+            paint.apply {
+                this.color = color
+                this.strokeWidth = lineThickness
+            }
+        )
     }
 }
 
@@ -156,6 +167,8 @@ open class ForwardStripeBarRenderer(
     stripeGradient: Float = DEFAULT_STRIPE_GRADIENT,
     paintInit: (Paint.() -> Unit)? = null,
 ): BaseStripeBarRenderer(lineThickness, spacing, withOutline, stripeGradient, paintInit) {
+    private val line = Line()
+
     internal open fun plotHorizontal(
         gap: Float,
         startX: Float,
@@ -166,8 +179,10 @@ open class ForwardStripeBarRenderer(
         val x1 = startX + gap
         val c = topY - (stripeGradient * x1)
         val x2 = (bottomY - c) / stripeGradient
-
-        return Line(x1, topY, x2, bottomY).confineTo(startX, topY, endX, bottomY)
+        return line.apply {
+            set(x1, topY, x2, bottomY)
+            confineTo(startX, topY, endX, bottomY)
+        }
     }
 
     internal open fun plotVertical(
@@ -181,7 +196,10 @@ open class ForwardStripeBarRenderer(
         val c = y1 - (stripeGradient * startX)
         val x2 = (bottomY - c) / stripeGradient
 
-        return Line(startX, y1, x2, bottomY).confineTo(startX, topY, endX, bottomY)
+        return line.apply {
+            set(startX, y1, x2, bottomY)
+            confineTo(startX, topY, endX, bottomY)
+        }
     }
 
     override fun drawStripes(
@@ -198,34 +216,26 @@ open class ForwardStripeBarRenderer(
         // Across
         do {
             val gap = n++ * spacing
-            val (x1, y1, x2, y2) = plotHorizontal(gap, startX, endX, topY, bottomY)
+            plotHorizontal(gap, startX, endX, topY, bottomY)
+            line.draw(canvas, paint.apply {
+                this.color = color
+                this.strokeWidth = lineThickness
+            })
 
-            canvas.drawLine(
-                x1, y1, x2, y2,
-                paint.apply {
-                    this.color = color
-                    this.strokeWidth = lineThickness
-                }
-            )
-
-            done = x1 + spacing > endX && x2 + spacing > endX
+            done = line.startX + spacing > endX && line.endX + spacing > endX
         } while (!done)
 
         // Down/backfilling the corner
         n = 0
         do {
             val gap = n++ * spacing
-            val (x1, y1, x2, y2) = plotVertical(gap, startX, endX, topY, bottomY)
+            plotVertical(gap, startX, endX, topY, bottomY)
+            line.draw(canvas, paint.apply {
+                this.color = color
+                this.strokeWidth = lineThickness
+            })
 
-            canvas.drawLine(
-                x1, y1, x2, y2,
-                paint.apply {
-                    this.color = color
-                    this.strokeWidth = lineThickness
-                }
-            )
-
-            done = y1 + spacing > bottomY && y2 + spacing > bottomY
+            done = line.startY + spacing > bottomY && line.endY + spacing > bottomY
         } while (!done)
     }
 }
@@ -241,14 +251,18 @@ class BackwardStripeBarRenderer(
 
 
 
-internal data class Line(val startX: Float, val startY: Float, val endX: Float, val endY: Float) {
-    private val m: Float = (endY - startY) / (endX - startX)
-    private val c: Float = startY - (m * startX)
+internal class Line {
+    var startX: Float = 0F
+    var startY: Float = 0F
+    var endX: Float = 0F
+    var endY: Float = 0F
+    private var m: Float = 1F
+    private var c: Float = 0F
 
     private fun x(y: Float): Float = (y - c) / m
     private fun y(x: Float): Float = (m * x) + c
 
-    fun confineTo(startX: Float, startY: Float, endX: Float, endY: Float): Line {
+    fun confineTo(startX: Float, startY: Float, endX: Float, endY: Float) {
         var x1 = this.startX
         var x2 = this.endX
         var y1 = this.startY
@@ -271,6 +285,20 @@ internal data class Line(val startX: Float, val startY: Float, val endX: Float, 
             x2 = x(y2)
         }
 
-        return Line(x1, y1, x2, y2)
+        this.startX = x1
+        this.startY = y1
+        this.endX = x2
+        this.endY = y2
     }
+
+    fun set(startX: Float, startY: Float, endX: Float, endY: Float) {
+        this.startX = startX
+        this.startY = startY
+        this.endX = endX
+        this.endY = endY
+        m = (endY - startY) / (endX - startX)
+        c = startY - (m * startX)
+    }
+
+    fun draw(canvas: Canvas, paint: Paint) = canvas.drawLine(startX, startY, endX, endY, paint)
 }
