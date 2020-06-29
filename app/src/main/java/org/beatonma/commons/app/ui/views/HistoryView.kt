@@ -23,12 +23,12 @@ class HistoryView @JvmOverloads constructor(
     defStyleAttr: Int = 0,
     defStyleRes: Int = 0,
 ): View(context, attrs, defStyleAttr, defStyleRes) {
-
+    private val now: LocalDate = LocalDate.now()
 
     private val dp: Float = context.dp(1F)
     private val scale: Float = 1.5F  // Density-independent pixels per month
-    private val barThickness = 16 * dp
-    private val barSpacing = 8 * dp // Between bars
+    private val barThickness = 24 * dp
+    private val barSpacing = 16 * dp // Between bars
     private val barHeightTotal = barThickness + barSpacing
 
     private val labelTextSize = context.dimenCompat(R.dimen.text_size_label).toFloat()
@@ -51,7 +51,7 @@ class HistoryView @JvmOverloads constructor(
 
     private var historyRenderData: HistoryRenderData? = null
 
-    private val barRenderers = BarRenderer.mixed(
+    private val barRenderers = BarRenderer.striped(
         lineThickness = dp * 1F,
         spacing = dp * 8F,
     )
@@ -71,73 +71,106 @@ class HistoryView @JvmOverloads constructor(
 
     fun setHistory(items: List<HistoryItem<*>>) {
         val history = History(items)
-        this.history = history
+        val renderData = HistoryRenderData(history, colors)
         requiredHeight = history.items.size * barHeightTotal + (verticalMargin * 2)
-        requiredWidth = xForMonth(history.durationMonths + paddingMonths)
-        historyRenderData = HistoryRenderData(history, colors)
+        requiredWidth = xForMonth(renderData.durationMonths + paddingMonths)
+        historyRenderData = renderData
         requestLayout()
     }
 
     override fun onDraw(canvas: Canvas?) {
         canvas ?: return
-        val history = this.history ?: return
-        val data = this.historyRenderData ?: return
+        val data = historyRenderData ?: return
 
-        drawGrid(canvas, history, gridPaint)
+        drawGrid(canvas, data, gridPaint)
         drawHistory(canvas, data)
-
-        canvas.drawSolidText("${requiredWidth.toInt()} x ${requiredHeight.toInt()}", gridPaint, 0F to gridPaint.textSize)
     }
 
     private fun drawHistory(canvas: Canvas, history: HistoryRenderData) {
-        val startY = verticalMargin
+        val startY = verticalMargin + (barHeightTotal / 2)
 
-        history.items.forEachIndexed { index, item ->
-            val startX = xForMonth(item.startInEpoch)
-            val endX = xForMonth(item.endInEpoch)
+        var n = 0
+        history.data.forEach { data ->
+            val index = n++
+
             val y = startY + (index * barHeightTotal)
 
-            barRenderers.modGet(index).draw(
-                canvas,
-                startX,
-                endX,
-                y,
-                barThickness,
-                item.color
+            data.data.forEach { item ->
+                val startX = xForMonth(item.startInEpoch)
+                val endX = xForMonth(item.endInEpoch)
+                barRenderers.modGet(index).draw(
+                    canvas,
+                    startX,
+                    endX,
+                    y,
+                    barThickness,
+                    item.color
+                )
+            }
+            canvas.drawText(
+                data.label,
+                xForMonth(data.startInEpoch) - textPaint.measureText(data.label),
+                y + halfLabelTextSize,
+                textPaint
             )
-
-            canvas.drawText(item.label, startX - textPaint.measureText(item.label), y + halfLabelTextSize, textPaint)
         }
     }
 
-    private fun drawGrid(canvas: Canvas, history: History, paint: Paint) {
-        history.decades.forEach { decade ->
-            val x = xForMonth(decade.inEpoch)
-            val text = "${decade.year}"
-            val textWidth = paint.measureText(text)
-            val textX = x - (textWidth / 2)
+    private fun drawGrid(canvas: Canvas, history: HistoryRenderData, paint: Paint) {
 
-            canvas.drawSolidText(text, paint,
-                textX to paint.textSize,
-                textX to requiredHeight,
-            )
-            canvas.drawLine(x, verticalMargin, x, requiredHeight - verticalMargin, paint)
+        drawGridline(canvas, "${history.start.year}", xForMonth(0), paint)
+
+        history.decades.forEach { decade ->
+            drawGridline(canvas, "${decade.year}", xForMonth(decade.inEpoch), paint)
         }
+
+        if (history.end != now) {
+            drawGridline(canvas, history.end.formatted(default = "-", today = now), xForMonth(history.durationMonths), paint)
+        }
+    }
+
+    private fun drawGridline(canvas: Canvas, text: String, x: Float, paint: Paint) {
+        val topTextY = paint.textSize
+        val bottomTextY = requiredHeight
+
+        val textWidth = paint.measureText(text)
+        val textX = x - (textWidth / 2F)
+
+        canvas.drawSolidText(text, paint,
+            textX to topTextY,
+            textX to bottomTextY,
+        )
+        canvas.drawLine(x, verticalMargin, x, requiredHeight - verticalMargin, paint)
     }
 
     private fun xForMonth(month: Long): Float = ((paddingMonths + month) * dp * scale)
 
-    private inner class HistoryRenderData(history: History, colors: IntArray) {
-        val items: List<ItemRenderData>
+    private class HistoryRenderData(history: History, colors: IntArray): Periodic {
+        val data: List<ItemRenderDataGroup>
+        val durationMonths = history.period.toTotalMonths()
+        val decades = decades(history.start, history.end)
+        override val start = history.start
+        override val end = history.end
 
         init {
-            val numColors = colors.size
-            items = history.items.mapIndexed { index, item ->
-                ItemRenderData(item, history, colors[index % numColors])
+            val grouped = history.items.groupBy {
+                when (it.item) {
+                    is Named -> it.item.name
+                    else -> "noname"
+                }
             }
-        }
 
-        val totalHeight = items.size * (barThickness + barSpacing) - barSpacing
+            var index = 0
+            data = grouped.map { (label, items) ->
+                index++
+                    ItemRenderDataGroup(
+                        label,
+                        items.map { item ->
+                            ItemRenderData(item, history, colors.modGet(index))
+                        }
+                    )
+            }.sortedByDescending { it.totalDuration }
+        }
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -165,14 +198,10 @@ class HistoryView @JvmOverloads constructor(
 
 private class History(
     val items: List<HistoryItem<*>> = listOf(),
-) {
-    val start: LocalDate = items.sortedBy { it.start }.first().start
-    val end: LocalDate = items.sortedBy { it.end }.last().end
+): Periodic {
+    override val start: LocalDate = items.sortedBy { it.start }.first().start
+    override val end: LocalDate = items.sortedBy { it.end }.last().end
     val period: Period = Period.between(start, end)
-
-    val durationMonths = period.toTotalMonths()
-
-    val decades = decades(start, end)
 
     fun isEmpty() = items.isEmpty()
 
@@ -182,11 +211,30 @@ private class History(
 }
 
 
-private class ItemRenderData(item: HistoryItem<*>, history: History, val color: Int): Periodic {
-    val label: String = when (item.item) {
-        is Named -> item.item.name
-        else -> "null"
+private class ItemRenderDataGroup(val label: String, val data: List<ItemRenderData>): Periodic {
+    override val start: LocalDate
+    override val end: LocalDate
+
+    val startInEpoch: Long
+    val endInEpoch: Long
+
+    val totalDuration: Long
+
+    init {
+        val first = data.minBy { it.start }!!
+        val last = data.maxBy { it.end }!!
+
+        start = first.start
+        end = last.end
+
+        startInEpoch = first.startInEpoch
+        endInEpoch = last.endInEpoch
+
+        totalDuration = data.map { Period.between(it.start, it.end).toTotalMonths() }.sum()
     }
+}
+
+private class ItemRenderData(item: HistoryItem<*>, history: History, val color: Int): Periodic {
     override val start = item.start
     override val end = item.end
 
@@ -228,5 +276,6 @@ private fun Canvas.drawSolidText(text: String, paint: Paint, vararg xy: Pair<Flo
 
 
 private fun <T> Array<T>.modGet(index: Int) = this[index % this.size]
+private fun IntArray.modGet(index: Int) = this[index % this.size]
 
 
