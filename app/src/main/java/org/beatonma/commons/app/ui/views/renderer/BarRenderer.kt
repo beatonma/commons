@@ -2,20 +2,21 @@ package org.beatonma.commons.app.ui.views.renderer
 
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.Path
 
 private const val TAG = "BarRenderer"
-private const val DEFAULT_WITH_OUTLINE = false
+private const val DEFAULT_WITH_BACKGROUND = true
 
 private const val DEFAULT_STRIPE_GRADIENT = -1F
 
 
 abstract class BarRenderer(paintInit: (Paint.() -> Unit)? = null) {
     val paint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.STROKE
         paintInit?.invoke(this)
     }
+    val path = Path()
 
-    abstract fun draw(canvas: Canvas, startX: Float, endX: Float, centerY: Float, thickness: Float, color: Int)
+    abstract fun draw(canvas: Canvas, startX: Float, endX: Float, centerY: Float, thickness: Float, colorPrimary: Int, colorSecondary: Int)
 
     companion object {
         fun simple(lineThickness: Float) = arrayOf(
@@ -23,33 +24,41 @@ abstract class BarRenderer(paintInit: (Paint.() -> Unit)? = null) {
             OutlineBarRenderer(lineThickness),
         )
 
-        fun mixed(lineThickness: Float, spacing: Float, withOutline: Boolean = DEFAULT_WITH_OUTLINE) = arrayOf(
+        fun mixed(lineThickness: Float, spacing: Float, withBackground: Boolean = DEFAULT_WITH_BACKGROUND) = arrayOf(
             SolidBarRenderer(),
             OutlineBarRenderer(lineThickness),
-            StripeBarRenderer(lineThickness, spacing, withOutline),
-            ForwardStripeBarRenderer(lineThickness, spacing, withOutline),
-            BackwardStripeBarRenderer(lineThickness, spacing, withOutline),
+            StripeBarRenderer(lineThickness, spacing, withBackground),
+            ForwardStripeBarRenderer(lineThickness, spacing, withBackground),
+            BackwardStripeBarRenderer(lineThickness,
+                spacing,
+                withBackground),
         )
 
-        fun striped(lineThickness: Float, spacing: Float, withOutline: Boolean = DEFAULT_WITH_OUTLINE) = arrayOf(
-            StripeBarRenderer(lineThickness, spacing, withOutline),
-            ForwardStripeBarRenderer(lineThickness, spacing, withOutline),
-            BackwardStripeBarRenderer(lineThickness, spacing, withOutline),
+        fun striped(lineThickness: Float, spacing: Float, withBackground: Boolean = DEFAULT_WITH_BACKGROUND) = arrayOf(
+            StripeBarRenderer(lineThickness, spacing, withBackground),
+            ForwardStripeBarRenderer(lineThickness, spacing, withBackground),
+            BackwardStripeBarRenderer(lineThickness,
+                spacing,
+                withBackground),
         )
     }
 }
 
-class SolidBarRenderer(paintInit: (Paint.() -> Unit)? = null): BarRenderer(paintInit) {
+
+class SolidBarRenderer(
+    paintInit: (Paint.() -> Unit)? = { style = Paint.Style.STROKE },
+): BarRenderer(paintInit) {
     override fun draw(
         canvas: Canvas,
         startX: Float,
         endX: Float,
         centerY: Float,
         thickness: Float,
-        color: Int,
+        colorPrimary: Int,
+        colorSecondary: Int
     ) {
         canvas.drawLine(startX, centerY, endX, centerY, paint.apply {
-            this.color = color
+            color = colorPrimary
             strokeWidth = thickness
         })
     }
@@ -58,7 +67,7 @@ class SolidBarRenderer(paintInit: (Paint.() -> Unit)? = null): BarRenderer(paint
 
 class OutlineBarRenderer(
     private val lineThickness: Float,
-    paintInit: (Paint.() -> Unit)? = null,
+    paintInit: (Paint.() -> Unit)? = { style = Paint.Style.FILL },
 ): BarRenderer(paintInit) {
     override fun draw(
         canvas: Canvas,
@@ -66,11 +75,25 @@ class OutlineBarRenderer(
         endX: Float,
         centerY: Float,
         thickness: Float,
-        color: Int,
+        colorPrimary: Int,
+        colorSecondary: Int,
     ) {
-        canvas.drawRect(startX, centerY - thickness / 2, endX, centerY + thickness / 2, paint.apply {
-            this.color = color
-            this.strokeWidth = lineThickness
+        val topY = centerY - thickness / 2F
+        val bottomY = centerY + thickness / 2F
+
+        // Background
+        canvas.drawRect(startX, topY, endX, bottomY, paint.apply {
+            color = colorSecondary
+        })
+
+        // Inset outline
+        path.reset()
+        path.addRect(startX, topY, endX, topY + lineThickness, Path.Direction.CW)
+        path.addRect(endX - lineThickness, topY, endX, bottomY, Path.Direction.CW)
+        path.addRect(startX, bottomY - lineThickness, endX, bottomY, Path.Direction.CW)
+        path.addRect(startX, topY, startX + lineThickness, bottomY, Path.Direction.CW)
+        canvas.drawPath(path, paint.apply {
+            color = colorPrimary
         })
     }
 }
@@ -79,9 +102,9 @@ class OutlineBarRenderer(
 abstract class BaseStripeBarRenderer(
     protected val lineThickness: Float,
     protected val spacing: Float,
-    private val withOutline: Boolean = DEFAULT_WITH_OUTLINE,
+    private val withBackground: Boolean = DEFAULT_WITH_BACKGROUND,
     protected val stripeGradient: Float = DEFAULT_STRIPE_GRADIENT,
-    paintInit: (Paint.() -> Unit)? = null,
+    paintInit: (Paint.() -> Unit)?,
 ): BarRenderer(paintInit) {
 
     override fun draw(
@@ -90,19 +113,21 @@ abstract class BaseStripeBarRenderer(
         endX: Float,
         centerY: Float,
         thickness: Float,
-        color: Int,
+        colorPrimary: Int,
+        colorSecondary: Int,
     ) {
         val topY = centerY - thickness / 2
         val bottomY = centerY + thickness / 2
 
-        drawStripes(canvas, startX, endX, topY, bottomY, color)
-
-        if (withOutline) {
+        if (withBackground) {
             canvas.drawRect(startX, centerY - thickness / 2, endX, centerY + thickness / 2, paint.apply {
-                this.color = color
-                this.strokeWidth = lineThickness
+                color = colorSecondary
+                style = Paint.Style.FILL
             })
         }
+
+        paint.style = Paint.Style.STROKE
+        drawStripes(canvas, startX, endX, topY, bottomY, colorPrimary)
     }
 
     abstract fun drawStripes(
@@ -111,25 +136,31 @@ abstract class BaseStripeBarRenderer(
         endX: Float,
         topY: Float,
         bottomY: Float,
-        color: Int,
+        stripeColor: Int,
     )
 }
 
-
+/**
+ * Simple vertical stripes
+ */
 class StripeBarRenderer(
     lineThickness: Float,
     spacing: Float,
-    withOutline: Boolean = DEFAULT_WITH_OUTLINE,
-    paintInit: (Paint.() -> Unit)? = null,
-): BaseStripeBarRenderer(lineThickness, spacing, withOutline, 0F, paintInit) {
+    withBackground: Boolean = DEFAULT_WITH_BACKGROUND,
+    paintInit: (Paint.() -> Unit)? = { style = Paint.Style.STROKE },
+): BaseStripeBarRenderer(lineThickness, spacing, withBackground, 0F, paintInit) {
     override fun drawStripes(
         canvas: Canvas,
         startX: Float,
         endX: Float,
         topY: Float,
         bottomY: Float,
-        color: Int
+        stripeColor: Int
     ) {
+        paint.apply {
+            color = stripeColor
+            strokeWidth = lineThickness
+        }
         var n = 0
         var done: Boolean
         do {
@@ -139,67 +170,55 @@ class StripeBarRenderer(
                 topY,
                 x,
                 bottomY,
-                paint.apply {
-                    this.color = color
-                    this.strokeWidth = lineThickness
-                }
+                paint
             )
             done = x + spacing > endX
         } while (!done)
-
-        canvas.drawLine(
-            endX,
-            topY,
-            endX,
-            bottomY,
-            paint.apply {
-                this.color = color
-                this.strokeWidth = lineThickness
-            }
-        )
     }
 }
 
+/**
+ * Stripes that lean forward with a gradient of [stripeGradient]
+ */
 open class ForwardStripeBarRenderer(
     lineThickness: Float,
     spacing: Float,
-    withOutline: Boolean = DEFAULT_WITH_OUTLINE,
+    withBackground: Boolean = DEFAULT_WITH_BACKGROUND,
     stripeGradient: Float = DEFAULT_STRIPE_GRADIENT,
-    paintInit: (Paint.() -> Unit)? = null,
-): BaseStripeBarRenderer(lineThickness, spacing, withOutline, stripeGradient, paintInit) {
+    paintInit: (Paint.() -> Unit)? = { style = Paint.Style.FILL },
+): BaseStripeBarRenderer(lineThickness, spacing, withBackground, stripeGradient, paintInit) {
     private val line = Line()
 
-    internal open fun plotHorizontal(
+    /**
+     * Plot a line from (startX + gap, topY) with given gradient to intersect [bottomY].
+     */
+    private fun plotHorizontal(
         gap: Float,
         startX: Float,
-        endX: Float,
         topY: Float,
         bottomY: Float,
-    ): Line {
+    ) {
         val x1 = startX + gap
         val c = topY - (stripeGradient * x1)
         val x2 = (bottomY - c) / stripeGradient
-        return line.apply {
-            set(x1, topY, x2, bottomY)
-            confineTo(startX, topY, endX, bottomY)
-        }
+
+        line.set(x1, topY, x2, bottomY)
     }
 
-    internal open fun plotVertical(
+    /**
+     * Plot a line from (startX, topY + gap) with given gradient to intersect [bottomY].
+     */
+    private fun plotVertical(
         gap: Float,
         startX: Float,
-        endX: Float,
         topY: Float,
         bottomY: Float,
-    ): Line {
+    ) {
         val y1 = topY + gap
         val c = y1 - (stripeGradient * startX)
         val x2 = (bottomY - c) / stripeGradient
 
-        return line.apply {
-            set(startX, y1, x2, bottomY)
-            confineTo(startX, topY, endX, bottomY)
-        }
+        line.set(startX, y1, x2, bottomY)
     }
 
     override fun drawStripes(
@@ -208,46 +227,68 @@ open class ForwardStripeBarRenderer(
         endX: Float,
         topY: Float,
         bottomY: Float,
-        color: Int,
+        stripeColor: Int,
     ) {
         var n = 0
         var done: Boolean
 
-        // Across
+        paint.color = stripeColor
+
+        // Go along the x-axis creating stripes
         do {
             val gap = n++ * spacing
-            plotHorizontal(gap, startX, endX, topY, bottomY)
-            line.draw(canvas, paint.apply {
-                this.color = color
-                this.strokeWidth = lineThickness
-            })
+
+            // Plot parallelogram
+            path.reset()
+            plotHorizontal(gap, startX, topY, bottomY)
+            line.confineTo(startX, topY, endX, bottomY)
+            path.moveTo(line)
+            plotHorizontal(gap, startX + lineThickness, topY, bottomY)
+            line.confineTo(startX, topY, endX, bottomY)
+            path.lineTo(line)
+            path.close()
+
+            canvas.drawPath(path, paint)
 
             done = line.startX + spacing > endX && line.endX + spacing > endX
         } while (!done)
 
-        // Down/backfilling the corner
-        n = 0
-        do {
-            val gap = n++ * spacing
-            plotVertical(gap, startX, endX, topY, bottomY)
-            line.draw(canvas, paint.apply {
-                this.color = color
-                this.strokeWidth = lineThickness
-            })
+        if (stripeGradient > 0) {
+            // Backfill the missing corner by going down the y-axis
+            n = 0
+            val offsetY = topY + lineThickness  // Avoid overlap with previous lines
+            do {
+                val gap = n++ * spacing
 
-            done = line.startY + spacing > bottomY && line.endY + spacing > bottomY
-        } while (!done)
+                // Plot parallelogram
+                path.reset()
+                plotVertical(gap, startX, offsetY, bottomY)
+                line.confineTo(startX, topY, endX, bottomY)
+                path.moveTo(line)
+                plotVertical(gap, startX, offsetY + lineThickness, bottomY + lineThickness)
+                line.confineTo(startX, topY, endX, bottomY)
+                path.lineTo(line)
+                path.close()
+
+                canvas.drawPath(path, paint)
+
+                done = line.startY + spacing > bottomY && line.endY + spacing > bottomY
+            } while (!done)
+        }
     }
 }
 
 
+/**
+ * Stripes that lean backward with a gradient of [stripeGradient]
+ */
 class BackwardStripeBarRenderer(
     lineThickness: Float,
     spacing: Float,
-    withOutline: Boolean = DEFAULT_WITH_OUTLINE,
+    withBackground: Boolean = DEFAULT_WITH_BACKGROUND,
     stripeGradient: Float = DEFAULT_STRIPE_GRADIENT,
-    paintInit: (Paint.() -> Unit)? = null,
-): ForwardStripeBarRenderer(lineThickness, spacing, withOutline, -stripeGradient, paintInit)
+    paintInit: (Paint.() -> Unit)? = { style = Paint.Style.FILL },
+): ForwardStripeBarRenderer(lineThickness, spacing, withBackground, -stripeGradient, paintInit)
 
 
 
@@ -301,4 +342,14 @@ internal class Line {
     }
 
     fun draw(canvas: Canvas, paint: Paint) = canvas.drawLine(startX, startY, endX, endY, paint)
+}
+
+private fun Path.moveTo(line: Line) {
+    moveTo(line.startX, line.startY)
+    lineTo(line.endX, line.endY)
+}
+
+private fun Path.lineTo(line: Line) {
+    lineTo(line.endX, line.endY)
+    lineTo(line.startX, line.startY)
 }
