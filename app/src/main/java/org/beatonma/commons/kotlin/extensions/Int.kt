@@ -74,3 +74,27 @@ fun Int.removeFlags(vararg flags: Int): Int {
 fun Int.replaceFlag(removed: Int, added: Int): Int {
     return (this and removed.inv()) or added
 }
+
+/**
+ * Get the closest multiple of [nearest] AFTER the receiver.
+ */
+fun Int.roundUp(nearest: Int): Int {
+    val mod = this % nearest
+    return if (mod == 0) this
+    else {
+        if (this < 0) this - mod
+        else this + nearest - mod
+    }
+}
+
+/**
+ * Get the closest multiple of [nearest] BEFORE the receiver.
+ */
+fun Int.roundDown(nearest: Int): Int {
+    val mod = this % nearest
+    return if (mod == 0) this
+    else {
+        if (this < 0) this - nearest - mod
+        else this - mod
+    }
+}
