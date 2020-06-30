@@ -26,7 +26,7 @@ abstract class BarRenderer(paintInit: (Paint.() -> Unit)? = null) {
 
         fun mixed(lineThickness: Float, spacing: Float, withBackground: Boolean = DEFAULT_WITH_BACKGROUND) = arrayOf(
             SolidBarRenderer(),
-            OutlineBarRenderer(lineThickness),
+//            OutlineBarRenderer(lineThickness),
             StripeBarRenderer(lineThickness, spacing, withBackground),
             ForwardStripeBarRenderer(lineThickness, spacing, withBackground),
             BackwardStripeBarRenderer(lineThickness,
@@ -126,7 +126,6 @@ abstract class BaseStripeBarRenderer(
             })
         }
 
-        paint.style = Paint.Style.STROKE
         drawStripes(canvas, startX, endX, topY, bottomY, colorPrimary)
     }
 
@@ -147,8 +146,8 @@ class StripeBarRenderer(
     lineThickness: Float,
     spacing: Float,
     withBackground: Boolean = DEFAULT_WITH_BACKGROUND,
-    paintInit: (Paint.() -> Unit)? = { style = Paint.Style.STROKE },
-): BaseStripeBarRenderer(lineThickness, spacing, withBackground, 0F, paintInit) {
+    paintInit: (Paint.() -> Unit)? = { style = Paint.Style.FILL },
+): BaseStripeBarRenderer(lineThickness, spacing, withBackground, Float.MAX_VALUE, paintInit) {
     override fun drawStripes(
         canvas: Canvas,
         startX: Float,
@@ -157,21 +156,25 @@ class StripeBarRenderer(
         bottomY: Float,
         stripeColor: Int
     ) {
-        paint.apply {
-            color = stripeColor
-            strokeWidth = lineThickness
-        }
+        paint.color = stripeColor
+
         var n = 0
         var done: Boolean
         do {
             val x = startX + (n++ * spacing)
-            canvas.drawLine(
-                x,
-                topY,
-                x,
-                bottomY,
-                paint
-            )
+            val widthX = (x + lineThickness).coerceAtMost(endX)
+
+            path.apply {
+                reset()
+                moveTo(x, topY)
+                lineTo(widthX, topY)
+                lineTo(widthX, bottomY)
+                lineTo(x, bottomY)
+                close()
+            }
+
+            canvas.drawPath(path, paint)
+
             done = x + spacing > endX
         } while (!done)
     }
@@ -248,7 +251,7 @@ open class ForwardStripeBarRenderer(
             path.lineTo(line)
             path.close()
 
-            canvas.drawPath(path, paint)
+            canvas.drawPath(path, paint.apply { style = Paint.Style.FILL })
 
             done = line.startX + spacing > endX && line.endX + spacing > endX
         } while (!done)
