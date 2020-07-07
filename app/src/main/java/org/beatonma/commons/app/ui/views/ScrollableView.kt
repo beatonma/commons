@@ -53,6 +53,7 @@ abstract class ScrollableView @JvmOverloads constructor(
     defStyleAttr: Int = 0,
     defStyleRes: Int = 0,
 ): View(context, attrs, defStyleAttr, defStyleRes), NestedScrollingChild {
+
     abstract val nestedScrollHelper: NestedScrollingChildHelper
 
     protected open val supportedScrollDirections: Int = combineFlags(
@@ -70,12 +71,15 @@ abstract class ScrollableView @JvmOverloads constructor(
     protected val unconsumedScroll = Coords()
 
     // The total size of the view as if it were being rendered all at once on a large display
-    protected var scrollableWidth: Float = 0F
-    protected var scrollableHeight: Float = 0F
+    protected var scrollableWidth: Int = 0
+    protected var scrollableHeight: Int = 0
 
     protected fun canScrollX(): Boolean = (contentRect.left > 0F || contentRect.right < scrollableWidth)
     protected fun canScrollY(): Boolean = (contentRect.top > 0F || contentRect.bottom < scrollableHeight)
     protected fun canScroll(): Boolean = canScrollX() || canScrollY()
+
+    override fun computeHorizontalScrollRange(): Int = scrollableWidth - width
+    override fun computeVerticalScrollRange(): Int = scrollableHeight - height
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         return gestureDetector.onTouchEvent(event) || super.onTouchEvent(event)
@@ -94,8 +98,8 @@ abstract class ScrollableView @JvmOverloads constructor(
 
         scroller.fling(
             contentRect.left, contentRect.top, velocityX, velocityY,
-            0, scrollableWidth.toInt() - contentRect.width(),
-            0, scrollableHeight.toInt() - contentRect.height(),
+            0, scrollableWidth - contentRect.width(),
+            0, scrollableHeight - contentRect.height(),
             0, 0
         )
     }
@@ -104,24 +108,35 @@ abstract class ScrollableView @JvmOverloads constructor(
         val startX = contentRect.left
         val startY = contentRect.top
 
-        val constrainedX = (contentRect.left + x).coerceAtLeast(0).coerceAtMost((scrollableWidth - contentRect.width()).toInt())
-        val constrainedY = (contentRect.top + y).coerceAtLeast(0).coerceAtMost((scrollableHeight - contentRect.height()).toInt())
+        val constrainedX = (contentRect.left + x).coerceAtLeast(0).coerceAtMost((scrollableWidth - contentRect.width()))
+        val constrainedY = (contentRect.top + y).coerceAtLeast(0).coerceAtMost((scrollableHeight - contentRect.height()))
 
         contentRect.offsetTo(constrainedX, constrainedY)
+
+        scrollTo(
+            (scrollX + x).coerceAtMost(computeHorizontalScrollRange()).coerceAtLeast(0),
+            (scrollY + y).coerceAtMost(computeHorizontalScrollRange()).coerceAtLeast(0)
+        )
 
         consumedScroll.add(constrainedX - startX, constrainedY - startY)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         withMeasureSpec(widthMeasureSpec, heightMeasureSpec) { widthSize, widthMode, heightSize, heightMode ->
+            val wSize: Int = when (widthMode) {
+                MeasureSpec.EXACTLY -> widthSize
+                MeasureSpec.AT_MOST -> scrollableWidth.coerceAtMost(widthSize)
+                else -> scrollableWidth.coerceAtMost(maxSize.x)
+            }
+
             val hSize: Int = when (heightMode) {
                 MeasureSpec.EXACTLY -> heightSize
-                MeasureSpec.AT_MOST -> scrollableHeight.toInt().coerceAtMost(heightSize)
-                else -> scrollableHeight.toInt().coerceAtMost(maxSize.y)
+                MeasureSpec.AT_MOST -> scrollableHeight.coerceAtMost(heightSize)
+                else -> scrollableHeight.coerceAtMost(maxSize.y)
             }
 
             super.onMeasure(
-                widthMeasureSpec,
+                MeasureSpec.makeMeasureSpec(wSize, MeasureSpec.AT_MOST),
                 MeasureSpec.makeMeasureSpec(hSize, MeasureSpec.AT_MOST)
             )
         }
@@ -173,8 +188,6 @@ abstract class ScrollableView @JvmOverloads constructor(
             return true
         }
     }
-
-
 
     /**
      * NESTED SCROLLING: Delegate methods
