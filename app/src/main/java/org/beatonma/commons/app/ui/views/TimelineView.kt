@@ -42,6 +42,11 @@ class TimelineView @JvmOverloads constructor(
         isNestedScrollingEnabled = true
     }
 
+    override val maxSize: Point
+        get() = context.displaySize().apply {
+            y /= 2
+        }
+
     private val now: LocalDate = LocalDate.now()
     private val dp: Float = context.dp(1F)
 
