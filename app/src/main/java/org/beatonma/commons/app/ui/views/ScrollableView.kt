@@ -3,7 +3,6 @@ package org.beatonma.commons.app.ui.views
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Point
-import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.GestureDetector
 import android.view.MotionEvent
@@ -19,33 +18,6 @@ import org.beatonma.commons.kotlin.extensions.withMeasureSpec
 
 private const val TAG = "ScrollableView"
 
-inline class Coords(val xy: IntArray = intArrayOf(0, 0)) {
-    var x: Int
-        set(value) { xy[0] = value }
-        get() = xy[0]
-
-    var y: Int
-        set(value) { xy[1] = value }
-        get() = xy[1]
-
-    fun reset() {
-        set(0, 0)
-    }
-
-    fun set(x: Int, y: Int) {
-        this.x = x
-        this.y = y
-    }
-
-    fun add(x: Int, y: Int) {
-        this.x += x
-        this.y += y
-    }
-
-    fun isEmpty(): Boolean = x == 0 && y == 0
-
-    override fun toString() = "[$x,$y]"
-}
 
 abstract class ScrollableView @JvmOverloads constructor(
     context: Context,
@@ -61,22 +33,23 @@ abstract class ScrollableView @JvmOverloads constructor(
         ViewCompat.SCROLL_AXIS_HORIZONTAL,
     )
 
-    protected val maxSize: Point = context.displaySize()
+    protected open val maxSize: Point = context.displaySize()
 
-    protected val contentRect = Rect()
     protected open val gestureDetector = GestureDetectorCompat(context, GestureListener())
     protected val scroller = OverScroller(context)
 
-    protected val consumedScroll = Coords()
-    protected val unconsumedScroll = Coords()
+    protected val tracker = ScrollTracker()
 
     // The total size of the view as if it were being rendered all at once on a large display
     protected var scrollableWidth: Int = 0
     protected var scrollableHeight: Int = 0
 
-    protected fun canScrollX(): Boolean = (contentRect.left > 0F || contentRect.right < scrollableWidth)
-    protected fun canScrollY(): Boolean = (contentRect.top > 0F || contentRect.bottom < scrollableHeight)
+    protected fun canScrollX(): Boolean = width < scrollableWidth
+    protected fun canScrollY(): Boolean = height < scrollableHeight
     protected fun canScroll(): Boolean = canScrollX() || canScrollY()
+
+    protected var horizontalScrollRange: Int = 0
+    protected var verticalScrollRange: Int = 0
 
     override fun computeHorizontalScrollRange(): Int = scrollableWidth - width
     override fun computeVerticalScrollRange(): Int = scrollableHeight - height
@@ -89,7 +62,7 @@ abstract class ScrollableView @JvmOverloads constructor(
         super.onDraw(canvas)
 
         if (scroller.computeScrollOffset()) {
-            contentRect.offsetTo(scroller.currX, scroller.currY)
+            scrollTo(scroller.currX, scroller.currY)
         }
     }
 
@@ -97,28 +70,63 @@ abstract class ScrollableView @JvmOverloads constructor(
         scroller.forceFinished(true)
 
         scroller.fling(
-            contentRect.left, contentRect.top, velocityX, velocityY,
-            0, scrollableWidth - contentRect.width(),
-            0, scrollableHeight - contentRect.height(),
+            scrollX, scrollY,
+            velocityX, velocityY,
+            0, horizontalScrollRange,
+            0, verticalScrollRange,
             0, 0
         )
     }
 
-    protected fun applyOffsets(x: Int, y: Int) {
-        val startX = contentRect.left
-        val startY = contentRect.top
+    protected fun applyScrollOffsets(x: Int, y: Int) {
+        tracker.forScroll(x, y)
 
-        val constrainedX = (contentRect.left + x).coerceAtLeast(0).coerceAtMost((scrollableWidth - contentRect.width()))
-        val constrainedY = (contentRect.top + y).coerceAtLeast(0).coerceAtMost((scrollableHeight - contentRect.height()))
-
-        contentRect.offsetTo(constrainedX, constrainedY)
+        val startX = scrollX
+        val startY = scrollY
 
         scrollTo(
-            (scrollX + x).coerceAtMost(computeHorizontalScrollRange()).coerceAtLeast(0),
-            (scrollY + y).coerceAtMost(computeHorizontalScrollRange()).coerceAtLeast(0)
+            (scrollX + x).coerceAtMost(horizontalScrollRange).coerceAtLeast(0),
+            (scrollY + y).coerceAtMost(verticalScrollRange).coerceAtLeast(0)
         )
 
-        consumedScroll.add(constrainedX - startX, constrainedY - startY)
+        tracker.consume(scrollX - startX, scrollY - startY)
+    }
+
+    private inner class GestureListener: GestureDetector.SimpleOnGestureListener() {
+        override fun onDown(event: MotionEvent?): Boolean {
+            scroller.forceFinished(true)
+
+            startNestedScroll(supportedScrollDirections)
+            return true
+        }
+
+        override fun onFling(e1: MotionEvent?, e2: MotionEvent?, velocityX: Float, velocityY: Float): Boolean {
+            fling(-velocityX.toInt(), -velocityY.toInt())
+            return true
+        }
+
+        override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
+            val dx = distanceX.toInt()
+            val dy = distanceY.toInt()
+            tracker.forScroll(dx, dy)
+            dispatchNestedPreScroll(dx, dy, tracker.consumed, null)
+
+            if (canScroll()) {
+                val unconsumedByPreScroll = tracker.unconsumed
+                applyScrollOffsets(unconsumedByPreScroll[0], unconsumedByPreScroll[1])
+
+                val consumed = tracker.consumed
+                val unconsumed = tracker.unconsumed
+
+                dispatchNestedScroll(
+                    consumed[0], consumed[1],
+                    unconsumed[0], unconsumed[1],
+                    null
+                )
+            }
+
+            return true
+        }
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -145,48 +153,8 @@ abstract class ScrollableView @JvmOverloads constructor(
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
 
-        contentRect.set(paddingLeft, paddingTop, width - paddingRight, height - paddingBottom)
-    }
-
-    private inner class GestureListener: GestureDetector.SimpleOnGestureListener() {
-        override fun onDown(event: MotionEvent?): Boolean {
-            scroller.forceFinished(true)
-
-            startNestedScroll(supportedScrollDirections)
-            return true
-        }
-
-        override fun onFling(e1: MotionEvent?, e2: MotionEvent?, velocityX: Float, velocityY: Float): Boolean {
-            fling(-velocityX.toInt(), -velocityY.toInt())
-            return true
-        }
-
-        override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
-            val dx = distanceX.toInt()
-            val dy = distanceY.toInt()
-            consumedScroll.reset()
-            unconsumedScroll.reset()
-
-            fun updateUnconsumed() {
-                unconsumedScroll.set(dx - consumedScroll.x, dy - consumedScroll.y)
-            }
-
-            dispatchNestedPreScroll(dx, dy, consumedScroll.xy, null)
-            updateUnconsumed()
-
-            if (canScroll()) {
-                applyOffsets(dx, dy)
-                updateUnconsumed()
-
-                dispatchNestedScroll(
-                    consumedScroll.x, consumedScroll.y,
-                    unconsumedScroll.x, unconsumedScroll.y,
-                    null
-                )
-            }
-
-            return true
-        }
+        horizontalScrollRange = scrollableWidth - w
+        verticalScrollRange = scrollableHeight - h
     }
 
     /**
@@ -247,4 +215,31 @@ abstract class ScrollableView @JvmOverloads constructor(
     /**
      * End of NESTED SCROLLING
      */
+}
+
+
+class ScrollTracker {
+    val completeScroll = intArrayOf(0, 0)
+    val consumed = intArrayOf(0, 0)
+    private val _unconsumed = intArrayOf(0, 0)
+    val unconsumed: IntArray get() {
+        _unconsumed[0] = completeScroll[0] - consumed[0]
+        _unconsumed[1] = completeScroll[1] - consumed[1]
+        return _unconsumed
+    }
+
+    fun forScroll(dx: Int, dy: Int) {
+        completeScroll.setXY(dx, dy)
+        consumed.setXY(0, 0)
+    }
+
+    fun consume(dx: Int, dy: Int) {
+        consumed[0] += dx
+        consumed[1] += dy
+    }
+
+    private fun IntArray.setXY(x: Int, y: Int) {
+        this[0] = x
+        this[1] = y
+    }
 }
