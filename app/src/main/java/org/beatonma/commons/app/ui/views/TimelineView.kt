@@ -6,14 +6,8 @@ import android.text.TextPaint
 import android.util.AttributeSet
 import androidx.core.graphics.withTranslation
 import androidx.core.view.NestedScrollingChildHelper
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.beatonma.commons.R
-import org.beatonma.commons.app.ui.views.renderer.BarRenderer
+import org.beatonma.commons.app.ui.views.renderer.SolidBarRenderer
 import org.beatonma.commons.data.core.interfaces.Named
 import org.beatonma.commons.data.core.interfaces.Periodic
 import org.beatonma.commons.data.core.interfaces.Temporal
@@ -21,7 +15,6 @@ import org.beatonma.commons.data.resolution.description
 import org.beatonma.commons.kotlin.extensions.*
 import java.time.LocalDate
 import java.time.Period
-import kotlin.coroutines.CoroutineContext
 
 private const val TAG = "HistoryView"
 
@@ -49,9 +42,6 @@ class TimelineView @JvmOverloads constructor(
         isNestedScrollingEnabled = true
     }
 
-    private val job: Job = Job()
-    private val coroutineContext: CoroutineContext get() = Dispatchers.Main + job
-
     private val now: LocalDate = LocalDate.now()
     private val dp: Float = context.dp(1F)
 
@@ -77,10 +67,11 @@ class TimelineView @JvmOverloads constructor(
 
     private var historyRenderData: HistoryRenderData? = null
 
-    private val barRenderers = BarRenderer.mixed(
-        lineThickness = dp * 8F,
-        spacing = dp * 16F,
-    )
+    private val barRenderers = arrayOf(SolidBarRenderer())
+//    private val barRenderers = BarRenderer.mixed(
+//        lineThickness = dp * 8F,
+//        spacing = dp * 16F,
+//    )
 
     private val bitmapPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val instantPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.FILL }
@@ -105,15 +96,11 @@ class TimelineView @JvmOverloads constructor(
     }
 
     fun setHistory(items: List<Temporal>) {
-        (context as LifecycleOwner).lifecycleScope.launch(coroutineContext) {
-            val renderData = HistoryRenderData(items, primaryColors, secondaryColors)
-            scrollableHeight = (renderData.data.size * barHeightTotal + (verticalMargin * 2)).toInt()
-            scrollableWidth = xForMonth(renderData.durationMonths + paddingMonths).toInt()
-            historyRenderData = renderData
-            withContext(Dispatchers.Main) {
-                requestLayout()
-            }
-        }
+        val renderData = HistoryRenderData(items, primaryColors, secondaryColors)
+        scrollableHeight = (renderData.data.size * barHeightTotal + (verticalMargin * 2)).toInt()
+        scrollableWidth = xForMonth(renderData.durationMonths + paddingMonths).toInt()
+        historyRenderData = renderData
+        requestLayout()
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -125,17 +112,20 @@ class TimelineView @JvmOverloads constructor(
         c.drawColor(0, PorterDuff.Mode.CLEAR)
 
         val data = historyRenderData ?: return
+
         val scrollX = this.scrollX.toFloat()
         val scrollY = this.scrollY.toFloat()
 
-        c.withTranslation(-scrollX, -scrollY) {
+        c.withTranslation(-scrollX, 0F) {
             drawGrid(c, data, gridPaint)
+        }
+
+        c.withTranslation(-scrollX, -scrollY) {
             drawHistory(c, data)
         }
 
         canvas.drawBitmap(bm, scrollX, scrollY, bitmapPaint)
     }
-
 
     private fun drawHistory(canvas: Canvas, history: HistoryRenderData) {
         val startY = yFor(verticalMargin + (barHeightTotal / 2))
@@ -163,7 +153,7 @@ class TimelineView @JvmOverloads constructor(
 
     private fun drawGridline(canvas: Canvas, text: String, x: Float, paint: Paint) {
         val topTextY = paint.textSize
-        val bottomTextY = scrollableHeight.toFloat()
+        val bottomTextY = height.toFloat()
 
         val textWidth = paint.measureText(text)
         val textX = x - (textWidth / 2F)
@@ -172,7 +162,7 @@ class TimelineView @JvmOverloads constructor(
             textX to topTextY,
             textX to bottomTextY,
         )
-        canvas.drawLine(x, verticalMargin, x, scrollableHeight - verticalMargin, paint)
+        canvas.drawLine(x, verticalMargin, x, height - verticalMargin, paint)
     }
 
     private fun xForMonth(month: Long): Float = ((paddingMonths + month) * dp * scale)
@@ -194,11 +184,6 @@ class TimelineView @JvmOverloads constructor(
         if (this.bitmap?.isRecycled == false) {
             this.bitmap?.recycle()
         }
-    }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        job.cancel()
     }
 
     private inner class HistoryRenderData(
