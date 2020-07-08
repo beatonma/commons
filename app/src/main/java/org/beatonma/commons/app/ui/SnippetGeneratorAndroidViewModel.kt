@@ -1,6 +1,5 @@
 package org.beatonma.commons.app.ui
 
-import android.app.Application
 import android.content.Context
 import androidx.annotation.CallSuper
 import androidx.lifecycle.MutableLiveData
@@ -10,7 +9,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.beatonma.commons.data.IoResult
 
-abstract class SnippetGeneratorAndroidViewModel<D>(application: Application): BaseIoAndroidViewModel<D>(application) {
+abstract class SnippetGeneratorAndroidViewModel<D>(
+    context: Context
+): BaseIoAndroidViewModel<D>(context) {
     val snippetsLiveData: MutableLiveData<List<Snippet>> = MutableLiveData()
 
     private var snippetJob: Job? = null

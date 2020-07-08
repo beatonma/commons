@@ -11,7 +11,6 @@ import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.Snippet
 import org.beatonma.commons.app.ui.SnippetGeneratorAndroidViewModel
 import org.beatonma.commons.app.ui.views.BarChartCategory
-import org.beatonma.commons.commonsApp
 import org.beatonma.commons.data.IoResult
 import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.repository.DivisionRepository
@@ -23,8 +22,8 @@ import org.beatonma.commons.kotlin.extensions.colorCompat
 
 class DivisionDetailViewModel @ViewModelInject constructor(
     private val repository: DivisionRepository,
-    @ApplicationContext application: Context,
-) : SnippetGeneratorAndroidViewModel<DivisionWithVotes>(application.commonsApp) {
+    @ApplicationContext context: Context,
+) : SnippetGeneratorAndroidViewModel<DivisionWithVotes>(context) {
 
     private val votesObserver = Observer<IoResult<DivisionWithVotes>> {
         viewModelScope.launch {

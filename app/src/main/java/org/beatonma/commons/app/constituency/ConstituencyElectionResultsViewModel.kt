@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.hilt.lifecycle.ViewModelInject
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.beatonma.commons.app.ui.BaseIoAndroidViewModel
-import org.beatonma.commons.commonsApp
 import org.beatonma.commons.context
 import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.repository.ConstituencyRepository
@@ -16,8 +15,8 @@ import org.beatonma.commons.kotlin.extensions.formatPercent
 
 class ConstituencyElectionResultsViewModel @ViewModelInject constructor(
     private val repository: ConstituencyRepository,
-    @ApplicationContext application: Context,
-): BaseIoAndroidViewModel<ConstituencyElectionDetailsWithExtras>(application.commonsApp) {
+    @ApplicationContext context: Context,
+): BaseIoAndroidViewModel<ConstituencyElectionDetailsWithExtras>(context) {
 
     fun forConstituencyInElection(constituencyId: ParliamentID, electionId: ParliamentID) {
         liveData = repository.observeConstituencyResultsForElection(constituencyId, electionId)

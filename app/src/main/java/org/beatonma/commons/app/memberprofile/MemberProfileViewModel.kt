@@ -9,7 +9,6 @@ import org.beatonma.commons.app.ui.Snippet
 import org.beatonma.commons.app.ui.SnippetGeneratorAndroidViewModel
 import org.beatonma.commons.app.ui.data.WeblinkData
 import org.beatonma.commons.app.ui.toSnippets
-import org.beatonma.commons.commonsApp
 import org.beatonma.commons.data.LiveDataIoResultList
 import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.CompleteMember
@@ -28,8 +27,8 @@ private const val TAG = "MemberProfViewModel"
 class MemberProfileViewModel
 @ViewModelInject constructor(
     private val repository: MemberRepository,
-    @ApplicationContext application: Context,
-) : SnippetGeneratorAndroidViewModel<CompleteMember>(application.commonsApp) {
+    @ApplicationContext context: Context,
+) : SnippetGeneratorAndroidViewModel<CompleteMember>(context) {
 
     lateinit var memberVoteLiveData: LiveDataIoResultList<VoteWithDivision>
 
