@@ -15,10 +15,11 @@ import org.beatonma.commons.data.resolution.description
 import org.beatonma.commons.kotlin.extensions.*
 import java.time.LocalDate
 import java.time.Period
+import kotlin.math.absoluteValue
 
 private const val TAG = "HistoryView"
 
-private const val LABEL_MAX_LENGTH = 31
+private const val LABEL_MAX_LENGTH = 48
 private const val PADDING_YEARS = 10L
 
 // Only show gridlines before/after timeline start/end if they fall within this number of years of the timeline
@@ -63,6 +64,7 @@ class TimelineView @JvmOverloads constructor(
     // Horizontal padding before/after graph bars, expressed in number of months
     private val paddingMonths = 12L * PADDING_YEARS
     private val verticalMargin: Float = labelTextSize * 1.5F
+    private var paddingExtraForLabels: Int = 0  // Additional space before start of graph to ensure labels are fully visible
 
     private var bitmap: Bitmap? = null
     private var alphaCanvas: Canvas? = null
@@ -101,11 +103,25 @@ class TimelineView @JvmOverloads constructor(
     }
 
     fun setHistory(items: List<Temporal>) {
+        if (items.isEmpty()) return
+
         val renderData = HistoryRenderData(items, primaryColors, secondaryColors)
-        scrollableHeight = (renderData.data.size * barHeightTotal + (verticalMargin * 2)).toInt()
-        scrollableWidth = xForMonth(renderData.durationMonths + paddingMonths).toInt()
+        scrollableHeight = calculateScrollableHeight(renderData)
+        scrollableWidth = calculateScrollableWidth(renderData)
         historyRenderData = renderData
         requestLayout()
+    }
+
+    private fun calculateScrollableHeight(renderData: HistoryRenderData): Int {
+        return (renderData.data.size * barHeightTotal + (verticalMargin * 2)).toInt()
+    }
+
+    private fun calculateScrollableWidth(renderData: HistoryRenderData): Int {
+        paddingExtraForLabels = 0
+        val minX = renderData.data.minOf { it.getTextStartX(textPaint) }
+        if (minX < 0) paddingExtraForLabels = (minX.absoluteValue + labelMargin).toInt()
+
+        return xForMonth(renderData.durationMonths + paddingMonths).toInt()
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -170,7 +186,7 @@ class TimelineView @JvmOverloads constructor(
         canvas.drawLine(x, verticalMargin, x, height - verticalMargin, paint)
     }
 
-    private fun xForMonth(month: Long): Float = ((paddingMonths + month) * dp * scale)
+    private fun xForMonth(month: Long): Float = ((paddingMonths + month) * dp * scale) + paddingExtraForLabels
     private fun yFor(targetY: Float): Float = targetY
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -322,6 +338,14 @@ class TimelineView @JvmOverloads constructor(
                 textY,
                 textPaint
             )
+        }
+
+        fun getTextStartX(textPaint: Paint): Int {
+            val textWidth = textPaint.measureText(label)
+            return when (start == end) {
+                true -> xForMonth(startInEpoch) - textWidth - labelMargin - instantRadius
+                false -> xForMonth(startInEpoch) - textWidth - labelMargin
+            }.toInt()
         }
     }
 }
