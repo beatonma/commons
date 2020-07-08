@@ -8,6 +8,12 @@ private fun bma(artifact: String, version: String = Versions.BMA) = dependency("
 private fun dagger(artifact: String, version: String = Versions.DAGGER) =
     dependency("com.google.dagger", artifact, version)
 
+private fun hilt(artifact: String, version: String = Versions.HILT) = dagger(artifact = artifact, version = version)
+private fun hiltAX(artifact: String, version: String = Versions.AX_HILT) = androidx(group = "hilt", artifact = artifact, version = version)
+
+private fun espresso(artifact: String, version: String = Versions.ESPRESSO) =
+    androidx(group = "test.espresso", artifact = artifact, version = version)
+
 private fun glide(artifact: String, version: String = Versions.GLIDE) =
     dependency("com.github.bumptech.glide", artifact, version)
 
@@ -32,26 +38,29 @@ private fun moshi(artifact: String, version: String = Versions.MOSHI) =
 object Versions {
     const val BMA = "0.9.29"
     const val COMPOSE = "0.1.0-dev07"
-//    const val COROUTINES = "1.3.5-1.4-M1"
-    const val COROUTINES = "1.3.5-2-native-mt-1.4-M1"
-    const val DAGGER = "2.27"
+    const val COROUTINES = "1.3.7-1.4-M3"
+    const val DAGGER = "2.28.1"
+    const val ESPRESSO = "3.3.0-beta02"
     const val GLIDE = "4.11.0"
+    const val HILT = "2.28.1-alpha"
+    const val AX_HILT = "1.0.0-alpha01"
     val JAVA = JavaVersion.VERSION_1_8
-    const val KOTLIN = "1.4-M1"
+    const val KOTLIN = "1.4-M3"
     const val RETROFIT = "2.9.0"
     const val ROOM = "2.2.5"
     const val MOSHI = "1.9.2"
-    const val AX_NAVIGATION = "2.3.0-beta01"
+    const val AX_NAVIGATION = "2.3.0"
+    const val AX_WORK = "2.4.0-rc01"
 }
 
 object Dependencies {
     object AndroidX {
         val APPCOMPAT = androidx("appcompat", version = "1.3.0-alpha01")
         val CONSTRAINTLAYOUT = androidx("constraintlayout", version = "2.0.0-beta7")
-        val CORE_KTX = androidx(group = "core", artifact = "core-ktx", version = "1.3.0-rc01")
-        val LIFECYCLE_RUNTIME = androidx(group = "lifecycle", artifact = "lifecycle-runtime-ktx", version = "2.3.0-alpha03")
-        val LIVEDATA_KTX = androidx(group = "lifecycle", artifact = "lifecycle-livedata-ktx", version = "2.3.0-alpha03")
-        val VIEWMODEL_KTX = androidx(group = "lifecycle", artifact = "lifecycle-viewmodel-ktx", version = "2.3.0-alpha03")
+        val CORE_KTX = androidx(group = "core", artifact = "core-ktx", version = "1.5.0-alpha01")
+        val LIFECYCLE_RUNTIME = androidx(group = "lifecycle", artifact = "lifecycle-runtime-ktx", version = "2.3.0-alpha05")
+        val LIVEDATA_KTX = androidx(group = "lifecycle", artifact = "lifecycle-livedata-ktx", version = "2.3.0-alpha05")
+        val VIEWMODEL_KTX = androidx(group = "lifecycle", artifact = "lifecycle-viewmodel-ktx", version = "2.3.0-alpha05")
         val ANNOTATIONS = androidx("annotation", version = "1.1.0")
         val RECYCLERVIEW = androidx(artifact = "recyclerview", version = "1.2.0-alpha03")
         val SWIPE_REFRESH_LAYOUT = androidx(artifact = "swiperefreshlayout", version = "1.1.0-rc01")
@@ -64,6 +73,8 @@ object Dependencies {
         val COMPOSE_MATERIAL = androidx(group = "ui", artifact = "ui-material", version = Versions.COMPOSE)
 
         val VIEWBINDING = androidx(group="databinding", artifact = "viewbinding", version = "4.1.0-alpha09")
+
+        val WORK = androidx(group = "work", artifact = "work-runtime-ktx", version = Versions.AX_WORK)
     }
 
     object Bma {
@@ -88,6 +99,15 @@ object Dependencies {
         val COMPILER = dagger("dagger-compiler")
         val ANNOTATION_PROCESSOR = dagger("dagger-android-processor")
         val SPI = dagger("dagger-spi")
+    }
+
+    object Hilt {
+        val LIFECYCLE_VIEWMODEL = hiltAX("hilt-lifecycle-viewmodel")
+        val CORE = hilt("hilt-android")
+        val WORK = hiltAX("hilt-work")
+
+        val KAPT = hilt("hilt-android-compiler")
+        val AX_KAPT = hiltAX("hilt-compiler")
     }
 
     object Glide {
@@ -147,10 +167,18 @@ object Dependencies {
         object AndroidX {
             val CORE = androidx(group = "test", artifact = "core", version = "1.3.0-beta02")
             val RUNNER = androidx(group = "test", artifact = "runner", version = "1.3.0-beta02")
-            val ESPRESSO = androidx(group = "test.espresso", artifact = "espresso-core", version = "3.3.0-beta02")
+//            val ESPRESSO = androidx(group = "test.espresso", artifact = "espresso-core", version = "3.3.0-beta02")
             val LIVEDATA = androidx(group = "arch.core", artifact = "core-testing", version = "2.1.0")
             val RULES = androidx(group = "test", artifact = "rules", version = "1.2.0")
+            object Espresso {
+                val CORE = espresso("espresso-core")
+                val CONTRIB = espresso("espresso-contrib")
+                val INTENTS = espresso("espresso-intents")
+                val ACCESSIBILITY = espresso("espresso-accessibility")
+            }
         }
+
+
 
         val BMA_TESTING = bma("testing")
         val MOCKITO = dependency("org.mockito", "mockito-core", "3.3.3")

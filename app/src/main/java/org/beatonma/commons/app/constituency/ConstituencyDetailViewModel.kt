@@ -1,16 +1,18 @@
 package org.beatonma.commons.app.constituency
 
 import android.content.Context
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MapStyleOptions
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.beatonma.commons.CommonsApplication
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.colors.PartyColors
 import org.beatonma.commons.app.ui.colors.getTheme
+import org.beatonma.commons.commonsApp
 import org.beatonma.commons.context
 import org.beatonma.commons.data.IoResult
 import org.beatonma.commons.data.LiveDataIoResult
@@ -28,14 +30,13 @@ import org.beatonma.commons.data.parse.KmlParser
 import org.beatonma.commons.kotlin.data.Color
 import org.beatonma.commons.kotlin.extensions.dp
 import org.beatonma.commons.kotlin.extensions.stringCompat
-import javax.inject.Inject
 
 private const val MAP_OUTLINE_WIDTH_DP = 2F
 
-class ConstituencyDetailViewModel @Inject constructor(
+class ConstituencyDetailViewModel @ViewModelInject constructor(
     private val repository: ConstituencyRepository,
-    application: CommonsApplication,
-): AndroidViewModel(application) {
+    @ApplicationContext application: Context,
+): AndroidViewModel(application.commonsApp) {
 
     private lateinit var constituencyLiveData: LiveDataIoResult<CompleteConstituency>
     private val geometryLiveData: MutableLiveData<Geometry> = MutableLiveData()

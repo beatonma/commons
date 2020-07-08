@@ -1,14 +1,17 @@
 package org.beatonma.commons.app.division
 
+import android.content.Context
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
-import org.beatonma.commons.CommonsApplication
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.Snippet
 import org.beatonma.commons.app.ui.SnippetGeneratorAndroidViewModel
 import org.beatonma.commons.app.ui.views.BarChartCategory
+import org.beatonma.commons.commonsApp
 import org.beatonma.commons.data.IoResult
 import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.repository.DivisionRepository
@@ -17,12 +20,11 @@ import org.beatonma.commons.data.core.room.entities.division.DivisionWithVotes
 import org.beatonma.commons.data.core.room.entities.division.Vote
 import org.beatonma.commons.data.core.room.entities.member.House
 import org.beatonma.commons.kotlin.extensions.colorCompat
-import javax.inject.Inject
 
-class DivisionDetailViewModel @Inject constructor(
+class DivisionDetailViewModel @ViewModelInject constructor(
     private val repository: DivisionRepository,
-    application: CommonsApplication,
-) : SnippetGeneratorAndroidViewModel<DivisionWithVotes>(application) {
+    @ApplicationContext application: Context,
+) : SnippetGeneratorAndroidViewModel<DivisionWithVotes>(application.commonsApp) {
 
     private val votesObserver = Observer<IoResult<DivisionWithVotes>> {
         viewModelScope.launch {

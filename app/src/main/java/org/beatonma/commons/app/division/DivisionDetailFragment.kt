@@ -1,6 +1,5 @@
 package org.beatonma.commons.app.division
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +7,7 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
+import dagger.hilt.android.AndroidEntryPoint
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.BaseViewmodelFragment
 import org.beatonma.commons.app.ui.colors.colorResId
@@ -26,13 +26,14 @@ import org.beatonma.commons.kotlin.extensions.*
 
 private const val TAG = "DivisionProfileFragment"
 
+@AndroidEntryPoint
 class DivisionDetailFragment : BaseViewmodelFragment() {
     companion object {
         const val HOUSE = "house"
     }
 
     private lateinit var binding: FragmentDivisionProfileBinding
-    private val viewmodel: DivisionDetailViewModel by viewModels { viewmodelFactory }
+    private val viewmodel: DivisionDetailViewModel by viewModels()
     private val adapter = VotesAdapter()
 
     private fun getDivisionFromBundle(): Pair<House, ParliamentID>? {
@@ -43,8 +44,8 @@ class DivisionDetailFragment : BaseViewmodelFragment() {
         return Pair(house, parliamentdotuk)
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         val division = getDivisionFromBundle() ?: return
         viewmodel.forDivision(division.first, division.second)
     }

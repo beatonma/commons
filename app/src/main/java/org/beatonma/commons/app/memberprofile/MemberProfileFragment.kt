@@ -1,6 +1,5 @@
 package org.beatonma.commons.app.memberprofile
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +8,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -38,6 +38,7 @@ import org.beatonma.commons.kotlin.extensions.*
 
 private const val TAG = "MemberProfileFrag"
 
+@AndroidEntryPoint
 class MemberProfileFragment : BaseViewmodelFragment(),
     Themed,
     OnBackPressed,
@@ -46,8 +47,8 @@ class MemberProfileFragment : BaseViewmodelFragment(),
 
     private lateinit var binding: FragmentMemberProfileBinding
 
-    private val viewmodel: MemberProfileViewModel by viewModels { viewmodelFactory }
-    override val socialViewModel: SocialViewModel by activityViewModels{ viewmodelFactory }
+    private val viewmodel: MemberProfileViewModel by viewModels()
+    override val socialViewModel: SocialViewModel by activityViewModels()
 
     override lateinit var socialViewController: SocialViewController
 
@@ -66,8 +67,8 @@ class MemberProfileFragment : BaseViewmodelFragment(),
 
     private fun getMemberIdFromBundle(): ParliamentID = arguments?.getInt(PARLIAMENTDOTUK) ?: 0
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         viewmodel.forMember(getMemberIdFromBundle())
     }
 
@@ -120,7 +121,6 @@ class MemberProfileFragment : BaseViewmodelFragment(),
 
     private fun updateUI(member: CompleteMember) {
         applyUiTheme(context?.getPartyTheme(member.party?.parliamentdotuk))
-//        applyUiTheme(member.party?.getTheme(context))
 
         binding.portrait.load(member.profile?.portraitUrl)
 

@@ -1,6 +1,5 @@
 package org.beatonma.commons.app.constituency
 
-import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -8,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.BaseViewmodelFragment
 import org.beatonma.commons.app.ui.colors.getPartyTheme
@@ -33,10 +33,10 @@ const val ELECTION_ID = "election_id"
 private data class BundleData(val constituencyId: ParliamentID, val electionId: ParliamentID)
 
 
+@AndroidEntryPoint
 class ConstituencyElectionResultsFragment : BaseViewmodelFragment() {
-
     private lateinit var binding: FragmentConstituencyElectionResultsBinding
-    private val viewmodel: ConstituencyElectionResultsViewModel by viewModels { viewmodelFactory }
+    private val viewmodel: ConstituencyElectionResultsViewModel by viewModels()
     private val adapter = CandidatesAdapter()
 
     private fun getConstituencyAndElectionFromBundle(): BundleData? {
@@ -46,9 +46,8 @@ class ConstituencyElectionResultsFragment : BaseViewmodelFragment() {
         )
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        // Get values from arguments
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         val data = getConstituencyAndElectionFromBundle()
         if (data == null) {
             Log.w(TAG, "Failed to get constituency,election IDs from bundle!")
@@ -129,6 +128,7 @@ class ConstituencyElectionResultsFragment : BaseViewmodelFragment() {
                 private val vh = ItemConstituencyCandidateBinding.bind(itemView)
 
                 override fun bind(item: CandidateData) {
+                    Log.d(TAG, "bind $item")
                     val candidate = (item as? Candidate)?.candidate ?: return
                     val theme = context.getPartyTheme(PartyResolution.getPartyId(candidate.partyName))
 

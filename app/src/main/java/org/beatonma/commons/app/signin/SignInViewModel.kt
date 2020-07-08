@@ -1,12 +1,14 @@
 package org.beatonma.commons.app.signin
 
+import android.content.Context
 import android.util.Log
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.AndroidViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
-import org.beatonma.commons.CommonsApplication
+import dagger.hilt.android.qualifiers.ApplicationContext
 import org.beatonma.commons.commonsApp
 import org.beatonma.commons.data.LiveDataIoResult
 import org.beatonma.commons.data.core.repository.UserAccount
@@ -14,7 +16,6 @@ import org.beatonma.commons.data.core.repository.UserRepository
 import org.beatonma.commons.data.core.repository.toUserAccount
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.kotlin.extensions.dump
-import javax.inject.Inject
 
 private const val TAG = "SignInViewModel"
 
@@ -22,10 +23,10 @@ private const val TAG = "SignInViewModel"
  * Return the registered snommoc.org user token for the current signed-in user, or null if
  * it is not available.
  */
-class SignInViewModel @Inject constructor(
+class SignInViewModel @ViewModelInject constructor(
     private val repository: UserRepository,
-    application: CommonsApplication,
-): AndroidViewModel(application) {
+    @ApplicationContext application: Context,
+): AndroidViewModel(application.commonsApp) {
 
     var activeToken: LiveDataIoResult<UserToken>? = null
 

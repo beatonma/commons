@@ -11,6 +11,7 @@ plugins {
     kotlin("kapt")
     id("kotlin-android")
     id("kotlin-android-extensions")
+    id("dagger.hilt.android.plugin")
     id("com.github.ben-manes.versions")
 }
 
@@ -148,7 +149,8 @@ dependencies {
         Dependencies.Test.AndroidX.CORE,
         Dependencies.Test.AndroidX.RULES,
         Dependencies.Test.AndroidX.RUNNER,
-        Dependencies.Test.AndroidX.ESPRESSO,
+        Dependencies.Test.AndroidX.Espresso.CORE,
+        Dependencies.Test.AndroidX.Espresso.CONTRIB,
         Dependencies.Test.AndroidX.LIVEDATA
     ).forEach { androidTestImplementation(it) }
 
@@ -163,13 +165,20 @@ dependencies {
         Dependencies.Dagger.COMPILER,
         Dependencies.Dagger.ANNOTATION_PROCESSOR,
         Dependencies.Room.AP,
-        Dependencies.Glide.COMPILER
+        Dependencies.Glide.COMPILER,
+        Dependencies.Hilt.KAPT,
+        Dependencies.Hilt.AX_KAPT
     )
 
     val dagger = arrayOf(
         Dependencies.Dagger.DAGGER,
         Dependencies.Dagger.ANDROID,
         Dependencies.Dagger.SUPPORT
+    )
+    val hilt = arrayOf(
+        Dependencies.Hilt.CORE,
+        Dependencies.Hilt.LIFECYCLE_VIEWMODEL,
+        Dependencies.Hilt.WORK
     )
 
     val room = arrayOf(
@@ -186,7 +195,8 @@ dependencies {
         Dependencies.AndroidX.LIVEDATA_KTX,
         Dependencies.AndroidX.VIEWMODEL_KTX,
         Dependencies.AndroidX.NAVIGATION_UI,
-        Dependencies.AndroidX.NAVIGATION_FRAGMENT
+        Dependencies.AndroidX.NAVIGATION_FRAGMENT,
+        Dependencies.AndroidX.WORK
     )
 
     val compose = arrayOf(
@@ -217,6 +227,7 @@ dependencies {
         androidx,
 //        compose,
         dagger,
+        hilt,
         google,
         kotlin,
         glide,

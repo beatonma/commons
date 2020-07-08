@@ -1,17 +1,18 @@
 package org.beatonma.commons.app.memberprofile
 
+import android.content.Context
 import androidx.annotation.VisibleForTesting
-import org.beatonma.commons.CommonsApplication
+import androidx.hilt.lifecycle.ViewModelInject
+import dagger.hilt.android.qualifiers.ApplicationContext
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.Snippet
 import org.beatonma.commons.app.ui.SnippetGeneratorAndroidViewModel
 import org.beatonma.commons.app.ui.data.WeblinkData
 import org.beatonma.commons.app.ui.toSnippets
+import org.beatonma.commons.commonsApp
 import org.beatonma.commons.data.LiveDataIoResultList
 import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.CompleteMember
-import org.beatonma.commons.data.core.interfaces.Dated
-import org.beatonma.commons.data.core.interfaces.Periodic
 import org.beatonma.commons.data.core.interfaces.Temporal
 import org.beatonma.commons.data.core.interfaces.compressConsecutiveItems
 import org.beatonma.commons.data.core.repository.MemberRepository
@@ -21,19 +22,16 @@ import org.beatonma.commons.kotlin.extensions.dateRange
 import org.beatonma.commons.kotlin.extensions.formatted
 import org.beatonma.commons.kotlin.extensions.openUrl
 import org.beatonma.commons.kotlin.extensions.stringCompat
-import java.time.LocalDate
-import javax.inject.Inject
 
 private const val TAG = "MemberProfViewModel"
 
 class MemberProfileViewModel
-@Inject constructor(
+@ViewModelInject constructor(
     private val repository: MemberRepository,
-    application: CommonsApplication,
-) : SnippetGeneratorAndroidViewModel<CompleteMember>(application) {
+    @ApplicationContext application: Context,
+) : SnippetGeneratorAndroidViewModel<CompleteMember>(application.commonsApp) {
 
     lateinit var memberVoteLiveData: LiveDataIoResultList<VoteWithDivision>
-
 
     fun forMember(parliamentdotuk: ParliamentID) {
         liveData = repository.observeMember(parliamentdotuk)
@@ -193,12 +191,22 @@ class MemberProfileViewModel
 }
 
 
-private suspend fun constructHistoryOf(member: CompleteMember): List<HistoryItem<*>> {
-    fun <T : Temporal> MutableList<HistoryItem<*>>.addEvents(items: List<T>?) {
-        if (items != null) addAll(items.map { HistoryItem(it) })
+private suspend fun constructHistoryOf(member: CompleteMember): List<Temporal> {
+    fun <T : Temporal> MutableList<Temporal>.addEvents(items: List<T>?) {
+        if (items != null) {
+            addAll(
+                items.mapNotNull {
+                    try {
+                        it
+                    } catch(e: Exception) {
+                        null
+                    }
+                }
+            )
+        }
     }
 
-    return mutableListOf<HistoryItem<*>>().apply {
+    return mutableListOf<Temporal>().apply {
         addEvents(member.posts)
         addEvents(member.houses)
         addEvents(member.experiences)
@@ -207,7 +215,7 @@ private suspend fun constructHistoryOf(member: CompleteMember): List<HistoryItem
         addEvents(member.committees)
         addEvents(member.financialInterests)
 
-        sortBy { it.start }
+        sortBy { it.startOf() }
     }
 }
 
@@ -241,16 +249,3 @@ suspend fun compressConstituencies(constituencies: List<HistoricalConstituencyWi
             )
         }
     )
-
-data class HistoryItem<T: Temporal>(
-    val item: T,
-    override val start: LocalDate? = when (item) {
-        is Periodic -> item.start
-        is Dated -> item.date
-        else -> null
-    },
-    override val end: LocalDate? = when (item) {
-        is Periodic -> item.end
-        else -> null
-    }
-): Periodic

@@ -3,31 +3,24 @@ package org.beatonma.commons
 import android.app.Activity
 import android.app.Application
 import android.content.Context
-import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.AndroidViewModel
-import dagger.android.AndroidInjector
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasAndroidInjector
+import dagger.hilt.android.HiltAndroidApp
 import org.beatonma.commons.app.SystemTheme
-import org.beatonma.commons.app.dagger.AppInjector
 import org.beatonma.commons.kotlin.extensions.getPrefs
-import javax.inject.Inject
+import android.content.res.Configuration as ResConfiguration
 
+private const val TAG = "CommonsApp"
 
-class CommonsApplication : Application(), HasAndroidInjector {
-    @Inject lateinit var androidInjector: DispatchingAndroidInjector<Any>
+@HiltAndroidApp
+class CommonsApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
 
-        AppInjector.init(this)
-
         initTheme()
     }
-
-    override fun androidInjector(): AndroidInjector<Any> = androidInjector
 
     private fun initTheme() {
         val forceNight = getPrefs(SystemTheme.THEME_PREFS)
@@ -42,25 +35,29 @@ class CommonsApplication : Application(), HasAndroidInjector {
     }
 
     fun isNightMode(): Boolean {
-        val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        val currentNightMode = resources.configuration.uiMode and ResConfiguration.UI_MODE_NIGHT_MASK
         return when (currentNightMode) {
-            Configuration.UI_MODE_NIGHT_YES -> true
-            Configuration.UI_MODE_NIGHT_NO -> false
+            ResConfiguration.UI_MODE_NIGHT_YES -> true
+            ResConfiguration.UI_MODE_NIGHT_NO -> false
             else -> false
         }
+    }
+
+    fun scheduleDatabaseCleanup() {
+
     }
 }
 
 val Activity.commonsApp: CommonsApplication
     get() = application as CommonsApplication
 
-val Context.commonsApp: CommonsApplication?
-    get() = applicationContext as? CommonsApplication
+val Context.commonsApp: CommonsApplication
+    get() = applicationContext as CommonsApplication
 
 val Fragment.commonsApp: CommonsApplication?
     get() = context?.commonsApp
 
-fun Context.isNightMode() = commonsApp?.isNightMode() ?: false
+fun Context.isNightMode() = commonsApp.isNightMode()
 
 val AndroidViewModel.context: Context
     get() = getApplication()

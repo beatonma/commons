@@ -22,7 +22,7 @@ import org.beatonma.commons.kotlin.extensions.snackbar
 
 @Deprecated("Use [SocialViewHost] and [SocialViewController] instead for usable transition animations.")
 abstract class BaseSocialFragment: BaseViewmodelFragment(), SocialUiComponent {
-    protected val viewmodel: SocialViewModel by activityViewModels { viewmodelFactory }
+    protected val viewmodel: SocialViewModel by activityViewModels()
 
     protected val observer = Observer<IoResult<SocialContent>> { result ->
         if (result is NetworkError) networkErrorSnackbar(result.error)

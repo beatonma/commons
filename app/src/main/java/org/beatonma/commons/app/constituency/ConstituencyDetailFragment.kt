@@ -1,7 +1,6 @@
 package org.beatonma.commons.app.constituency
 
 import android.Manifest
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,6 +13,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.LatLngBounds
+import dagger.hilt.android.AndroidEntryPoint
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.BaseViewmodelFragment
 import org.beatonma.commons.app.ui.colors.PartyColors
@@ -36,10 +36,11 @@ private const val CAMERA_PADDING_DP = 64
 private const val VIEW_TYPE_FIRST = 1
 private const val VIEW_TYPE_HEADER = 345
 
+@AndroidEntryPoint
 class ConstituencyDetailFragment : BaseViewmodelFragment(), ViewTreeObserver.OnGlobalLayoutListener {
 
     private lateinit var binding: FragmentConstituencyDetailBinding
-    private val viewmodel: ConstituencyDetailViewModel by viewModels { viewmodelFactory }
+    private val viewmodel: ConstituencyDetailViewModel by viewModels()
     private var constituencyId: ParliamentID = 0
 
     private val resultsAdapter = ElectionResultsAdapter()
@@ -50,8 +51,8 @@ class ConstituencyDetailFragment : BaseViewmodelFragment(), ViewTreeObserver.OnG
     private fun getConstituencyFromBundle(): ParliamentID? =
         arguments?.getInt(PARLIAMENTDOTUK)
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         val parliamentdotuk = getConstituencyFromBundle()
         if (parliamentdotuk == null) {
             Log.w(TAG, "Failed to get constituency ID from bundle!")
@@ -74,8 +75,6 @@ class ConstituencyDetailFragment : BaseViewmodelFragment(), ViewTreeObserver.OnG
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.mapview.viewTreeObserver.addOnGlobalLayoutListener(this)
-
         binding.electionResultsRecyclerview.setup(resultsAdapter)
 
         viewmodel.liveData.observe(viewLifecycleOwner) {
@@ -83,6 +82,8 @@ class ConstituencyDetailFragment : BaseViewmodelFragment(), ViewTreeObserver.OnG
             updateGeometryUi(it.geometry, it.theme)
             resultsAdapter.items = it.electionResults
         }
+
+        binding.mapview.viewTreeObserver.addOnGlobalLayoutListener(this)
     }
 
     override fun onGlobalLayout() {
@@ -94,7 +95,7 @@ class ConstituencyDetailFragment : BaseViewmodelFragment(), ViewTreeObserver.OnG
         mapView.getMapAsync { map ->
             gMap = map
 
-            map.moveCameraTo(viewmodel.getUkBounds())
+//            map.moveCameraTo(viewmodel.getUkBounds())
 
             context?.ifPermissionAvailable(Manifest.permission.ACCESS_COARSE_LOCATION) {
                 try {
@@ -239,7 +240,7 @@ class ConstituencyDetailFragment : BaseViewmodelFragment(), ViewTreeObserver.OnG
                     )
 
                     portrait.load(profile.portraitUrl)
-                    theme.also { accent.setBackgroundColor(it.primary) }
+                    accent.setBackgroundColor(theme.primary)
                 }
 
                 itemView.setOnClickListener { view ->
@@ -265,7 +266,7 @@ class ConstituencyDetailFragment : BaseViewmodelFragment(), ViewTreeObserver.OnG
                         linkColor = theme.accent,
                     )
 
-                    theme.also { accent.setBackgroundColor(it.primary) }
+                    accent.setBackgroundColor(theme.primary)
                 }
 
                 itemView.setOnClickListener { view ->

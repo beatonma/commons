@@ -4,9 +4,10 @@ import android.location.Geocoder
 import android.util.Log
 import androidx.core.location.component1
 import androidx.core.location.component2
-import androidx.lifecycle.AndroidViewModel
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import kotlinx.coroutines.Dispatchers
@@ -14,21 +15,18 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import org.beatonma.commons.CommonsApplication
-import org.beatonma.commons.data.CommonsRemoteDataSourceImpl
+import org.beatonma.commons.data.CommonsRemoteDataSource
 import org.beatonma.commons.data.SuccessResult
 import org.beatonma.commons.data.core.search.MemberSearchResult
 import org.beatonma.commons.data.core.search.SearchResult
-import javax.inject.Inject
 
 private const val TAG = "SearchViewModel"
 
-class SearchViewModel @Inject constructor(
-    application: CommonsApplication,
-    private val dataSource: CommonsRemoteDataSourceImpl,
+class SearchViewModel @ViewModelInject constructor(
+    private val dataSource: CommonsRemoteDataSource,
     private val locationProvider: FusedLocationProviderClient,
     private val geocoder: Geocoder
-) : AndroidViewModel(application) {
+) : ViewModel() {
 
     private var networkJob: Job? = null
     val resultLiveData = MutableLiveData<List<SearchResult>>()

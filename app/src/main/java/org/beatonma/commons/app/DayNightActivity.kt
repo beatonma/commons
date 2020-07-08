@@ -2,8 +2,8 @@ package org.beatonma.commons.app
 
 import android.content.Context
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
-import dagger.android.support.DaggerAppCompatActivity
 import org.beatonma.commons.kotlin.extensions.getPrefs
 
 object SystemTheme {
@@ -11,7 +11,7 @@ object SystemTheme {
     const val UI_FORCE_DARK_THEME = "force_dark_theme"
 }
 
-abstract class DayNightActivity: DaggerAppCompatActivity() {
+abstract class DayNightActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

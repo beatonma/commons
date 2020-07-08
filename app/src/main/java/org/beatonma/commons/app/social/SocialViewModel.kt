@@ -1,10 +1,13 @@
 package org.beatonma.commons.app.social
 
+import android.content.Context
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.AndroidViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import org.beatonma.commons.BuildConfig
-import org.beatonma.commons.CommonsApplication
 import org.beatonma.commons.annotations.SignInRequired
+import org.beatonma.commons.commonsApp
 import org.beatonma.commons.context
 import org.beatonma.commons.data.IoResult
 import org.beatonma.commons.data.LiveDataIoResult
@@ -15,15 +18,14 @@ import org.beatonma.commons.data.core.social.CreatedComment
 import org.beatonma.commons.data.core.social.CreatedVote
 import org.beatonma.commons.data.core.social.SocialContent
 import org.beatonma.commons.data.core.social.SocialVoteType
-import javax.inject.Inject
 
 private const val TAG = "SocialViewModel"
 
-class SocialViewModel @Inject constructor(
+class SocialViewModel @ViewModelInject constructor(
     private val userRepository: UserRepository,
     private val socialRepository: SocialRepository,
-    application: CommonsApplication,
-): AndroidViewModel(application) {
+    @ApplicationContext application: Context,
+): AndroidViewModel(application.commonsApp) {
 
     lateinit var livedata: LiveDataIoResult<SocialContent>
     lateinit var socialTarget: SocialTarget
