@@ -76,6 +76,8 @@ abstract class CommonsDatabase : RoomDatabase() {
     abstract fun constituencyDao(): ConstituencyDao
     abstract fun divisionDao(): DivisionDao
     abstract fun userDao(): UserDao
+
+    abstract fun memberCleanupDao(): MemberCleanupDao
 }
 
 const val COMMONS_DB_FILENAME = "commons.db"

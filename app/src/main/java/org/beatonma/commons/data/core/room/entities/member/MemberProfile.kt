@@ -42,14 +42,18 @@ data class MemberProfile(
     @field:Json(name = "gender") @ColumnInfo(name = "gender") val gender: String? = null,
     @Embedded(prefix = "birth_") @field:Json(name = "place_of_birth") val placeOfBirth: Town? = null,
     @field:Json(name = "portrait") @ColumnInfo(name = "portrait_url") val portraitUrl: String? = null,
-    @field:Json(name = "current_post") @ColumnInfo(name = "current_post") val currentPost: String? = null
+    @field:Json(name = "current_post") @ColumnInfo(name = "current_post") val currentPost: String? = null,
+
+    @ColumnInfo(name = Timestamped.FIELD_ACCESSED_AT) override var accessedAt: Long = System.currentTimeMillis(),
+    @ColumnInfo(name = Timestamped.FIELD_CREATED_AT) override var createdAt: Long = System.currentTimeMillis(),
+
 ) : Parliamentdotuk,
     Named,
     Periodic,
     Commentable,
-    Votable
+    Votable,
+    Timestamped
 {
-
     override fun getSocialContentTarget(): SocialTargetType = SocialTargetType.member
 
     @Ignore override val start: LocalDate? = dateOfBirth

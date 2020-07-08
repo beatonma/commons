@@ -5,7 +5,8 @@ import androidx.room.*
 import org.beatonma.commons.data.LiveDataList
 import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.ApiCompleteMember
-import org.beatonma.commons.data.core.CompleteMember
+import org.beatonma.commons.data.core.interfaces.markAccessed
+import org.beatonma.commons.data.core.interfaces.markAllAccessed
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import org.beatonma.commons.data.core.room.entities.division.VoteWithDivision
 import org.beatonma.commons.data.core.room.entities.election.Election
@@ -18,10 +19,6 @@ interface MemberDao {
     @Transaction
     @Query("""SELECT * FROM featured_members""")
     fun getFeaturedProfiles(): LiveDataList<FeaturedMemberProfile>
-
-    @Transaction
-    @Query("""SELECT * FROM member_profiles WHERE member_profiles.parliamentdotuk = :parliamentdotuk""")
-    fun getCompleteMember(parliamentdotuk: ParliamentID): LiveData<CompleteMember>
 
     @Query("""SELECT * FROM member_profiles WHERE member_profiles.parliamentdotuk = :parliamentdotuk""")
     fun getMemberProfile(parliamentdotuk: ParliamentID): LiveData<MemberProfile>
@@ -149,10 +146,15 @@ interface MemberDao {
     suspend fun insertPartyAssociations(partyAssociations: List<PartyAssociation>)
 
     /**
-     * Delete everything related to a Person via ForeignKey cascading
+     * Retrieve the profile and update its accessed_at timestamp.
      */
-    @Delete
-    suspend fun deleteProfile(profile: MemberProfile)
+    suspend fun getMemberProfileTimestamped(parliamentdotuk: ParliamentID): LiveData<MemberProfile> {
+        val result = getMemberProfile(parliamentdotuk)
+
+        safeInsertProfile(result.value)
+
+        return result
+    }
 
     @Transaction
     suspend fun insertCompleteMember(parliamentdotuk: ParliamentID, member: ApiCompleteMember) {
@@ -166,7 +168,7 @@ interface MemberDao {
             insertConstituencyIfNotExists(member.profile.constituency)
         }
 
-        insertProfile(member.profile)
+        safeInsertProfile(member.profile)
 
         insertPhysicalAddresses(
             member.addresses.physical.map { it.copy(memberId = parliamentdotuk) }
@@ -213,6 +215,7 @@ interface MemberDao {
         insertPartyAssociations(member.parties.map {it.toPartyAssociation(parliamentdotuk) })
     }
 
+    @Transaction
     suspend fun safeInsertProfile(profile: MemberProfile?, ifNotExists: Boolean = false) {
         profile ?: return
 
@@ -224,22 +227,23 @@ interface MemberDao {
         insertPartyIfNotExists(profile.party)
 
         if (ifNotExists) {
-            insertProfileIfNotExists(profile)
+            insertProfileIfNotExists(profile.markAccessed())
         }
         else {
-            insertProfile(profile)
+            insertProfile(profile.markAccessed())
         }
     }
 
+    @Transaction
     suspend fun safeInsertProfiles(profiles: List<MemberProfile>, ifNotExists: Boolean = false) {
         insertConstituenciesIfNotExists(profiles.mapNotNull { it.constituency })
         insertPartiesIfNotExists(profiles.map { it.party })
 
         if (ifNotExists) {
-            insertProfilesIfNotExists(profiles)
+            insertProfilesIfNotExists(profiles.markAllAccessed())
         }
         else {
-            insertProfiles(profiles)
+            insertProfiles(profiles.markAllAccessed())
         }
     }
 }

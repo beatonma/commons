@@ -21,6 +21,7 @@ import org.beatonma.commons.app.ui.navigation.OnBackPressed
 import org.beatonma.commons.app.ui.recyclerview.LoadingAdapter
 import org.beatonma.commons.app.ui.recyclerview.setup
 import org.beatonma.commons.app.ui.recyclerview.viewholder.StaticViewHolder
+import org.beatonma.commons.commonsApp
 import org.beatonma.commons.data.core.search.MemberSearchResult
 import org.beatonma.commons.data.core.search.SearchResult
 import org.beatonma.commons.databinding.ActivityNavhostMainBinding
@@ -159,6 +160,11 @@ class MainActivity : DayNightActivity() , SearchHost {
         searchView.onActionViewCollapsed()
         binding.mainActivityMotion.transitionToState(R.id.hide_search_results)
         navController.navigate(searchResult.toUri())
+    }
+
+    override fun onDestroy() {
+        commonsApp.scheduleDatabaseCleanup()
+        super.onDestroy()
     }
 
     inner class SearchResultsAdapter : LoadingAdapter<SearchResult>(

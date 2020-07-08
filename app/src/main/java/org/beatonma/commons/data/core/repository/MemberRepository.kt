@@ -46,7 +46,7 @@ class MemberRepository @Inject constructor(
     )
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun observeCompleteMember(parliamentdotuk: ParliamentID): LiveData<CompleteMember> =
+    suspend fun observeCompleteMember(parliamentdotuk: ParliamentID): LiveData<CompleteMember> =
         observeComplete(
             CompleteMember(),
             updatePredicate = { m ->
@@ -65,7 +65,7 @@ class MemberRepository @Inject constructor(
                 )
             },
         ) { member ->
-            addSource(memberDao.getMemberProfile(parliamentdotuk)) { profile ->
+            addSource(memberDao.getMemberProfileTimestamped(parliamentdotuk)) { profile ->
                 member.update({ it.profile != profile }) { copy(profile = profile) }
             }
             addSource(memberDao.getPhysicalAddresses(parliamentdotuk)) { addresses ->
