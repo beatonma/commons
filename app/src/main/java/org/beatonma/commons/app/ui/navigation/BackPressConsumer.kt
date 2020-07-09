@@ -1,6 +1,6 @@
 package org.beatonma.commons.app.ui.navigation
 
-interface OnBackPressed {
+interface BackPressConsumer {
     /**
      * Return true if the action is consumed
      */
