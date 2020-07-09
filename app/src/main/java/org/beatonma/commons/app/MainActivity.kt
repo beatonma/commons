@@ -8,19 +8,22 @@ import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.viewModels
+import androidx.annotation.IdRes
 import androidx.appcompat.widget.SearchView
 import androidx.core.net.toUri
+import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import org.beatonma.commons.R
+import org.beatonma.commons.app.search.SearchEnabled
 import org.beatonma.commons.app.search.SearchHost
 import org.beatonma.commons.app.search.SearchViewModel
-import org.beatonma.commons.app.ui.navigation.OnBackPressed
+import org.beatonma.commons.app.ui.navigation.BackPressConsumer
 import org.beatonma.commons.app.ui.recyclerview.LoadingAdapter
 import org.beatonma.commons.app.ui.recyclerview.setup
-import org.beatonma.commons.app.ui.recyclerview.viewholder.StaticViewHolder
+import org.beatonma.commons.app.ui.recyclerview.viewholder.staticViewHolderOf
 import org.beatonma.commons.commonsApp
 import org.beatonma.commons.data.core.search.MemberSearchResult
 import org.beatonma.commons.data.core.search.SearchResult
@@ -35,7 +38,7 @@ import org.beatonma.commons.network.retrofit.CommonsService
 private const val TAG = "MainActivity"
 
 @AndroidEntryPoint
-class MainActivity : DayNightActivity() , SearchHost {
+class MainActivity : DayNightActivity(), SearchHost {
 
     override val searchViewModel: SearchViewModel by viewModels()
 
@@ -44,6 +47,13 @@ class MainActivity : DayNightActivity() , SearchHost {
 
     override val searchAdapter = SearchResultsAdapter()
     lateinit var navController: NavController
+
+    private val destinationChangedListener = {
+        when (getContentFragment()) {
+            is SearchEnabled -> enableSearch()
+            else -> disableSearch()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,10 +96,9 @@ class MainActivity : DayNightActivity() , SearchHost {
     }
 
     override fun onBackPressed() {
-        val fragment = supportFragmentManager.primaryNavigationFragment  // Nav host fragment
-            ?.childFragmentManager?.primaryNavigationFragment  // Foreground fragment
+        val fragment = getContentFragment()
 
-        if (fragment is OnBackPressed) {
+        if (fragment is BackPressConsumer) {
             if (fragment.onBackPressed()) {
                 // Back press consumed by fragment
                 return
@@ -112,6 +121,14 @@ class MainActivity : DayNightActivity() , SearchHost {
         searchViewModel.resultLiveData.observe(this@MainActivity) { results ->
             searchAdapter.items = results
         }
+    }
+
+    /**
+     * Return the fragment that is currently the navController destination.
+     */
+    private fun getContentFragment(): Fragment? {
+        return supportFragmentManager.primaryNavigationFragment  // Nav host fragment
+            ?.childFragmentManager?.primaryNavigationFragment  // Foreground fragment
     }
 
     private fun handleIntent(intent: Intent) {
@@ -138,12 +155,20 @@ class MainActivity : DayNightActivity() , SearchHost {
         // TODO
     }
 
+    override fun enableSearch() {
+        transitionToState(R.id.hide_search_results)
+    }
+
+    override fun disableSearch() {
+        transitionToState(R.id.disable_search)
+    }
+
     override fun isSearchUiVisible(): Boolean {
         return binding.mainActivityMotion.currentState == R.id.show_search_results
     }
 
     override fun showSearch() {
-        binding.mainActivityMotion.transitionToState(R.id.show_search_results)
+        transitionToState(R.id.show_search_results)
     }
 
     override fun hideSearch() {
@@ -153,18 +178,36 @@ class MainActivity : DayNightActivity() , SearchHost {
     }
 
     override fun onSearchViewClosed() {
-        binding.mainActivityMotion.transitionToState(R.id.hide_search_results)
+        transitionToState(R.id.hide_search_results)
     }
 
     override fun openSearchResult(searchResult: SearchResult) {
         searchView.onActionViewCollapsed()
-        binding.mainActivityMotion.transitionToState(R.id.hide_search_results)
+        transitionToState(R.id.hide_search_results)
         navController.navigate(searchResult.toUri())
+    }
+
+    override fun onPause() {
+        super.onPause()
+        supportFragmentManager.primaryNavigationFragment  // Nav host fragment
+            ?.childFragmentManager?.removeOnBackStackChangedListener(destinationChangedListener)
+//        navController.removeOnDestinationChangedListener(destinationChangedListener)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        supportFragmentManager.primaryNavigationFragment  // Nav host fragment
+            ?.childFragmentManager?.addOnBackStackChangedListener(destinationChangedListener)
+//        navController.addOnDestinationChangedListener(destinationChangedListener)
     }
 
     override fun onDestroy() {
         commonsApp.scheduleDatabaseCleanup()
         super.onDestroy()
+    }
+
+    private fun transitionToState(@IdRes stateId: Int) {
+        binding.mainActivityMotion.transitionToState(stateId)
     }
 
     inner class SearchResultsAdapter : LoadingAdapter<SearchResult>(
@@ -194,15 +237,12 @@ class MainActivity : DayNightActivity() , SearchHost {
             }
 
         override fun getNullViewHolder(view: View): RecyclerView.ViewHolder =
-            object : StaticViewHolder(view) {
-                init {
-                    itemView.setOnClickListener {
-                        findMemberForCurrentLocation()
-                    }
+            staticViewHolderOf(view) {
+                itemView.setOnClickListener {
+                    findMemberForCurrentLocation()
                 }
             }
 
-        override fun getEmptyViewHolder(view: View): RecyclerView.ViewHolder =
-            object : StaticViewHolder(view) {}
+        override fun getEmptyViewHolder(view: View): RecyclerView.ViewHolder = staticViewHolderOf(view)
     }
 }

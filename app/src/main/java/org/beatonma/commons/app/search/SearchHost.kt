@@ -21,8 +21,27 @@ interface SearchHost {
     fun findMemberForCurrentLocation()
     fun showPermissionDenied(permission: String)
     fun isSearchUiVisible(): Boolean
+
+    /**
+     * Make the search UI accessible.
+     */
+    fun enableSearch()
+
+    /**
+     * Completely hide the search UI.
+     */
+    fun disableSearch()
+
+    /**
+     * Expand the search UI to enable queries
+     */
     fun showSearch()
+
+    /**
+     * Collapse the search UI to its minimal state.
+     */
     fun hideSearch()
+
     fun onSearchViewClosed()
     fun openSearchResult(searchResult: SearchResult)
 
