@@ -1,17 +1,29 @@
 package org.beatonma.commons.data.core.room.entities.member
 
+import android.content.Context
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import com.squareup.moshi.Json
+import org.beatonma.commons.R
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.core.interfaces.Named
 import org.beatonma.commons.data.core.interfaces.Periodic
+import org.beatonma.commons.kotlin.extensions.stringCompat
 import java.time.LocalDate
 
+/**
+ * Names are lowercase so they can be used with Navigation Components deepLink
+ * as part of the URL path.
+ */
 enum class House {
-    Commons,
-    Lords
+    commons,
+    lords,
+    ;
+    fun description(context: Context) = when(this) {
+        commons -> context.stringCompat(R.string.house_of_commons)
+        lords -> context.stringCompat(R.string.house_of_lords)
+    }
 }
 
 
