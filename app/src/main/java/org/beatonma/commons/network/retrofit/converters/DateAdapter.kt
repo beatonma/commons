@@ -19,11 +19,9 @@ class DateAdapter: JsonAdapter<LocalDate>() {
 
     @ToJson
     override fun toJson(writer: JsonWriter, value: LocalDate?) {
-        if (value != null) {
-            writer.value(value.toString())
-        }
-        else {
-            writer.nullValue()
+        when (value) {
+            null -> writer.nullValue()
+            else -> writer.value(value.toString())
         }
     }
 }
