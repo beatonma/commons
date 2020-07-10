@@ -3,6 +3,8 @@ package org.beatonma.commons.network
 import android.util.Log
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ApplicationComponent
 import okhttp3.*
 import org.beatonma.commons.BuildConfig.*
 import org.beatonma.commons.kotlin.extensions.autotag
@@ -42,7 +44,7 @@ private inline fun Interceptor.Chain.withDefaultHeaders(block: (Request.Builder,
     }.build())
 }
 
-@Module
+@Module @InstallIn(ApplicationComponent::class)
 class HttpClientModule {
     @Singleton
     @Provides

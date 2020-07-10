@@ -2,6 +2,8 @@ package org.beatonma.commons.network.dagger
 
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ApplicationComponent
 import org.beatonma.commons.network.retrofit.CommonsService
 import org.beatonma.commons.network.retrofit.GenericUrlService
 import org.beatonma.commons.network.retrofit.TwfyService
@@ -10,7 +12,7 @@ import retrofit2.Retrofit
 import javax.inject.Named
 import javax.inject.Singleton
 
-@Module
+@Module @InstallIn(ApplicationComponent::class)
 class NetworkServiceModule {
     @Singleton
     @Provides
