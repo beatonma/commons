@@ -7,8 +7,8 @@
 
     <Transition
         android:id="@+id/transition_social_collapsed_expanded"
-        motion:constraintSetStart="@id/state_collapsed"
-        motion:constraintSetEnd="@+id/state_expanded"
+        motion:constraintSetStart="@id/state_social_collapsed"
+        motion:constraintSetEnd="@+id/state_social_expanded"
         >
        <KeyFrameSet>
            <KeyPosition
@@ -50,8 +50,8 @@
 
     <Transition
         android:id="@+id/transition_social_expanded_compose"
-        motion:constraintSetStart="@id/state_expanded"
-        motion:constraintSetEnd="@+id/state_compose_comment"
+        motion:constraintSetStart="@id/state_social_expanded"
+        motion:constraintSetEnd="@+id/state_social_compose_comment"
         >
         <KeyFrameSet>
             <!-- Scrim -->
@@ -119,7 +119,7 @@
 
 
     <ConstraintSet
-        android:id="@+id/state_collapsed"
+        android:id="@+id/state_social_collapsed"
         >
         <!-- Icons -->
         <Constraint
@@ -212,7 +212,7 @@
     </ConstraintSet>
 
     <ConstraintSet
-        android:id="@+id/state_expanded"
+        android:id="@+id/state_social_expanded"
         >
         <Constraint
             android:id="@+id/social_summary_flow"
@@ -308,7 +308,7 @@
             android:alpha="0.0"/>
     </ConstraintSet>
 
-    <ConstraintSet android:id="@+id/state_compose_comment">
+    <ConstraintSet android:id="@+id/state_social_compose_comment">
 
         <Constraint
             android:id="@+id/social_summary_flow"

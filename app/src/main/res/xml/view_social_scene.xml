@@ -6,7 +6,7 @@
 
     <Transition
         motion:constraintSetStart="@+id/state_view_content"
-        motion:constraintSetEnd="@+id/state_compose_comment"
+        motion:constraintSetEnd="@+id/state_social_compose_comment"
         motion:duration="600">
 
        <KeyFrameSet>
@@ -133,7 +133,7 @@
 
     </ConstraintSet>
 
-    <ConstraintSet android:id="@+id/state_compose_comment">
+    <ConstraintSet android:id="@+id/state_social_compose_comment">
 
         <Constraint
             android:id="@+id/create_comment_scrim"
