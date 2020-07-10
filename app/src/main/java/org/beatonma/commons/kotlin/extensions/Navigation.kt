@@ -11,10 +11,9 @@ import androidx.navigation.Navigation
 import androidx.navigation.fragment.FragmentNavigator
 import org.beatonma.commons.app.division.DivisionDetailFragment.Companion.HOUSE
 import org.beatonma.commons.data.PARLIAMENTDOTUK
-import org.beatonma.commons.data.core.MinimalMember
-import org.beatonma.commons.data.core.room.entities.bill.MinimalBill
-import org.beatonma.commons.data.core.room.entities.constituency.Constituency
+import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
 import org.beatonma.commons.data.core.room.entities.division.FeaturedDivisionWithDivision
+import org.beatonma.commons.data.core.room.entities.division.Vote
 
 fun View.navigateTo(
     @IdRes navigationAction: Int,
@@ -41,10 +40,9 @@ fun View.navigateTo(url: Uri) {
 }
 
 
-fun MinimalMember.bundle() = bundleOf(PARLIAMENTDOTUK to this.profile.parliamentdotuk)
-fun Constituency.bundle() = bundleOf(PARLIAMENTDOTUK to this.parliamentdotuk)
-fun MinimalBill.bundle() = bundleOf(PARLIAMENTDOTUK to this.parliamentdotuk)
 fun FeaturedDivisionWithDivision.bundle() = bundleOf(
-    HOUSE to division.house.ordinal,
+    HOUSE to division.house.name,
     PARLIAMENTDOTUK to featured.divisionId
 )
+fun Parliamentdotuk.bundle() = bundleOf(PARLIAMENTDOTUK to this.parliamentdotuk)
+fun Vote.bundle() = bundleOf(PARLIAMENTDOTUK to this.memberId)
