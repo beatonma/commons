@@ -10,7 +10,7 @@ import androidx.annotation.ColorInt
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.recyclerview.widget.RecyclerView
 import org.beatonma.commons.R
-import org.beatonma.commons.app.ui.navigation.OnBackPressed
+import org.beatonma.commons.app.ui.navigation.BackPressConsumer
 import org.beatonma.commons.app.ui.recyclerview.LoadingAdapter
 import org.beatonma.commons.app.ui.recyclerview.setup
 import org.beatonma.commons.data.core.social.SocialComment
@@ -33,8 +33,6 @@ private const val TAG = "SocialViewController"
  *  - The parent layout should define layoutDescription=@xml/socialhost_motion_scene, or a derivation
  *    thereof, to enable motion animations.
  *
- *  - The parent activity/fragment should also call SocialHost.onBackPressed() in its onBackPressed
- *    implementation.
  *
  * e.g.
  * <!-- my_layout.xml -->
@@ -62,7 +60,7 @@ class SocialViewController(
     _collapsedTheme: SocialViewTheme,
     _expandedTheme: SocialViewTheme = _collapsedTheme,
     val defaultTransition: Int? = null,
-): OnBackPressed {
+): BackPressConsumer {
     var collapsedTheme: SocialViewTheme = _collapsedTheme
         set(value) {
             field = value
@@ -97,8 +95,8 @@ class SocialViewController(
 
     private val currentState: State
         get() = when(layout.currentState) {
-            R.id.state_expanded -> State.EXPANDED
-            R.id.state_compose_comment -> State.COMPOSE_COMMENT
+            R.id.state_social_expanded -> State.EXPANDED
+            R.id.state_social_compose_comment -> State.COMPOSE_COMMENT
             else -> State.COLLAPSED
         }
 
@@ -121,16 +119,11 @@ class SocialViewController(
 
     override fun onBackPressed(): Boolean {
         val targetState = when (layout.currentState) {
-            R.id.state_compose_comment -> State.EXPANDED
-            R.id.state_expanded -> State.COLLAPSED
+            R.id.state_social_compose_comment -> State.EXPANDED
+            R.id.state_social_expanded -> State.COLLAPSED
             else -> return false
         }
 
-//        if (targetState == State.COLLAPSED && defaultTransition != null) {
-//            layout.onTransitionEnd { layout, _ ->
-//                layout?.setTransition(defaultTransition)
-//            }
-//        }
         transitionTo(targetState)
 
         return true
@@ -196,7 +189,7 @@ class SocialViewController(
     internal fun notifyInvalidComment(result: CommentValidation) {
         // TODO show message with reason for failed submission
 
-        val shakeAmount = context.dp(8F)
+        val shakeAmount = context.dimenCompat(R.dimen.social_invalid_comment_shake_amount).toFloat()
 
         // Shake the comment UI side to side
         ObjectAnimator.ofFloat(commentAnimationLayer, View.TRANSLATION_X, 0F, shakeAmount, -shakeAmount, 0F)
@@ -226,9 +219,9 @@ class SocialViewController(
     private fun transitionTo(state: State){
         layout.transitionToState(
             when (state) {
-                State.COLLAPSED -> R.id.state_collapsed
-                State.EXPANDED -> R.id.state_expanded
-                State.COMPOSE_COMMENT -> R.id.state_compose_comment
+                State.COLLAPSED -> R.id.state_social_collapsed
+                State.EXPANDED -> R.id.state_social_expanded
+                State.COMPOSE_COMMENT -> R.id.state_social_compose_comment
             }
         )
 

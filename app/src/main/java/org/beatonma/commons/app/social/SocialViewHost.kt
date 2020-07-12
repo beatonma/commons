@@ -6,20 +6,52 @@ import android.util.TypedValue
 import androidx.annotation.CallSuper
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.beatonma.commons.R
 import org.beatonma.commons.annotations.SignInRequired
-import org.beatonma.commons.app.ui.navigation.OnBackPressed
+import org.beatonma.commons.app.ui.navigation.BackPressConsumer
+import org.beatonma.commons.data.IoResult
 import org.beatonma.commons.data.NoBodySuccessResult
+import org.beatonma.commons.data.core.interfaces.Sociable
+import org.beatonma.commons.data.core.social.SocialContent
 import org.beatonma.commons.data.core.social.SocialVoteType
 
 private const val TAG = "SocialViewHost"
 
-interface SocialViewHost: LifecycleOwner, OnBackPressed {
+interface SocialViewHost: LifecycleOwner, BackPressConsumer {
     val socialViewModel: SocialViewModel
     val socialViewController: SocialViewController
+
+    val socialObserver: Observer<IoResult<SocialContent>>
+
+    fun createSocialObserver() = Observer<IoResult<SocialContent>> { result ->
+        socialViewController.updateUi(result.data)
+    }
+
+    fun observeSocialViewModel() {
+        socialViewModel.livedata.removeObserver(socialObserver)
+        lifecycleScope.launch(Dispatchers.IO) {
+            socialViewModel.refresh()
+            withContext(Dispatchers.Main) {
+                socialViewModel.livedata.observe(this@SocialViewHost, socialObserver)
+            }
+        }
+    }
+
+    fun observeSocialContent(sociable: Sociable) {
+        val target = sociable.asSocialTarget()
+
+        lifecycleScope.launch(Dispatchers.Main) {
+            socialViewModel.run {
+                forTarget(target)
+                observeSocialViewModel()
+            }
+        }
+    }
 
     fun setupViewController(
         layout: MotionLayout,
@@ -41,6 +73,7 @@ interface SocialViewHost: LifecycleOwner, OnBackPressed {
     }
 
     fun onVoteSubmissionSuccessful() {
+        observeSocialViewModel()
         socialViewController.onVoteSubmissionSuccessful()
     }
 
@@ -97,7 +130,7 @@ interface SocialViewHost: LifecycleOwner, OnBackPressed {
         return socialViewController.onBackPressed()
     }
 
-    fun resolveColorAttributes(context: Context): SocialViewTheme {
+    private fun resolveColorAttributes(context: Context): SocialViewTheme {
         val typedValue = TypedValue()
         val theme = context.theme
 
