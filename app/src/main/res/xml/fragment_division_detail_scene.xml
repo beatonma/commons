@@ -12,12 +12,9 @@
 
         <OnSwipe
             motion:dragDirection="dragUp"
-            motion:touchAnchorId="@+id/recyclerview"
-            motion:moveWhenScrollAtTop="true"
+            motion:touchAnchorId="@+id/chart"
             />
 
-        <KeyFrameSet>
-        </KeyFrameSet>
     </Transition>
 
     <Transition
@@ -27,8 +24,7 @@
 
         <OnSwipe
             motion:dragDirection="dragUp"
-            motion:touchAnchorId="@+id/recyclerview"
-            motion:moveWhenScrollAtTop="true"
+            motion:touchAnchorId="@+id/chart"
             />
 
         <KeyFrameSet>
@@ -36,9 +32,9 @@
     </Transition>
 
     <Transition
-        android:id="@+id/transition_collapsed_expanded_ext"
+        android:id="@+id/transition_collapsed_expanded"
         motion:constraintSetStart="@id/state_default"
-        motion:constraintSetEnd="@+id/state_social_expended_ext"
+        motion:constraintSetEnd="@+id/state_social_expanded"
         >
         <!-- Start injected content from '_merge_src_transition_social_collapsed_expanded' -->
         <KeyFrameSet
@@ -165,17 +161,14 @@
         <!-- End injected content from '_merge_src_transition_social_collapsed_expanded' -->
 
         <KeyFrameSet>
-            <KeyAttribute
-                motion:motionTarget="@+id/name"
-                motion:framePosition="20"
-                android:alpha="0.0"/>
+
         </KeyFrameSet>
     </Transition>
 
     <Transition
-        android:id="@+id/transition_scrolled_collapsed_expanded_ext"
+        android:id="@+id/transition_scrolled_collapsed_expanded"
         motion:constraintSetStart="@id/state_scrolled"
-        motion:constraintSetEnd="@+id/state_social_expended_ext"
+        motion:constraintSetEnd="@+id/state_social_expanded"
         >
         <!-- Start injected content from '_merge_src_transition_social_collapsed_expanded' -->
         <KeyFrameSet
@@ -300,83 +293,6 @@
         
         </KeyFrameSet>
         <!-- End injected content from '_merge_src_transition_social_collapsed_expanded' -->
-
-        <KeyFrameSet>
-            <KeyAttribute
-                motion:motionTarget="@+id/name"
-                motion:framePosition="20"
-                android:alpha="0.0"/>
-        </KeyFrameSet>
-    </Transition>
-
-    <Transition
-        android:id="@+id/transition_soc_expanded_compose">
-        <!-- Start injected content from '_merge_src_transition_social_expanded_compose' -->
-        <KeyFrameSet
-            >
-            <!-- Scrim -->
-            <KeyPosition
-                motion:motionTarget="@+id/create_comment_scrim"
-                motion:framePosition="1"
-                motion:percentHeight="1.0"
-                motion:percentX="1.0"
-                motion:percentY="1.0"/>
-        
-            <KeyAttribute
-                motion:motionTarget="@+id/create_comment_scrim"
-                motion:framePosition="40"
-                android:alpha="0.0"/>
-            <!-- Scrim end -->
-        
-            <!-- FAB to compose comment background -->
-            <KeyPosition
-                motion:motionTarget="@+id/create_comment_background"
-                motion:framePosition="20"
-                motion:percentWidth=".0"
-                motion:percentHeight=".0"
-                motion:percentX=".0"
-                motion:percentY=".0"
-                />
-        
-            <KeyAttribute
-                motion:motionTarget="@+id/create_comment_background"
-                motion:framePosition="20"
-                android:alpha=".4"
-                />
-        
-            <KeyAttribute
-                motion:motionTarget="@+id/create_comment_background"
-                motion:framePosition="40"
-                android:alpha="1.0"
-                />
-        
-            <KeyPosition
-                motion:motionTarget="@+id/create_comment_background"
-                motion:framePosition="40"
-                motion:percentWidth=".60"
-                motion:percentHeight=".10"
-                motion:percentX=".60"
-                motion:percentY=".10"
-                />
-        
-            <KeyPosition
-                motion:motionTarget="@+id/create_comment_background"
-                motion:framePosition="60"
-                motion:percentWidth="1.0"
-                motion:percentX="1.0"
-                />
-            <!-- End FAB to compose comment background -->
-        
-            <!-- Comment layer -->
-            <KeyAttribute
-                motion:motionTarget="@+id/create_comment_alpha_layer"
-                motion:framePosition="80"
-                android:alpha="0.0"/>
-        
-            <!-- End comment layer -->
-        </KeyFrameSet>
-        <!-- End injected content from '_merge_src_transition_social_expanded_compose' -->
-
 
     </Transition>
 
@@ -384,64 +300,30 @@
         android:id="@+id/state_default"
         motion:deriveConstraintsFrom="@+id/state_social_collapsed">
         <Constraint
-            android:id="@+id/name"
+            android:id="@+id/text_flow"
             android:layout_height="wrap_content"
             android:layout_width="0dp"
-            android:elevation="4dp"
-            app:layout_constraintTop_toBottomOf="@+id/portrait"
-            app:layout_constraintStart_toStartOf="@+id/inset_start"
-            app:layout_constraintEnd_toEndOf="@+id/inset_end"
-            android:alpha="1.0"
-            />
-        <Constraint
-            android:id="@+id/portrait"
             motion:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            motion:layout_constraintDimensionRatio="3:2"
+            app:layout_constraintEnd_toStartOf="@+id/inset_end"
+            app:layout_constraintStart_toEndOf="@+id/inset_start"
+            android:layout_marginTop="@dimen/whitespace_edge"
+            android:layout_marginHorizontal="@dimen/whitespace_edge"
             />
-
     </ConstraintSet>
 
     <ConstraintSet
         android:id="@+id/state_scrolled"
         motion:deriveConstraintsFrom="@+id/state_social_collapsed">
-
         <Constraint
-            android:id="@+id/portrait"
-            motion:layout_constraintBottom_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            motion:layout_constraintDimensionRatio="3:1"
-            />
-
-        <Constraint
-            android:id="@+id/name"
+            android:id="@+id/text_flow"
             android:layout_height="wrap_content"
             android:layout_width="0dp"
-            android:elevation="4dp"
-            app:layout_constraintTop_toBottomOf="@+id/portrait"
-            app:layout_constraintStart_toStartOf="@+id/inset_start"
-            app:layout_constraintEnd_toEndOf="@+id/inset_end"
-            android:alpha="1.0"
+            motion:layout_constraintBottom_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/inset_end"
+            app:layout_constraintStart_toEndOf="@+id/inset_start"
+            android:layout_marginTop="@dimen/whitespace_edge"
+            android:layout_marginHorizontal="@dimen/whitespace_edge"
             />
-    </ConstraintSet>
-
-    <ConstraintSet
-        android:id="@+id/state_social_expended_ext"
-        motion:deriveConstraintsFrom="@+id/state_social_expanded">
-
-        <Constraint
-            android:id="@+id/name"
-            android:alpha="0.0"/>
-
-        <Constraint
-            android:id="@+id/recyclerview"
-            motion:layout_constraintTop_toBottomOf="@+id/accent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
-            
-
     </ConstraintSet>
 
     <!-- Start injected content from '_merge_src_socialhost_motion_scene' -->

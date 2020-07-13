@@ -1,0 +1,65 @@
+<KeyFrameSet
+    xmlns:motion="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+    <!-- Scrim -->
+    <KeyPosition
+        motion:motionTarget="@+id/create_comment_scrim"
+        motion:framePosition="1"
+        motion:percentHeight="1.0"
+        motion:percentX="1.0"
+        motion:percentY="1.0"/>
+
+    <KeyAttribute
+        motion:motionTarget="@+id/create_comment_scrim"
+        motion:framePosition="40"
+        android:alpha="0.0"/>
+    <!-- Scrim end -->
+
+    <!-- FAB to compose comment background -->
+    <KeyPosition
+        motion:motionTarget="@+id/create_comment_background"
+        motion:framePosition="20"
+        motion:percentWidth=".0"
+        motion:percentHeight=".0"
+        motion:percentX=".0"
+        motion:percentY=".0"
+        />
+
+    <KeyAttribute
+        motion:motionTarget="@+id/create_comment_background"
+        motion:framePosition="20"
+        android:alpha=".4"
+        />
+
+    <KeyAttribute
+        motion:motionTarget="@+id/create_comment_background"
+        motion:framePosition="40"
+        android:alpha="1.0"
+        />
+
+    <KeyPosition
+        motion:motionTarget="@+id/create_comment_background"
+        motion:framePosition="40"
+        motion:percentWidth=".60"
+        motion:percentHeight=".10"
+        motion:percentX=".60"
+        motion:percentY=".10"
+        />
+
+    <KeyPosition
+        motion:motionTarget="@+id/create_comment_background"
+        motion:framePosition="60"
+        motion:percentWidth="1.0"
+        motion:percentX="1.0"
+        />
+    <!-- End FAB to compose comment background -->
+
+    <!-- Comment layer -->
+    <KeyAttribute
+        motion:motionTarget="@+id/create_comment_alpha_layer"
+        motion:framePosition="80"
+        android:alpha="0.0"/>
+
+    <!-- End comment layer -->
+</KeyFrameSet>

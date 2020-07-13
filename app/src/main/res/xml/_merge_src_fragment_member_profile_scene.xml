@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:motion="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    motion:defaultDuration="@integer/animation_debug_duration">
+
+    <Transition
+        android:id="@+id/transition_default"
+        motion:constraintSetStart="@+id/state_default"
+        motion:constraintSetEnd="@+id/state_scrolled">
+
+        <OnSwipe
+            motion:dragDirection="dragUp"
+            motion:touchAnchorId="@+id/recyclerview"
+            motion:moveWhenScrollAtTop="true"
+            />
+
+        <KeyFrameSet>
+        </KeyFrameSet>
+    </Transition>
+
+    <Transition
+        android:id="@+id/transition_scrolled"
+        motion:constraintSetStart="@+id/state_scrolled"
+        motion:constraintSetEnd="@+id/state_default">
+
+        <OnSwipe
+            motion:dragDirection="dragUp"
+            motion:touchAnchorId="@+id/recyclerview"
+            motion:moveWhenScrollAtTop="true"
+            />
+
+        <KeyFrameSet>
+        </KeyFrameSet>
+    </Transition>
+
+    <Transition
+        android:id="@+id/transition_collapsed_expanded_ext"
+        motion:constraintSetStart="@id/state_default"
+        motion:constraintSetEnd="@+id/state_social_expended_ext"
+        >
+        __merge__(_merge_src_transition_social_collapsed_expanded)
+        <KeyFrameSet>
+            <KeyAttribute
+                motion:motionTarget="@+id/name"
+                motion:framePosition="20"
+                android:alpha="0.0"/>
+        </KeyFrameSet>
+    </Transition>
+
+    <Transition
+        android:id="@+id/transition_scrolled_collapsed_expanded_ext"
+        motion:constraintSetStart="@id/state_scrolled"
+        motion:constraintSetEnd="@+id/state_social_expended_ext"
+        >
+        __merge__(_merge_src_transition_social_collapsed_expanded)
+        <KeyFrameSet>
+            <KeyAttribute
+                motion:motionTarget="@+id/name"
+                motion:framePosition="20"
+                android:alpha="0.0"/>
+        </KeyFrameSet>
+    </Transition>
+
+    <Transition
+        android:id="@+id/transition_soc_expanded_compose">
+        __merge__(_merge_src_transition_social_expanded_compose)
+
+    </Transition>
+
+    <ConstraintSet
+        android:id="@+id/state_default"
+        motion:deriveConstraintsFrom="@+id/state_social_collapsed">
+        <Constraint
+            android:id="@+id/name"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:elevation="4dp"
+            app:layout_constraintTop_toBottomOf="@+id/portrait"
+            app:layout_constraintStart_toStartOf="@+id/inset_start"
+            app:layout_constraintEnd_toEndOf="@+id/inset_end"
+            android:alpha="1.0"
+            />
+        <Constraint
+            android:id="@+id/portrait"
+            motion:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintDimensionRatio="3:2"
+            />
+
+    </ConstraintSet>
+
+    <ConstraintSet
+        android:id="@+id/state_scrolled"
+        motion:deriveConstraintsFrom="@+id/state_social_collapsed">
+
+        <Constraint
+            android:id="@+id/portrait"
+            motion:layout_constraintBottom_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintDimensionRatio="3:1"
+            />
+
+        <Constraint
+            android:id="@+id/name"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:elevation="4dp"
+            app:layout_constraintTop_toBottomOf="@+id/portrait"
+            app:layout_constraintStart_toStartOf="@+id/inset_start"
+            app:layout_constraintEnd_toEndOf="@+id/inset_end"
+            android:alpha="1.0"
+            />
+    </ConstraintSet>
+
+    <ConstraintSet
+        android:id="@+id/state_social_expended_ext"
+        motion:deriveConstraintsFrom="@+id/state_social_expanded">
+
+        <Constraint
+            android:id="@+id/name"
+            android:alpha="0.0"/>
+
+        <Constraint
+            android:id="@+id/recyclerview"
+            motion:layout_constraintTop_toBottomOf="@+id/accent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+            
+
+    </ConstraintSet>
+
+    __merge__(_merge_src_socialhost_motion_scene)
+</MotionScene>
