@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     >
     <KeyPosition
-        motion:motionTarget="@+id/vote_up"
+        motion:motionTarget="@+id/social_vote_up"
         motion:framePosition="25"
         motion:percentX=".15"
         motion:percentY="0.0"
@@ -11,7 +11,7 @@
         />
 
     <KeyPosition
-        motion:motionTarget="@+id/vote_down"
+        motion:motionTarget="@+id/social_vote_down"
         motion:framePosition="25"
         motion:percentX=".15"
         motion:percentY="0.0"
@@ -19,7 +19,7 @@
         />
 
     <KeyPosition
-        motion:motionTarget="@+id/comment_count_icon"
+        motion:motionTarget="@+id/social_comment_count_icon"
         motion:framePosition="25"
         motion:percentX=".15"
         motion:percentY="0.0"
@@ -27,21 +27,21 @@
         />
 
     <KeyPosition
-        motion:motionTarget="@+id/vote_up_count"
+        motion:motionTarget="@+id/social_vote_up_count"
         motion:framePosition="40"
         motion:percentY="0.0"
         motion:pathMotionArc="startHorizontal"
         />
 
     <KeyPosition
-        motion:motionTarget="@+id/vote_down_count"
+        motion:motionTarget="@+id/social_vote_down_count"
         motion:framePosition="40"
         motion:percentY="0.0"
         motion:pathMotionArc="startHorizontal"
         />
 
     <KeyPosition
-        motion:motionTarget="@+id/comment_count"
+        motion:motionTarget="@+id/social_comment_count"
         motion:framePosition="40"
         motion:percentY="0.0"
         motion:pathMotionArc="startHorizontal"
@@ -49,42 +49,42 @@
 
     <!-- Icon anim end -->
     <KeyPosition
-        motion:motionTarget="@+id/vote_up"
+        motion:motionTarget="@+id/social_vote_up"
         motion:framePosition="80"
         motion:percentX="1.0"
         motion:percentY="1.0"
         />
 
     <KeyPosition
-        motion:motionTarget="@+id/vote_down"
+        motion:motionTarget="@+id/social_vote_down"
         motion:framePosition="80"
         motion:percentX="1.0"
         motion:percentY="1.0"
         />
 
     <KeyPosition
-        motion:motionTarget="@+id/comment_count_icon"
+        motion:motionTarget="@+id/social_comment_count_icon"
         motion:framePosition="80"
         motion:percentX="1.0"
         motion:percentY="1.0"
         />
 
     <KeyPosition
-        motion:motionTarget="@+id/vote_up_count"
+        motion:motionTarget="@+id/social_vote_up_count"
         motion:framePosition="80"
         motion:percentX="1.0"
         motion:percentY="1.0"
         />
 
     <KeyPosition
-        motion:motionTarget="@+id/vote_down_count"
+        motion:motionTarget="@+id/social_vote_down_count"
         motion:framePosition="80"
         motion:percentX="1.0"
         motion:percentY="1.0"
         />
 
     <KeyPosition
-        motion:motionTarget="@+id/comment_count"
+        motion:motionTarget="@+id/social_comment_count"
         motion:framePosition="80"
         motion:percentX="1.0"
         motion:percentY="1.0"
@@ -114,7 +114,7 @@
         />
 
     <KeyAttribute
-        motion:motionTarget="@+id/expanded_alpha_layer"
+        motion:motionTarget="@+id/social_expanded_alpha_layer"
         motion:framePosition="80"
         android:scaleX="@fraction/transition_scale_start"
         android:scaleY="@fraction/transition_scale_start"
