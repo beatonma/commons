@@ -4,9 +4,12 @@ import androidx.room.*
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.ParliamentID
+import org.beatonma.commons.data.core.interfaces.Commentable
 import org.beatonma.commons.data.core.interfaces.Dated
 import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
+import org.beatonma.commons.data.core.interfaces.Votable
 import org.beatonma.commons.data.core.room.entities.member.House
+import org.beatonma.commons.data.core.social.SocialTargetType
 import java.time.LocalDate
 
 @Entity(
@@ -29,7 +32,15 @@ data class Division(
     @ColumnInfo(name = "deferred_vote") val deferredVote: Boolean,
     @ColumnInfo(name = "whipped_vote") val whippedVote: Boolean?,  // Lords only
 ): Parliamentdotuk,
-    Dated
+    Dated,
+    Commentable,
+    Votable {
+
+    override fun getSocialContentTarget(): SocialTargetType = when(house) {
+        House.commons -> SocialTargetType.division_commons
+        House.lords -> SocialTargetType.division_lords
+    }
+}
 
 data class ApiDivision(
     @field:Json(name = PARLIAMENTDOTUK) override val parliamentdotuk: ParliamentID,
