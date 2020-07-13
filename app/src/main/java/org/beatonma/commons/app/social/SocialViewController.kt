@@ -7,8 +7,10 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.ColorInt
+import androidx.annotation.IdRes
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.recyclerview.widget.RecyclerView
+import dagger.hilt.android.scopes.FragmentScoped
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.navigation.BackPressConsumer
 import org.beatonma.commons.app.ui.recyclerview.LoadingAdapter
@@ -54,12 +56,17 @@ private const val TAG = "SocialViewController"
  *      </androidx.constraintlayout.motion.widget.MotionLayout>
  *
  */
+@FragmentScoped
 class SocialViewController(
     private val host: SocialViewHost,
     private val layout: MotionLayout,
     _collapsedTheme: SocialViewTheme,
     _expandedTheme: SocialViewTheme = _collapsedTheme,
     val defaultTransition: Int? = null,
+
+    @IdRes private val collapsedConstraintsId: Int,
+    @IdRes private val expandedConstraintsId: Int,
+    @IdRes private val composeCommentConstraintsId: Int,
 ): BackPressConsumer {
     var collapsedTheme: SocialViewTheme = _collapsedTheme
         set(value) {
@@ -95,8 +102,8 @@ class SocialViewController(
 
     private val currentState: State
         get() = when(layout.currentState) {
-            R.id.state_social_expanded -> State.EXPANDED
-            R.id.state_social_compose_comment -> State.COMPOSE_COMMENT
+            expandedConstraintsId -> State.EXPANDED
+            composeCommentConstraintsId -> State.COMPOSE_COMMENT
             else -> State.COLLAPSED
         }
 
@@ -119,8 +126,8 @@ class SocialViewController(
 
     override fun onBackPressed(): Boolean {
         val targetState = when (layout.currentState) {
-            R.id.state_social_compose_comment -> State.EXPANDED
-            R.id.state_social_expanded -> State.COLLAPSED
+            composeCommentConstraintsId -> State.EXPANDED
+            expandedConstraintsId -> State.COLLAPSED
             else -> return false
         }
 
@@ -219,9 +226,9 @@ class SocialViewController(
     private fun transitionTo(state: State){
         layout.transitionToState(
             when (state) {
-                State.COLLAPSED -> R.id.state_social_collapsed
-                State.EXPANDED -> R.id.state_social_expanded
-                State.COMPOSE_COMMENT -> R.id.state_social_compose_comment
+                State.COLLAPSED -> collapsedConstraintsId
+                State.EXPANDED -> expandedConstraintsId
+                State.COMPOSE_COMMENT -> composeCommentConstraintsId
             }
         )
 

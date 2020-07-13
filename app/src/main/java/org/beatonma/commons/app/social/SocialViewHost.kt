@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import android.util.TypedValue
 import androidx.annotation.CallSuper
+import androidx.annotation.IdRes
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
@@ -56,7 +57,11 @@ interface SocialViewHost: LifecycleOwner, BackPressConsumer {
     fun setupViewController(
         layout: MotionLayout,
         defaultTransition: Int? = null,
-        collapsedTheme: SocialViewTheme? = null
+        collapsedTheme: SocialViewTheme? = null,
+
+        @IdRes collapsedConstraintsId: Int = R.id.state_social_collapsed,
+        @IdRes expandedConstraintsId: Int = R.id.state_social_expanded,
+        @IdRes composeCommentConstraintsId: Int = R.id.state_social_compose_comment,
     ): SocialViewController {
         if (defaultTransition != null) {
             layout.setTransition(defaultTransition)
@@ -69,6 +74,9 @@ interface SocialViewHost: LifecycleOwner, BackPressConsumer {
             collapsedTheme ?: expandedTheme,
             expandedTheme,
             defaultTransition = defaultTransition,
+            collapsedConstraintsId = collapsedConstraintsId,
+            expandedConstraintsId = expandedConstraintsId,
+            composeCommentConstraintsId = composeCommentConstraintsId
         )
     }
 
