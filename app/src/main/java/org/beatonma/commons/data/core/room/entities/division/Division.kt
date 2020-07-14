@@ -9,7 +9,9 @@ import org.beatonma.commons.data.core.interfaces.Dated
 import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
 import org.beatonma.commons.data.core.interfaces.Votable
 import org.beatonma.commons.data.core.room.entities.member.House
+import org.beatonma.commons.data.core.room.entities.member.Party
 import org.beatonma.commons.data.core.social.SocialTargetType
+import org.beatonma.commons.network.retrofit.Contract
 import java.time.LocalDate
 
 @Entity(
@@ -44,21 +46,21 @@ data class Division(
 
 data class ApiDivision(
     @field:Json(name = PARLIAMENTDOTUK) override val parliamentdotuk: ParliamentID,
-    @field:Json(name = "title") val title: String,
-    @field:Json(name = "description") val description: String?,
-    @field:Json(name = "date") override val date: LocalDate,
-    @field:Json(name = "house") val house: House,
-    @field:Json(name = "passed") val passed: Boolean,
-    @field:Json(name = "ayes") val ayes: Int,
-    @field:Json(name = "noes") val noes: Int,
-    @field:Json(name = "abstentions") val abstentions: Int?,
-    @field:Json(name = "did_not_vote") val didNotVote: Int?,
-    @field:Json(name = "non_eligible") val nonEligible: Int?,
-    @field:Json(name = "suspended_or_expelled") val suspendedOrExpelled: Int?,
-    @field:Json(name = "errors") val errors: Int?,
-    @field:Json(name = "deferred_vote") val deferredVote: Boolean,
-    @field:Json(name = "whipped_vote") val whippedVote: Boolean?,
-    @field:Json(name = "votes") val votes: List<ApiVote>,
+    @field:Json(name = Contract.TITLE) val title: String,
+    @field:Json(name = Contract.DESCRIPTION) val description: String?,
+    @field:Json(name = Contract.DATE) override val date: LocalDate,
+    @field:Json(name = Contract.HOUSE) val house: House,
+    @field:Json(name = Contract.PASSED) val passed: Boolean,
+    @field:Json(name = Contract.AYES) val ayes: Int,
+    @field:Json(name = Contract.NOES) val noes: Int,
+    @field:Json(name = Contract.ABSTENTIONS) val abstentions: Int?,
+    @field:Json(name = Contract.DID_NOT_VOTE) val didNotVote: Int?,
+    @field:Json(name = Contract.NON_ELIGIBLE) val nonEligible: Int?,
+    @field:Json(name = Contract.SUSPENDED_OR_EXPELLED) val suspendedOrExpelled: Int?,
+    @field:Json(name = Contract.ERRORS) val errors: Int?,
+    @field:Json(name = Contract.DEFERRED_VOTE) val deferredVote: Boolean,
+    @field:Json(name = Contract.WHIPPED_VOTE) val whippedVote: Boolean?,
+    @field:Json(name = Contract.VOTES) val votes: List<ApiVote>,
 ): Parliamentdotuk,
     Dated {
     fun toDivision() = Division(
@@ -83,5 +85,13 @@ data class ApiDivision(
 data class DivisionWithVotes(
     @Embedded val division: Division,
     @Relation(parentColumn = "division_$PARLIAMENTDOTUK", entityColumn = "dvote_division_id", entity = Vote::class)
-    val votes: List<Vote>
+    val votes: List<VoteWithParty>
+)
+
+
+data class VoteWithParty(
+    @Embedded val vote: Vote,
+
+    @Relation(parentColumn = "party_id", entityColumn = "party_$PARLIAMENTDOTUK")
+    val party: Party?
 )
