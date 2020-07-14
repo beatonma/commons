@@ -34,8 +34,10 @@ interface DivisionDao: SharedPartyDao {
 
     @Transaction
     suspend fun insertApiDivision(parliamentdotuk: ParliamentID, apiDivision: ApiDivision) {
-        insertPartiesIfNotExists(apiDivision.votes.map { it.party })
+        insertPartiesIfNotExists(apiDivision.votes.mapNotNull { it.party })
         insertDivision(apiDivision.toDivision())
+
+        apiDivision.votes.map { apiVote -> apiVote.toVote(parliamentdotuk) }
 
         insertVotes(
             apiDivision.votes.map { apiVote -> apiVote.toVote(parliamentdotuk) }
