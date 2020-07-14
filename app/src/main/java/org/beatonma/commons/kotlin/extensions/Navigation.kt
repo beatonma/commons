@@ -11,6 +11,7 @@ import androidx.navigation.Navigation
 import androidx.navigation.fragment.FragmentNavigator
 import org.beatonma.commons.app.division.DivisionDetailFragment.Companion.HOUSE
 import org.beatonma.commons.data.PARLIAMENTDOTUK
+import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
 import org.beatonma.commons.data.core.room.entities.division.FeaturedDivisionWithDivision
 import org.beatonma.commons.data.core.room.entities.division.Vote
@@ -41,8 +42,11 @@ fun View.navigateTo(url: Uri) {
 
 
 fun FeaturedDivisionWithDivision.bundle() = bundleOf(
-    HOUSE to division.house.name,
+    HOUSE to division.house,
     PARLIAMENTDOTUK to featured.divisionId
 )
 fun Parliamentdotuk.bundle() = bundleOf(PARLIAMENTDOTUK to this.parliamentdotuk)
-fun Vote.bundle() = bundleOf(PARLIAMENTDOTUK to this.memberId)
+fun Vote.memberBundle() = bundleOf(PARLIAMENTDOTUK to this.memberId)
+
+fun Bundle?.getParliamentID(): ParliamentID = this?.getInt(PARLIAMENTDOTUK)
+    ?: throw Exception("ParliamentID not found in bundle: $this")
