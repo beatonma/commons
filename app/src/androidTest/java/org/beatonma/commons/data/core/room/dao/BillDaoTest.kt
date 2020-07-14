@@ -116,4 +116,20 @@ class BillDaoInsertCompleteBillTest: BaseRoomDaoTest<BillDao>() {
             }
         }
     }
+
+    @Test
+    fun ensure_ParliamentarySession_is_written_and_retrieved_correctly() {
+        daoTest(BillDao::getBillSession) {
+            name shouldbe "2008-2009"
+            parliamentdotuk shouldbe 377312
+        }
+    }
+
+    @Test
+    fun ensure_BillType_is_written_and_retrieved_correctly() {
+        daoTest(BillDao::getBillType) {
+            name shouldbe "Ballot"
+            description shouldbe "Private Members' Bill (Ballot Bill)"
+        }
+    }
 }
