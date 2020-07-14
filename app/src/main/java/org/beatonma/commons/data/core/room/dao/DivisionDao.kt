@@ -4,10 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import org.beatonma.commons.data.LiveDataList
 import org.beatonma.commons.data.ParliamentID
+import org.beatonma.commons.data.core.room.dao.shared.SharedPartyDao
 import org.beatonma.commons.data.core.room.entities.division.*
 
 @Dao
-interface DivisionDao {
+interface DivisionDao: SharedPartyDao {
     @Transaction
     @Query("""SELECT * FROM featured_divisions""")
     fun getFeaturedDivisions(): LiveDataList<FeaturedDivisionWithDivision>
@@ -33,7 +34,9 @@ interface DivisionDao {
 
     @Transaction
     suspend fun insertApiDivision(parliamentdotuk: ParliamentID, apiDivision: ApiDivision) {
+        insertPartiesIfNotExists(apiDivision.votes.map { it.party })
         insertDivision(apiDivision.toDivision())
+
         insertVotes(
             apiDivision.votes.map { apiVote -> apiVote.toVote(parliamentdotuk) }
         )

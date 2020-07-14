@@ -7,13 +7,15 @@ import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.ApiCompleteMember
 import org.beatonma.commons.data.core.interfaces.markAccessed
 import org.beatonma.commons.data.core.interfaces.markAllAccessed
+import org.beatonma.commons.data.core.room.dao.shared.SharedConstituencyDao
+import org.beatonma.commons.data.core.room.dao.shared.SharedPartyDao
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import org.beatonma.commons.data.core.room.entities.division.VoteWithDivision
 import org.beatonma.commons.data.core.room.entities.election.Election
 import org.beatonma.commons.data.core.room.entities.member.*
 
 @Dao
-interface MemberDao {
+interface MemberDao: SharedPartyDao, SharedConstituencyDao {
 
     // Get operations
     @Transaction
@@ -99,18 +101,6 @@ interface MemberDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertProfilesIfNotExists(people: List<MemberProfile>)
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertConstituencyIfNotExists(constituency: Constituency)
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertConstituenciesIfNotExists(constituencies: List<Constituency>)
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertPartyIfNotExists(party: Party)
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertPartiesIfNotExists(parties: List<Party>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPosts(posts: List<Post>)

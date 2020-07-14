@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import org.beatonma.commons.data.LiveDataList
 import org.beatonma.commons.data.ParliamentID
+import org.beatonma.commons.data.core.room.dao.shared.SharedConstituencyDao
 import org.beatonma.commons.data.core.room.entities.constituency.*
 import org.beatonma.commons.data.core.room.entities.election.ConstituencyResult
 import org.beatonma.commons.data.core.room.entities.election.ConstituencyResultWithDetails
@@ -11,7 +12,7 @@ import org.beatonma.commons.data.core.room.entities.election.Election
 import org.beatonma.commons.data.core.room.entities.member.Party
 
 @Dao
-interface ConstituencyDao {
+interface ConstituencyDao: SharedConstituencyDao {
 
     @Transaction
     @Query("""SELECT * FROM constituencies WHERE constituency_parliamentdotuk = :parliamentdotuk""")
@@ -54,14 +55,8 @@ interface ConstituencyDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertConstituencies(constituency: List<Constituency>)
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertConstituenciesIfNotExists(constituency: List<Constituency>)
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertConstituency(constituency: Constituency)
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertConstituencyIfNotExists(constituency: Constituency)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBoundary(boundary: ConstituencyBoundary)
