@@ -30,14 +30,13 @@ interface BillDao {
     @Query("""SELECT * FROM bill_stages WHERE billstage_bill_parliamentdotuk = :parliamentdotuk""")
     fun getBillStages(parliamentdotuk: ParliamentID): LiveDataList<BillStageWithSittings>
 
-    @Query("""SELECT * FROM parliamentary_sessions 
-        LEFT JOIN bills ON bills.bill_session_id = session_parliamentdotuk
-        WHERE bills.bill_parliamentdotuk = :parliamentdotuk
-        """)
+    @Query("""SELECT * FROM parliamentary_sessions
+        LEFT JOIN bills ON bills.bill_session_id = parliamentary_sessions.session_parliamentdotuk
+        WHERE bills.bill_parliamentdotuk = :parliamentdotuk""")
     fun getBillSession(parliamentdotuk: ParliamentID): LiveData<ParliamentarySession>
 
     @Query("""SELECT * FROM bill_types
-        LEFT JOIN bills ON bills.bill_type_id = billtype_name
+        LEFT JOIN bills ON bills.bill_type_id = bill_types.billtype_name
         WHERE bills.bill_parliamentdotuk = :parliamentdotuk""")
     fun getBillType(parliamentdotuk: ParliamentID): LiveData<BillType>
 
