@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Text">
+    <style name="Text" parent="Widget.MaterialComponents.TextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:ellipsize">end</item>
@@ -38,13 +38,27 @@
         <item name="android:textSize">@dimen/text_size_h3</item>
     </style>
 
-    <style name="Text.Primary.Subheader">
-        <item name="android:textSize">@dimen/text_size_subheader</item>
-        <item name="android:maxLines">2</item>
+    <style name="Text.Primary.Condensed">
+        <item name="android:fontFamily">sans-serif-condensed</item>
     </style>
 
-    <style name="Text.Condensed" parent="Text.Primary">
+    <style name="Text.Secondary.Condensed">
         <item name="android:fontFamily">sans-serif-condensed</item>
+    </style>
+
+
+
+    <style name="Text.Primary.Quotation" parent="Text.Primary">
+        <item name="android:textColor">@color/TextOpaque</item>
+        <item name="android:fontWeight">600</item>
+        <item name="android:lineSpacingMultiplier">1.2</item>
+        <item name="fontFamily">sans-serif-condensed</item>
+        <item name="android:padding">@dimen/whitespace_quotation_padding</item>
+        <item name="android:letterSpacing">0.05</item>
+    </style>
+
+    <style name="Text.Primary.Date" parent="Text.Primary.Condensed">
+
     </style>
 
 
