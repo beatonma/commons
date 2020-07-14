@@ -73,11 +73,11 @@ data class ApiBill(
 
 
 data class MinimalBill(
-    @ColumnInfo(name = "bill_$PARLIAMENTDOTUK") val parliamentdotuk: ParliamentID,
+    @ColumnInfo(name = "bill_$PARLIAMENTDOTUK") override val parliamentdotuk: ParliamentID,
     @ColumnInfo(name = "bill_title") val title: String,
     @ColumnInfo(name = "bill_description") val description: String?,
     @ColumnInfo(name = "bill_date") override val date: LocalDate?,
-): Dated
+): Dated, Parliamentdotuk
 
 
 data class BillWithSessionAndType(
