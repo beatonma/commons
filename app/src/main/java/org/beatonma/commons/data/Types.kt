@@ -1,6 +1,7 @@
 package org.beatonma.commons.data
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import retrofit2.Response
 
 typealias ParliamentID = Int
@@ -12,3 +13,4 @@ typealias ListResponse<T> = Response<List<T>>
 typealias LiveDataIoResult<T> = LiveData<IoResult<T>>
 typealias LiveDataIoResultList<T> = LiveData<IoResultList<T>>
 typealias LiveDataList<T> = LiveData<List<T>>
+typealias IoResultObserver<T> = Observer<IoResult<T>>
