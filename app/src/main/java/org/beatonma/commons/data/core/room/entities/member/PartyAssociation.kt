@@ -5,6 +5,7 @@ import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.core.interfaces.Named
 import org.beatonma.commons.data.core.interfaces.Periodic
+import org.beatonma.commons.network.retrofit.Contract
 import java.time.LocalDate
 
 @Entity(
@@ -53,9 +54,9 @@ data class PartyAssociationWithParty(
 
 
 data class ApiPartyAssociation(
-    @field:Json(name = "party") val party: Party,
-    @field:Json(name = "start") override val start: LocalDate,
-    @field:Json(name = "end") override val end: LocalDate?
+    @field:Json(name = Contract.PARTY) val party: Party,
+    @field:Json(name = Contract.START) override val start: LocalDate,
+    @field:Json(name = Contract.END) override val end: LocalDate?
 ): Periodic {
     fun toPartyAssociation(member: Int) = PartyAssociation(
         memberId = member,

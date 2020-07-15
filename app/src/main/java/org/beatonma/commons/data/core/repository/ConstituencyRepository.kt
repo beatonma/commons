@@ -31,11 +31,11 @@ class ConstituencyRepository @Inject constructor(
 
             apiConstituency.boundary?.also { boundary ->
                 constituencyDao.insertBoundary(
-                    boundary.copy(parliamentdotuk = apiConstituency.parliamentdotuk)
+                    boundary.toConstituencyBoundary(constituencyId = apiConstituency.parliamentdotuk)
                 )
             }
 
-            memberDao.insertElections(apiConstituency.results.map { it.election })
+            constituencyDao.insertElections(apiConstituency.results.map { it.election })
             memberDao.safeInsertProfiles(apiConstituency.results.map { it.member }, ifNotExists = true)
 
             constituencyDao.insertElectionResults(apiConstituency.results.map { result ->

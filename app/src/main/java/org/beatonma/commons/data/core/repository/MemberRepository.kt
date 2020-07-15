@@ -6,7 +6,6 @@ import org.beatonma.commons.data.*
 import org.beatonma.commons.data.core.CompleteMember
 import org.beatonma.commons.data.core.room.dao.DivisionDao
 import org.beatonma.commons.data.core.room.dao.MemberDao
-import org.beatonma.commons.data.core.room.entities.division.Vote
 import org.beatonma.commons.data.core.room.entities.division.VoteWithDivision
 import org.beatonma.commons.data.core.room.entities.member.House
 import org.beatonma.commons.data.livedata.observeComplete
@@ -32,16 +31,17 @@ class MemberRepository @Inject constructor(
         networkCall = { remoteSource.getCommonsVotesForMember(parliamentdotuk) },
         saveCallResult = { memberVotes ->
             divisionDao.insertDivisions(memberVotes.map {
-                it.division.copy(house = House.Commons)
+                it.division.copy(house = House.commons)
             })
-            divisionDao.insertVotes(memberVotes.map { memberVote ->
-                Vote(
-                    memberId = parliamentdotuk,
-                    divisionId = memberVote.division.parliamentdotuk,
-                    voteType = memberVote.voteType,
-                    memberName = ""
-                )
-            })
+            divisionDao.insertVotes(memberVotes.map { it.toVote(parliamentdotuk) })
+//            divisionDao.insertVotes(memberVotes.map { memberVote ->
+//                Vote(
+//                    memberId = parliamentdotuk,
+//                    divisionId = memberVote.division.parliamentdotuk,
+//                    voteType = memberVote.voteType,
+//                    memberName = ""
+//                )
+//            })
         }
     )
 

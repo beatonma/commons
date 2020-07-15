@@ -6,7 +6,9 @@ import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.core.interfaces.Named
 import org.beatonma.commons.data.core.interfaces.Periodic
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
+import org.beatonma.commons.data.core.room.entities.election.ApiElection
 import org.beatonma.commons.data.core.room.entities.election.Election
+import org.beatonma.commons.network.retrofit.Contract
 import java.time.LocalDate
 
 @Entity(
@@ -37,11 +39,28 @@ import java.time.LocalDate
 )
 data class HistoricalConstituency(
     @ColumnInfo(name = "memberfor_member_id") val memberId: Int,
-    @field:Json(name = "constituency") @ColumnInfo(name = "memberfor_constituency_id") val constituencyId: Int,
-    @field:Json(name = "start") @ColumnInfo(name = "memberfor_start") override val start: LocalDate,
-    @field:Json(name = "end") @ColumnInfo(name = "memberfor_end") override val end: LocalDate?,
-    @field:Json(name = "election") @ColumnInfo(name = "memberfor_election_id") val electionId: Int
+    @ColumnInfo(name = "memberfor_constituency_id") val constituencyId: Int,
+    @ColumnInfo(name = "memberfor_start") override val start: LocalDate,
+    @ColumnInfo(name = "memberfor_end") override val end: LocalDate?,
+    @ColumnInfo(name = "memberfor_election_id") val electionId: Int
 ): Periodic
+
+
+data class ApiHistoricalConstituency(
+    @field:Json(name = Contract.CONSTITUENCY) val constituency: Constituency,
+    @field:Json(name = Contract.START) override val start: LocalDate,
+    @field:Json(name = Contract.END) override val end: LocalDate?,
+    @field:Json(name = Contract.ELECTION) val election: ApiElection
+): Periodic {
+    fun toHistoricalConstituency(member: Int) = HistoricalConstituency(
+        memberId = member,
+        constituencyId = constituency.parliamentdotuk,
+        start = start,
+        end = end,
+        electionId = election.parliamentdotuk
+    )
+}
+
 
 data class HistoricalConstituencyWithElection(
     @Embedded val historicalConstituency: HistoricalConstituency,
@@ -59,17 +78,3 @@ data class HistoricalConstituencyWithElection(
 }
 
 
-data class ApiHistoricalConstituency(
-    @field:Json(name = "constituency") val constituency: Constituency,
-    @field:Json(name = "start") override val start: LocalDate,
-    @field:Json(name = "end") override val end: LocalDate?,
-    @field:Json(name = "election") val election: Election
-): Periodic {
-    fun toHistoricalConstituency(member: Int) = HistoricalConstituency(
-        memberId = member,
-        constituencyId = constituency.parliamentdotuk,
-        start = start,
-        end = end,
-        electionId = election.parliamentdotuk
-    )
-}

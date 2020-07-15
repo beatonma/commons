@@ -7,6 +7,7 @@ import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.interfaces.Named
 import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
 import org.beatonma.commons.data.core.interfaces.Periodic
+import org.beatonma.commons.network.retrofit.Contract
 import java.time.LocalDate
 
 @Entity(
@@ -17,15 +18,15 @@ import java.time.LocalDate
     tableName = "committee_memberships"
 )
 data class CommitteeMembership(
-    @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = "committee_$PARLIAMENTDOTUK")
-    override val parliamentdotuk: ParliamentID,
+    @ColumnInfo(name = "committee_$PARLIAMENTDOTUK") override val parliamentdotuk: ParliamentID,
     @ColumnInfo(name = "committee_member_id") val memberId: ParliamentID,
-    @field:Json(name = "name") @ColumnInfo(name = "committee_name") override val name: String,
-    @field:Json(name = "start") @ColumnInfo(name = "committee_start") override val start: LocalDate?,
-    @field:Json(name = "end") @ColumnInfo(name = "committee_end") override val end: LocalDate?,
+    @ColumnInfo(name = "committee_name") override val name: String,
+    @ColumnInfo(name = "committee_start") override val start: LocalDate?,
+    @ColumnInfo(name = "committee_end") override val end: LocalDate?,
 ): Parliamentdotuk,
     Named,
     Periodic
+
 
 @Entity(
     indices = [
@@ -50,9 +51,43 @@ data class CommitteeMembership(
 data class CommitteeChairship(
     @ColumnInfo(name = "committee_id") val committeeId: ParliamentID,
     @ColumnInfo(name = "chair_member_id") val memberId: ParliamentID,
-    @field:Json(name = "start") @ColumnInfo(name = "chair_start") override val start: LocalDate,
-    @field:Json(name = "end") @ColumnInfo(name = "chair_end") override val end: LocalDate?,
+    @ColumnInfo(name = "chair_start") override val start: LocalDate,
+    @ColumnInfo(name = "chair_end") override val end: LocalDate?,
 ): Periodic
+
+
+data class ApiCommittee(
+    @field:Json(name = Contract.PARLIAMENTDOTUK) override val parliamentdotuk: ParliamentID,
+    @field:Json(name = Contract.NAME) override val name: String,
+    @field:Json(name = Contract.START) override val start: LocalDate?,
+    @field:Json(name = Contract.END) override val end: LocalDate?,
+    @field:Json(name = Contract.CHAIR) val chairs: List<ApiCommitteeChairship>,
+): Parliamentdotuk,
+    Named,
+    Periodic {
+
+    fun toCommitteeMembership(member: ParliamentID) = CommitteeMembership(
+        parliamentdotuk = parliamentdotuk,
+        memberId = member,
+        name = name,
+        start = start,
+        end = end
+    )
+}
+
+
+data class ApiCommitteeChairship(
+    @field:Json(name = Contract.START) val start: LocalDate,
+    @field:Json(name = Contract.END) val end: LocalDate?,
+) {
+    fun toCommitteeChairship(committeeId: ParliamentID, memberId: ParliamentID) = CommitteeChairship(
+        committeeId = committeeId,
+        memberId = memberId,
+        start = start,
+        end = end
+    )
+}
+
 
 data class CommitteeMemberWithChairs(
     @Embedded val membership: CommitteeMembership,
@@ -70,24 +105,4 @@ data class CommitteeMemberWithChairs(
         get() = membership.start
     override val end: LocalDate?
         get() = membership.end
-}
-
-data class ApiCommittee(
-    @field:Json(name = PARLIAMENTDOTUK) override val parliamentdotuk: ParliamentID,
-    val memberId: ParliamentID,
-    @field:Json(name = "name") override val name: String,
-    @field:Json(name = "start") override val start: LocalDate?,
-    @field:Json(name = "end") override val end: LocalDate?,
-    @field:Json(name = "chair") val chairs: List<CommitteeChairship>,
-): Parliamentdotuk,
-    Named,
-    Periodic {
-
-    fun toCommitteeMembership(member: ParliamentID) = CommitteeMembership(
-        parliamentdotuk = parliamentdotuk,
-        memberId = member,
-        name = name,
-        start = start,
-        end = end
-    )
 }

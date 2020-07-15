@@ -1,11 +1,12 @@
 package org.beatonma.commons.data.core.room.entities.member
 
 import androidx.room.ColumnInfo
-import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
+import org.beatonma.commons.data.ParliamentID
+import org.beatonma.commons.network.retrofit.Contract
 
 sealed class Address
 
@@ -26,14 +27,35 @@ sealed class Address
     tableName = "physical_addresses"
 )
 data class PhysicalAddress(
-    @field:Json(name = "address") @ColumnInfo(name = "paddr_address") val address: String,
-    @field:Json(name = "description") @ColumnInfo(name = "paddr_description") val description: String,
-    @field:Json(name = "postcode") @ColumnInfo(name = "paddr_postcode") val postcode: String?,
-    @field:Json(name = "phone") @ColumnInfo(name = "paddr_phone") val phone: String?,
-    @field:Json(name = "fax") @ColumnInfo(name = "paddr_fax") val fax: String?,
-    @field:Json(name = "email") @ColumnInfo(name = "paddr_email") val email: String?,
-    @ColumnInfo(name = "paddr_member_id", index = true) val memberId: Int
+    @ColumnInfo(name = "paddr_address") val address: String,
+    @ColumnInfo(name = "paddr_description") val description: String,
+    @ColumnInfo(name = "paddr_postcode") val postcode: String?,
+    @ColumnInfo(name = "paddr_phone") val phone: String?,
+    @ColumnInfo(name = "paddr_fax") val fax: String?,
+    @ColumnInfo(name = "paddr_email") val email: String?,
+    @ColumnInfo(name = "paddr_member_id", index = true) val memberId: Int,
 ): Address()
+
+
+data class ApiPhysicalAddress(
+    @field:Json(name = Contract.ADDRESS) val address: String,
+    @field:Json(name = Contract.DESCRIPTION) val description: String,
+    @field:Json(name = Contract.POSTCODE) val postcode: String?,
+    @field:Json(name = Contract.PHONE) val phone: String?,
+    @field:Json(name = Contract.FAX) val fax: String?,
+    @field:Json(name = Contract.EMAIL) val email: String?,
+) {
+    fun toPhysicalAddress(memberId: ParliamentID) = PhysicalAddress(
+        memberId = memberId,
+        address = address,
+        description = description,
+        postcode = postcode,
+        phone = phone,
+        fax = fax,
+        email = email
+    )
+}
+
 
 @Entity(
     foreignKeys = [
@@ -52,15 +74,25 @@ data class PhysicalAddress(
     tableName = "weblinks"
 )
 data class WebAddress(
-    @field:Json(name = "url") @ColumnInfo(name = "waddr_url") val url: String,
-    @field:Json(name = "description") @ColumnInfo(name = "waddr_description") val description: String,
+    @ColumnInfo(name = "waddr_url") val url: String,
+    @ColumnInfo(name = "waddr_description") val description: String,
     @ColumnInfo(name = "waddr_member_id", index = true) val memberId: Int
 )
 
-/**
- * Used for deserializing api response
- */
+
+data class ApiWebAddress(
+    @field:Json(name = Contract.URL) val url: String,
+    @field:Json(name = Contract.DESCRIPTION) val description: String,
+) {
+    fun toWebAddress(memberId: ParliamentID) = WebAddress(
+        url = url,
+        description = description,
+        memberId = memberId
+    )
+}
+
+
 data class ApiAddresses(
-    @Embedded @field:Json(name = "physical") val physical: List<PhysicalAddress>,
-    @Embedded @field:Json(name = "web") val web: List<WebAddress>
-): Address()
+    @field:Json(name = Contract.PHYSICAL) val physical: List<ApiPhysicalAddress>,
+    @field:Json(name = Contract.WEB) val web: List<ApiWebAddress>
+)

@@ -5,6 +5,7 @@ import androidx.room.*
 import org.beatonma.commons.data.LiveDataList
 import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.room.dao.shared.SharedConstituencyDao
+import org.beatonma.commons.data.core.room.dao.shared.SharedElectionDao
 import org.beatonma.commons.data.core.room.entities.constituency.*
 import org.beatonma.commons.data.core.room.entities.election.ConstituencyResult
 import org.beatonma.commons.data.core.room.entities.election.ConstituencyResultWithDetails
@@ -12,7 +13,7 @@ import org.beatonma.commons.data.core.room.entities.election.Election
 import org.beatonma.commons.data.core.room.entities.member.Party
 
 @Dao
-interface ConstituencyDao: SharedConstituencyDao {
+interface ConstituencyDao: SharedConstituencyDao, SharedElectionDao {
 
     @Transaction
     @Query("""SELECT * FROM constituencies WHERE constituency_parliamentdotuk = :parliamentdotuk""")

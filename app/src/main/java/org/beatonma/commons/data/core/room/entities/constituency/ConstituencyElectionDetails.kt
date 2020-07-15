@@ -7,6 +7,7 @@ import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
 import org.beatonma.commons.data.core.room.entities.election.Election
 import org.beatonma.commons.data.core.room.entities.member.Party
+import org.beatonma.commons.network.retrofit.Contract
 
 @Entity(
     foreignKeys = [
@@ -40,15 +41,15 @@ data class ConstituencyElectionDetails(
 
 
 data class ApiConstituencyElectionDetails(
-    @field:Json(name = PARLIAMENTDOTUK) override val parliamentdotuk: ParliamentID,
-    @field:Json(name = "electorate") val electorate: Int,
-    @field:Json(name = "turnout") val turnout: Int,
-    @field:Json(name = "turnout_fraction") val turnoutFraction: String,
-    @field:Json(name = "result") val result: String,
-    @field:Json(name = "majority") val majority: Int,
-    @field:Json(name = "candidates") val candidates: List<ApiConstituencyCandidate>,
-    @field:Json(name = "constituency") val constituency: Constituency,
-    @field:Json(name = "election") val election: Election,
+    @field:Json(name = Contract.PARLIAMENTDOTUK) override val parliamentdotuk: ParliamentID,
+    @field:Json(name = Contract.ELECTORATE) val electorate: Int,
+    @field:Json(name = Contract.TURNOUT) val turnout: Int,
+    @field:Json(name = Contract.TURNOUT_FRACTION) val turnoutFraction: String,
+    @field:Json(name = Contract.RESULT) val result: String,
+    @field:Json(name = Contract.MAJORITY) val majority: Int,
+    @field:Json(name = Contract.CANDIDATES) val candidates: List<ApiConstituencyCandidate>,
+    @field:Json(name = Contract.CONSTITUENCY) val constituency: Constituency,
+    @field:Json(name = Contract.ELECTION) val election: Election,
 ): Parliamentdotuk {
     fun toConstituencyElectionDetails() = ConstituencyElectionDetails(
         parliamentdotuk = parliamentdotuk,
@@ -91,10 +92,10 @@ data class ConstituencyCandidate(
 
 
 data class ApiConstituencyCandidate(
-    @field:Json(name = "name") val name: String,
-    @field:Json(name = "party_name") val partyName: String,
-    @field:Json(name = "order") val order: Int,
-    @field:Json(name = "votes") val votes: Int,
+    @field:Json(name = Contract.NAME) val name: String,
+    @field:Json(name = Contract.PARTY_NAME) val partyName: String,
+    @field:Json(name = Contract.ORDER) val order: Int,
+    @field:Json(name = Contract.VOTES) val votes: Int,
 ) {
     fun toConstituencyCandidate(resultsId: Int) = ConstituencyCandidate(
         resultsId = resultsId,

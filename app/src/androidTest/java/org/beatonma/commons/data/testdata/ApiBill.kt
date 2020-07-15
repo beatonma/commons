@@ -20,8 +20,7 @@ val API_BILL = ApiBill(
     isMoneyBill = false,
     publicInvolvementAllowed = true,
     publications = listOf(
-        BillPublication(
-            billId = BILL_PUK,
+        ApiBillPublication(
             parliamentdotuk = 397898,
             title = "Bill as introduced"
         ),
@@ -31,18 +30,17 @@ val API_BILL = ApiBill(
         name = "2008-2009"
     ),
     sponsors = listOf(
-        BillSponsor(
-            billId = BILL_PUK,
+        ApiBillSponsor(
             parliamentdotuk = 1727,
-            name = "Baroness Wilcox"
+            name = "Baroness Wilcox",
+            party = null
         ),
     ),
     stages = listOf(
         ApiBillStage(
             parliamentdotuk = 6697,
             sittings = listOf(
-                BillStageSitting(
-                    billStageId = 6697,
+                ApiBillStageSitting(
                     parliamentdotuk = 8684,
                     date = "2014-05-14".asDate(),
                     isFormal = false,

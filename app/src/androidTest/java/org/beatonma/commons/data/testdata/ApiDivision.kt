@@ -26,27 +26,47 @@ const val API_DIVISION_JSON = """{
         {
             "parliamentdotuk": 1609,
             "name": "Chloe Smith",
-            "vote": "Abstains"
+            "vote": "Abstains",
+            "party": {
+                "parliamentdotuk": 15,
+                "name": "Labour"
+            }
         },
         {
             "parliamentdotuk": 3989,
             "name": "Jack Lopresti",
-            "vote": "AyeVote"
+            "vote": "AyeVote",
+            "party": {
+                "parliamentdotuk": 15,
+                "name": "Labour"
+            }
         },
         {
             "parliamentdotuk": 1587,
             "name": "Pat McFadden",
-            "vote": "DidNotVote"
+            "vote": "DidNotVote",
+            "party": {
+                "parliamentdotuk": 15,
+                "name": "Labour"
+            }
         },
         {
             "parliamentdotuk": 1503,
             "name": "Mr Jamie Reed",
-            "vote": "NoVote"
+            "vote": "NoVote",
+            "party": {
+                "parliamentdotuk": 15,
+                "name": "Labour"
+            }
         },
         {
             "parliamentdotuk": 31415926,
             "name": "Fake Member",
-            "vote": "SuspendedOrExpelledVote"
+            "vote": "SuspendedOrExpelledVote",
+            "party": {
+                "parliamentdotuk": 15,
+                "name": "Labour"
+            }
         }
     ]
 }"""
@@ -58,7 +78,7 @@ val API_DIVISION = ApiDivision(
     passed = true,
     ayes = 275,
     noes = 33,
-    house = House.Commons,
+    house = House.commons,
     didNotVote = 339,
     abstentions = 1,
     deferredVote = true,
@@ -69,27 +89,32 @@ val API_DIVISION = ApiDivision(
         ApiVote(
             memberId = 1609,
             memberName = "Chloe Smith",
-            voteType = VoteType.Abstains
+            voteType = VoteType.Abstains,
+            party = LABOUR,
         ),
         ApiVote(
             memberId = 3989,
             memberName = "Jack Lopresti",
-            voteType = VoteType.AyeVote
+            voteType = VoteType.AyeVote,
+            party = LABOUR,
         ),
         ApiVote(
             memberId = 1587,
             memberName = "Pat McFadden",
-            voteType = VoteType.DidNotVote
+            voteType = VoteType.DidNotVote,
+            party = LABOUR,
         ),
         ApiVote(
             memberId = 1503,
             memberName = "Mr Jamie Reed",
-            voteType = VoteType.NoVote
+            voteType = VoteType.NoVote,
+            party = LABOUR,
         ),
         ApiVote(
             memberId = 31415926,
             memberName = "Fake Member",
-            voteType = VoteType.SuspendedOrExpelledVote
+            voteType = VoteType.SuspendedOrExpelledVote,
+            party = LABOUR,
         )
     ),
     description = null,

@@ -9,6 +9,7 @@ import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
+import org.beatonma.commons.network.retrofit.Contract
 
 private const val TAG = "ConstituencyBoundary"
 
@@ -26,15 +27,33 @@ private const val TAG = "ConstituencyBoundary"
 )
 data class ConstituencyBoundary(
     @ColumnInfo(name = "boundary_constituency_id") @PrimaryKey override val parliamentdotuk: ParliamentID,
-    @field:Json(name = "kml") @ColumnInfo(name = "boundary_kml") val kml: String,
-    @field:Json(name = "area") @ColumnInfo(name = "boundary_area") val area: String?,
-    @field:Json(name = "boundary_length") @ColumnInfo(name = "boundary_length") val boundaryLength: String?,
-    @field:Json(name = "center_latitude") @ColumnInfo(name = "boundary_center_lat") val centerLat: String?,
-    @field:Json(name = "center_longitude") @ColumnInfo(name = "boundary_center_long") val centerLong: String?,
+    @ColumnInfo(name = "boundary_kml") val kml: String,
+    @ColumnInfo(name = "boundary_area") val area: String?,
+    @ColumnInfo(name = "boundary_length") val boundaryLength: String?,
+    @ColumnInfo(name = "boundary_center_lat") val centerLat: String?,
+    @ColumnInfo(name = "boundary_center_long") val centerLong: String?,
 ): Parliamentdotuk {
     fun center(): LatLng? {
         val lat = centerLat?.toDoubleOrNull() ?: return null
         val long = centerLong?.toDoubleOrNull() ?: return null
         return LatLng(lat, long)
     }
+}
+
+
+data class ApiConstituencyBoundary(
+    @field:Json(name = Contract.KML) val kml: String,
+    @field:Json(name = Contract.AREA) val area: String?,
+    @field:Json(name = Contract.BOUNDARY_LENGTH) val boundaryLength: String?,
+    @field:Json(name = Contract.CENTER_LATITUDE) val centerLat: String?,
+    @field:Json(name = Contract.CENTER_LONGITUDE) val centerLong: String?,
+) {
+    fun toConstituencyBoundary(constituencyId: ParliamentID) = ConstituencyBoundary(
+        parliamentdotuk = constituencyId,
+        kml = kml,
+        area = area,
+        boundaryLength = boundaryLength,
+        centerLat = centerLat,
+        centerLong = centerLong
+    )
 }

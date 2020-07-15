@@ -7,6 +7,8 @@ import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.interfaces.Named
+import org.beatonma.commons.data.core.room.entities.member.Party
+import org.beatonma.commons.network.retrofit.Contract
 
 /**
  * [parliamentdotuk] may be used to look up the member profile, but it may be null if the server
@@ -16,7 +18,22 @@ import org.beatonma.commons.data.core.interfaces.Named
     tableName = "bill_sponsors"
 )
 data class BillSponsor(
-    @field:Json(name = "name") @ColumnInfo(name = "sponsor_name") @PrimaryKey override val name: String,
+    @ColumnInfo(name = "sponsor_name") @PrimaryKey override val name: String,
     @ColumnInfo(name = "sponsor_bill_id") val billId: ParliamentID,
-    @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = "sponsor_$PARLIAMENTDOTUK") val parliamentdotuk: ParliamentID?,
+    @ColumnInfo(name = "sponsor_$PARLIAMENTDOTUK") val parliamentdotuk: ParliamentID?,
+    @ColumnInfo(name = "sponsor_party_id") val partyId: ParliamentID?,
 ): Named
+
+
+data class ApiBillSponsor(
+    @field:Json(name = Contract.NAME) override val name: String,
+    @field:Json(name = Contract.PARLIAMENTDOTUK) val parliamentdotuk: ParliamentID?,
+    @field:Json(name = Contract.PARTY) val party: Party?
+): Named {
+    fun toBillSponsor(billId: ParliamentID) = BillSponsor(
+        name = name,
+        billId = billId,
+        parliamentdotuk = parliamentdotuk,
+        partyId = party?.parliamentdotuk
+    )
+}

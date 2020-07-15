@@ -4,8 +4,11 @@ import androidx.room.Embedded
 import androidx.room.Ignore
 import androidx.room.Relation
 import com.squareup.moshi.Json
+import org.beatonma.commons.data.ParliamentID
+import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import org.beatonma.commons.data.core.room.entities.member.*
+import org.beatonma.commons.network.retrofit.Contract
 
 data class CompleteMember(
     @Embedded var profile: MemberProfile? = null,
@@ -37,22 +40,24 @@ data class MinimalMember(
         entityColumn = "constituency_parliamentdotuk",
         entity = Constituency::class)
     val constituency: Constituency?,
-)
+): Parliamentdotuk {
+    override val parliamentdotuk: ParliamentID get() = profile.parliamentdotuk
+}
 
 /**
  * Class for deserializing complete /member/profile/ api response.
  */
 data class ApiCompleteMember(
     val profile: MemberProfile,
-    @field:Json(name = "address") val addresses: ApiAddresses,
-    @field:Json(name = "posts") val posts: ApiPosts,
-    @field:Json(name = "committees") val committees: List<ApiCommittee>,
-    @field:Json(name = "houses") val houses: List<HouseMembership>,
-    @field:Json(name = "interests") val financialInterests: List<FinancialInterest>,
-    @field:Json(name = "experiences") val experiences: List<Experience>,
-    @field:Json(name = "subjects") val topicsOfInterest: List<TopicOfInterest>,
-    @field:Json(name = "constituencies") val constituencies: List<ApiHistoricalConstituency>,
-    @field:Json(name = "parties") val parties: List<ApiPartyAssociation>,
+    @field:Json(name = Contract.ADDRESS) val addresses: ApiAddresses,
+    @field:Json(name = Contract.POSTS) val posts: ApiPosts,
+    @field:Json(name = Contract.COMMITTEES) val committees: List<ApiCommittee>,
+    @field:Json(name = Contract.HOUSES) val houses: List<ApiHouseMembership>,
+    @field:Json(name = Contract.INTERESTS) val financialInterests: List<ApiFinancialInterest>,
+    @field:Json(name = Contract.EXPERIENCES) val experiences: List<ApiExperience>,
+    @field:Json(name = Contract.SUBJECTS) val topicsOfInterest: List<ApiTopicOfInterest>,
+    @field:Json(name = Contract.CONSTITUENCIES) val constituencies: List<ApiHistoricalConstituency>,
+    @field:Json(name = Contract.PARTIES) val parties: List<ApiPartyAssociation>,
 
     /**
      * API fields pending implementation:

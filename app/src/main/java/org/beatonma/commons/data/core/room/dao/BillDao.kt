@@ -83,11 +83,11 @@ interface BillDao {
         insertBillStageSittings(
         apiBill.stages.map { stage ->
             stage.sittings.map { sitting ->
-                sitting.copy(billStageId = stage.parliamentdotuk)
+                sitting.toBillStageSitting(billStageId = stage.parliamentdotuk)
             }
         }.flatten())
 
-        insertBillSponsors(apiBill.sponsors.map { it.copy(billId = parliamentdotuk) })
-        insertBillPublications(apiBill.publications.map { it.copy(billId = parliamentdotuk) })
+        insertBillSponsors(apiBill.sponsors.map { it.toBillSponsor(billId = parliamentdotuk) })
+        insertBillPublications(apiBill.publications.map { it.toBillPublication(billId = parliamentdotuk) })
     }
 }

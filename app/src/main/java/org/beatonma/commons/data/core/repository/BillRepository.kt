@@ -1,5 +1,6 @@
 package org.beatonma.commons.data.core.repository
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import org.beatonma.commons.data.CommonsRemoteDataSource
 import org.beatonma.commons.data.LiveDataIoResult
@@ -8,8 +9,12 @@ import org.beatonma.commons.data.core.room.dao.BillDao
 import org.beatonma.commons.data.core.room.entities.bill.CompleteBill
 import org.beatonma.commons.data.livedata.observeComplete
 import org.beatonma.commons.data.resultLiveData
+import org.beatonma.commons.kotlin.extensions.allNotNull
 import javax.inject.Inject
 import javax.inject.Singleton
+
+
+private const val TAG = "BillRepo"
 
 @Singleton
 class BillRepository @Inject constructor(
@@ -22,10 +27,19 @@ class BillRepository @Inject constructor(
         saveCallResult = { bill -> billDao.insertCompleteBill(parliamentdotuk, bill) }
     )
 
-    private fun observeCompleteBill(parliamentdotuk: ParliamentID): LiveData<CompleteBill> =
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    suspend fun observeCompleteBill(parliamentdotuk: ParliamentID): LiveData<CompleteBill> =
         observeComplete(
             CompleteBill(),
-            updatePredicate = { b -> b.bill != null },
+            updatePredicate = { b ->
+                allNotNull(
+                    b.bill,
+                    b.type,
+                    b.session,
+                    b.publications,
+                    b.sponsors,
+                    b.stages,
+                )},
         ) { bill ->
             addSource(billDao.getBill(parliamentdotuk)) { _bill ->
                 bill.update { copy(bill = _bill) }

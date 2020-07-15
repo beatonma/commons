@@ -7,6 +7,7 @@ import com.squareup.moshi.Json
 import org.beatonma.commons.data.core.room.entities.member.BasicProfile
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 import org.beatonma.commons.data.core.room.entities.member.Party
+import org.beatonma.commons.network.retrofit.Contract
 
 @Entity(
     primaryKeys = [
@@ -24,8 +25,8 @@ data class ConstituencyResult(
 
 
 data class ApiConstituencyResult(
-    @field:Json(name = "mp") val member: MemberProfile,
-    @field:Json(name = "election") val election: Election,
+    @field:Json(name = Contract.MP) val member: MemberProfile,
+    @field:Json(name = Contract.ELECTION) val election: Election,
 ) {
     fun toConstituencyResult(constituencyId: Int) = ConstituencyResult(
         memberId = member.parliamentdotuk,

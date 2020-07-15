@@ -8,14 +8,14 @@ import org.beatonma.commons.data.core.ApiCompleteMember
 import org.beatonma.commons.data.core.interfaces.markAccessed
 import org.beatonma.commons.data.core.interfaces.markAllAccessed
 import org.beatonma.commons.data.core.room.dao.shared.SharedConstituencyDao
+import org.beatonma.commons.data.core.room.dao.shared.SharedElectionDao
 import org.beatonma.commons.data.core.room.dao.shared.SharedPartyDao
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import org.beatonma.commons.data.core.room.entities.division.VoteWithDivision
-import org.beatonma.commons.data.core.room.entities.election.Election
 import org.beatonma.commons.data.core.room.entities.member.*
 
 @Dao
-interface MemberDao: SharedPartyDao, SharedConstituencyDao {
+interface MemberDao: SharedPartyDao, SharedConstituencyDao, SharedElectionDao {
 
     // Get operations
     @Transaction
@@ -124,9 +124,6 @@ interface MemberDao: SharedPartyDao, SharedConstituencyDao {
     suspend fun insertTopicsOfInterest(topicOfInterests: List<TopicOfInterest>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertElections(elections: List<Election>)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMemberForConstituencies(memberForConstituencies: List<HistoricalConstituency>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -161,20 +158,20 @@ interface MemberDao: SharedPartyDao, SharedConstituencyDao {
         safeInsertProfile(member.profile)
 
         insertPhysicalAddresses(
-            member.addresses.physical.map { it.copy(memberId = parliamentdotuk) }
+            member.addresses.physical.map { it.toPhysicalAddress(memberId = parliamentdotuk) }
         )
         insertWebAddresses(
-            member.addresses.web.map { it.copy(memberId = parliamentdotuk) }
+            member.addresses.web.map { it.toWebAddress(memberId = parliamentdotuk) }
         )
 
         insertPosts(member.posts.governmental.map { post ->
-            post.copy(memberId = parliamentdotuk, postType = Post.PostType.GOVERNMENTAL)
+            post.toPost(memberId = parliamentdotuk, postType = Post.PostType.GOVERNMENTAL)
         })
         insertPosts(member.posts.parliamentary.map { post ->
-            post.copy(memberId = parliamentdotuk, postType = Post.PostType.PARLIAMENTARY)
+            post.toPost(memberId = parliamentdotuk, postType = Post.PostType.PARLIAMENTARY)
         })
         insertPosts(member.posts.opposition.map { post ->
-            post.copy(memberId = parliamentdotuk, postType = Post.PostType.OPPOSITION)
+            post.toPost(memberId = parliamentdotuk, postType = Post.PostType.OPPOSITION)
         })
 
         insertCommitteeMemberships(member.committees.map { membership ->
@@ -183,21 +180,22 @@ interface MemberDao: SharedPartyDao, SharedConstituencyDao {
 
         member.committees.forEach { committee ->
             insertCommitteeChairships(committee.chairs.map { chair ->
-                chair.copy(
+                chair.toCommitteeChairship(
                     committeeId = committee.parliamentdotuk,
-                    memberId = parliamentdotuk)
+                    memberId = parliamentdotuk
+                )
             })
         }
 
         insertHouseMemberships(member.houses.map { house ->
-            house.copy(memberId = parliamentdotuk)
+            house.toHouseMembership(memberId = parliamentdotuk)
         })
 
-        insertFinancialInterests(member.financialInterests.map { it.copy(memberId = parliamentdotuk) })
-        insertExperiences(member.experiences.map { it.copy(memberId = parliamentdotuk) })
-        insertTopicsOfInterest(member.topicsOfInterest.map { it.copy(memberId = parliamentdotuk) })
+        insertFinancialInterests(member.financialInterests.map { it.toFinancialInterest(memberId = parliamentdotuk) })
+        insertExperiences(member.experiences.map { it.toExperience(memberId = parliamentdotuk) })
+        insertTopicsOfInterest(member.topicsOfInterest.map { it.toTopicOfInterest(memberId = parliamentdotuk) })
 
-        insertElections(member.constituencies.map { it.election })
+        insertElections(member.constituencies.map { it.election.toElection() })
         insertMemberForConstituencies(member.constituencies.map {
             it.toHistoricalConstituency(parliamentdotuk)
         } )

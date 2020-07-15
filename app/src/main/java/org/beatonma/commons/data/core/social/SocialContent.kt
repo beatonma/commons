@@ -1,6 +1,7 @@
 package org.beatonma.commons.data.core.social
 
 import com.squareup.moshi.Json
+import org.beatonma.commons.network.retrofit.Contract
 
 /**
  * Names are lowercase so they can be used with Navigation Components deepLink
@@ -15,10 +16,10 @@ enum class SocialTargetType {
 }
 
 data class SocialContent(
-    @field:Json(name = "title") val title: String?,
-    @field:Json(name = "comments") val comments: List<SocialComment>,
-    @field:Json(name = "votes") val votes: SocialVotes,
-    @field:Json(name = "vote") val userVote: SocialVoteType?,
+    @field:Json(name = Contract.TITLE) val title: String?,
+    @field:Json(name = Contract.COMMENTS) val comments: List<SocialComment>,
+    @field:Json(name = Contract.VOTES) val votes: SocialVotes,
+    @field:Json(name = Contract.VOTE) val userVote: SocialVoteType?,
 ) {
     fun commentCount(): Int = comments.size
     fun voteCount(): Int = votes.voteCount()

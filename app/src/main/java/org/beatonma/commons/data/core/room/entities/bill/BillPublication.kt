@@ -8,6 +8,7 @@ import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
+import org.beatonma.commons.network.retrofit.Contract
 
 private const val TAG = "BillPublication"
 
@@ -24,8 +25,19 @@ private const val TAG = "BillPublication"
     tableName = "bill_publications"
 )
 data class BillPublication(
-    @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = "bill_pub_parliamentdotuk") @PrimaryKey
-    override val parliamentdotuk: ParliamentID,
+    @ColumnInfo(name = "bill_pub_parliamentdotuk") @PrimaryKey override val parliamentdotuk: ParliamentID,
     @ColumnInfo(name = "bill_pub_bill_id") val billId: ParliamentID,
-    @field:Json(name = "title") @ColumnInfo(name = "bill_pub_title") val title: String,
+    @ColumnInfo(name = "bill_pub_title") val title: String,
 ) : Parliamentdotuk
+
+
+data class ApiBillPublication(
+    @field:Json(name = Contract.PARLIAMENTDOTUK) override val parliamentdotuk: ParliamentID,
+    @field:Json(name = Contract.TITLE) val title: String,
+) : Parliamentdotuk {
+    fun toBillPublication(billId: ParliamentID) = BillPublication(
+        parliamentdotuk = parliamentdotuk,
+        title = title,
+        billId = billId
+    )
+}

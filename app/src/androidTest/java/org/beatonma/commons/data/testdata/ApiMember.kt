@@ -3,7 +3,7 @@ package org.beatonma.commons.data.testdata
 import org.beatonma.commons.androidTest.asDate
 import org.beatonma.commons.data.core.ApiCompleteMember
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
-import org.beatonma.commons.data.core.room.entities.election.Election
+import org.beatonma.commons.data.core.room.entities.election.ApiElection
 import org.beatonma.commons.data.core.room.entities.member.*
 
 const val MEMBER_PUK = 1423
@@ -34,34 +34,29 @@ val API_MEMBER = ApiCompleteMember(
     ),
     addresses = ApiAddresses(
         physical = listOf(
-            PhysicalAddress(
+            ApiPhysicalAddress(
                 description = "Parliamentary",
                 address = "House of Commons, London",
                 postcode = "SW1A 0AA",
                 phone = "+442072194682",
                 fax = "+442072194683",
                 email = "boris.johnson.mp@parliament.uk",
-                memberId = MEMBER_PUK,
             ),
         ),
         web = listOf(
-            WebAddress("https://twitter.com/borisjohnson",
+            ApiWebAddress("https://twitter.com/borisjohnson",
                 "Twitter",
-                memberId = MEMBER_PUK,
             ),
         )
     ),
     committees = listOf(
         ApiCommittee(
-            memberId = MEMBER_PUK,
             parliamentdotuk = 2,
             name = "Administration Committee",
             start = "2015-07-21".asDate(),
             end = "2017-05-03".asDate(),
             chairs = listOf(
-                CommitteeChairship(
-                    committeeId = 2,
-                    memberId = MEMBER_PUK,
+                ApiCommitteeChairship(
                     start = "2015-07-21".asDate(),
                     end = "2017-05-03".asDate(),
                 )
@@ -75,7 +70,7 @@ val API_MEMBER = ApiCompleteMember(
                 parliamentdotuk = 147277),
             start = "2019-12-12".asDate(),
             end = null,
-            election = Election(
+            election = ApiElection(
                 parliamentdotuk = 397,
                 name = "2019 General Election",
                 date = "2019-12-12".asDate(),
@@ -88,7 +83,7 @@ val API_MEMBER = ApiCompleteMember(
                 parliamentdotuk = 147277),
             start = "2017-06-08".asDate(),
             end = "2019-11-06".asDate(),
-            election = Election(
+            election = ApiElection(
                 parliamentdotuk = 377,
                 name = "2017 General Election",
                 date = "2017-06-08".asDate(),
@@ -97,8 +92,7 @@ val API_MEMBER = ApiCompleteMember(
         ),
     ),
     experiences = listOf(
-        Experience(
-            memberId = MEMBER_PUK,
+        ApiExperience(
             category = "Political",
             organisation = "Liberal Democrats",
             title = "National Treasurer",
@@ -107,22 +101,19 @@ val API_MEMBER = ApiCompleteMember(
         ),
     ),
     houses = listOf(
-        HouseMembership(
-            house = House.Commons,
+        ApiHouseMembership(
+            house = House.commons,
             start = "2001-06-07".asDate(),
             end = "2008-06-04".asDate(),
-            memberId = MEMBER_PUK,
         ),
-        HouseMembership(
-            house = House.Commons,
+        ApiHouseMembership(
+            house = House.commons,
             start = "2015-05-07".asDate(),
             end = null,
-            memberId = MEMBER_PUK,
         )
     ),
     financialInterests = listOf(
-        FinancialInterest(
-            memberId = MEMBER_PUK,
+        ApiFinancialInterest(
             parliamentdotuk = 12485,
             category = "Category 1: Directorships",
             description = "Director, Durham Group Estates Ltd",
@@ -150,39 +141,32 @@ val API_MEMBER = ApiCompleteMember(
     ),
     posts = ApiPosts(
         governmental = listOf(
-            Post(
-                memberId = MEMBER_PUK,
+            ApiPost(
                 parliamentdotuk = 661,
                 name = "Prime Minister, First Lord of the Treasury and Minister for the Civil Service",
                 start = "2019-07-24".asDate(),
                 end = "2020-01-01".asDate(),
-                postType = Post.PostType.GOVERNMENTAL,
             ),
         ),
         parliamentary = listOf(
-            Post(
-                memberId = MEMBER_PUK,
+            ApiPost(
                 parliamentdotuk = 787,
                 name = "Leader of the Conservative Party",
                 start = "2019-07-23".asDate(),
                 end = "2020-01-02".asDate(),
-                postType = Post.PostType.PARLIAMENTARY,
             ),
         ),
         opposition = listOf(
-            Post(
-                memberId = MEMBER_PUK,
+            ApiPost(
                 parliamentdotuk = 15,
                 name = "Shadow Minister (Business, Innovation and Skills)",
                 start = "2005-12-09".asDate(),
                 end = "2007-07-16".asDate(),
-                postType = Post.PostType.OPPOSITION,
             ),
         ),
     ),
     topicsOfInterest = listOf(
-        TopicOfInterest(
-            memberId = MEMBER_PUK,
+        ApiTopicOfInterest(
             category = "Countries of Interest",
             topic = "Australia, Fiji, New Zealand, Samoa",
         ),

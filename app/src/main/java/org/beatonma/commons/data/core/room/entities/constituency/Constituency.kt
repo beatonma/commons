@@ -11,14 +11,15 @@ import org.beatonma.commons.data.core.room.entities.election.ApiConstituencyResu
 import org.beatonma.commons.data.core.room.entities.election.ConstituencyResultWithDetails
 import org.beatonma.commons.data.core.room.entities.member.BasicProfileWithParty
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
+import org.beatonma.commons.network.retrofit.Contract
 import java.time.LocalDate
 
 @Entity(
     tableName = "constituencies"
 )
 data class Constituency(
-    @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = "constituency_$PARLIAMENTDOTUK") @PrimaryKey override val parliamentdotuk: ParliamentID,
-    @field:Json(name = "name") @ColumnInfo(name = "constituency_name") override val name: String,
+    @ColumnInfo(name = "constituency_$PARLIAMENTDOTUK") @PrimaryKey override val parliamentdotuk: ParliamentID,
+    @ColumnInfo(name = "constituency_name") override val name: String,
     @ColumnInfo(name = "constituency_start") override val start: LocalDate? = null,
     @ColumnInfo(name = "constituency_end") override val end: LocalDate? = null,
 ): Parliamentdotuk,
@@ -27,13 +28,13 @@ data class Constituency(
 
 
 data class ApiConstituency(
-    @field:Json(name = PARLIAMENTDOTUK) override val parliamentdotuk: ParliamentID,
-    @field:Json(name = "name") override val name: String,
-    @field:Json(name = "start") override val start: LocalDate?,
-    @field:Json(name = "end") override val end: LocalDate?,
-    @field:Json(name = "mp") val memberProfile: MemberProfile?,
-    @field:Json(name = "boundary") val boundary: ConstituencyBoundary?,
-    @field:Json(name = "results") val results: List<ApiConstituencyResult>,
+    @field:Json(name = Contract.PARLIAMENTDOTUK) override val parliamentdotuk: ParliamentID,
+    @field:Json(name = Contract.NAME) override val name: String,
+    @field:Json(name = Contract.START) override val start: LocalDate?,
+    @field:Json(name = Contract.END) override val end: LocalDate?,
+    @field:Json(name = Contract.MP) val memberProfile: MemberProfile?,
+    @field:Json(name = Contract.BOUNDARY) val boundary: ApiConstituencyBoundary?,
+    @field:Json(name = Contract.RESULTS) val results: List<ApiConstituencyResult>,
 ): Parliamentdotuk,
     Named,
     Periodic {

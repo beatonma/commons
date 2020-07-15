@@ -8,12 +8,13 @@ import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.interfaces.Named
 import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
+import org.beatonma.commons.network.retrofit.Contract
 
 @Entity(
     tableName = "parliamentary_sessions"
 )
 data class ParliamentarySession(
-    @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = "session_$PARLIAMENTDOTUK") @PrimaryKey override val parliamentdotuk: ParliamentID,
-    @field:Json(name = "name") @ColumnInfo(name = "session_name") override val name: String,
+    @field:Json(name = Contract.PARLIAMENTDOTUK) @ColumnInfo(name = "session_$PARLIAMENTDOTUK") @PrimaryKey override val parliamentdotuk: ParliamentID,
+    @field:Json(name = Contract.NAME) @ColumnInfo(name = "session_name") override val name: String,
 ): Parliamentdotuk,
     Named

@@ -6,6 +6,7 @@ import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.interfaces.Dated
 import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
+import org.beatonma.commons.network.retrofit.Contract
 import java.time.LocalDate
 
 /**
@@ -34,23 +35,23 @@ data class Bill(
 
 
 data class ApiBill(
-    @field:Json(name = PARLIAMENTDOTUK) @PrimaryKey override val parliamentdotuk: ParliamentID,
-    @field:Json(name = "title") val title: String,
-    @field:Json(name = "description") val description: String?,
-    @field:Json(name = "act_name") val actName: String?,
-    @field:Json(name = "label") val label: String?,
-    @field:Json(name = "homepage") val homepage: String?,
-    @field:Json(name = "date") override val date: LocalDate,
-    @field:Json(name = "ballot_number") val ballotNumber: Int?,
-    @field:Json(name = "bill_chapter") val billChapter: String?,
-    @field:Json(name = "is_private") val isPrivate: Boolean = false,
-    @field:Json(name = "is_money_bill") val isMoneyBill: Boolean = false,
-    @field:Json(name = "public_involvement_allowed") val publicInvolvementAllowed: Boolean = false,
-    @field:Json(name = "publications") val publications: List<BillPublication> = listOf(),
-    @field:Json(name = "session") val session: ParliamentarySession?,
-    @field:Json(name = "type") val type: BillType?,
-    @field:Json(name = "sponsors") @Ignore val sponsors: List<BillSponsor> = listOf(),
-    @field:Json(name = "stages") @Ignore val stages: List<ApiBillStage> = listOf(),
+    @field:Json(name = Contract.PARLIAMENTDOTUK) @PrimaryKey override val parliamentdotuk: ParliamentID,
+    @field:Json(name = Contract.TITLE) val title: String,
+    @field:Json(name = Contract.DESCRIPTION) val description: String?,
+    @field:Json(name = Contract.ACT_NAME) val actName: String?,
+    @field:Json(name = Contract.LABEL) val label: String?,
+    @field:Json(name = Contract.HOMEPAGE) val homepage: String?,
+    @field:Json(name = Contract.DATE) override val date: LocalDate,
+    @field:Json(name = Contract.BALLOT_NUMBER) val ballotNumber: Int?,
+    @field:Json(name = Contract.BILL_CHAPTER) val billChapter: String?,
+    @field:Json(name = Contract.IS_PRIVATE) val isPrivate: Boolean = false,
+    @field:Json(name = Contract.IS_MONEY_BILL) val isMoneyBill: Boolean = false,
+    @field:Json(name = Contract.PUBLIC_INVOLVEMENT_ALLOWED) val publicInvolvementAllowed: Boolean = false,
+    @field:Json(name = Contract.PUBLICATIONS) val publications: List<ApiBillPublication> = listOf(),
+    @field:Json(name = Contract.SESSION) val session: ParliamentarySession?,
+    @field:Json(name = Contract.TYPE) val type: BillType?,
+    @field:Json(name = Contract.SPONSORS) @Ignore val sponsors: List<ApiBillSponsor> = listOf(),
+    @field:Json(name = Contract.STAGES) @Ignore val stages: List<ApiBillStage> = listOf(),
 ): Parliamentdotuk,
     Dated {
     fun toBill() = Bill(

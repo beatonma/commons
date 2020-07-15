@@ -5,6 +5,7 @@ import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
+import org.beatonma.commons.network.retrofit.Contract
 
 @Entity(
     foreignKeys = [
@@ -26,9 +27,9 @@ data class BillStage(
 
 
 data class ApiBillStage(
-    @field:Json(name = PARLIAMENTDOTUK) override val parliamentdotuk: ParliamentID,
-    @field:Json(name = "type") val type: String,
-    @field:Json(name = "sittings") val sittings: List<BillStageSitting>
+    @field:Json(name = Contract.PARLIAMENTDOTUK) override val parliamentdotuk: ParliamentID,
+    @field:Json(name = Contract.TYPE) val type: String,
+    @field:Json(name = Contract.SITTINGS) val sittings: List<ApiBillStageSitting>
 ): Parliamentdotuk {
     fun toBillStage(billId: ParliamentID) = BillStage(
         parliamentdotuk = parliamentdotuk,

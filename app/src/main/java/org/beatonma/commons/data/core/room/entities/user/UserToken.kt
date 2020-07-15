@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.core.repository.UserAccount
+import org.beatonma.commons.network.retrofit.Contract
 
 @Entity(
     primaryKeys = [
@@ -21,9 +22,9 @@ data class UserToken(
 )
 
 data class ApiUserToken(
-    @field:Json(name = "token") val snommocToken: String,
-    @field:Json(name = "gtoken") val googleTokenStub: String,
-    @field:Json(name = "username") val username: String,
+    @field:Json(name = Contract.SNOMMOC_TOKEN) val snommocToken: String,
+    @field:Json(name = Contract.GOOGLE_TOKEN) val googleTokenStub: String,
+    @field:Json(name = Contract.USERNAME) val username: String,
 ) {
     fun composeToUserToken(account: UserAccount) = UserToken(
         name = account.name,
