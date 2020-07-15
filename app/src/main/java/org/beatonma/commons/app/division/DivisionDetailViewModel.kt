@@ -2,56 +2,25 @@ package org.beatonma.commons.app.division
 
 import android.content.Context
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.launch
 import org.beatonma.commons.R
-import org.beatonma.commons.app.ui.Snippet
-import org.beatonma.commons.app.ui.SnippetGeneratorAndroidViewModel
+import org.beatonma.commons.app.ui.BaseIoAndroidViewModel
 import org.beatonma.commons.app.ui.views.BarChartCategory
-import org.beatonma.commons.data.IoResult
-import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.repository.DivisionRepository
 import org.beatonma.commons.data.core.room.entities.division.Division
 import org.beatonma.commons.data.core.room.entities.division.DivisionWithVotes
-import org.beatonma.commons.data.core.room.entities.division.Vote
-import org.beatonma.commons.data.core.room.entities.member.House
+import org.beatonma.commons.data.core.room.entities.division.VoteWithParty
+import org.beatonma.commons.kotlin.extensions.BundledDivision
 import org.beatonma.commons.kotlin.extensions.colorCompat
 
 class DivisionDetailViewModel @ViewModelInject constructor(
     private val repository: DivisionRepository,
     @ApplicationContext context: Context,
-) : SnippetGeneratorAndroidViewModel<DivisionWithVotes>(context) {
+) : BaseIoAndroidViewModel<DivisionWithVotes>(context) {
 
-    private val votesObserver = Observer<IoResult<DivisionWithVotes>> {
-        viewModelScope.launch {
-            voteLiveData.postValue(
-                sortedVotes(it.data?.votes ?: listOf())
-            )
-        }
+    fun forDivision(bundled: BundledDivision) {
+        liveData = repository.observeDivision(bundled.house, bundled.parliamentdotuk)
     }
-    var voteLiveData: MutableLiveData<List<Vote>> = MutableLiveData()
-
-    fun forDivision(house: House, parliamentdotuk: ParliamentID) {
-        liveData = repository.observeDivision(house, parliamentdotuk)
-        observe()
-    }
-
-    override fun observe() {
-        super.observe()
-        liveData.observeForever(votesObserver)
-    }
-
-    override fun onCleared() {
-        liveData.removeObserver(votesObserver)
-        super.onCleared()
-    }
-
-    override suspend fun generateSnippets(data: DivisionWithVotes): List<Snippet> = listOfNotNull(
-
-    )
 
     fun getVoteChartData(division: Division) = listOf(
         BarChartCategory(division.ayes, colorCompat(R.color.vote_aye), "Ayes"),
@@ -60,7 +29,10 @@ class DivisionDetailViewModel @ViewModelInject constructor(
         BarChartCategory(division.noes, colorCompat(R.color.vote_no), "Noes"),
     ).filter { it.value > 0 }
 
-    suspend fun sortedVotes(votes: List<Vote>): List<Vote> = votes.sortedWith(
-        compareBy({ it.voteType }, { it.memberName })
+    suspend fun sortedVotes(votes: List<VoteWithParty>): List<VoteWithParty> = votes.sortedWith(
+        compareBy(
+            { it.vote.voteType },
+            { it.vote.memberName }
+        )
     )
 }
