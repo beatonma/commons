@@ -1,0 +1,29 @@
+{
+  "comment": "Sample party names",
+  "data": [
+    {
+      "name": "Conservative",
+      "color": "@color/party_conservative"
+    },
+    {
+      "name": "Labour",
+      "color": "@color/party_labour"
+    },
+    {
+      "name": "Liberal Democrats",
+      "color": "@color/party_lib_dem"
+    },
+    {
+      "name": "Scottish National Party",
+      "color": "@color/party_snp"
+    },
+    {
+      "name": "Greens",
+      "color": "@color/party_green"
+    },
+    {
+      "name": "Plaid Cymru",
+      "color": "@color/party_plaid_cymru"
+    }
+  ]
+}
