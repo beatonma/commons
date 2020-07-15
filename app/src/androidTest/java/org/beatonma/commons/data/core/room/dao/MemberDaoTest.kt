@@ -136,7 +136,7 @@ class MemberDaoInsertApiCompleteMemberTest: BaseRoomDaoTest<MemberDao>() {
         daoTest(MemberDao::getHouseMemberships) {
             size shouldbe 2
             first { it.start == "2001-06-07".asDate() }.run {
-                house shouldbe House.Commons
+                house shouldbe House.commons
                 end shouldbe "2008-06-04".asDate()
             }
         }

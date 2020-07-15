@@ -61,23 +61,23 @@ class DivisionDaoInsertApiDivisionTest: BaseRoomDaoTest<DivisionDao>() {
                 passed shouldbe true
             }
             votes.size shouldbe 5
-            votes.first { it.memberId == 1609 }.run {
+            votes.first { it.vote.memberId == 1609 }.vote.run {
                 memberName shouldbe "Chloe Smith"
                 voteType shouldbe VoteType.Abstains
             }
-            votes.first { it.memberId == 3989 }.run {
+            votes.first { it.vote.memberId == 3989 }.vote.run {
                 memberName shouldbe "Jack Lopresti"
                 voteType shouldbe VoteType.AyeVote
             }
-            votes.first { it.memberId == 1587 }.run {
+            votes.first { it.vote.memberId == 1587 }.vote.run {
                 memberName shouldbe "Pat McFadden"
                 voteType shouldbe VoteType.DidNotVote
             }
-            votes.first { it.memberId == 1503 }.run {
+            votes.first { it.vote.memberId == 1503 }.vote.run {
                 memberName shouldbe "Mr Jamie Reed"
                 voteType shouldbe VoteType.NoVote
             }
-            votes.first { it.memberId == 31415926 }.run {
+            votes.first { it.vote.memberId == 31415926 }.vote.run {
                 memberName shouldbe "Fake Member"
                 voteType shouldbe VoteType.SuspendedOrExpelledVote
             }
