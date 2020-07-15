@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        style="@style/Chart.Key.Icon"
+        android:id="@+id/ayes_color"
+        android:background="@color/vote_aye"
+        />
+
+    <TextView
+        android:id="@+id/ayes"
+        style="@style/Text.Primary"
+        tools:text="3 ayes"
+        />
+
+    <androidx.constraintlayout.helper.widget.Flow
+        android:id="@+id/ayes_flow"
+        android:layout_width="wrap_content"
+        app:constraint_referenced_ids="ayes_color,ayes"
+        style="@style/Commons.Flow.Horizontal"/>
+
+    <com.google.android.material.imageview.ShapeableImageView
+        style="@style/Chart.Key.Icon"
+        android:id="@+id/noes_color"
+        android:background="@color/vote_no"
+        />
+
+    <TextView
+        android:id="@+id/noes"
+        style="@style/Text.Primary"
+        tools:text="2 noes"
+        />
+
+    <androidx.constraintlayout.helper.widget.Flow
+        android:id="@+id/noes_flow"
+        android:layout_width="wrap_content"
+        app:constraint_referenced_ids="noes_color,noes"
+        style="@style/Commons.Flow.Horizontal"/>
+
+    <com.google.android.material.imageview.ShapeableImageView
+        style="@style/Chart.Key.Icon"
+        android:id="@+id/did_not_votes_color"
+        android:background="@color/vote_didnotvote"
+        />
+
+    <TextView
+        android:id="@+id/did_not_votes"
+        style="@style/Text.Primary"
+        tools:text="12 did not vote"
+        />
+
+    <androidx.constraintlayout.helper.widget.Flow
+        android:id="@+id/did_not_votes_flow"
+        android:layout_width="wrap_content"
+        app:constraint_referenced_ids="did_not_votes_color,did_not_votes"
+        style="@style/Commons.Flow.Horizontal"/>
+
+    <com.google.android.material.imageview.ShapeableImageView
+        style="@style/Chart.Key.Icon"
+        android:id="@+id/abstentions_color"
+        android:background="@color/vote_abstain"
+        />
+
+    <TextView
+        android:id="@+id/abstentions"
+        style="@style/Text.Primary"
+        tools:text="12 did not vote"
+        />
+
+    <androidx.constraintlayout.helper.widget.Flow
+        android:id="@+id/abstentions_flow"
+        android:layout_width="wrap_content"
+        app:constraint_referenced_ids="abstentions_color,abstentions"
+        style="@style/Commons.Flow.Horizontal"/>
+
+    <androidx.constraintlayout.helper.widget.Flow
+        android:id="@+id/votes_chart_key_flow"
+        android:layout_marginHorizontal="@dimen/whitespace_edge"
+        app:constraint_referenced_ids="ayes_flow,noes_flow,abstentions_flow,did_not_votes_flow"
+        app:flow_horizontalGap="@dimen/flow_gap_large"
+        app:flow_wrapMode="chain"
+        style="@style/Commons.Flow.Horizontal"/>
+
+</merge>
