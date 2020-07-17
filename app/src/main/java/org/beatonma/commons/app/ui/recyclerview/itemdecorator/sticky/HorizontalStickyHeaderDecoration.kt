@@ -1,21 +1,19 @@
-package org.beatonma.commons.app.ui.recyclerview.itemdecorator
+package org.beatonma.commons.app.ui.recyclerview.itemdecorator.sticky
 
 import android.content.Context
-import android.graphics.*
-import android.graphics.drawable.Drawable
-import android.text.TextPaint
+import android.graphics.Canvas
+import android.graphics.Rect
+import android.graphics.Typeface
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import org.beatonma.commons.R
-import org.beatonma.commons.app.ui.recyclerview.adapter.StickyHeaderAdapter
 import org.beatonma.commons.data.ShouldNotHappen
-import org.beatonma.commons.kotlin.extensions.colorCompat
 import org.beatonma.commons.kotlin.extensions.dimenCompat
 import org.beatonma.commons.kotlin.extensions.getRelativeBoundsOfChild
 
 class HorizontalStickyHeaderDecoration(
     context: Context,
-    private val headerTextSize: Int = context.dimenCompat(R.dimen.list_sticky_header_text_size),
+    headerTextSize: Int = context.dimenCompat(R.dimen.list_sticky_header_text_size),
 
     // Minimum space before the header text - filled by background, if provided.
     private val marginHorizontal: Int = context.dimenCompat(R.dimen.list_sticky_header_text_margin_horizontal),
@@ -27,26 +25,14 @@ class HorizontalStickyHeaderDecoration(
     private val headerPaddingVertical: Int = context.dimenCompat(R.dimen.list_sticky_header_text_margin_vertical),
 
     // Additional padding - particularly useful with StickyHeader.backgroundFillsView
-    private val space: Space = defaultSpace(context),
+    space: Space = defaultSpace(context),
 
     typeface: Typeface = Typeface.DEFAULT_BOLD,
-): RecyclerView.ItemDecoration() {
+): StickyHeaderDecoration(context, headerTextSize, space, typeface) {
     private val headerMarginBetween: Int = headerMarginBetween + space.marginBetweenGroups
 
     private val headerHeight = headerTextSize + (2 * headerPaddingVertical)
-    private val defaultTextColor = context.colorCompat(R.color.TextPrimary)
 
-    private val backgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.FILL
-    }
-    private val textPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.FILL
-        color = defaultTextColor
-        textSize = headerTextSize.toFloat()
-        this.typeface = typeface
-    }
-    private val rect = Rect()
-    private val rectF = RectF()
 
     override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         val headerMap = getHeadersForVisibleItems(parent)
@@ -177,82 +163,9 @@ class HorizontalStickyHeaderDecoration(
             space.paddingBottom
         )
     }
-
-    /**
-     * Space added by padding fields will be filled by background.
-     * Space added by marginBetweenGroups will be empty.
-     */
-    class Space(
-        val paddingVertical: Int = 0,
-        val paddingHorizontal: Int = 0,
-        val paddingStart: Int = paddingHorizontal,
-        val paddingTop: Int = paddingVertical,
-        val paddingEnd: Int = paddingHorizontal,
-        val paddingBottom: Int = paddingVertical,
-        val marginBetweenGroups: Int = paddingHorizontal,
-    )
 }
 
-
-/**
- * Return map of Position:HeaderText, each being the start point of a new header.
- */
-private fun getHeadersForVisibleItems(
-    parent: RecyclerView,
-): Map<Int, StickyHeader> {
-    val map = mutableMapOf<Int, StickyHeader>()
-    val adapter = parent.stickyAdapter
-
-    var previousText: String? = null
-
-    parent.forEachChild { adapterPosition, _ ->
-        val header = adapter.getStickyHeaderForPosition(adapterPosition)
-        val headerText = header.text
-        if (headerText != previousText) {
-            map[adapterPosition] = header
-        }
-        previousText = headerText
-    }
-    return map
-}
-
-/**
- * Returns header text for (previous, current) positions
- */
-private fun headerSameAsPrevious(
-    parent: RecyclerView,
-    position: Int,
-): Boolean = parent.stickyAdapter.isHeaderSameForPositions(position - 1, position)
-
-private inline fun RecyclerView.forEachChild(reversed: Boolean = false, block: (adapterPosition: Int, child: View) -> Unit) {
-    val childCount = this.childCount
-    val range = if (reversed) (0..childCount).reversed() else 0..childCount
-    for (position in range) {
-        val child = getChildAt(position)
-        val adapterPosition = getChildAdapterPosition(child)
-        if (adapterPosition != RecyclerView.NO_POSITION) {
-            block(adapterPosition, child)
-        }
-    }
-}
-
-private fun defaultSpace(context: Context): HorizontalStickyHeaderDecoration.Space =
-    HorizontalStickyHeaderDecoration.Space(
+private fun defaultSpace(context: Context): StickyHeaderDecoration.Space =
+    StickyHeaderDecoration.Space(
         marginBetweenGroups = context.dimenCompat(R.dimen.list_space_between_groups_horizontal)
     )
-
-
-class StickyHeader(
-    val text: String,
-    val textColor: Int? = null,
-    val backgroundColor: Int? = null,
-    val backgroundCornerRadius: Int? = null,
-    val backgroundDrawable: Drawable? = null,
-
-    // If true, background color/drawable will appear behind the normal viewholder as well as the header.
-    val backgroundFillsView: Boolean = false,
-) {
-    override fun toString() = text
-}
-
-private val RecyclerView.stickyAdapter get() = adapter as StickyHeaderAdapter
