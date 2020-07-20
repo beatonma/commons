@@ -21,7 +21,7 @@ import org.beatonma.commons.network.retrofit.Contract
 )
 data class BillStage(
     @ColumnInfo(name = "billstage_$PARLIAMENTDOTUK") @PrimaryKey override val parliamentdotuk: ParliamentID,
-    @ColumnInfo(name = "billstage_bill_$PARLIAMENTDOTUK") val billId: ParliamentID = 0,
+    @ColumnInfo(name = "billstage_bill_$PARLIAMENTDOTUK") val billId: ParliamentID,
     @ColumnInfo(name = "billstage_type") val type: String,
 ): Parliamentdotuk
 

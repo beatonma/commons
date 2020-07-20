@@ -1,8 +1,6 @@
 package org.beatonma.commons.data.core.room.entities.bill
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.*
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.ParliamentID
@@ -37,3 +35,11 @@ data class ApiBillSponsor(
         partyId = party?.parliamentdotuk
     )
 }
+
+
+data class BillSponsorWithParty(
+    @Embedded val sponsor: BillSponsor,
+
+    @Relation(parentColumn = "sponsor_party_id", entityColumn = "party_$PARLIAMENTDOTUK")
+    val party: Party?
+)
