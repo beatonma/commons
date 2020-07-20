@@ -1,10 +1,10 @@
 package org.beatonma.commons.app.ui.recyclerview
 
-import android.content.Context
 import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import org.beatonma.commons.app.ui.recyclerview.adapter.BaseRecyclerViewAdapter
 import org.beatonma.commons.app.ui.recyclerview.itemanimator.FadeItemAnimator
 import org.beatonma.commons.app.ui.recyclerview.itemdecorator.CommonsDividerItemDecoration
 import java.lang.ref.WeakReference
@@ -14,14 +14,25 @@ import kotlin.math.max
 
 fun RecyclerView.setup(
     adapter: BaseRecyclerViewAdapter,
-    layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(context),
+    @RecyclerView.Orientation orientation: Int = RecyclerView.VERTICAL,
+    reverseLayout: Boolean = false,
+    layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(context, orientation, reverseLayout),
     itemAnimator: RecyclerView.ItemAnimator = FadeItemAnimator(),
+    itemDecoration: RecyclerView.ItemDecoration? = null,  // Applied to all items, if set
     showSeparators: Boolean = false,
     space: RvSpacing? = null,
 ) {
     setAdapter(adapter)
     setLayoutManager(layoutManager)
     setItemAnimator(itemAnimator)
+
+    if (space != null) {
+        addItemDecoration(space.linearDecorator(orientation))
+    }
+
+    if (itemDecoration != null) {
+        addItemDecoration(itemDecoration)
+    }
 
     if (showSeparators) {
         when (layoutManager) {
@@ -30,8 +41,6 @@ fun RecyclerView.setup(
             )
         }
     }
-
-    if (space != null) addItemDecoration(space.linearDecorator())
 }
 
 
@@ -49,7 +58,7 @@ fun RecyclerView.setupGrid(
 ) {
     setup(
         adapter,
-        layoutManager = StaggeredGridLayoutManager(columnCount.coerceAtLeast(1), StaggeredGridLayoutManager.HORIZONTAL)
+        layoutManager = StaggeredGridLayoutManager(columnCount.coerceAtLeast(1), StaggeredGridLayoutManager.VERTICAL)
     )
 
     if (columnWidth == 0) {
@@ -75,7 +84,3 @@ fun RecyclerView.setupGrid(
         }
     }
 }
-
-
-fun horizontalLinearLayoutManager(context: Context?) =
-    LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
