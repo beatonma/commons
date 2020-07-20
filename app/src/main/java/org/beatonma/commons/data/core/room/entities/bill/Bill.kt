@@ -4,8 +4,11 @@ import androidx.room.*
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.ParliamentID
+import org.beatonma.commons.data.core.interfaces.Commentable
 import org.beatonma.commons.data.core.interfaces.Dated
 import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
+import org.beatonma.commons.data.core.interfaces.Votable
+import org.beatonma.commons.data.core.social.SocialTargetType
 import org.beatonma.commons.network.retrofit.Contract
 import java.time.LocalDate
 
@@ -31,8 +34,11 @@ data class Bill(
     @ColumnInfo(name = "bill_session_id") val sessionId: ParliamentID?,
     @ColumnInfo(name = "bill_type_id") val typeId: String?,
 ): Parliamentdotuk,
-    Dated
-
+    Dated,
+    Commentable,
+    Votable {
+    override fun getSocialContentTarget(): SocialTargetType = SocialTargetType.bill
+}
 
 data class ApiBill(
     @field:Json(name = Contract.PARLIAMENTDOTUK) @PrimaryKey override val parliamentdotuk: ParliamentID,
@@ -96,6 +102,6 @@ data class CompleteBill(
     @Ignore val session: ParliamentarySession? = null,
     @Ignore val type: BillType? = null,
     @Ignore val publications: List<BillPublication>? = null,
-    @Ignore val sponsors: List<BillSponsor>? = null,
+    @Ignore val sponsors: List<BillSponsorWithParty>? = null,
     @Ignore val stages: List<BillStageWithSittings>? = null,
 )
