@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import org.beatonma.lib.util.kotlin.extensions.dump
 import java.time.LocalDate
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -53,6 +52,33 @@ fun <T> LiveData<T>.getOrAwaitValue(
     @Suppress("UNCHECKED_CAST")
     return data as T
 }
+
+
+/**
+ * Dump value to log (with optional message) and return `this` value
+ * Convenience for `.also { println("$it") }`
+ * If the resulting string is very long it will be broken into chunks.
+ * Should only be used for debugging purposes
+ */
+fun <T> T.dump(message: String = ""): T {
+    if (this is Collection<*>) {
+        if (message.isNotEmpty()) println("$message [$size]:")
+        return also {
+            forEach { item -> item.dump("  ") }
+        }
+    }
+    val str = toString()
+    val step = 2048
+    val length = str.length
+    var pos = 0
+    while(pos < str.length) {
+        println("${if (message.isNotEmpty()) "$message " else "" } ${str.substring(pos,
+            Integer.min(length, pos + step))}")
+        pos += step
+    }
+    return this
+}
+
 
 
 fun String.asDate(): LocalDate = LocalDate.parse(this)
