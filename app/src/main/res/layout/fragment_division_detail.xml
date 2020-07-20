@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.motion.widget.MotionLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layoutDescription="@xml/fragment_division_detail_scene"
+    >
+
+    <androidx.constraintlayout.widget.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/inset_start"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="@dimen/whitespace_edge"
+        />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/inset_end"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="@dimen/whitespace_edge"
+        />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="0dp"
+        android:text="@string/division_title"
+        style="@style/Text.Primary.H1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="@tools:sample/cities"
+        />
+
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="0dp"
+        style="@style/Text.Primary.Quotation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="@tools:sample/cities"
+        />
+
+    <TextView
+        android:id="@+id/house_and_date"
+        android:layout_width="0dp"
+        style="@style/Text.Primary.Condensed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="House of Commons"
+        />
+
+    <androidx.constraintlayout.helper.widget.Flow
+        android:id="@+id/text_flow"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:constraint_referenced_ids="title,house_and_date,description"
+        app:layout_constraintGuide_begin="@+id/inset_start"
+        app:layout_constraintGuide_end="@+id/inset_end"
+        app:flow_horizontalAlign="start"
+        app:flow_horizontalBias="0"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <include
+        layout="@layout/merge_division_results_chart_key"/>
+
+    <org.beatonma.commons.app.ui.views.StackedBarChart
+        android:id="@+id/chart"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/stacked_bar_chart_height"
+        android:layout_marginVertical="@dimen/flow_gap_large"
+        android:paddingVertical="4dp"
+        app:animDuration="1200"
+        app:centerColor="@color/TextPrimary"
+        app:showCenter="true"
+        />
+
+    <androidx.constraintlayout.helper.widget.Flow
+        android:id="@+id/chart_flow"
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="16dp"
+        app:flow_verticalGap="@dimen/flow_gap_large"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_flow"
+        app:constraint_referenced_ids="votes_chart_key_flow,chart"/>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerview"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/social_parent_container"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+    <include
+        layout="@layout/socialhost_motion"/>
+    <View
+        android:id="@+id/social_parent_container"
+        android:layout_width="@dimen/social_compact_view_width"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/chart_flow"
+        style="@style/Social.Compact.Container"/>
+
+</androidx.constraintlayout.motion.widget.MotionLayout>
