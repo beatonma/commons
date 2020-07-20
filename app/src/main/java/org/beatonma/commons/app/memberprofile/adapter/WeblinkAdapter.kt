@@ -5,8 +5,8 @@ import androidx.recyclerview.widget.RecyclerView
 
 import org.beatonma.commons.app.ui.data.WeblinkData
 import org.beatonma.commons.app.ui.recyclerview.adapter.ThemedAdapter
-import org.beatonma.commons.app.ui.views.ChipData
-import org.beatonma.commons.app.ui.views.CollapsibleChipHolder
+import org.beatonma.commons.app.ui.views.chip.ChipData
+import org.beatonma.commons.app.ui.views.chip.CollapsibleChipHolder
 
 private const val TAG = "WeblinkAdapter"
 

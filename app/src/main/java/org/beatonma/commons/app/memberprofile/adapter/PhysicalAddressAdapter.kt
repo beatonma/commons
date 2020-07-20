@@ -8,8 +8,8 @@ import org.beatonma.commons.app.ui.recyclerview.adapter.ThemedCollapsibleAdapter
 import org.beatonma.commons.app.ui.recyclerview.adapter.TypedAdapter
 import org.beatonma.commons.app.ui.recyclerview.defaultItemSpace
 import org.beatonma.commons.app.ui.recyclerview.setup
-import org.beatonma.commons.app.ui.views.ChipData
-import org.beatonma.commons.app.ui.views.CollapsibleChipHolder
+import org.beatonma.commons.app.ui.views.chip.ChipData
+import org.beatonma.commons.app.ui.views.chip.CollapsibleChipHolder
 import org.beatonma.commons.data.core.room.entities.member.PhysicalAddress
 import org.beatonma.commons.databinding.ItemMemberPhysicalAddressBinding
 import org.beatonma.commons.kotlin.extensions.bindText
