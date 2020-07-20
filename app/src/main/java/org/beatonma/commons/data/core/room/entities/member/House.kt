@@ -26,6 +26,11 @@ enum class House {
         commons -> context.stringCompat(R.string.house_of_commons)
         lords -> context.stringCompat(R.string.house_of_lords)
     }
+
+    fun otherPlace() = when (this) {
+        lords -> commons
+        commons -> lords
+    }
 }
 
 
