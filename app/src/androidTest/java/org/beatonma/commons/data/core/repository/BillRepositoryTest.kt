@@ -71,7 +71,7 @@ class BillRepositoryTest : BaseRoomTest() {
 
                 with(sponsors!!) {
                     size shouldbe 1
-                    first().run {
+                    first().sponsor.run {
                         parliamentdotuk shouldbe 1727
                         name shouldbe "Baroness Wilcox"
                     }

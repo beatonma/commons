@@ -91,7 +91,7 @@ class BillDaoInsertCompleteBillTest: BaseRoomDaoTest<BillDao>() {
     @Test
     fun ensure_BillSponsor_is_written_and_retrieved_correctly() {
         daoTest(BillDao::getBillSponsors) {
-            first().run {
+            first().sponsor.run {
                 billId shouldbe BILL_PUK
                 parliamentdotuk shouldbe 1727
                 name shouldbe "Baroness Wilcox"
