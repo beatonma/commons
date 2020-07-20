@@ -3,8 +3,8 @@ object Commons {
 
     object Sdk {
         const val MIN = 26
-        const val TARGET = 30
-        const val COMPILE = "android-R"
+        const val TARGET = 29
+        const val COMPILE = 29
     }
 
     object Social {
