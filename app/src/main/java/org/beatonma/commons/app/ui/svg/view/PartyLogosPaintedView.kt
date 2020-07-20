@@ -1,14 +1,14 @@
-package org.beatonma.commons.ui.svg.view
+package org.beatonma.commons.app.ui.svg.view
 
 import android.content.Context
 import android.util.AttributeSet
-
+import org.beatonma.commons.BuildConfig.*
 import org.beatonma.commons.R
-import org.beatonma.commons.political.organisation.*
-
+import org.beatonma.commons.app.ui.svg.getAllSupportedSvgPartyIds
+import org.beatonma.commons.app.ui.svg.getPartySvg
+import org.beatonma.commons.kotlin.extensions.hasFlag
+import org.beatonma.commons.kotlin.extensions.int
 import org.beatonma.lib.graphic.paintedview.PaintedSvgView
-import org.beatonma.lib.util.kotlin.extensions.hasFlag
-import org.beatonma.lib.util.kotlin.extensions.int
 
 
 /**
@@ -23,8 +23,7 @@ class PartyLogosPaintedView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : PaintedSvgView(context, attrs, defStyleAttr) {
-
-    private val parties: List<String>
+    private val parties: List<Int>
     private val partyCount: Int
     private val partyDuration: Long
     private var partyIndex: Int = 0
@@ -50,7 +49,7 @@ class PartyLogosPaintedView @JvmOverloads constructor(
 
     private fun nextLogo() {
         partyIndex = (partyIndex + 1) % partyCount
-        setSvgWithAnimation(getPartySvg(parties[partyIndex]))
+        setSvgWithAnimation(getPartySvg(parties[partyIndex]))//getPartySvg(parties[partyIndex]))
     }
 
     override fun onDetachedFromWindow() {
@@ -74,24 +73,24 @@ class PartyLogosPaintedView @JvmOverloads constructor(
         private const val FLAG_UKIP = 4096
         private const val FLAG_UUP = 8192
 
-        fun resolveParties(flags: Int): List<String> {
-            if (flags == 0) return partyNames
+        fun resolveParties(flags: Int): List<Int> {
+            if (flags == 0) return getAllSupportedSvgPartyIds()
 
-            val list = mutableListOf<String>()
-            if (flags.hasFlag(FLAG_CONSERVATIVE)) list.add(CONSERVATIVE)
-            if (flags.hasFlag(FLAG_CHANGE_UK)) list.add(CHANGE_UK)
-            if (flags.hasFlag(FLAG_DUP)) list.add(DUP)
-            if (flags.hasFlag(FLAG_GREEN)) list.add(GREEN)
-            if (flags.hasFlag(FLAG_INDEPENDENT)) list.add(INDEPENDENT)
-            if (flags.hasFlag(FLAG_LABOUR)) list.add(LABOUR)
-            if (flags.hasFlag(FLAG_LABOUR_COOP)) list.add(LABOUR_COOP)
-            if (flags.hasFlag(FLAG_LIB_DEM)) list.add(LIB_DEM)
-            if (flags.hasFlag(FLAG_PLAID_CYMRU)) list.add(PLAID_CYMRU)
-            if (flags.hasFlag(FLAG_SDLP)) list.add(SDLP)
-            if (flags.hasFlag(FLAG_SINN_FEIN)) list.add(SINN_FEIN)
-            if (flags.hasFlag(FLAG_SNP)) list.add(SNP)
-            if (flags.hasFlag(FLAG_UKIP)) list.add(UKIP)
-            if (flags.hasFlag(FLAG_UUP)) list.add(UUP)
+            val list = mutableListOf<Int>()
+            if (flags.hasFlag(FLAG_CONSERVATIVE)) list.add(PARTY_CONSERVATIVE_PARLIAMENTDOTUK)
+            if (flags.hasFlag(FLAG_CHANGE_UK)) list.add(PARTY_THE_INDEPENDENT_GROUP_FOR_CHANGE_PARLIAMENTDOTUK)
+            if (flags.hasFlag(FLAG_DUP)) list.add(PARTY_DEMOCRATIC_UNIONIST_PARTY_PARLIAMENTDOTUK)
+            if (flags.hasFlag(FLAG_GREEN)) list.add(PARTY_GREEN_PARTY_PARLIAMENTDOTUK)
+            if (flags.hasFlag(FLAG_INDEPENDENT)) list.add(PARTY_INDEPENDENT_PARLIAMENTDOTUK)
+            if (flags.hasFlag(FLAG_LABOUR)) list.add(PARTY_LABOUR_PARLIAMENTDOTUK)
+            if (flags.hasFlag(FLAG_LABOUR_COOP)) list.add(PARTY_LABOUR_COOP_PARLIAMENTDOTUK)
+            if (flags.hasFlag(FLAG_LIB_DEM)) list.add(PARTY_LIBERAL_DEMOCRAT_PARLIAMENTDOTUK)
+            if (flags.hasFlag(FLAG_PLAID_CYMRU)) list.add(PARTY_PLAID_CYMRU_PARLIAMENTDOTUK)
+            if (flags.hasFlag(FLAG_SDLP)) list.add(PARTY_SOCIAL_DEMOCRATIC_LABOUR_PARTY_PARLIAMENTDOTUK)
+            if (flags.hasFlag(FLAG_SINN_FEIN)) list.add(PARTY_SINN_FEIN_PARLIAMENTDOTUK)
+            if (flags.hasFlag(FLAG_SNP)) list.add(PARTY_SCOTTISH_NATIONAL_PARTY_PARLIAMENTDOTUK)
+            if (flags.hasFlag(FLAG_UKIP)) list.add(PARTY_UK_INDEPENDENCE_PARTY_PARLIAMENTDOTUK)
+            if (flags.hasFlag(FLAG_UUP)) list.add(PARTY_ULSTER_UNIONIST_PARTY_PARLIAMENTDOTUK)
 
             return list
         }

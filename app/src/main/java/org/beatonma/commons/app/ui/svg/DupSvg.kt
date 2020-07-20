@@ -1,4 +1,4 @@
-package org.beatonma.commons.ui.svg
+package org.beatonma.commons.app.ui.svg
 
 import org.beatonma.lib.graphic.core.svg.Svg
 import org.beatonma.lib.graphic.core.svg.SvgPath
