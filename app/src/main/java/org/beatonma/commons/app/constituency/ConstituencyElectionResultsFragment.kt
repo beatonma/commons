@@ -7,15 +7,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.transition.TransitionManager
 import dagger.hilt.android.AndroidEntryPoint
 import org.beatonma.commons.R
-import org.beatonma.commons.app.ui.BaseViewmodelFragment
+import org.beatonma.commons.app.ui.CommonsFragment
 import org.beatonma.commons.app.ui.colors.getPartyTheme
-import org.beatonma.commons.app.ui.recyclerview.LoadingAdapter
+import org.beatonma.commons.app.ui.recyclerview.adapter.LoadingAdapter
+import org.beatonma.commons.app.ui.recyclerview.defaultPrimaryContentSpacing
 import org.beatonma.commons.app.ui.recyclerview.setup
 import org.beatonma.commons.app.ui.recyclerview.viewholder.StaticViewHolder
 import org.beatonma.commons.app.ui.views.BarChartCategory
-import org.beatonma.commons.data.NetworkError
 import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyElectionDetailsWithExtras
 import org.beatonma.commons.data.resolution.PartyResolution
@@ -34,7 +35,7 @@ private data class BundleData(val constituencyId: ParliamentID, val electionId: 
 
 
 @AndroidEntryPoint
-class ConstituencyElectionResultsFragment : BaseViewmodelFragment() {
+class ConstituencyElectionResultsFragment : CommonsFragment() {
     private lateinit var binding: FragmentConstituencyElectionResultsBinding
     private val viewmodel: ConstituencyElectionResultsViewModel by viewModels()
     private val adapter = CandidatesAdapter()
@@ -69,16 +70,16 @@ class ConstituencyElectionResultsFragment : BaseViewmodelFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        binding.candidates.setup(adapter)
+        binding.candidates.setup(
+            adapter,
+            space = defaultPrimaryContentSpacing(view.context)
+        )
 
         viewmodel.liveData.observe(viewLifecycleOwner) { result ->
-            if (result is NetworkError) networkErrorSnackbar()
+            result.report()
 
-            val data = result.data
-            if (data != null) {
-                updateUi(data)
+            withNotNull(result.data) {
+                updateUi(it)
             }
         }
     }
@@ -87,6 +88,7 @@ class ConstituencyElectionResultsFragment : BaseViewmodelFragment() {
         val details = data.details ?: return
         val election = data.election
         val constituency = data.constituency
+
         bindText(
             binding.electionName to stringCompat(
                 R.string.constituency_election_header,
@@ -104,9 +106,11 @@ class ConstituencyElectionResultsFragment : BaseViewmodelFragment() {
             )
         )
 
-        adapter.winningVoteCount = data.candidates?.minBy { it.order }?.votes ?: 0
-        adapter.totalVotes = details.turnout
-        adapter.items = viewmodel.composeCandidateData(data)
+        with (adapter) {
+            winningVoteCount = data.candidates?.minBy { it.order }?.votes ?: 0
+            totalVotes = details.turnout
+            items = viewmodel.composeCandidateData(data)
+        }
     }
 
     private inner class CandidatesAdapter: LoadingAdapter<CandidateData>(null) {
@@ -128,7 +132,6 @@ class ConstituencyElectionResultsFragment : BaseViewmodelFragment() {
                 private val vh = ItemConstituencyCandidateBinding.bind(itemView)
 
                 override fun bind(item: CandidateData) {
-                    Log.d(TAG, "bind $item")
                     val candidate = (item as? Candidate)?.candidate ?: return
                     val theme = context.getPartyTheme(PartyResolution.getPartyId(candidate.partyName))
 
@@ -136,7 +139,7 @@ class ConstituencyElectionResultsFragment : BaseViewmodelFragment() {
                         barchart.categories = listOf(
                             BarChartCategory(candidate.votes, theme.primary, "Votes"),
                             BarChartCategory(winningVoteCount - candidate.votes, Color.TRANSPARENT, "Other")  // Normalised to winningVoteCount
-//                        BarChartCategory(totalVotes - candidate.votes, Color.TRANSPARENT, "Other")  // Relative to totalVotes
+//                          BarChartCategory(totalVotes - candidate.votes, Color.TRANSPARENT, "Other")  // Relative to totalVotes
                         )
                         bindText(
                             rank to stringCompat(R.string.integer, candidate.order),
@@ -152,9 +155,9 @@ class ConstituencyElectionResultsFragment : BaseViewmodelFragment() {
 
         private inner class DepositSeparatorViewHolder(view: View): StaticViewHolder(view) {
             private val vh = ItemConstituencyCandidateDepositSeparatorBinding.bind(view)
-
-            override fun bind() {
+            init {
                 itemView.setOnClickListener {
+                    TransitionManager.beginDelayedTransition(itemView.parent as ViewGroup)
                     vh.about.toggleVisibility()
                 }
             }

@@ -15,12 +15,11 @@ import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.LatLngBounds
 import dagger.hilt.android.AndroidEntryPoint
 import org.beatonma.commons.R
-import org.beatonma.commons.app.ui.BaseViewmodelFragment
+import org.beatonma.commons.app.ui.CommonsFragment
 import org.beatonma.commons.app.ui.colors.PartyColors
 import org.beatonma.commons.app.ui.colors.getTheme
-import org.beatonma.commons.app.ui.recyclerview.LoadingAdapter
+import org.beatonma.commons.app.ui.recyclerview.adapter.LoadingAdapter
 import org.beatonma.commons.app.ui.recyclerview.setup
-import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import org.beatonma.commons.data.parse.Geometry
@@ -32,12 +31,11 @@ import org.beatonma.commons.kotlin.extensions.*
 
 private const val TAG = "ConstitDetailFragment"
 private const val MAPVIEW_BUNDLE_KEY = "MapViewBundle"
-private const val CAMERA_PADDING_DP = 64
 private const val VIEW_TYPE_FIRST = 1
 private const val VIEW_TYPE_HEADER = 345
 
 @AndroidEntryPoint
-class ConstituencyDetailFragment : BaseViewmodelFragment(), ViewTreeObserver.OnGlobalLayoutListener {
+class ConstituencyDetailFragment : CommonsFragment(), ViewTreeObserver.OnGlobalLayoutListener {
 
     private lateinit var binding: FragmentConstituencyDetailBinding
     private val viewmodel: ConstituencyDetailViewModel by viewModels()
@@ -48,16 +46,13 @@ class ConstituencyDetailFragment : BaseViewmodelFragment(), ViewTreeObserver.OnG
     private val mapView: MapView? get() = binding.mapview
     private var gMap: GoogleMap? = null
 
-    private fun getConstituencyFromBundle(): ParliamentID? =
-        arguments?.getInt(PARLIAMENTDOTUK)
+    private val isMapReady: Boolean get() = gMap != null && mapView?.size()?.isSet() == true
+
+    private fun getConstituencyFromBundle(): ParliamentID = arguments.getParliamentID()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val parliamentdotuk = getConstituencyFromBundle()
-        if (parliamentdotuk == null) {
-            Log.w(TAG, "Failed to get constituency ID from bundle!")
-            return
-        }
         constituencyId = parliamentdotuk
         viewmodel.forConstituency(parliamentdotuk)
     }
@@ -75,28 +70,28 @@ class ConstituencyDetailFragment : BaseViewmodelFragment(), ViewTreeObserver.OnG
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        initiateMap(binding.mapview)
+        binding.root.viewTreeObserver.addOnGlobalLayoutListener(this)
+
         binding.electionResultsRecyclerview.setup(resultsAdapter)
-
-        viewmodel.liveData.observe(viewLifecycleOwner) {
-            updateConstituencyUi(it.constituency, it.theme)
-            updateGeometryUi(it.geometry, it.theme)
-            resultsAdapter.items = it.electionResults
-        }
-
-        binding.mapview.viewTreeObserver.addOnGlobalLayoutListener(this)
     }
 
     override fun onGlobalLayout() {
-        binding.root.viewTreeObserver.removeOnGlobalLayoutListener(this)
-        initiateMap(binding.mapview)
+        if (binding.mapview.size().isSet()) {
+            binding.root.viewTreeObserver.removeOnGlobalLayoutListener(this)
+            if (isMapReady) {
+                val map = gMap ?: throw Exception("Trying to call onMapReady with null map!")
+                onMapReady(map)
+            }
+        }
+        else {
+            Log.d(TAG, "Awaiting next layout before map setup...")
+        }
     }
 
     private fun initiateMap(mapView: MapView) {
         mapView.getMapAsync { map ->
             gMap = map
-
-//            map.moveCameraTo(viewmodel.getUkBounds())
-
             context?.ifPermissionAvailable(Manifest.permission.ACCESS_COARSE_LOCATION) {
                 try {
                     map.isMyLocationEnabled = true
@@ -104,6 +99,27 @@ class ConstituencyDetailFragment : BaseViewmodelFragment(), ViewTreeObserver.OnG
                 }
                 catch (e: SecurityException) { /* Not actually required - already caught by ifPermissionAvailable but IDE complains */ }
             }
+
+            if (isMapReady) {
+                onMapReady(map)
+            }
+        }
+    }
+
+    /**
+     * Must be called after mapView.getMapAsync has returned and MapView layout has completed.
+     */
+    private fun onMapReady(map: GoogleMap) {
+        map.apply {
+            setMapStyle(viewmodel.getMapStyle())
+            clear()
+            moveCameraTo(viewmodel.getUkBounds())
+        }
+
+        viewmodel.liveData.observe(viewLifecycleOwner) {
+            updateConstituencyUi(it.constituency, it.theme)
+            updateGeometryUi(it.geometry)
+            resultsAdapter.items = it.electionResults
         }
     }
 
@@ -116,20 +132,18 @@ class ConstituencyDetailFragment : BaseViewmodelFragment(), ViewTreeObserver.OnG
         }
     }
 
-    private fun updateGeometryUi(geometry: Geometry?, theme: PartyColors?) {
+    private fun updateGeometryUi(geometry: Geometry?) {
         geometry ?: return
-        theme ?: return
         val map = gMap ?: return
-        updateMap(map, geometry, theme)
+        updateMap(map, geometry)
     }
 
-    private fun updateMap(gMap: GoogleMap, geometry: Geometry, theme: PartyColors) {
+    private fun updateMap(gMap: GoogleMap, geometry: Geometry) {
         gMap.apply {
             clear()
-            setMapStyle(viewmodel.getMapStyle())
             geometry.polygons.forEach { polygon -> addPolygon(polygon) }
 
-            moveCameraTo(geometry.boundary)
+            moveCameraTo(geometry.boundary, animate = true)
         }
     }
 
@@ -187,8 +201,18 @@ class ConstituencyDetailFragment : BaseViewmodelFragment(), ViewTreeObserver.OnG
      */
 
 
-    private fun GoogleMap.moveCameraTo(boundary: LatLngBounds) {
-        moveCamera(CameraUpdateFactory.newLatLngBounds(boundary, context.dp(CAMERA_PADDING_DP)))
+    private fun GoogleMap.moveCameraTo(boundary: LatLngBounds, animate: Boolean = false) {
+        val cameraUpdate = CameraUpdateFactory.newLatLngBounds(
+            boundary,
+            context.dimenCompat(R.dimen.map_camera_padding)
+        )
+
+        if (animate) {
+            animateCamera(cameraUpdate)
+        }
+        else {
+            moveCamera(cameraUpdate)
+        }
     }
 
     private inner class ElectionResultsAdapter: LoadingAdapter<ConstituencyDataHolder>() {

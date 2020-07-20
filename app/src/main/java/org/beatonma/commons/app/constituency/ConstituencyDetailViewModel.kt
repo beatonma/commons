@@ -2,7 +2,10 @@ package org.beatonma.commons.app.constituency
 
 import android.content.Context
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MapStyleOptions
@@ -14,7 +17,7 @@ import org.beatonma.commons.app.ui.colors.PartyColors
 import org.beatonma.commons.app.ui.colors.getTheme
 import org.beatonma.commons.commonsApp
 import org.beatonma.commons.context
-import org.beatonma.commons.data.IoResult
+import org.beatonma.commons.data.IoResultObserver
 import org.beatonma.commons.data.LiveDataIoResult
 import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.repository.ConstituencyRepository
@@ -43,7 +46,7 @@ class ConstituencyDetailViewModel @ViewModelInject constructor(
 
     internal val liveData = MediatorLiveData<ConstituencyData>()
 
-    private val geometryObserver = Observer<IoResult<CompleteConstituency>> {
+    private val geometryObserver = IoResultObserver<CompleteConstituency> {
         buildGeometry(it.data?.boundary)
     }
 
