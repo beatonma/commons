@@ -3,11 +3,10 @@ package org.beatonma.commons.app.ui
 import android.content.Context
 import androidx.annotation.CallSuper
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import org.beatonma.commons.data.IoResult
+import org.beatonma.commons.data.IoResultObserver
 
 abstract class SnippetGeneratorAndroidViewModel<D>(
     context: Context
@@ -15,7 +14,7 @@ abstract class SnippetGeneratorAndroidViewModel<D>(
     val snippetsLiveData: MutableLiveData<List<Snippet>> = MutableLiveData()
 
     private var snippetJob: Job? = null
-    private val snippetGeneratorObserver = Observer<IoResult<D>> {
+    private val snippetGeneratorObserver = IoResultObserver<D> {
         it.data?.let { data ->
             snippetJob?.cancel()
             snippetJob = viewModelScope.launch {

@@ -12,16 +12,18 @@ import androidx.annotation.IdRes
 import androidx.appcompat.widget.SearchView
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.beatonma.commons.R
-import org.beatonma.commons.app.search.SearchEnabled
 import org.beatonma.commons.app.search.SearchHost
 import org.beatonma.commons.app.search.SearchViewModel
 import org.beatonma.commons.app.ui.navigation.BackPressConsumer
-import org.beatonma.commons.app.ui.recyclerview.LoadingAdapter
+import org.beatonma.commons.app.ui.recyclerview.adapter.LoadingAdapter
 import org.beatonma.commons.app.ui.recyclerview.setup
 import org.beatonma.commons.app.ui.recyclerview.viewholder.staticViewHolderOf
 import org.beatonma.commons.commonsApp
@@ -48,11 +50,18 @@ class MainActivity : DayNightActivity(), SearchHost {
     override val searchAdapter = SearchResultsAdapter()
     lateinit var navController: NavController
 
-    private val destinationChangedListener = {
-        when (getContentFragment()) {
-            is SearchEnabled -> enableSearch()
-            else -> disableSearch()
+    private val updateSearchEnabled = {
+        lifecycleScope.launch(Dispatchers.Main) {
+            // Arbitrary delay to avoid clashes with fragment transitions/child layout animations
+            // on fragment change
+            // TODO currently disabled while making other transitions
+//            delay(300)
+//            when (getContentFragment()) {
+//                is SearchEnabled -> enableSearch()
+//                else -> disableSearch()
+//            }
         }
+        Unit
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -121,15 +130,22 @@ class MainActivity : DayNightActivity(), SearchHost {
         searchViewModel.resultLiveData.observe(this@MainActivity) { results ->
             searchAdapter.items = results
         }
+
+        // Update search UI visibility - we may have entered via deep-link to arbitrary destination.
+        updateSearchEnabled.invoke()
     }
+
+    /**
+     * FragmentManager instance that is responsible for navController content
+     */
+    private fun getNavigationFragmentManager() =
+        supportFragmentManager.primaryNavigationFragment?.childFragmentManager
 
     /**
      * Return the fragment that is currently the navController destination.
      */
-    private fun getContentFragment(): Fragment? {
-        return supportFragmentManager.primaryNavigationFragment  // Nav host fragment
-            ?.childFragmentManager?.primaryNavigationFragment  // Foreground fragment
-    }
+    private fun getContentFragment(): Fragment? =
+        getNavigationFragmentManager()?.primaryNavigationFragment  // Foreground fragment
 
     private fun handleIntent(intent: Intent) {
         when (intent.action) {
@@ -189,16 +205,12 @@ class MainActivity : DayNightActivity(), SearchHost {
 
     override fun onPause() {
         super.onPause()
-        supportFragmentManager.primaryNavigationFragment  // Nav host fragment
-            ?.childFragmentManager?.removeOnBackStackChangedListener(destinationChangedListener)
-//        navController.removeOnDestinationChangedListener(destinationChangedListener)
+        getNavigationFragmentManager()?.removeOnBackStackChangedListener(updateSearchEnabled)
     }
 
     override fun onResume() {
         super.onResume()
-        supportFragmentManager.primaryNavigationFragment  // Nav host fragment
-            ?.childFragmentManager?.addOnBackStackChangedListener(destinationChangedListener)
-//        navController.addOnDestinationChangedListener(destinationChangedListener)
+        getNavigationFragmentManager()?.addOnBackStackChangedListener(updateSearchEnabled)
     }
 
     override fun onDestroy() {

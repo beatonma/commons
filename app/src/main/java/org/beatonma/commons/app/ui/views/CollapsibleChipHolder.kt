@@ -3,9 +3,9 @@ package org.beatonma.commons.app.ui.views
 import android.content.res.ColorStateList
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.core.view.updateLayoutParams
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.Job
@@ -17,11 +17,15 @@ import org.beatonma.commons.kotlin.extensions.inflate
 import org.beatonma.lib.graphic.core.utility.AnimationUtils
 
 
-open class CollapsibleChipHolder(parent: ViewGroup): RecyclerView.ViewHolder(parent.inflate(R.layout.view_collapsible_chip)), CollapsibleChip {
+open class CollapsibleChipHolder(
+    parent: ViewGroup
+): RecyclerView.ViewHolder(
+    parent.inflate(R.layout.view_collapsible_chip)
+), CollapsibleChip {
     private var motionCollapsedWidth = Integer.MAX_VALUE
     private var motionExpandedWidth = Integer.MIN_VALUE
     private val interpolator = AnimationUtils.getMotionInterpolator()
-    private var job: Job? = null
+    private var autoCollapseJob: Job? = null
 
     val vh = ViewCollapsibleChipBinding.bind(itemView)
     init {
@@ -63,7 +67,7 @@ open class CollapsibleChipHolder(parent: ViewGroup): RecyclerView.ViewHolder(par
     }
 
     override fun bind(chipData: ChipData) {
-        job?.cancel()
+        autoCollapseJob?.cancel()
 
         motionCollapsedWidth = Integer.MAX_VALUE
         motionExpandedWidth = Integer.MIN_VALUE
@@ -79,14 +83,14 @@ open class CollapsibleChipHolder(parent: ViewGroup): RecyclerView.ViewHolder(par
     fun isExpanded() = vh.motion.currentState == vh.motion.endState
 
     override fun collapse() {
-        job?.cancel()
+        autoCollapseJob?.cancel()
         vh.motion.transitionToStart()
     }
 
     override fun expand() {
         vh.motion.transitionToEnd()
 
-        job = (itemView.context as AppCompatActivity).lifecycleScope.launch {
+        autoCollapseJob = (itemView.context as? LifecycleOwner)?.lifecycleScope?.launch {
             delay(CollapsibleChip.AUTO_COLLAPSE_TIME_MILLIS)
             collapse()
         }

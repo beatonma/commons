@@ -11,13 +11,13 @@ import androidx.viewpager2.widget.MarginPageTransformer
 import dagger.hilt.android.AndroidEntryPoint
 import org.beatonma.commons.R
 import org.beatonma.commons.app.featured.FeaturedContentViewModel
-import org.beatonma.commons.app.ui.BaseViewmodelFragment
+import org.beatonma.commons.app.search.SearchEnabled
+import org.beatonma.commons.app.ui.CommonsFragment
 import org.beatonma.commons.app.ui.colors.getTheme
-import org.beatonma.commons.app.ui.recyclerview.LoadingAdapter
-import org.beatonma.commons.app.ui.recyclerview.RvSpacing
+import org.beatonma.commons.app.ui.recyclerview.adapter.LoadingAdapter
+import org.beatonma.commons.app.ui.recyclerview.primaryContentWithToolbarSpacing
 import org.beatonma.commons.app.ui.recyclerview.setup
 import org.beatonma.commons.data.LiveDataIoResultList
-import org.beatonma.commons.data.NetworkError
 import org.beatonma.commons.data.core.room.entities.bill.FeaturedBillWithBill
 import org.beatonma.commons.data.core.room.entities.division.FeaturedDivisionWithDivision
 import org.beatonma.commons.data.core.room.entities.member.FeaturedMemberProfile
@@ -27,7 +27,7 @@ import org.beatonma.commons.databinding.ViewpagerBinding
 import org.beatonma.commons.kotlin.extensions.*
 
 @AndroidEntryPoint
-class ExperimentalFrontPageFragment : BaseViewmodelFragment() {
+class ExperimentalFrontPageFragment : CommonsFragment(), SearchEnabled {
     private lateinit var binding: ViewpagerBinding
 
     private val viewmodel: FeaturedContentViewModel by viewModels()
@@ -56,7 +56,7 @@ class ExperimentalFrontPageFragment : BaseViewmodelFragment() {
         }
 
         viewmodel.motd.observe(viewLifecycleOwner) { result ->
-            if (result is NetworkError) networkErrorSnackbar()
+            result.report()
 
             val motd = result.data?.firstOrNull() ?: return@observe
             val action = motd.url?.let { url ->
@@ -79,10 +79,10 @@ class ExperimentalFrontPageFragment : BaseViewmodelFragment() {
     }
 }
 
-abstract class AbsFeatureFragment<T>(val livedata: LiveDataIoResultList<T>): Fragment() {
+abstract class AbstractFeatureFragment<T>(val livedata: LiveDataIoResultList<T>): CommonsFragment() {
     private lateinit var binding: RecyclerviewBinding
 
-    abstract val adapter: AbsFeatureAdapter<T>
+    abstract val adapter: AbstractFeatureAdapter<T>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -96,16 +96,16 @@ abstract class AbsFeatureFragment<T>(val livedata: LiveDataIoResultList<T>): Fra
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.recyclerview.setup(adapter, space = RvSpacing(verticalSpace = context.dp(64)))
+        binding.recyclerview.setup(adapter, space = primaryContentWithToolbarSpacing(view.context))
 
         livedata.observe(viewLifecycleOwner) { result ->
-            if (result is NetworkError) networkErrorSnackbar()
+            result.report()
             adapter.items = result.data
         }
     }
 }
 
-abstract class AbsFeatureAdapter<T>(
+abstract class AbstractFeatureAdapter<T>(
     val bindFunc: (T, ItemWideImageTitleSubtitleDescriptionBinding) -> Unit
 ): LoadingAdapter<T>() {
 
@@ -119,8 +119,8 @@ abstract class AbsFeatureAdapter<T>(
 }
 
 
-class PeopleFrontPageFragment(livedata: LiveDataIoResultList<FeaturedMemberProfile>): AbsFeatureFragment<FeaturedMemberProfile>(livedata) {
-    override val adapter: AbsFeatureAdapter<FeaturedMemberProfile> = object : AbsFeatureAdapter<FeaturedMemberProfile>(
+class PeopleFrontPageFragment(livedata: LiveDataIoResultList<FeaturedMemberProfile>): AbstractFeatureFragment<FeaturedMemberProfile>(livedata) {
+    override val adapter: AbstractFeatureAdapter<FeaturedMemberProfile> = object : AbstractFeatureAdapter<FeaturedMemberProfile>(
             { item, vh ->
                 val featured = item.profile
                 val profile = featured.profile
@@ -146,9 +146,9 @@ class PeopleFrontPageFragment(livedata: LiveDataIoResultList<FeaturedMemberProfi
         ) {}
 }
 
-class BillsFrontPageFragment(livedata: LiveDataIoResultList<FeaturedBillWithBill>): AbsFeatureFragment<FeaturedBillWithBill>(livedata) {
-    override val adapter: AbsFeatureAdapter<FeaturedBillWithBill> = object :
-        AbsFeatureAdapter<FeaturedBillWithBill>(
+class BillsFrontPageFragment(livedata: LiveDataIoResultList<FeaturedBillWithBill>): AbstractFeatureFragment<FeaturedBillWithBill>(livedata) {
+    override val adapter: AbstractFeatureAdapter<FeaturedBillWithBill> = object :
+        AbstractFeatureAdapter<FeaturedBillWithBill>(
             { item, vh ->
                 val bill = item.bill
 
@@ -168,9 +168,9 @@ class BillsFrontPageFragment(livedata: LiveDataIoResultList<FeaturedBillWithBill
         ) {}
 }
 
-class DivisionsFrontPageFragment(livedata: LiveDataIoResultList<FeaturedDivisionWithDivision>): AbsFeatureFragment<FeaturedDivisionWithDivision>(livedata) {
-    override val adapter: AbsFeatureAdapter<FeaturedDivisionWithDivision> = object :
-        AbsFeatureAdapter<FeaturedDivisionWithDivision>(
+class DivisionsFrontPageFragment(livedata: LiveDataIoResultList<FeaturedDivisionWithDivision>): AbstractFeatureFragment<FeaturedDivisionWithDivision>(livedata) {
+    override val adapter: AbstractFeatureAdapter<FeaturedDivisionWithDivision> = object :
+        AbstractFeatureAdapter<FeaturedDivisionWithDivision>(
             { item, vh ->
                 val division = item.division
                 vh.apply {
