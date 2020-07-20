@@ -13,6 +13,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.beatonma.commons.R
+import org.beatonma.commons.app.social.SocialViewController
+import org.beatonma.commons.app.social.SocialViewHost
+import org.beatonma.commons.app.social.SocialViewModel
 import org.beatonma.commons.app.ui.CommonsFragment
 import org.beatonma.commons.app.ui.recyclerview.adapter.LoadingAdapter
 import org.beatonma.commons.app.ui.recyclerview.adapter.StickyHeaderAdapter
@@ -20,14 +23,13 @@ import org.beatonma.commons.app.ui.recyclerview.adapter.TypedAdapter
 import org.beatonma.commons.app.ui.recyclerview.defaultHorizontalOverscroll
 import org.beatonma.commons.app.ui.recyclerview.itemdecorator.sticky.HorizontalStickyHeaderDecoration
 import org.beatonma.commons.app.ui.recyclerview.itemdecorator.sticky.StickyHeader
-import org.beatonma.commons.app.ui.recyclerview.itemdecorator.sticky.StickyHeaderDecoration
 import org.beatonma.commons.app.ui.recyclerview.setup
 import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.room.entities.bill.BillSponsorWithParty
 import org.beatonma.commons.data.core.room.entities.bill.CompleteBill
 import org.beatonma.commons.data.core.room.entities.member.House
 import org.beatonma.commons.data.resolution.describe
-import org.beatonma.commons.databinding.FragmentBillProfileBinding
+import org.beatonma.commons.databinding.FragmentBillDetailBinding
 import org.beatonma.commons.databinding.ItemBillStageBinding
 import org.beatonma.commons.databinding.ItemMemberCompactBinding
 import org.beatonma.commons.kotlin.extensions.*
@@ -35,14 +37,18 @@ import org.beatonma.commons.kotlin.extensions.*
 private const val TAG = "BillDetailFrag"
 
 @AndroidEntryPoint
-class BillDetailFragment : CommonsFragment() {
+class BillDetailFragment : CommonsFragment(), SocialViewHost {
 
-    private lateinit var binding: FragmentBillProfileBinding
+    private lateinit var binding: FragmentBillDetailBinding
 
     private val viewmodel: BillDetailViewModel by viewModels()
 
     private val stagesAdapter = BillStagesAdapter()
     private val sponsorsAdapter = BillSponsorsAdapter()
+
+    override val socialViewModel: SocialViewModel by viewModels()
+    override lateinit var socialViewController: SocialViewController
+    override val socialObserver = createSocialObserver()
 
     private fun getBillIdFromBundle(): ParliamentID = arguments.getParliamentID()
 
@@ -56,33 +62,31 @@ class BillDetailFragment : CommonsFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentBillProfileBinding.inflate(inflater)
+        binding = FragmentBillDetailBinding.inflate(inflater)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        socialViewController = setupViewController(binding.root)
+
         binding.stagesRecyclerview.setup(
             stagesAdapter,
             orientation = HORIZONTAL,
             space = defaultHorizontalOverscroll(view.context),
-            itemDecoration = HorizontalStickyHeaderDecoration(
-                view.context,
-                space = StickyHeaderDecoration.Space(
-                    paddingHorizontal = context.dimenCompat(R.dimen.card_padding_horizontal),
-                    paddingBottom = context.dimenCompat(R.dimen.card_padding_bottom),
-                    marginBetweenGroups = context.dimenCompat(R.dimen.list_space_between_groups_horizontal)
-                )
-            ),
+            itemDecoration = HorizontalStickyHeaderDecoration(view.context),
         )
         binding.sponsorsRecyclerview.setup(sponsorsAdapter, orientation = HORIZONTAL)
 
         viewmodel.liveData.observe(viewLifecycleOwner) { result ->
             result.report()
 
-            val data = result.data
-            if (data != null) {
+            withNotNull(result.data) { data ->
                 updateUi(data)
+                withNotNull(data.bill) { bill ->
+                    observeSocialContent(bill)
+                }
             }
         }
     }
@@ -91,13 +95,13 @@ class BillDetailFragment : CommonsFragment() {
         with(binding) {
             bindText(
                 title to bill.bill?.title,
+                description to bill.bill?.description,
                 typeAndSession to context?.dotted(
                     stringCompat(R.string.bill_session, bill.session?.name),
                     bill.type?.name
                 ),
                 publications to stringCompat(R.string.bill_publications_count,
                     bill.publications?.size ?: 0),
-                stages to stringCompat(R.string.bill_stages_count, bill.stages?.size ?: 0),
             )
         }
 
