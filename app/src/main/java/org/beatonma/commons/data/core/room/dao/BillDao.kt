@@ -20,7 +20,7 @@ interface BillDao {
     fun getBillPublications(parliamentdotuk: ParliamentID): LiveDataList<BillPublication>
 
     @Query("""SELECT * FROM bill_sponsors WHERE sponsor_bill_id = :parliamentdotuk""")
-    fun getBillSponsors(parliamentdotuk: ParliamentID): LiveDataList<BillSponsor>
+    fun getBillSponsors(parliamentdotuk: ParliamentID): LiveDataList<BillSponsorWithParty>
 
     @Transaction
     @Query("""SELECT * FROM bills WHERE bill_parliamentdotuk = :parliamentdotuk""")
