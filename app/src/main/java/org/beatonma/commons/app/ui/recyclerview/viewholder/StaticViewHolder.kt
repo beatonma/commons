@@ -17,3 +17,17 @@ abstract class StaticViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         itemView.setOnClickListener(listener)
     }
 }
+
+inline fun staticViewHolderOf(view: View, crossinline initBlock: StaticViewHolder.() -> Unit = {}) =
+    object: StaticViewHolder(view) {
+        init {
+            initBlock()
+        }
+    }
+
+inline fun staticViewHolderOf(parent: ViewGroup, layoutId: Int, crossinline initBlock: StaticViewHolder.() -> Unit = {}) =
+    object: StaticViewHolder(parent, layoutId) {
+        init {
+            initBlock()
+        }
+    }
