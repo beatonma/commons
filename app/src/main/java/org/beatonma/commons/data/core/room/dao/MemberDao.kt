@@ -2,6 +2,7 @@ package org.beatonma.commons.data.core.room.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import org.beatonma.commons.data.FlowList
 import org.beatonma.commons.data.LiveDataList
 import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.ApiCompleteMember
@@ -20,7 +21,7 @@ interface MemberDao: SharedPartyDao, SharedConstituencyDao, SharedElectionDao {
     // Get operations
     @Transaction
     @Query("""SELECT * FROM featured_members""")
-    fun getFeaturedProfiles(): LiveDataList<FeaturedMemberProfile>
+    fun getFeaturedProfiles(): FlowList<FeaturedMemberProfile>
 
     @Query("""SELECT * FROM member_profiles WHERE member_profiles.parliamentdotuk = :parliamentdotuk""")
     fun getMemberProfile(parliamentdotuk: ParliamentID): LiveData<MemberProfile>

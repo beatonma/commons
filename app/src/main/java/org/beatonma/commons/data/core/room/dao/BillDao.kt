@@ -2,6 +2,7 @@ package org.beatonma.commons.data.core.room.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import org.beatonma.commons.data.FlowList
 import org.beatonma.commons.data.LiveDataList
 import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.room.entities.bill.*
@@ -11,7 +12,7 @@ interface BillDao {
 
     @Transaction
     @Query("""SELECT * FROM featured_bills""")
-    fun getFeaturedBills(): LiveDataList<FeaturedBillWithBill>
+    fun getFeaturedBills(): FlowList<FeaturedBillWithBill>
 
     @Query("""SELECT * FROM bills WHERE bill_parliamentdotuk = :parliamentdotuk""")
     fun getBill(parliamentdotuk: ParliamentID): LiveData<Bill>

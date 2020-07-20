@@ -2,16 +2,17 @@ package org.beatonma.commons.data.core.room.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import org.beatonma.commons.data.LiveDataList
+import org.beatonma.commons.data.FlowList
 import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.room.dao.shared.SharedPartyDao
 import org.beatonma.commons.data.core.room.entities.division.*
 
 @Dao
 interface DivisionDao: SharedPartyDao {
+
     @Transaction
     @Query("""SELECT * FROM featured_divisions""")
-    fun getFeaturedDivisions(): LiveDataList<FeaturedDivisionWithDivision>
+    fun getFeaturedDivisionsFlow(): FlowList<FeaturedDivisionWithDivision>
 
     @Query("""SELECT * FROM divisions WHERE division_parliamentdotuk = :parliamentdotuk""")
     fun getDivision(parliamentdotuk: ParliamentID): LiveData<Division>
