@@ -62,7 +62,7 @@ open class HttpClientTest: BaseHttpClientTest() {
             .execute()
 
         val request = mockServer.takeRequest()
-        request.getHeader(HTTP_HEADER_USER_AGENT).run {
+        request.getHeader(HttpHeader.USER_AGENT)!!.run {
             assertContains("Android")
         }
     }
@@ -85,9 +85,9 @@ class TwfyHttpClientTest: HttpClientTest() {
             .execute()
 
         val request = mockServer.takeRequest()
-        request.path.run {
-            assertMatches(Regex(".*[?&]$TWFY_PARAM_API_KEY=[\\w]+.*"))
-            assertMatches(Regex(".*[?&]$TWFY_PARAM_OUTPUT_FORMAT=[\\w]+.*"))
+        request.path!!.run {
+            assertMatches(Regex(".*[?&]${TwfyParam.API_KEY}=[\\w]+.*"))
+            assertMatches(Regex(".*[?&]${TwfyParam.OUTPUT_FORMAT}=[\\w]+.*"))
         }
     }
 }
