@@ -1,3 +1,17 @@
 package org.beatonma.commons.data.core.interfaces
 
-interface Temporal
+import java.time.LocalDate
+
+interface Temporal {
+    fun startOf(): LocalDate = when(this) {
+        is Periodic -> this.start ?: throw Exception("No start set on Periodic item: $this")
+        is Dated -> this.date ?: throw Exception("No date set on Dated item: $this")
+        else -> throw Exception("Unhandled Temporal class: ${this.javaClass.canonicalName}")
+    }
+
+    fun endOf(today: LocalDate): LocalDate = when(this) {
+        is Periodic -> this.end ?: today
+        is Dated -> this.date ?: throw Exception("No date set on Dated item: $this")
+        else -> throw Exception("Unhandled Temporal class: ${this.javaClass.canonicalName}")
+    }
+}
