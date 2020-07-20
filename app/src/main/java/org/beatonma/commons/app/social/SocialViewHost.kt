@@ -7,7 +7,6 @@ import androidx.annotation.CallSuper
 import androidx.annotation.IdRes
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -15,7 +14,7 @@ import kotlinx.coroutines.withContext
 import org.beatonma.commons.R
 import org.beatonma.commons.annotations.SignInRequired
 import org.beatonma.commons.app.ui.navigation.BackPressConsumer
-import org.beatonma.commons.data.IoResult
+import org.beatonma.commons.data.IoResultObserver
 import org.beatonma.commons.data.NoBodySuccessResult
 import org.beatonma.commons.data.core.interfaces.Sociable
 import org.beatonma.commons.data.core.social.SocialContent
@@ -27,9 +26,9 @@ interface SocialViewHost: LifecycleOwner, BackPressConsumer {
     val socialViewModel: SocialViewModel
     val socialViewController: SocialViewController
 
-    val socialObserver: Observer<IoResult<SocialContent>>
+    val socialObserver: IoResultObserver<SocialContent>
 
-    fun createSocialObserver() = Observer<IoResult<SocialContent>> { result ->
+    fun createSocialObserver() = IoResultObserver<SocialContent> { result ->
         socialViewController.updateUi(result.data)
     }
 

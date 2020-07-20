@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.scopes.FragmentScoped
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.navigation.BackPressConsumer
-import org.beatonma.commons.app.ui.recyclerview.LoadingAdapter
+import org.beatonma.commons.app.ui.recyclerview.adapter.LoadingAdapter
 import org.beatonma.commons.app.ui.recyclerview.setup
 import org.beatonma.commons.data.core.social.SocialComment
 import org.beatonma.commons.data.core.social.SocialContent
@@ -82,21 +82,21 @@ class SocialViewController(
     private val context = layout.context
     private val adapter = CommentAdapter()
 
-    private val title: TextView = layout.findViewById(R.id.title)
+    private val title: TextView = layout.findViewById(R.id.social_title)
 
-    private val commentTouchTarget: View = layout.findViewById(R.id.comments)
-    private val upvoteTouchTarget: View = layout.findViewById(R.id.upvotes)
-    private val downvoteTouchTarget: View = layout.findViewById(R.id.downvotes)
+    private val commentTouchTarget: View = layout.findViewById(R.id.social_comments)
+    private val upvoteTouchTarget: View = layout.findViewById(R.id.social_upvotes)
+    private val downvoteTouchTarget: View = layout.findViewById(R.id.social_downvotes)
 
-    private val commentIcon: ImageView = layout.findViewById(R.id.comment_count_icon)
-    private val upvoteIcon: ImageView = layout.findViewById(R.id.vote_up)
-    private val downvoteIcon: ImageView = layout.findViewById(R.id.vote_down)
+    private val commentIcon: ImageView = layout.findViewById(R.id.social_comment_count_icon)
+    private val upvoteIcon: ImageView = layout.findViewById(R.id.social_vote_up)
+    private val downvoteIcon: ImageView = layout.findViewById(R.id.social_vote_down)
 
-    private val commentCount: TextView = layout.findViewById(R.id.comment_count)
-    private val voteUpCount: TextView = layout.findViewById(R.id.vote_up_count)
-    private val voteDownCount: TextView = layout.findViewById(R.id.vote_down_count)
+    private val commentCount: TextView = layout.findViewById(R.id.social_comment_count)
+    private val voteUpCount: TextView = layout.findViewById(R.id.social_vote_up_count)
+    private val voteDownCount: TextView = layout.findViewById(R.id.social_vote_down_count)
 
-    private val commentAnimationLayer: View = layout.findViewById(R.id.create_comment_alpha_layer)
+    private val commentAnimationLayer: View = layout.findViewById(R.id.social_create_comment_alpha_layer)
 
     private var currentVote: SocialVoteType? = null
 
@@ -114,12 +114,12 @@ class SocialViewController(
         }
 
     init {
-        layout.findViewById<RecyclerView>(R.id.comments_recyclerview).setup(adapter)
+        layout.findViewById<RecyclerView>(R.id.social_comments_recyclerview).setup(adapter)
 
         setupTransitionClickListeners(layout, mapOf(
             R.id.social_parent_container to State.EXPANDED,
-            R.id.create_comment_scrim to State.EXPANDED,
-            R.id.create_comment_fab to State.COMPOSE_COMMENT,
+            R.id.social_create_comment_scrim to State.EXPANDED,
+            R.id.social_create_comment_fab to State.COMPOSE_COMMENT,
         ))
         setupSocialClickListeners()
     }
@@ -241,8 +241,8 @@ class SocialViewController(
         }
         upvoteTouchTarget.setOnClickListener { onVoteClicked(SocialVoteType.aye) }
         downvoteTouchTarget.setOnClickListener { onVoteClicked(SocialVoteType.no) }
-        layout.findViewById<View>(R.id.create_comment_submit).setOnClickListener {
-            val editText: EditText = layout.findViewById(R.id.create_comment_edittext)
+        layout.findViewById<View>(R.id.social_create_comment_submit).setOnClickListener {
+            val editText: EditText = layout.findViewById(R.id.social_create_comment_edittext)
             val comment = editText.text.toString()
             host.validateComment(comment)
         }
