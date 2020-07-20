@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    style="@style/Item.Horizontal">
+    
+    <TextView
+        android:id="@+id/name"
+        tools:text="@tools:sample/full_names"
+        style="@style/Text.Primary"/>
+    
+    <TextView
+        android:id="@+id/party"
+        app:layout_constraintTop_toBottomOf="@+id/name"
+        tools:text="@sample/parties.json/data/name"
+        style="@style/Text.Secondary.Condensed"/>
+    
+    
+
+</androidx.constraintlayout.widget.ConstraintLayout>
