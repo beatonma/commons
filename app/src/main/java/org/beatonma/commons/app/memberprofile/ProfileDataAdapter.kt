@@ -6,42 +6,70 @@ import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.TransitionManager
 import org.beatonma.commons.R
-import org.beatonma.commons.app.memberprofile.adapter.*
+import org.beatonma.commons.app.memberprofile.adapter.CurrentAdapter
+import org.beatonma.commons.app.memberprofile.adapter.FinancialInterestsAdapter
+import org.beatonma.commons.app.memberprofile.adapter.PhysicalAddressAdapter
+import org.beatonma.commons.app.memberprofile.adapter.WeblinkAdapter
 import org.beatonma.commons.app.ui.colors.PartyColors
 import org.beatonma.commons.app.ui.colors.Themed
 import org.beatonma.commons.app.ui.data.WeblinkData
-import org.beatonma.commons.app.ui.recyclerview.*
-import org.beatonma.commons.app.ui.recyclerview.viewholder.StaticViewHolder
+import org.beatonma.commons.app.ui.recyclerview.adapter.*
+import org.beatonma.commons.app.ui.recyclerview.defaultSpace
+import org.beatonma.commons.app.ui.recyclerview.setup
+import org.beatonma.commons.app.ui.recyclerview.setupGrid
+import org.beatonma.commons.app.ui.recyclerview.viewholder.staticViewHolderOf
+import org.beatonma.commons.data.core.interfaces.Temporal
 import org.beatonma.commons.data.core.room.entities.member.FinancialInterest
 import org.beatonma.commons.data.core.room.entities.member.PhysicalAddress
+import org.beatonma.commons.databinding.HistoryviewBinding
 import org.beatonma.commons.databinding.RecyclerviewBinding
 import org.beatonma.commons.databinding.ViewCollapsingGroupBinding
-import org.beatonma.commons.kotlin.extensions.*
+import org.beatonma.commons.kotlin.extensions.hide
+import org.beatonma.commons.kotlin.extensions.inflate
+import org.beatonma.commons.kotlin.extensions.show
+import org.beatonma.commons.kotlin.extensions.stringCompat
 import org.beatonma.lib.graphic.core.utility.AnimationUtils
 
 private const val TAG = "ProfileDataAdapter"
 
+/**
+ * DISPLAYED
+ * - weblinks
+ * - current position/status
+ * - history
+ * - contact/physical addresses
+ * - financial interests
+ *
+ * TODO
+ * - experiences
+ * - topics of interest
+ * - posts
+ */
+
 
 internal enum class LayoutType {
     HORIZONTAL {
-        override fun setup(recyclerView: RecyclerView, adapter: BaseRecyclerViewAdapter) {
-            recyclerView.setup(adapter, layoutManager = horizontalLinearLayoutManager(recyclerView.context), space = RvSpacing(
-                horizontalItemSpace = recyclerView.context.dimenCompat(R.dimen.flow_gap_horizontal)
-            ))
+        override fun setup(recyclerView: RecyclerView, adapter: BaseRecyclerViewAdapter, showSeparators: Boolean) {
+            recyclerView.setup(
+                adapter,
+                orientation = RecyclerView.HORIZONTAL,
+                space = defaultSpace(recyclerView.context, orientation = RecyclerView.HORIZONTAL, overscroll = true),
+                showSeparators = showSeparators
+            )
         }
     },
     VERTICAL {
-        override fun setup(recyclerView: RecyclerView, adapter: BaseRecyclerViewAdapter) {
-            recyclerView.setup(adapter)
+        override fun setup(recyclerView: RecyclerView, adapter: BaseRecyclerViewAdapter, showSeparators: Boolean) {
+            recyclerView.setup(adapter, showSeparators = showSeparators)
         }
     },
     STAGGERED_GRID {
-        override fun setup(recyclerView: RecyclerView, adapter: BaseRecyclerViewAdapter) {
+        override fun setup(recyclerView: RecyclerView, adapter: BaseRecyclerViewAdapter, showSeparators: Boolean) {
             recyclerView.setupGrid(adapter, columnCount = 1)
         }
     };
 
-    abstract fun setup(recyclerView: RecyclerView, adapter: BaseRecyclerViewAdapter)
+    abstract fun setup(recyclerView: RecyclerView, adapter: BaseRecyclerViewAdapter, showSeparators: Boolean = false)
 }
 
 
@@ -65,24 +93,29 @@ class ProfileDataAdapter: LoadingAdapter<ProfileData<Any>>(), Themed {
             ?: super.onCreateViewHolder(parent, viewType)
 
     override fun onCreateDefaultViewHolder(parent: ViewGroup): RecyclerView.ViewHolder {
-        return object: StaticViewHolder(parent.inflate(R.layout.invisible)) {}
+        return staticViewHolderOf(parent.inflate(R.layout.invisible))
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val data = items?.get(position) ?: return
         when (holder) {
             is AbstractProfileDataHolder<*> -> holder.bind(data, theme)
+            is GenericTypedViewHolder<*> -> {
+                @Suppress("UNCHECKED_CAST")
+                (holder as GenericTypedViewHolder<ProfileData<*>>).bind(data)
+            }
             else -> super.onBindViewHolder(holder, position)
         }
     }
 }
 
-private fun createHistoryHolder(parent: ViewGroup): AbstractProfileDataHolder<HistoryItem<*>> =
-    object: CollapsibleProfileDataHolder<HistoryItem<*>>(
-        parent,
-        HistoryAdapter(),
-        title = parent.context.stringCompat(R.string.member_history_title),
-    ) {}
+private fun createHistoryHolder(parent: ViewGroup): GenericTypedViewHolder<ProfileData<Temporal>> =
+    object: GenericTypedViewHolder<ProfileData<Temporal>>(parent.inflate(R.layout.historyview)) {
+        val vh = HistoryviewBinding.bind(itemView)
+        override fun bind(item: ProfileData<Temporal>) {
+            vh.historyview.setHistory(item.items)
+        }
+    }
 
 private fun createCurrentHolder(parent: ViewGroup): AbstractProfileDataHolder<Any> =
     object: CollapsibleProfileDataHolder<Any>(
@@ -102,13 +135,15 @@ private fun createAddressHolder(parent: ViewGroup): AbstractProfileDataHolder<Ph
         parent,
         PhysicalAddressAdapter(),
         title = parent.context.stringCompat(R.string.member_write_to),
+        showSeparators = true
     ) {}
 
 private fun createFinancialInterestsHolder(parent: ViewGroup): AbstractProfileDataHolder<FinancialInterest> =
     object: CollapsibleProfileDataHolder<FinancialInterest>(
         parent,
         FinancialInterestsAdapter(),
-        title = parent.context.stringCompat(R.string.member_financial_interests)
+        title = parent.context.stringCompat(R.string.member_financial_interests),
+        showSeparators = true
     ) {}
 
 
@@ -129,11 +164,12 @@ internal abstract class AbstractProfileDataHolder<D>(
 internal abstract class ProfileDataHolder<D>(
     parent: ViewGroup,
     adapter: ThemedAdapter<D>,
-    layoutType: LayoutType = LayoutType.VERTICAL
+    layoutType: LayoutType = LayoutType.VERTICAL,
+    showSeparators: Boolean = false,
 ): AbstractProfileDataHolder<D>(parent, R.layout.recyclerview, adapter) {
     private val vh = RecyclerviewBinding.bind(itemView)
     init {
-        layoutType.setup(vh.recyclerview, adapter)
+        layoutType.setup(vh.recyclerview, adapter, showSeparators)
     }
 }
 
@@ -143,11 +179,12 @@ internal abstract class CollapsibleProfileDataHolder<D>(
     layoutType: LayoutType = LayoutType.VERTICAL,
     title: String,
     initialCollapsed: Boolean = true,
-    collapsedVisibleItems: Int = 3
+    collapsedVisibleItems: Int = 3,
+    showSeparators: Boolean = false,
 ): AbstractProfileDataHolder<D>(parent, R.layout.view_collapsing_group, adapter) {
     private val vh = ViewCollapsingGroupBinding.bind(itemView)
     init {
-        layoutType.setup(vh.recyclerview, adapter)
+        layoutType.setup(vh.recyclerview, adapter, showSeparators)
         adapter.apply {
             collapsedItemsVisible = collapsedVisibleItems
             setCollapsed(initialCollapsed)
@@ -194,10 +231,12 @@ sealed class ProfileData<T>(internal val type: ProfileDataType) {
     abstract val items: List<T>
 
     data class Current(override val items: List<Any>): ProfileData<Any>(ProfileDataType.CURRENT)
-    data class History(override val items: List<HistoryItem<*>>): ProfileData<HistoryItem<*>>(ProfileDataType.HISTORY)
+    data class History(override val items: List<Temporal>): ProfileData<Temporal>(ProfileDataType.HISTORY)
     data class Weblinks(override val items: List<WeblinkData>): ProfileData<WeblinkData>(ProfileDataType.WEBLINKS)
     data class Addresses(override val items: List<PhysicalAddress>): ProfileData<PhysicalAddress>(ProfileDataType.ADDRESSES)
     data class FinancialInterests(override val items: List<FinancialInterest>): ProfileData<FinancialInterest>(ProfileDataType.FINANCIAL)
+
+    fun isEmpty() = items.isEmpty()
 
     internal enum class ProfileDataType {
         WEBLINKS {
@@ -216,6 +255,6 @@ sealed class ProfileData<T>(internal val type: ProfileDataType) {
             override fun getViewHolder(parent: ViewGroup) = createFinancialInterestsHolder(parent)
         }
         ;
-        abstract fun getViewHolder(parent: ViewGroup): AbstractProfileDataHolder<*>
+        abstract fun getViewHolder(parent: ViewGroup): RecyclerView.ViewHolder
     }
 }
