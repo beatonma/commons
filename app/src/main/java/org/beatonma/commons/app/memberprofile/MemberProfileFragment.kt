@@ -4,68 +4,53 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.beatonma.commons.R
 import org.beatonma.commons.app.social.SocialViewController
 import org.beatonma.commons.app.social.SocialViewHost
 import org.beatonma.commons.app.social.SocialViewModel
 import org.beatonma.commons.app.social.SocialViewTheme
-import org.beatonma.commons.app.ui.BaseViewmodelFragment
-import org.beatonma.commons.app.ui.Snippet
+import org.beatonma.commons.app.ui.CommonsFragment
 import org.beatonma.commons.app.ui.colors.PartyColors
 import org.beatonma.commons.app.ui.colors.Themed
 import org.beatonma.commons.app.ui.colors.getPartyTheme
-import org.beatonma.commons.app.ui.navigation.OnBackPressed
-import org.beatonma.commons.app.ui.recyclerview.RvSpacing
+import org.beatonma.commons.app.ui.navigation.BackPressConsumer
+import org.beatonma.commons.app.ui.recyclerview.defaultPrimaryContentSpacing
 import org.beatonma.commons.app.ui.recyclerview.setup
-import org.beatonma.commons.data.IoResult
-import org.beatonma.commons.data.NetworkError
-import org.beatonma.commons.data.PARLIAMENTDOTUK
+import org.beatonma.commons.data.IoResultObserver
 import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.CompleteMember
-import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 import org.beatonma.commons.data.core.social.SocialContent
 import org.beatonma.commons.databinding.FragmentMemberProfileBinding
-import org.beatonma.commons.databinding.FragmentMemberProfileSnippetBinding
 import org.beatonma.commons.kotlin.extensions.*
 
 private const val TAG = "MemberProfileFrag"
 
 @AndroidEntryPoint
-class MemberProfileFragment : BaseViewmodelFragment(),
+class MemberProfileFragment : CommonsFragment(),
     Themed,
-    OnBackPressed,
+    BackPressConsumer,
     SocialViewHost
 {
 
     private lateinit var binding: FragmentMemberProfileBinding
 
     private val viewmodel: MemberProfileViewModel by viewModels()
-    override val socialViewModel: SocialViewModel by activityViewModels()
+    override val socialViewModel: SocialViewModel by viewModels()
 
     override lateinit var socialViewController: SocialViewController
+    override val socialObserver: IoResultObserver<SocialContent> = createSocialObserver()
 
-    private val socialObserver = Observer<IoResult<SocialContent>> { result ->
-        socialViewController.updateUi(result.data)
-    }
-
-    override fun onVoteSubmissionSuccessful() {
-        observeSocialViewModel()
-    }
 
     private val adapter = ProfileDataAdapter()
 
     override var theme: PartyColors? = null
-    private val defaultTransition = R.id.transition_scroll
 
-    private fun getMemberIdFromBundle(): ParliamentID = arguments?.getInt(PARLIAMENTDOTUK) ?: 0
+    private fun getMemberIdFromBundle(): ParliamentID = arguments.getParliamentID()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,38 +68,26 @@ class MemberProfileFragment : BaseViewmodelFragment(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        socialViewController = setupViewController(binding.root, defaultTransition)
+        socialViewController = setupViewController(
+            binding.root,
+            collapsedConstraintsId = R.id.state_default,
+            expandedConstraintsId = R.id.state_social_expended_ext,
+        )
 
         binding.recyclerview.setup(
             adapter,
-            space = RvSpacing(
-                topSpace = context.dp(16),
-                bottomSpace = dimenCompat(R.dimen.list_overscroll_padding),
-                verticalItemSpace = dimenCompat(R.dimen.flow_gap_vertical)
-            )
+            space = defaultPrimaryContentSpacing(view.context)
         )
 
         viewmodel.liveData.observe(viewLifecycleOwner) { result ->
-            if (result is NetworkError) networkErrorSnackbar()
+            result.report()
 
             result.data?.let { member ->
                 updateUI(member)
 
-                val profile = member.profile
-                if (profile != null) {
+                withNotNull(member.profile) { profile ->
                     observeSocialContent(profile)
                 }
-            }
-        }
-    }
-
-    private fun observeSocialContent(profile: MemberProfile) {
-        val target = profile.asSocialTarget()
-
-        lifecycleScope.launch(Dispatchers.Main) {
-            socialViewModel.run {
-                forTarget(target)
-                observeSocialViewModel()
             }
         }
     }
@@ -130,16 +103,6 @@ class MemberProfileFragment : BaseViewmodelFragment(),
         }
 
         updateUiToolbarText(member)
-    }
-
-    private fun observeSocialViewModel() {
-        socialViewModel.livedata.removeObserver(socialObserver)
-        lifecycleScope.launch(Dispatchers.IO) {
-            socialViewModel.refresh()
-            withContext(Dispatchers.Main) {
-                socialViewModel.livedata.observe(viewLifecycleOwner, socialObserver)
-            }
-        }
     }
 
     private fun updateUiToolbarText(member: CompleteMember) {
@@ -164,27 +127,10 @@ class MemberProfileFragment : BaseViewmodelFragment(),
         socialViewController.collapsedTheme = SocialViewTheme(theme.textSecondaryOnPrimary, theme.textPrimaryOnPrimary)
     }
 
-//    private fun setSnippet(snippet: Snippet) = bindSnippet(binding.snippet, snippet)
-
 //    private fun observeMemberVotes() {
 //        // TODO load votes when user requests them and display soemwhere
 //        viewmodel.memberVoteLiveData.observe(viewLifecycleOwner) {
 //            it.data.dump()
 //        }
 //    }
-}
-
-
-
-private fun bindSnippet(binding: FragmentMemberProfileSnippetBinding, snippet: Snippet) {
-    binding.apply {
-        bindText(
-            title to snippet.title,
-            content to snippet.content,
-            subtitle to snippet.subtitle,
-            subcontent to snippet.subcontent,
-        )
-
-        binding.root.setOnClickListener { view -> snippet.onclick?.invoke(view.context) }
-    }
 }

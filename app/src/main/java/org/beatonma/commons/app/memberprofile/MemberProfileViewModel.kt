@@ -17,10 +17,7 @@ import org.beatonma.commons.data.core.interfaces.compressConsecutiveItems
 import org.beatonma.commons.data.core.repository.MemberRepository
 import org.beatonma.commons.data.core.room.entities.division.VoteWithDivision
 import org.beatonma.commons.data.core.room.entities.member.*
-import org.beatonma.commons.kotlin.extensions.dateRange
-import org.beatonma.commons.kotlin.extensions.formatted
-import org.beatonma.commons.kotlin.extensions.openUrl
-import org.beatonma.commons.kotlin.extensions.stringCompat
+import org.beatonma.commons.kotlin.extensions.*
 
 private const val TAG = "MemberProfViewModel"
 
@@ -192,9 +189,9 @@ class MemberProfileViewModel
 
 private suspend fun constructHistoryOf(member: CompleteMember): List<Temporal> {
     fun <T : Temporal> MutableList<Temporal>.addEvents(items: List<T>?) {
-        if (items != null) {
+        withNotNull(items) { safeItems ->
             addAll(
-                items.mapNotNull {
+                safeItems.mapNotNull {
                     try {
                         it
                     } catch(e: Exception) {
