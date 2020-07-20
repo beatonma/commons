@@ -115,7 +115,7 @@ class CommonsRemoteDataSourceImpl @Inject constructor(
 
     override suspend fun getDivision(house: House, parliamentdotuk: ParliamentID) =
         when (house) {
-            House.Lords -> getLordsDivision(parliamentdotuk)
+            House.lords -> getLordsDivision(parliamentdotuk)
             else -> getCommonsDivision(parliamentdotuk)
         }
 

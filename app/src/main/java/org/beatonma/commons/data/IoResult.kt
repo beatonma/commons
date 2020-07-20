@@ -19,10 +19,10 @@ sealed class IoError<T>(data: T?, message: String?, val error: Exception?): IoRe
         return "[${this.javaClass.canonicalName}] data=`$data`, message=`$message`, error=`$error`"
     }
 }
-class NetworkError<T>(message: String?, error: Exception?): IoError<T>(null, message, error)
-class GenericError<T>(message: String?, error: Exception?): IoError<T>(null, message, error)
-class LocalError<T>(message: String?, error: Exception?): IoError<T>(null, message, error)
-class UnexpectedValueError<T>(message: String?, error: Exception?): IoError<T>(null, message, error)
+class NetworkError(message: String?, error: Exception?): IoError<Nothing>(null, message, error)
+class GenericError(message: String?, error: Exception?): IoError<Nothing>(null, message, error)
+class LocalError(message: String?, error: Exception?): IoError<Nothing>(null, message, error)
+class UnexpectedValueError(message: String?, error: Exception?): IoError<Nothing>(null, message, error)
 class NotSignedInError(message: String?, error: Exception? = null): IoError<Nothing>(null, message, error)
 
 class LoadingResult<T>(data: T? = null, message: String? = null): IoResult<T>(data, message)

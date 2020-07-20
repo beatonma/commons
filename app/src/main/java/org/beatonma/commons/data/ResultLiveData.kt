@@ -28,16 +28,16 @@ fun <T, N> resultLiveData(
                     saveCallResult(response.data)
                 }
                 catch (e: Exception) {
-                    emit(LocalError<T>("Unable to save network result: $e", e))
+                    emit(LocalError("Unable to save network result: $e", e))
                 }
             }
             else {
-                emit(UnexpectedValueError<T>("Null data: ${response.message}", null))
+                emit(UnexpectedValueError("Null data: ${response.message}", null))
             }
         }
 
         is IoError -> {
-            emit(NetworkError<T>(response.message, response.error))
+            emit(NetworkError(response.message, response.error))
             emitSource(source)
         }
     }
@@ -69,16 +69,16 @@ fun <T, N> resultLiveDataLocalPreferred(
                     saveCallResult(response.data)
                 }
                 catch (e: Exception) {
-                    emit(LocalError<T>("Unable to save network result: $e", e))
+                    emit(LocalError("Unable to save network result: $e", e))
                 }
             }
             else {
-                emit(UnexpectedValueError<T>("Null data: ${response.message}", null))
+                emit(UnexpectedValueError("Null data: ${response.message}", null))
             }
         }
 
         is IoError -> {
-            emit(NetworkError<T>(response.message, response.error))
+            emit(NetworkError(response.message, response.error))
             emitSource(source)
         }
     }
@@ -96,12 +96,12 @@ fun <T> resultLiveDataNoCache(
                 emit(SuccessResult(response.data, "Network OK"))
             }
             else {
-                emit(UnexpectedValueError<T>("Null data: ${response.message}", null))
+                emit(UnexpectedValueError("Null data: ${response.message}", null))
             }
         }
 
         is IoError -> {
-            emit(NetworkError<T>(response.message, response.error))
+            emit(NetworkError(response.message, response.error))
         }
     }
 }
