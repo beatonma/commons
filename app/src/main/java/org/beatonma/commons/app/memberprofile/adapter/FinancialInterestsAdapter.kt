@@ -2,7 +2,7 @@ package org.beatonma.commons.app.memberprofile.adapter
 
 import android.view.ViewGroup
 import org.beatonma.commons.R
-import org.beatonma.commons.app.ui.recyclerview.ThemedCollapsibleAdapter
+import org.beatonma.commons.app.ui.recyclerview.adapter.ThemedCollapsibleAdapter
 import org.beatonma.commons.data.core.room.entities.member.FinancialInterest
 import org.beatonma.commons.databinding.ItemMemberFinancialInterestBinding
 import org.beatonma.commons.kotlin.extensions.bindText

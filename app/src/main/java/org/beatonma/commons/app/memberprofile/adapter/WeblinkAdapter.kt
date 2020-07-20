@@ -4,7 +4,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 
 import org.beatonma.commons.app.ui.data.WeblinkData
-import org.beatonma.commons.app.ui.recyclerview.ThemedAdapter
+import org.beatonma.commons.app.ui.recyclerview.adapter.ThemedAdapter
 import org.beatonma.commons.app.ui.views.ChipData
 import org.beatonma.commons.app.ui.views.CollapsibleChipHolder
 

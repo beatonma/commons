@@ -3,7 +3,11 @@ package org.beatonma.commons.app.memberprofile.adapter
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import org.beatonma.commons.R
-import org.beatonma.commons.app.ui.recyclerview.*
+import org.beatonma.commons.app.ui.recyclerview.adapter.ThemedAdapter
+import org.beatonma.commons.app.ui.recyclerview.adapter.ThemedCollapsibleAdapter
+import org.beatonma.commons.app.ui.recyclerview.adapter.TypedAdapter
+import org.beatonma.commons.app.ui.recyclerview.defaultItemSpace
+import org.beatonma.commons.app.ui.recyclerview.setup
 import org.beatonma.commons.app.ui.views.ChipData
 import org.beatonma.commons.app.ui.views.CollapsibleChipHolder
 import org.beatonma.commons.data.core.room.entities.member.PhysicalAddress
@@ -20,7 +24,7 @@ class PhysicalAddressAdapter: ThemedCollapsibleAdapter<PhysicalAddress>() {
             init {
                 vh.actions.setup(
                     adapter,
-                    horizontalLinearLayoutManager(parent.context),
+                    orientation = RecyclerView.HORIZONTAL,
                     space = defaultItemSpace(context, horizontal = true)
                 )
             }

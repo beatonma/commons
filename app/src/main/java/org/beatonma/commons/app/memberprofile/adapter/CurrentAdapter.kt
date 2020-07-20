@@ -3,7 +3,7 @@ package org.beatonma.commons.app.memberprofile.adapter
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import org.beatonma.commons.R
-import org.beatonma.commons.app.ui.recyclerview.ThemedCollapsibleAdapter
+import org.beatonma.commons.app.ui.recyclerview.adapter.ThemedCollapsibleAdapter
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import org.beatonma.commons.databinding.ItemWideTitleActionBinding
 import org.beatonma.commons.kotlin.extensions.*
