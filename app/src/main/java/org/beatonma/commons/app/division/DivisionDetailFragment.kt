@@ -8,7 +8,6 @@ import android.widget.ImageView
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
@@ -21,10 +20,10 @@ import org.beatonma.commons.app.social.SocialViewHost
 import org.beatonma.commons.app.social.SocialViewModel
 import org.beatonma.commons.app.ui.CommonsFragment
 import org.beatonma.commons.app.ui.navigation.BackPressConsumer
-import org.beatonma.commons.app.ui.recyclerview.LoadingAdapter
+import org.beatonma.commons.app.ui.recyclerview.adapter.LoadingAdapter
 import org.beatonma.commons.app.ui.recyclerview.defaultPrimaryContentSpacing
 import org.beatonma.commons.app.ui.recyclerview.setup
-import org.beatonma.commons.data.IoResult
+import org.beatonma.commons.data.IoResultObserver
 import org.beatonma.commons.data.core.room.entities.division.Division
 import org.beatonma.commons.data.core.room.entities.division.VoteType
 import org.beatonma.commons.data.core.room.entities.division.VoteWithParty
@@ -54,7 +53,7 @@ class DivisionDetailFragment : CommonsFragment(),
 
     override val socialViewModel: SocialViewModel by viewModels()
     override lateinit var socialViewController: SocialViewController
-    override val socialObserver: Observer<IoResult<SocialContent>> = createSocialObserver()
+    override val socialObserver: IoResultObserver<SocialContent> = createSocialObserver()
 
     private fun getDivisionFromBundle(): BundledDivision = arguments.getDivision()
 
@@ -86,8 +85,7 @@ class DivisionDetailFragment : CommonsFragment(),
         viewmodel.liveData.observe(viewLifecycleOwner) { result ->
             result.report()
 
-            val data = result.data
-            if (data != null) {
+            withNotNull(result.data) { data ->
                 lifecycleScope.launch {
                     val votes = viewmodel.sortedVotes(data.votes)
                     withContext(Dispatchers.Main) {
