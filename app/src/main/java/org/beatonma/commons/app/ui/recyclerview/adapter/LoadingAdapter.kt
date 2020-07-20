@@ -1,4 +1,4 @@
-package org.beatonma.commons.app.ui.recyclerview
+package org.beatonma.commons.app.ui.recyclerview.adapter
 
 import android.view.View
 import android.view.ViewGroup

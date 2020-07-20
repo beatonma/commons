@@ -1,4 +1,4 @@
-package org.beatonma.commons.app.ui.recyclerview
+package org.beatonma.commons.app.ui.recyclerview.adapter
 
 import android.view.View
 import android.view.ViewGroup
@@ -6,7 +6,7 @@ import androidx.annotation.CallSuper
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import org.beatonma.commons.R
-import org.beatonma.commons.app.ui.recyclerview.viewholder.StaticViewHolder
+import org.beatonma.commons.app.ui.recyclerview.viewholder.staticViewHolderOf
 import org.beatonma.commons.kotlin.extensions.inflate
 
 /**
@@ -53,6 +53,5 @@ abstract class ShowWhenEmptyAdapter<T>(
         }
     }
 
-    open fun getEmptyViewHolder(view: View): RecyclerView.ViewHolder =
-        object: StaticViewHolder(view) {}
+    open fun getEmptyViewHolder(view: View): RecyclerView.ViewHolder = staticViewHolderOf(view)
 }
