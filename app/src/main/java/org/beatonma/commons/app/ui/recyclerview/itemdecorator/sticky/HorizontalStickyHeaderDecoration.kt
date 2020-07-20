@@ -167,5 +167,7 @@ class HorizontalStickyHeaderDecoration(
 
 private fun defaultSpace(context: Context): StickyHeaderDecoration.Space =
     StickyHeaderDecoration.Space(
+        paddingHorizontal = context.dimenCompat(R.dimen.card_padding_horizontal),
+        paddingBottom = context.dimenCompat(R.dimen.card_padding_bottom),
         marginBetweenGroups = context.dimenCompat(R.dimen.list_space_between_groups_horizontal)
     )
