@@ -2,7 +2,7 @@ package org.beatonma.commons.app.search
 
 import android.Manifest
 import androidx.appcompat.widget.SearchView
-import org.beatonma.commons.app.ui.recyclerview.TypedAdapter
+import org.beatonma.commons.app.ui.recyclerview.adapter.TypedAdapter
 import org.beatonma.commons.data.core.search.SearchResult
 import org.beatonma.commons.kotlin.extensions.PermissionResults
 
