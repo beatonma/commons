@@ -1,4 +1,4 @@
-package org.beatonma.commons.app.ui.views
+package org.beatonma.commons.app.ui.views.chip
 
 import android.content.res.ColorStateList
 import android.view.View
