@@ -10,7 +10,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.SignInButton
 import dagger.hilt.android.AndroidEntryPoint
-import org.beatonma.commons.app.ui.BaseViewmodelFragment
+import org.beatonma.commons.app.ui.CommonsFragment
 import org.beatonma.commons.data.core.repository.UserAccount
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.databinding.FragmentSigninBinding
@@ -20,7 +20,7 @@ import javax.inject.Inject
 private const val RC_GOOGLE_SIGNIN = 9913
 
 @AndroidEntryPoint
-class SignInFragment : BaseViewmodelFragment() {
+class SignInFragment : CommonsFragment() {
     private lateinit var binding: FragmentSigninBinding
 
     @Inject

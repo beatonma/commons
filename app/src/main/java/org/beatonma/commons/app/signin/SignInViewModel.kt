@@ -15,7 +15,6 @@ import org.beatonma.commons.data.core.repository.UserAccount
 import org.beatonma.commons.data.core.repository.UserRepository
 import org.beatonma.commons.data.core.repository.toUserAccount
 import org.beatonma.commons.data.core.room.entities.user.UserToken
-import org.beatonma.commons.kotlin.extensions.dump
 
 private const val TAG = "SignInViewModel"
 
@@ -48,16 +47,6 @@ class SignInViewModel @ViewModelInject constructor(
     fun getGoogleAccountFromSignInResult(completedTask: Task<GoogleSignInAccount>): UserAccount? {
         try {
             val account = completedTask.getResult(ApiException::class.java)
-            account?.run {
-                idToken.dump("idToken")
-                id.dump("id")
-                email.dump("email")
-                displayName.dump("name")
-                givenName.dump("givenName")
-                familyName.dump("familyName")
-                photoUrl.dump("photo")
-                grantedScopes.forEach { it.dump("scope") }
-            }
             return account?.toUserAccount()
         }
         catch(e: ApiException) {
