@@ -1,16 +1,87 @@
 package org.beatonma.commons.data
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.flow.*
-import org.beatonma.commons.kotlin.extensions.dump
+import kotlinx.coroutines.launch
 
-fun <T, N> resultFlow(
-    databaseQuery: suspend () -> Flow<T>,
+
+/**
+ * Emits cached results of [databaseQuery] then attempts to update data with [networkCall].
+ *
+ * - If networkCall succeeds it will update the database cache via [saveCallResult] and the
+ * [databaseQuery] will emit the new data.
+ *
+ * - Otherwise
+ */
+fun <T, N> cachedResultFlow(
+    databaseQuery: () -> Flow<T>,
     networkCall: suspend () -> IoResult<N>,
     saveCallResult: suspend (N) -> Unit
-): FlowIoResult<T> = flow<IoResult<T>> {
-    val local = databaseQuery.invoke()
+): FlowIoResult<T> = channelFlow {
+    send(LoadingResult())
 
-    val response = networkCall.invoke().dump("NETWORK")
+    // Run databaseQuery in separate coroutine and surface results to channelFlow
+    launch {
+        databaseQuery.invoke()
+            .distinctUntilChanged()
+            .mapLatest { SuccessResult(it,"DB read") }
+            .collectLatest { send(it) }
+    }
+
+    submitAndSaveNetworkResult(networkCall, saveCallResult)
+}.flowOn(Dispatchers.IO)
+
+/**
+ * [networkCall] will only execute if [databaseQuery] does not emit a useful value.
+ */
+fun <T, N> resultFlowLocalPreferred(
+    databaseQuery: suspend () -> Flow<T>,
+    networkCall: suspend () -> IoResult<N>,
+    saveCallResult: suspend (N) -> Unit,
+): FlowIoResult<T> = channelFlow<IoResult<T>> {
+    databaseQuery.invoke()
+        .collect { queryResult ->
+            when {
+                queryResult == null -> submitAndSaveNetworkResult(networkCall, saveCallResult)
+                queryResult is Collection<*> && queryResult.isEmpty() -> {
+                    submitAndSaveNetworkResult(networkCall, saveCallResult)
+                }
+                else -> sendAndClose(
+                    SuccessResult(queryResult, "DB read")
+                )
+            }
+        }
+}.flowOn(Dispatchers.IO)
+
+/**
+ * Run the network call with no local caching.
+ * The resulting flow will emit a LoadingResult while waiting for network response.
+ */
+fun <T> resultFlowNoCache(
+    networkCall: suspend () -> IoResult<T>,
+): FlowIoResult<T> = flow {
+    emit(LoadingResult<T>())
+
+    emit(networkCall.invoke())
+}
+
+
+
+private suspend fun <E> ProducerScope<E>.sendAndClose(element: E, cause: Throwable? = null) {
+    send(element)
+    close(cause)
+}
+
+
+/**
+ * Shared network handling block for updating local cache.
+ */
+private suspend inline fun <E, N> ProducerScope<IoResult<E>>.submitAndSaveNetworkResult(
+    networkCall: suspend () -> IoResult<N>,
+    saveCallResult: suspend (N) -> Unit
+) {
+    val response = networkCall.invoke()
     when(response) {
         is SuccessResult -> {
             if (response.data != null) {
@@ -18,82 +89,16 @@ fun <T, N> resultFlow(
                     saveCallResult(response.data)
                 }
                 catch (e: Exception) {
-                    emit(LocalError("Unable to save network result: $e", e))
+                    sendAndClose(LocalError("Unable to save network result: $e", e))
                 }
             }
             else {
-                emit(UnexpectedValueError("Null data: ${response.message}", null))
+                sendAndClose(UnexpectedValueError("Null data: ${response.message}", null))
             }
         }
 
         is IoError -> {
-            emit(NetworkError(response.message, response.error))
-        }
-    }
-
-    local
-        .map { SuccessResult(it, "OK") }
-        .collect { emit(it) }
-}
-
-
-fun <T, N> resultFlowLocalPreferred(
-    databaseQuery: suspend () -> Flow<T>,
-    networkCall: suspend () -> IoResult<N>,
-    saveCallResult: suspend (N) -> Unit
-): FlowIoResult<T> = flow {
-    databaseQuery.invoke().dump("DB.INVOKE")
-        .onStart { emit(LoadingResult<T>().dump("ON_START")) }
-        .map {
-            it.dump("FROM DB")
-            SuccessResult(it, "DB read OK")
-        }
-        .onEmpty {
-            val response = networkCall.invoke().dump("NETWORK RESPONSE")
-            when (response) {
-                is SuccessResult -> {
-                    if (response.data != null) {
-                        try {
-                            saveCallResult(response.data)
-                        } catch (e: Exception) {
-                            emit(LocalError("Unable to save network result: $e", e))
-                        }
-                    }
-                    else {
-                        emit(UnexpectedValueError("Null data: ${response.message}", null))
-                    }
-                }
-
-                is IoError -> {
-                    emit(NetworkError(response.message, response.error))
-                }
-            }
-        }
-        .collect {
-            emit(it)
-        }
-}
-
-
-
-fun <T> resultFlowNoCache(
-    networkCall: suspend () -> IoResult<T>,
-): FlowIoResult<T> = flow {
-    emit(LoadingResult<T>())
-
-    val response = networkCall.invoke()
-    when (response) {
-        is SuccessResult -> {
-            if (response.data != null) {
-                emit(SuccessResult(response.data, "Network OK"))
-            }
-            else {
-                emit(UnexpectedValueError("Null data: ${response.message}", null))
-            }
-        }
-
-        is IoError -> {
-            emit(NetworkError(response.message, response.error))
+            sendAndClose(NetworkError(response.message, response.error))
         }
     }
 }
