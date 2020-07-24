@@ -2,6 +2,7 @@ package org.beatonma.commons.app.division
 
 import android.content.Context
 import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.asLiveData
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.BaseIoAndroidViewModel
@@ -19,7 +20,7 @@ class DivisionDetailViewModel @ViewModelInject constructor(
 ) : BaseIoAndroidViewModel<DivisionWithVotes>(context) {
 
     fun forDivision(bundled: BundledDivision) {
-        liveData = repository.observeDivision(bundled.house, bundled.parliamentdotuk)
+        liveData = repository.getDivision(bundled.house, bundled.parliamentdotuk).asLiveData()
     }
 
     fun getVoteChartData(division: Division) = listOf(

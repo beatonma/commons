@@ -1,7 +1,7 @@
 package org.beatonma.commons.data.core.room.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
+import kotlinx.coroutines.flow.Flow
 import org.beatonma.commons.data.FlowList
 import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.room.dao.shared.SharedPartyDao
@@ -14,12 +14,9 @@ interface DivisionDao: SharedPartyDao {
     @Query("""SELECT * FROM featured_divisions""")
     fun getFeaturedDivisionsFlow(): FlowList<FeaturedDivisionWithDivision>
 
-    @Query("""SELECT * FROM divisions WHERE division_parliamentdotuk = :parliamentdotuk""")
-    fun getDivision(parliamentdotuk: ParliamentID): LiveData<Division>
-
     @Transaction
     @Query("""SELECT * FROM divisions WHERE division_parliamentdotuk = :parliamentdotuk""")
-    fun getDivisionWithVotes(parliamentdotuk: ParliamentID): LiveData<DivisionWithVotes>
+    fun getDivisionWithVotes(parliamentdotuk: ParliamentID): Flow<DivisionWithVotes>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFeaturedDivisions(featuredDivisions: List<FeaturedDivision>)
