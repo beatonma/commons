@@ -3,6 +3,7 @@ package org.beatonma.commons.app.bill
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.asLiveData
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.beatonma.commons.app.ui.BaseIoAndroidViewModel
 import org.beatonma.commons.data.ParliamentID
@@ -21,7 +22,7 @@ class BillDetailViewModel @ViewModelInject constructor(
 
 
     fun forBill(parliamentdotuk: ParliamentID) {
-        liveData = repository.observeBill(parliamentdotuk)
+        liveData = repository.getBill(parliamentdotuk).asLiveData()
     }
 
     /**
