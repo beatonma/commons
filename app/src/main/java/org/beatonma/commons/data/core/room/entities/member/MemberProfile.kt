@@ -45,9 +45,6 @@ data class MemberProfile(
     @field:Json(name = Contract.PORTRAIT) @ColumnInfo(name = "portrait_url") val portraitUrl: String? = null,
     @field:Json(name = Contract.CURRENT_POST) @ColumnInfo(name = "current_post") val currentPost: String? = null,
 
-    @ColumnInfo(name = Timestamped.FIELD_ACCESSED_AT) override var accessedAt: Long = System.currentTimeMillis(),
-    @ColumnInfo(name = Timestamped.FIELD_CREATED_AT) override var createdAt: Long = System.currentTimeMillis(),
-
     ) : Parliamentdotuk,
     Named,
     Periodic,
@@ -55,10 +52,14 @@ data class MemberProfile(
     Votable,
     Timestamped
 {
-    override fun getSocialContentTarget(): SocialTargetType = SocialTargetType.member
+    @ColumnInfo(name = Timestamped.FIELD_ACCESSED_AT) override var accessedAt: Long = System.currentTimeMillis()
+    @ColumnInfo(name = Timestamped.FIELD_CREATED_AT) override var createdAt: Long = System.currentTimeMillis()
 
     @Ignore override val start: LocalDate? = dateOfBirth
     @Ignore override val end: LocalDate? = dateOfDeath
+
+    override fun getSocialContentTarget(): SocialTargetType = SocialTargetType.member
+
 }
 
 data class BasicProfile(
