@@ -5,8 +5,8 @@ import com.squareup.moshi.Json
 import org.beatonma.commons.data.PARLIAMENTDOTUK
 import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
+import org.beatonma.commons.data.core.room.entities.election.ApiElection
 import org.beatonma.commons.data.core.room.entities.election.Election
-import org.beatonma.commons.data.core.room.entities.member.Party
 import org.beatonma.commons.network.retrofit.Contract
 
 @Entity(
@@ -48,8 +48,8 @@ data class ApiConstituencyElectionDetails(
     @field:Json(name = Contract.RESULT) val result: String,
     @field:Json(name = Contract.MAJORITY) val majority: Int,
     @field:Json(name = Contract.CANDIDATES) val candidates: List<ApiConstituencyCandidate>,
-    @field:Json(name = Contract.CONSTITUENCY) val constituency: Constituency,
-    @field:Json(name = Contract.ELECTION) val election: Election,
+    @field:Json(name = Contract.CONSTITUENCY) val constituency: ApiConstituencyMinimal,
+    @field:Json(name = Contract.ELECTION) val election: ApiElection,
 ): Parliamentdotuk {
     fun toConstituencyElectionDetails() = ConstituencyElectionDetails(
         parliamentdotuk = parliamentdotuk,
@@ -120,10 +120,4 @@ data class ConstituencyElectionDetailsWithExtras(
     val candidates: List<ConstituencyCandidate>? = null,
     val election: Election? = null,
     val constituency: Constituency? = null,
-)
-
-
-data class CandidateWithParty(
-    val candidate: ConstituencyCandidate,
-    val party: Party?
 )
