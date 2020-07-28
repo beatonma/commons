@@ -98,10 +98,10 @@ data class BillWithSessionAndType(
 
 
 data class CompleteBill(
-    @Embedded val bill: Bill? = null,
-    @Ignore val session: ParliamentarySession? = null,
-    @Ignore val type: BillType? = null,
-    @Ignore val publications: List<BillPublication>? = null,
-    @Ignore val sponsors: List<BillSponsorWithParty>? = null,
-    @Ignore val stages: List<BillStageWithSittings>? = null,
+    @Embedded var bill: Bill? = null,
+    @Ignore var session: ParliamentarySession? = null,
+    @Ignore var type: BillType? = null,
+    @Ignore var publications: List<BillPublication>? = null,
+    @Ignore var sponsors: List<BillSponsorWithParty>? = null,
+    @Ignore var stages: List<BillStageWithSittings>? = null,
 )

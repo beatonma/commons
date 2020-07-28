@@ -61,34 +61,6 @@ class BillDaoInsertCompleteBillTest: BaseRoomDaoTest<BillDao>() {
     }
 
     @Test
-    fun ensure_BillWithSessionAndType_is_written_and_retrieved_correctly() {
-        daoTest(BillDao::getBillWithRelations) {
-            bill.run {
-                parliamentdotuk shouldbe BILL_PUK
-                title shouldbe "Presumption of Death"
-                description shouldbe "A Bill to make provision in relation to the presumed deaths of missing persons; and for connected purposes."
-                actName shouldbe "Deep Sea Mining Act"
-                label shouldbe "Presumption of Death"
-                homepage shouldbe "http://services.parliament.uk/bills/presumptionofdeath.html"
-                date shouldbe "2009-06-25".asDate()
-                ballotNumber shouldbe 4
-                billChapter shouldbe "15"
-                isPrivate shouldbe false
-                isMoneyBill shouldbe false
-                publicInvolvementAllowed shouldbe true
-            }
-            session.run {
-                parliamentdotuk shouldbe 377312
-                name shouldbe "2008-2009"
-            }
-            type.run {
-                name shouldbe "Ballot"
-                description shouldbe "Private Members' Bill (Ballot Bill)"
-            }
-        }
-    }
-
-    @Test
     fun ensure_BillSponsor_is_written_and_retrieved_correctly() {
         daoTest(BillDao::getBillSponsors) {
             first().sponsor.run {

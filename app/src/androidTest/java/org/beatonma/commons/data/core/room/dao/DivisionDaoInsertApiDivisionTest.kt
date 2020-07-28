@@ -21,6 +21,7 @@ class DivisionDaoTestSuite
 
 
 class DivisionDaoInsertApiDivisionTest: BaseRoomDaoTest<DivisionDao>() {
+
     override val dao: DivisionDao
         get() = db.divisionDao()
 
@@ -32,20 +33,6 @@ class DivisionDaoInsertApiDivisionTest: BaseRoomDaoTest<DivisionDao>() {
 
         runBlocking(Dispatchers.Main) {
             dao.insertApiDivision(testPukId, API_DIVISION)
-        }
-    }
-
-    @Test
-    fun ensure_Division_is_written_and_retrieved_correctly() {
-        daoTest(DivisionDao::getDivision) {
-            run {
-                parliamentdotuk shouldbe 229684
-                title shouldbe "Statutory Instruments: Motion for Approval. That the draft Infrastructure Planning (Radioactive Waste Geological Disposal Facilities) Order 2015, which was laid before this House on 12 January, be approved. Q acc agreed to."
-                date shouldbe "2015-03-25".asDate()
-                ayes shouldbe 275
-                noes shouldbe 33
-                passed shouldbe true
-            }
         }
     }
 

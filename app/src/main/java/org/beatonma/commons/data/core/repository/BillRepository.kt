@@ -1,9 +1,8 @@
 package org.beatonma.commons.data.core.repository
 
-import kotlinx.coroutines.Dispatchers
+import androidx.annotation.VisibleForTesting
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.merge
 import org.beatonma.commons.data.CommonsRemoteDataSource
 import org.beatonma.commons.data.FlowIoResult
@@ -25,25 +24,27 @@ class BillRepository @Inject constructor(
     fun getBill(parliamentdotuk: ParliamentID): FlowIoResult<CompleteBill> = cachedResultFlow(
         databaseQuery = { getCompleteBillFlow(parliamentdotuk) },
         networkCall = { remoteSource.getBill(parliamentdotuk) },
-        saveCallResult = { bill -> billDao.insertCompleteBill(parliamentdotuk, bill) }
-    ).flowOn(Dispatchers.IO)
+        saveCallResult = { bill -> billDao.insertCompleteBill(parliamentdotuk, bill) },
+        distinctUntilChanged = false,
+    )
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun getCompleteBillFlow(parliamentdotuk: ParliamentID) = channelFlow<CompleteBill> {
         val builder = CompleteBill()
         val dataSourceFunctions = listOf(
-            BillDao::getBillFlow,
-            BillDao::getBillStagesFlow,
-            BillDao::getBillPublicationsFlow,
-            BillDao::getBillSponsorsFlow,
-            BillDao::getBillSessionFlow,
-            BillDao::getBillTypeFlow,
+            BillDao::getBill,
+            BillDao::getBillStages,
+            BillDao::getBillPublications,
+            BillDao::getBillSponsors,
+            BillDao::getBillSession,
+            BillDao::getBillType,
         )
 
-        val mergedFlow = dataSourceFunctions.map {
-            it.invoke(billDao, parliamentdotuk)
+        val mergedFlow = dataSourceFunctions.map { func ->
+            func.invoke(billDao, parliamentdotuk)
         }.merge()
 
-        mergedFlow.collect { data ->
+        mergedFlow.collect { data: Any? ->
             if (data is List<*>) {
                 val first = data.firstOrNull()
 
@@ -68,5 +69,5 @@ class BillRepository @Inject constructor(
 
             send(builder)
         }
-    }.flowOn(Dispatchers.IO)
+    }
 }
