@@ -3,6 +3,7 @@ package org.beatonma.commons.data.deserialization.api
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.runBlocking
+import org.beatonma.commons.data.core.room.entities.member.House
 import org.beatonma.commons.data.deserialization.api.expected.*
 import org.beatonma.commons.network.retrofit.CommonsService
 import org.beatonma.lib.testing.kotlin.extensions.assertions.shouldbe
@@ -41,7 +42,7 @@ class LiveDeserializationTest {
     @Test
     fun ensure_commonsdivision_instance_is_deserialized_correctly() {
         runBlocking {
-            val actualDivision = service.getCommonsDivision(161145).body()!!
+            val actualDivision = service.getDivision(House.commons, 161145).body()!!
             val expectedDivision = expectedApiDivisionCommons()
 
             actualDivision shouldbe expectedDivision
@@ -51,7 +52,7 @@ class LiveDeserializationTest {
     @Test
     fun ensure_lordsdivision_instance_is_deserialized_correctly() {
         runBlocking {
-            val actualDivision = service.getLordsDivision(712319).body()!!
+            val actualDivision = service.getDivision(House.lords, 712319).body()!!
             val expectedDivision = expectedApiDivisionLords()
 
             actualDivision shouldbe expectedDivision
@@ -88,6 +89,19 @@ class LiveDeserializationTest {
             actualMember.constituencies shouldbe expectedMember.constituencies
             actualMember.parties shouldbe expectedMember.parties
             actualMember shouldbe expectedMember
+        }
+    }
+
+    @Test
+    fun ensure_constituency_election_result_is_deserialized_correctly() {
+        runBlocking {
+            val actualResult = service.getConstituencyElectionResults(electionId = 19, constituencyId = 147277).body()!!
+            val expectedResult = expectedApiConstituencyElectionResult()
+
+            actualResult.candidates shouldbe expectedResult.candidates
+            actualResult.election shouldbe expectedResult.election
+            actualResult.constituency shouldbe expectedResult.constituency
+            actualResult shouldbe expectedResult
         }
     }
 }
