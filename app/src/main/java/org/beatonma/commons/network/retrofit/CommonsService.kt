@@ -9,13 +9,12 @@ import org.beatonma.commons.data.core.ApiCompleteMember
 import org.beatonma.commons.data.core.MessageOfTheDay
 import org.beatonma.commons.data.core.repository.SocialTarget
 import org.beatonma.commons.data.core.room.entities.bill.ApiBill
-import org.beatonma.commons.data.core.room.entities.bill.Bill
 import org.beatonma.commons.data.core.room.entities.constituency.ApiConstituency
 import org.beatonma.commons.data.core.room.entities.constituency.ApiConstituencyElectionDetails
 import org.beatonma.commons.data.core.room.entities.division.ApiDivision
 import org.beatonma.commons.data.core.room.entities.division.ApiMemberVote
-import org.beatonma.commons.data.core.room.entities.member.BasicProfile
-import org.beatonma.commons.data.core.room.entities.member.MemberProfile
+import org.beatonma.commons.data.core.room.entities.member.ApiMemberProfile
+import org.beatonma.commons.data.core.room.entities.member.House
 import org.beatonma.commons.data.core.room.entities.user.ApiUserToken
 import org.beatonma.commons.data.core.search.MemberSearchResult
 import org.beatonma.commons.data.core.social.DeletedVote
@@ -58,12 +57,12 @@ interface CommonsService: SocialCommonsService {
 
     @EnvelopePayload
     @GET("$FEATURED_API_PATH/members/")
-    suspend fun getFeaturedPeople(): ListResponse<MemberProfile>
+    suspend fun getFeaturedPeople(): ListResponse<ApiMemberProfile>
 
     // Bills
     @EnvelopePayload
     @GET("$FEATURED_API_PATH/bills/")
-    suspend fun getFeaturedBills(): ListResponse<Bill>
+    suspend fun getFeaturedBills(): ListResponse<ApiBill>
 
     @GET("$BILL_API_PATH/{$PARLIAMENTDOTUK}/")
     suspend fun getBill(@Path(PARLIAMENTDOTUK) parliamentdotuk: ParliamentID): Response<ApiBill>
@@ -77,28 +76,15 @@ interface CommonsService: SocialCommonsService {
      * Votes by a particular member on all divisions
      */
     @EnvelopePayload
-    @GET("$MEMBER_API_PATH/votes/commons/{$PARLIAMENTDOTUK}/")
-    suspend fun getCommonsVotesForMember(@Path(PARLIAMENTDOTUK) parliamentdotuk: ParliamentID): ListResponse<ApiMemberVote>
+    @GET("$MEMBER_API_PATH/votes/{house}/{$PARLIAMENTDOTUK}/")
+    suspend fun getVotesForMember(@Path("house") house: House, @Path(PARLIAMENTDOTUK) parliamentdotuk: ParliamentID): ListResponse<ApiMemberVote>
 
-    /**
-     * Votes by a particular member on all divisions
-     */
-    @EnvelopePayload
-    @GET("$MEMBER_API_PATH/votes/lords/{$PARLIAMENTDOTUK}/")
-    suspend fun getLordsVotesForMember(@Path(PARLIAMENTDOTUK) parliamentdotuk: ParliamentID): ListResponse<ApiMemberVote>
-
-    @GET("$DIVISION_API_PATH/commons/{$PARLIAMENTDOTUK}/")
-    suspend fun getCommonsDivision(@Path(PARLIAMENTDOTUK) parliamentdotuk: ParliamentID): Response<ApiDivision>
-
-    @GET("$DIVISION_API_PATH/lords/{$PARLIAMENTDOTUK}/")
-    suspend fun getLordsDivision(@Path(PARLIAMENTDOTUK) parliamentdotuk: ParliamentID): Response<ApiDivision>
+    @GET("$DIVISION_API_PATH/{house}/{$PARLIAMENTDOTUK}/")
+    suspend fun getDivision(@Path("house") house: House, @Path(PARLIAMENTDOTUK) parliamentdotuk: ParliamentID): Response<ApiDivision>
 
     // Constituencies
     @GET("$CONSTITUENCY_API_PATH/{$PARLIAMENTDOTUK}/")
     suspend fun getConstituency(@Path(PARLIAMENTDOTUK) parliamentdotuk: ParliamentID): Response<ApiConstituency>
-
-    @GET("$CONSTITUENCY_API_PATH/member/{$PARLIAMENTDOTUK}/")
-    suspend fun getMemberForConstituency(@Path(PARLIAMENTDOTUK) parliamentdotuk: ParliamentID): Response<BasicProfile>
 
     @GET("$CONSTITUENCY_API_PATH/{constituency_id}/election/{election_id}/")
     suspend fun getConstituencyElectionResults(

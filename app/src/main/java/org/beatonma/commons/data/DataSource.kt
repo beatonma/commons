@@ -4,14 +4,12 @@ import org.beatonma.commons.annotations.SignInRequired
 import org.beatonma.commons.data.core.ApiCompleteMember
 import org.beatonma.commons.data.core.MessageOfTheDay
 import org.beatonma.commons.data.core.room.entities.bill.ApiBill
-import org.beatonma.commons.data.core.room.entities.bill.Bill
 import org.beatonma.commons.data.core.room.entities.constituency.ApiConstituency
 import org.beatonma.commons.data.core.room.entities.constituency.ApiConstituencyElectionDetails
 import org.beatonma.commons.data.core.room.entities.division.ApiDivision
 import org.beatonma.commons.data.core.room.entities.division.ApiMemberVote
-import org.beatonma.commons.data.core.room.entities.member.BasicProfile
+import org.beatonma.commons.data.core.room.entities.member.ApiMemberProfile
 import org.beatonma.commons.data.core.room.entities.member.House
-import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 import org.beatonma.commons.data.core.room.entities.user.ApiUserToken
 import org.beatonma.commons.data.core.search.MemberSearchResult
 import org.beatonma.commons.data.core.social.*
@@ -27,7 +25,7 @@ abstract class BaseDataSource {
                 val body = response.body()
                 return when(body) {
                     null -> NoBodySuccessResult(response.code(), message = "Network OK")
-                    else -> SuccessResult(body, message = "Network OK ")
+                    else -> SuccessResult(body, message = "Network OK")
                 }
             }
             return NetworkError("[${response.code()}] ${response.message()}", null)
@@ -41,22 +39,18 @@ abstract class BaseDataSource {
 
 interface CommonsRemoteDataSource {
     // READ
-    suspend fun getFeaturedPeople(): IoResultList<MemberProfile>
+    suspend fun getFeaturedPeople(): IoResultList<ApiMemberProfile>
     suspend fun getMember(parliamentdotuk: ParliamentID): IoResult<ApiCompleteMember>
 
-    suspend fun getFeaturedBills(): IoResultList<Bill>
+    suspend fun getFeaturedBills(): IoResultList<ApiBill>
     suspend fun getBill(parliamentdotuk: ParliamentID): IoResult<ApiBill>
 
-    suspend fun getCommonsVotesForMember(parliamentdotuk: ParliamentID): IoResultList<ApiMemberVote>
-    suspend fun getLordsVotesForMember(parliamentdotuk: ParliamentID): IoResultList<ApiMemberVote>
+    suspend fun getVotesForMember(house: House, parliamentdotuk: ParliamentID): IoResultList<ApiMemberVote>
 
     suspend fun getFeaturedDivisions(): IoResultList<ApiDivision>
     suspend fun getDivision(house: House, parliamentdotuk: ParliamentID): IoResult<ApiDivision>
-    suspend fun getCommonsDivision(parliamentdotuk: ParliamentID): IoResult<ApiDivision>
-    suspend fun getLordsDivision(parliamentdotuk: ParliamentID): IoResult<ApiDivision>
 
     suspend fun getConstituency(parliamentdotuk: ParliamentID): IoResult<ApiConstituency>
-    suspend fun getMemberForConstituency(parliamentdotuk: ParliamentID): IoResult<BasicProfile>
     suspend fun getConstituencyDetailsForElection(constituencyId: Int, electionId: Int): IoResult<ApiConstituencyElectionDetails>
 
     suspend fun getSearchResults(query: String): IoResultList<MemberSearchResult>
@@ -105,36 +99,17 @@ class CommonsRemoteDataSourceImpl @Inject constructor(
         service.getFeaturedDivisions()
     }
 
-    override suspend fun getCommonsVotesForMember(parliamentdotuk: ParliamentID) = getResult {
-        service.getCommonsVotesForMember(parliamentdotuk)
+    override suspend fun getVotesForMember(house: House, parliamentdotuk: ParliamentID) = getResult {
+        service.getVotesForMember(house, parliamentdotuk)
     }
 
-    override suspend fun getLordsVotesForMember(parliamentdotuk: ParliamentID) = getResult {
-        service.getLordsVotesForMember(parliamentdotuk)
-    }
-
-    override suspend fun getDivision(house: House, parliamentdotuk: ParliamentID) =
-        when (house) {
-            House.lords -> getLordsDivision(parliamentdotuk)
-            else -> getCommonsDivision(parliamentdotuk)
-        }
-
-    override suspend fun getCommonsDivision(parliamentdotuk: ParliamentID) = getResult {
-        service.getCommonsDivision(parliamentdotuk)
-    }
-
-    override suspend fun getLordsDivision(parliamentdotuk: ParliamentID) = getResult {
-        service.getLordsDivision(parliamentdotuk)
+    override suspend fun getDivision(house: House, parliamentdotuk: ParliamentID) = getResult {
+        service.getDivision(house, parliamentdotuk)
     }
 
     override suspend fun getConstituency(parliamentdotuk: ParliamentID) = getResult {
         service.getConstituency(parliamentdotuk)
     }
-
-    override suspend fun getMemberForConstituency(parliamentdotuk: ParliamentID) = getResult {
-        service.getMemberForConstituency(parliamentdotuk)
-    }
-
 
     override suspend fun getConstituencyDetailsForElection(constituencyId: Int, electionId: Int) = getResult {
         service.getConstituencyElectionResults(constituencyId, electionId)
