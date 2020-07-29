@@ -22,14 +22,14 @@ class BillRepository @Inject constructor(
 ) {
 
     fun getBill(parliamentdotuk: ParliamentID): FlowIoResult<CompleteBill> = cachedResultFlow(
-        databaseQuery = { getCompleteBillFlow(parliamentdotuk) },
+        databaseQuery = { getCompleteBill(parliamentdotuk) },
         networkCall = { remoteSource.getBill(parliamentdotuk) },
         saveCallResult = { bill -> billDao.insertCompleteBill(parliamentdotuk, bill) },
         distinctUntilChanged = false,
     )
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun getCompleteBillFlow(parliamentdotuk: ParliamentID) = channelFlow<CompleteBill> {
+    fun getCompleteBill(parliamentdotuk: ParliamentID) = channelFlow<CompleteBill> {
         val builder = CompleteBill()
         val dataSourceFunctions = listOf(
             BillDao::getBill,
