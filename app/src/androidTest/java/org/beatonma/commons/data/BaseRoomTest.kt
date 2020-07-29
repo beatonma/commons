@@ -6,6 +6,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import org.beatonma.commons.data.core.room.CommonsDatabase
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import java.util.concurrent.Executors
@@ -28,5 +29,11 @@ abstract class BaseRoomTest {
             .allowMainThreadQueries()
             .setTransactionExecutor(Executors.newSingleThreadExecutor())
             .build()
+    }
+
+    @CallSuper
+    @After
+    open fun tearDown() {
+        db.close()
     }
 }
