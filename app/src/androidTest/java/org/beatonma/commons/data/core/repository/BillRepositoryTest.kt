@@ -2,9 +2,10 @@ package org.beatonma.commons.data.core.repository
 
 import fakeIt
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.runBlocking
 import org.beatonma.commons.androidTest.asDate
-import org.beatonma.commons.androidTest.getOrAwaitValue
+import org.beatonma.commons.androidTest.awaitValue
 import org.beatonma.commons.data.BaseRoomTest
 import org.beatonma.commons.data.CommonsRemoteDataSource
 import org.beatonma.commons.data.core.room.dao.BillDao
@@ -36,11 +37,13 @@ class BillRepositoryTest : BaseRoomTest() {
     }
 
     @Test
-    fun ensure_observeCompleteBill_mediatorLiveData_is_constructed_correctly() {
+    fun ensure_getCompleteBill_is_constructed_correctly() {
         runBlocking(Dispatchers.Main) {
-            val data = repository.observeCompleteBill(BILL_PUK)
+            repository.getCompleteBill(BILL_PUK)
+                .awaitValue(latchCount = 5)
+                .single()
+                .run {
 
-            data.getOrAwaitValue {
                 with(bill!!) {
                     parliamentdotuk shouldbe 392545
                     title shouldbe "Presumption of Death"
