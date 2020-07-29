@@ -1,56 +1,43 @@
 package org.beatonma.commons.androidTest
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 
-
 /**
- * Adapted from https://github.com/android/architecture-components-samples/blob/master/LiveDataSample/app/src/test/java/com/android/example/livedatabuilder/util/LiveDataTestUtil.kt
- * The afterObserve block has been replaced with a block that runs using the retrieved data as the receiver.
- *
- * Gets the value of a [LiveData] or waits for it to have one, with a timeout.
- *
- * Use this extension from host-side (JVM) tests. It's recommended to use it alongside
- * `InstantTaskExecutorRule` or a similar mechanism to execute tasks synchronously.
+ * Hide flow emissions until [latchCount] emissions have been collected, then emit the final result.
  */
-fun <T> LiveData<T>.getOrAwaitValue(
-    time: Long = 2,
-    timeUnit: TimeUnit = TimeUnit.SECONDS,
-    latchCount: Int = 1,
-    block: T.() -> Unit? = {},
-): T {
-    var data: T? = null
+fun <T> Flow<T>.awaitValue(
+    latchCount: Int,
+    time: Long = 2000,
+    timeUnit: TimeUnit = TimeUnit.MILLISECONDS,
+): Flow<T> = channelFlow {
     val latch = CountDownLatch(latchCount)
-    val observer = object : Observer<T> {
-        override fun onChanged(o: T?) {
-            val self = this
-            o.dump("onChanged: ")
-            data = o
-            latch.countDown()
-            if (latch.count == 0L) {
-                runBlocking(Dispatchers.Main) { this@getOrAwaitValue.removeObserver(self) }
-            }
+
+    val timeoutJob = launch {
+        val timeout = timeUnit.toMillis(time)
+        delay(timeUnit.toMillis(time))
+        if (!this@channelFlow.isClosedForSend) {
+            throw TimeoutException("awaitValue did not complete (timeout=${timeout}ms)")
         }
     }
 
-    this@getOrAwaitValue.observeForever(observer)
-
-    // Don't wait indefinitely if the LiveData is not set.
-    if (!latch.await(time, timeUnit)) {
-        this@getOrAwaitValue.removeObserver(observer)
-        throw TimeoutException("LiveData value was never set.")
+    launch {
+        this@awaitValue.collect {
+            latch.countDown()
+            if (latch.count == 0L) {
+                this@channelFlow.send(it)
+                this@channelFlow.close()
+                timeoutJob.cancel()
+            }
+        }
     }
-
-    data!!.block()
-
-    @Suppress("UNCHECKED_CAST")
-    return data as T
 }
 
 
