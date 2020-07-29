@@ -8,30 +8,62 @@ import org.beatonma.commons.data.core.room.entities.member.*
 
 const val MEMBER_PUK = 1423
 
+val EXAMPLE_MEMBER_PROFILE_BORIS_JOHNSON = ApiMemberProfile(
+    parliamentdotuk = MEMBER_PUK,
+    name = "Boris Johnson",
+    party = Party(
+        name = "Conservative",
+        parliamentdotuk = 4,
+    ),
+    constituency = Constituency(
+        name = "Uxbridge and South Ruislip",
+        parliamentdotuk = 147277,
+    ),
+    isMp = true,
+    isLord = false,
+    dateOfBirth = "1964-06-19".asDate(),
+    dateOfDeath = null,
+    age = 55,
+    gender = "M",
+    placeOfBirth = Town(
+        town = "New York",
+        country = "USA"
+    ),
+    portraitUrl = "https://members-api.parliament.uk/api/members/1423/Portrait?cropType=OneOne",
+    currentPost = "Prime Minister",
+)
+
+val EXAMPLE_MEMBER_PROFILE_KEIR_STARMER = ApiMemberProfile(
+    parliamentdotuk = MEMBER_PUK,
+    name = "Keir Starmer",
+    party = Party(
+        name = "Labour",
+        parliamentdotuk = 15,
+    ),
+    constituency = Constituency(
+        name = "Holburn and St Pancras",
+        parliamentdotuk = 146996,
+    ),
+    isMp = true,
+    isLord = false,
+    dateOfBirth = "1962-09-20".asDate(),
+    dateOfDeath = null,
+    age = 57,
+    gender = "M",
+    placeOfBirth = Town(
+        town = "Southwark",
+        country = "England"
+    ),
+    portraitUrl = "https://members-api.parliament.uk/api/members/4514/Portrait?cropType=ThreeTwo",
+    currentPost = "Leader of the Labour Party",
+)
+
 /**
  * Edited API response - items have been added/removed for usefulness, compiled from several
  * actual responses.
  */
 val API_MEMBER = ApiCompleteMember(
-    profile = MemberProfile(
-        parliamentdotuk = MEMBER_PUK,
-        name = "Boris Johnson",
-        party = Party(name = "Conservative",
-            parliamentdotuk = 4),
-        constituency = Constituency(
-            name = "Uxbridge and South Ruislip",
-            parliamentdotuk = 147277),
-        isMp = true,
-        isLord = false,
-        dateOfBirth = "1964-06-19".asDate(), dateOfDeath = null,
-        age = 55,
-        gender = "M",
-        placeOfBirth = Town(
-            town = "New York",
-            country = "USA"),
-        portraitUrl = "https://members-api.parliament.uk/api/members/1423/Portrait?cropType=OneOne",
-        currentPost = "Prime Minister",
-    ),
+    profile = EXAMPLE_MEMBER_PROFILE_BORIS_JOHNSON,
     addresses = ApiAddresses(
         physical = listOf(
             ApiPhysicalAddress(
@@ -44,8 +76,9 @@ val API_MEMBER = ApiCompleteMember(
             ),
         ),
         web = listOf(
-            ApiWebAddress("https://twitter.com/borisjohnson",
-                "Twitter",
+            ApiWebAddress(
+                url = "https://twitter.com/borisjohnson",
+                description = "Twitter",
             ),
         )
     ),
@@ -171,4 +204,8 @@ val API_MEMBER = ApiCompleteMember(
             topic = "Australia, Fiji, New Zealand, Samoa",
         ),
     ),
+)
+
+val EXAMPLE_FEATURED_PERSON = FeaturedMember(
+    memberId = MEMBER_PUK
 )
