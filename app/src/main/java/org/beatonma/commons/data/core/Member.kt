@@ -1,7 +1,6 @@
 package org.beatonma.commons.data.core
 
 import androidx.room.Embedded
-import androidx.room.Ignore
 import androidx.room.Relation
 import com.squareup.moshi.Json
 import org.beatonma.commons.data.ParliamentID
@@ -11,19 +10,19 @@ import org.beatonma.commons.data.core.room.entities.member.*
 import org.beatonma.commons.network.retrofit.Contract
 
 data class CompleteMember(
-    @Embedded var profile: MemberProfile? = null,
-    @Ignore val party: Party? = null,
-    @Ignore val constituency: Constituency? = null,
-    @Ignore val committees: List<CommitteeMemberWithChairs>? = null,
-    @Ignore val addresses: List<PhysicalAddress>? = null,
-    @Ignore val weblinks: List<WebAddress>? = null,
-    @Ignore val posts: List<Post>? = null,
-    @Ignore val experiences: List<Experience>? = null,
-    @Ignore val financialInterests: List<FinancialInterest>? = null,
-    @Ignore val houses: List<HouseMembership>? = null,
-    @Ignore val topicsOfInterest: List<TopicOfInterest>? = null,
-    @Ignore val historicConstituencies: List<HistoricalConstituencyWithElection>? = null,
-    @Ignore val parties: List<PartyAssociationWithParty>? = null,
+    var profile: MemberProfile? = null,
+    var party: Party? = null,
+    var constituency: Constituency? = null,
+    var committees: List<CommitteeMemberWithChairs>? = null,
+    var addresses: List<PhysicalAddress>? = null,
+    var weblinks: List<WebAddress>? = null,
+    var posts: List<Post>? = null,
+    var experiences: List<Experience>? = null,
+    var financialInterests: List<FinancialInterest>? = null,
+    var houses: List<HouseMembership>? = null,
+    var topicsOfInterest: List<TopicOfInterest>? = null,
+    var historicConstituencies: List<HistoricalConstituencyWithElection>? = null,
+    var parties: List<PartyAssociationWithParty>? = null,
 )
 
 data class MinimalMember(
@@ -48,7 +47,7 @@ data class MinimalMember(
  * Class for deserializing complete /member/profile/ api response.
  */
 data class ApiCompleteMember(
-    val profile: MemberProfile,
+    val profile: ApiMemberProfile,
     @field:Json(name = Contract.ADDRESS) val addresses: ApiAddresses,
     @field:Json(name = Contract.POSTS) val posts: ApiPosts,
     @field:Json(name = Contract.COMMITTEES) val committees: List<ApiCommittee>,
