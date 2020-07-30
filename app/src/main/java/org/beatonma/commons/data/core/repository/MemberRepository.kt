@@ -1,15 +1,19 @@
 package org.beatonma.commons.data.core.repository
 
 import androidx.annotation.VisibleForTesting
-import androidx.lifecycle.LiveData
-import org.beatonma.commons.data.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.merge
+import org.beatonma.commons.data.CommonsRemoteDataSource
+import org.beatonma.commons.data.FlowIoResult
+import org.beatonma.commons.data.ParliamentID
+import org.beatonma.commons.data.cachedResultFlow
 import org.beatonma.commons.data.core.CompleteMember
-import org.beatonma.commons.data.core.room.dao.DivisionDao
 import org.beatonma.commons.data.core.room.dao.MemberDao
-import org.beatonma.commons.data.core.room.entities.division.VoteWithDivision
-import org.beatonma.commons.data.core.room.entities.member.House
-import org.beatonma.commons.data.livedata.observeComplete
-import org.beatonma.commons.kotlin.extensions.allNotNull
+import org.beatonma.commons.data.core.room.entities.constituency.Constituency
+import org.beatonma.commons.data.core.room.entities.member.*
+import org.beatonma.commons.kotlin.extensions.dump
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -17,92 +21,72 @@ import javax.inject.Singleton
 class MemberRepository @Inject constructor(
     private val remoteSource: CommonsRemoteDataSource,
     private val memberDao: MemberDao,
-    private val divisionDao: DivisionDao,
 ) {
-
-    fun observeMember(parliamentdotuk: ParliamentID): LiveDataIoResult<CompleteMember> = resultLiveData(
-        databaseQuery = { observeCompleteMember(parliamentdotuk) },
+    fun getMember(parliamentdotuk: ParliamentID): FlowIoResult<CompleteMember> = cachedResultFlow(
+        databaseQuery = { getCompleteMember(parliamentdotuk) },
         networkCall = { remoteSource.getMember(parliamentdotuk) },
-        saveCallResult = { member -> memberDao.insertCompleteMember(parliamentdotuk, member) }
-    )
-
-    fun observeCommonsVotesForMember(parliamentdotuk: ParliamentID): LiveDataIoResultList<VoteWithDivision> = resultLiveData(
-        databaseQuery = { memberDao.getCommonsVotesForMember(parliamentdotuk) },
-        networkCall = { remoteSource.getCommonsVotesForMember(parliamentdotuk) },
-        saveCallResult = { memberVotes ->
-            divisionDao.insertDivisions(memberVotes.map {
-                it.division.copy(house = House.commons)
-            })
-            divisionDao.insertVotes(memberVotes.map { it.toVote(parliamentdotuk) })
-//            divisionDao.insertVotes(memberVotes.map { memberVote ->
-//                Vote(
-//                    memberId = parliamentdotuk,
-//                    divisionId = memberVote.division.parliamentdotuk,
-//                    voteType = memberVote.voteType,
-//                    memberName = ""
-//                )
-//            })
-        }
+        saveCallResult = { member -> memberDao.insertCompleteMember(parliamentdotuk, member) },
+        distinctUntilChanged = false
     )
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    suspend fun observeCompleteMember(parliamentdotuk: ParliamentID): LiveData<CompleteMember> =
-        observeComplete(
-            CompleteMember(),
-            updatePredicate = { m ->
-                allNotNull(
-                    m.profile,
-                    m.addresses,
-                    m.weblinks,
-                    m.posts,
-                    m.committees,
-                    m.houses,
-                    m.financialInterests,
-                    m.experiences,
-                    m.topicsOfInterest,
-                    m.historicConstituencies,
-                    m.parties,
-                )
-            },
-        ) { member ->
-            addSource(memberDao.getMemberProfileTimestamped(parliamentdotuk)) { profile ->
-                member.update({ it.profile != profile }) { copy(profile = profile) }
+    fun getCompleteMember(parliamentdotuk: ParliamentID): Flow<CompleteMember> = channelFlow<CompleteMember> {
+        val builder = CompleteMember()
+
+        val profile = memberDao.getMemberProfileTimestampedFlow(parliamentdotuk)
+        val dataSourceFunctions = listOf(
+            MemberDao::getPhysicalAddresses,
+            MemberDao::getWebAddresses,
+            MemberDao::getPosts,
+            MemberDao::getCommitteeMembershipWithChairship,
+            MemberDao::getHouseMemberships,
+            MemberDao::getFinancialInterests,
+            MemberDao::getExperiences,
+            MemberDao::getTopicsOfInterest,
+            MemberDao::getHistoricalConstituencies,
+            MemberDao::getPartyAssociations,
+            MemberDao::getParty,
+            MemberDao::getConstituency,
+        )
+
+        val mergedFlow = merge(
+            profile,
+            dataSourceFunctions.map { func ->
+                func.invoke(memberDao, parliamentdotuk)
+            }.merge()
+        )
+
+        mergedFlow.collect { data: Any? ->
+            data.dump("DATA")
+            if (data is List<*>) {
+                val first = data.firstOrNull()
+
+                @Suppress("UNCHECKED_CAST")
+                when (first) {
+                    is PhysicalAddress -> builder.addresses = data as List<PhysicalAddress>
+                    is WebAddress -> builder.weblinks = data as List<WebAddress>
+                    is Post -> builder.posts = data as List<Post>
+                    is CommitteeMemberWithChairs -> builder.committees = data as List<CommitteeMemberWithChairs>
+                    is HouseMembership -> builder.houses = data as List<HouseMembership>
+                    is FinancialInterest -> builder.financialInterests = data as List<FinancialInterest>
+                    is Experience -> builder.experiences = data as List<Experience>
+                    is TopicOfInterest -> builder.topicsOfInterest = data as List<TopicOfInterest>
+                    is HistoricalConstituencyWithElection -> builder.historicConstituencies = data as List<HistoricalConstituencyWithElection>
+                    is PartyAssociationWithParty -> builder.parties = data as List<PartyAssociationWithParty>
+                    null -> Unit
+                    else -> error("All valid types must be handled: ${data.javaClass.canonicalName}")
+                }
             }
-            addSource(memberDao.getPhysicalAddresses(parliamentdotuk)) { addresses ->
-                member.update({ it.addresses != addresses }) { copy(addresses = addresses) }
+            else {
+                when (data) {
+                    is MemberProfile -> builder.profile = data
+                    is Constituency -> builder.constituency = data
+                    is Party -> builder.party = data
+                    null -> Unit
+                    else -> error("All valid types must be handled: ${data.javaClass.canonicalName}")
+                }
             }
-            addSource(memberDao.getWebAddresses(parliamentdotuk)) { weblinks ->
-                member.update({ it.weblinks != weblinks }) { copy(weblinks = weblinks) }
-            }
-            addSource(memberDao.getPosts(parliamentdotuk)) {posts ->
-                member.update({ it.posts != posts }) { copy(posts = posts) }
-            }
-            addSource(memberDao.getCommitteeMembershipWithChairship(parliamentdotuk)) { committees ->
-                member.update({ it.committees != committees }) { copy(committees = committees) }
-            }
-            addSource(memberDao.getHouseMemberships(parliamentdotuk)) { houses ->
-                member.update({ it.houses != houses }) { copy(houses = houses) }
-            }
-            addSource(memberDao.getFinancialInterests(parliamentdotuk)) { financialInterests ->
-                member.update({ it.financialInterests != financialInterests }) { copy(financialInterests = financialInterests) }
-            }
-            addSource(memberDao.getExperiences(parliamentdotuk)) { experiences ->
-                member.update({ it.experiences != experiences }) { copy(experiences = experiences) }
-            }
-            addSource(memberDao.getTopicsOfInterest(parliamentdotuk)) { topicsOfInterest ->
-                member.update({ it.topicsOfInterest != topicsOfInterest }) { copy(topicsOfInterest = topicsOfInterest) }
-            }
-            addSource(memberDao.getHistoricalConstituencies(parliamentdotuk)) { historicConstituencies ->
-                member.update({ it.historicConstituencies != historicConstituencies }) { copy(historicConstituencies = historicConstituencies) }
-            }
-            addSource(memberDao.getPartyAssociations(parliamentdotuk)) { parties ->
-                member.update({ it.parties != parties }) { copy(parties = parties) }
-            }
-            addSource(memberDao.getParty(parliamentdotuk)) { party ->
-                member.update({ it.party != party }) { copy(party = party) }
-            }
-            addSource(memberDao.getConstituency(parliamentdotuk)) { constituency ->
-                member.update({ it.constituency != constituency }) { copy(constituency = constituency) }
-            }
+            send(builder)
         }
+    }
 }
