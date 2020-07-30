@@ -1,9 +1,9 @@
 package org.beatonma.commons.data.core.room.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import org.beatonma.commons.data.FlowList
-import org.beatonma.commons.data.LiveDataList
 import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.ApiCompleteMember
 import org.beatonma.commons.data.core.interfaces.markAccessed
@@ -12,7 +12,6 @@ import org.beatonma.commons.data.core.room.dao.shared.SharedConstituencyDao
 import org.beatonma.commons.data.core.room.dao.shared.SharedElectionDao
 import org.beatonma.commons.data.core.room.dao.shared.SharedPartyDao
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
-import org.beatonma.commons.data.core.room.entities.division.VoteWithDivision
 import org.beatonma.commons.data.core.room.entities.member.*
 
 @Dao
@@ -23,62 +22,52 @@ interface MemberDao: SharedPartyDao, SharedConstituencyDao, SharedElectionDao {
     @Query("""SELECT * FROM featured_members""")
     fun getFeaturedProfiles(): FlowList<FeaturedMemberProfile>
 
-    @Query("""SELECT * FROM member_profiles WHERE member_profiles.parliamentdotuk = :parliamentdotuk""")
-    fun getMemberProfile(parliamentdotuk: ParliamentID): LiveData<MemberProfile>
+    @Query("""SELECT * FROM member_profiles WHERE member_profiles.parliamentdotuk = :memberId""")
+    fun getMemberProfile(memberId: ParliamentID): Flow<MemberProfile>
 
     @Query("""SELECT * FROM constituencies
         LEFT JOIN member_profiles ON constituency_id = constituency_parliamentdotuk 
-        WHERE parliamentdotuk = :parliamentdotuk""")
-    fun getConstituency(parliamentdotuk: ParliamentID): LiveData<Constituency>
+        WHERE parliamentdotuk = :memberId""")
+    fun getConstituency(memberId: ParliamentID): Flow<Constituency>
 
     @Query("""SELECT * FROM parties
         LEFT JOIN member_profiles ON party_id = party_parliamentdotuk 
-        WHERE parliamentdotuk = :parliamentdotuk""")
-    fun getParty(parliamentdotuk: ParliamentID): LiveData<Party>
+        WHERE parliamentdotuk = :memberId""")
+    fun getParty(memberId: ParliamentID): Flow<Party>
 
-    @Query("""SELECT * FROM physical_addresses WHERE physical_addresses.paddr_member_id = :parliamentdotuk""")
-    fun getPhysicalAddresses(parliamentdotuk: ParliamentID): LiveDataList<PhysicalAddress>
+    @Query("""SELECT * FROM physical_addresses WHERE physical_addresses.paddr_member_id = :memberId""")
+    fun getPhysicalAddresses(memberId: ParliamentID): FlowList<PhysicalAddress>
 
-    @Query("""SELECT * FROM weblinks WHERE weblinks.waddr_member_id = :parliamentdotuk""")
-    fun getWebAddresses(parliamentdotuk: ParliamentID): LiveDataList<WebAddress>
+    @Query("""SELECT * FROM weblinks WHERE weblinks.waddr_member_id = :memberId""")
+    fun getWebAddresses(memberId: ParliamentID): FlowList<WebAddress>
 
-    @Query("""SELECT * FROM posts WHERE post_member_id = :parliamentdotuk""")
-    fun getPosts(parliamentdotuk: ParliamentID): LiveDataList<Post>
+    @Query("""SELECT * FROM posts WHERE post_member_id = :memberId""")
+    fun getPosts(memberId: ParliamentID): FlowList<Post>
 
-    @Query("""SELECT * FROM committee_memberships WHERE committee_member_id = :parliamentdotuk""")
-    fun getCommitteeMemberships(parliamentdotuk: ParliamentID): LiveDataList<CommitteeMembership>
+    @Query("""SELECT * FROM house_memberships WHERE house_member_id = :memberId""")
+    fun getHouseMemberships(memberId: ParliamentID): FlowList<HouseMembership>
 
-    @Query("""SELECT * FROM house_memberships WHERE house_member_id = :parliamentdotuk""")
-    fun getHouseMemberships(parliamentdotuk: ParliamentID): LiveDataList<HouseMembership>
+    @Query("""SELECT * FROM financial_interests WHERE interest_member_id = :memberId""")
+    fun getFinancialInterests(memberId: ParliamentID): FlowList<FinancialInterest>
 
-    @Query("""SELECT * FROM financial_interests WHERE interest_member_id = :parliamentdotuk""")
-    fun getFinancialInterests(parliamentdotuk: ParliamentID): LiveDataList<FinancialInterest>
+    @Query("""SELECT * FROM experiences WHERE experience_member_id = :memberId""")
+    fun getExperiences(memberId: ParliamentID): FlowList<Experience>
 
-    @Query("""SELECT * FROM experiences WHERE experience_member_id = :parliamentdotuk""")
-    fun getExperiences(parliamentdotuk: ParliamentID): LiveDataList<Experience>
-
-    @Query("""SELECT * FROM topics_of_interest WHERE topic_member_id = :parliamentdotuk""")
-    fun getTopicsOfInterest(parliamentdotuk: ParliamentID): LiveDataList<TopicOfInterest>
+    @Query("""SELECT * FROM topics_of_interest WHERE topic_member_id = :memberId""")
+    fun getTopicsOfInterest(memberId: ParliamentID): FlowList<TopicOfInterest>
 
     @Transaction
-    @Query("""SELECT * FROM committee_memberships WHERE committee_member_id = :parliamentdotuk""")
-    fun getCommitteeMembershipWithChairship(parliamentdotuk: ParliamentID): LiveDataList<CommitteeMemberWithChairs>
+    @Query("""SELECT * FROM committee_memberships WHERE committee_member_id = :memberId""")
+    fun getCommitteeMembershipWithChairship(memberId: ParliamentID): FlowList<CommitteeMemberWithChairs>
 
     @Transaction
-    @Query("""SELECT * FROM historic_constituencies WHERE memberfor_member_id = :parliamentdotuk""")
-    fun getHistoricalConstituencies(parliamentdotuk: ParliamentID): LiveDataList<HistoricalConstituencyWithElection>
+    @Query("""SELECT * FROM historic_constituencies WHERE memberfor_member_id = :memberId""")
+    fun getHistoricalConstituencies(memberId: ParliamentID): FlowList<HistoricalConstituencyWithElection>
 
     @Transaction
-    @Query("""SELECT * FROM party_associations WHERE partyacc_member_id = :parliamentdotuk""")
-    fun getPartyAssociations(parliamentdotuk: ParliamentID): LiveDataList<PartyAssociationWithParty>
+    @Query("""SELECT * FROM party_associations WHERE partyacc_member_id = :memberId""")
+    fun getPartyAssociations(memberId: ParliamentID): FlowList<PartyAssociationWithParty>
 
-    @Transaction
-    @Query("""SELECT * FROM division_votes WHERE dvote_member_id = :parliamentdotuk""")
-    fun getCommonsVotesForMember(parliamentdotuk: ParliamentID): LiveDataList<VoteWithDivision>
-
-    @Transaction
-    @Query("""SELECT * FROM division_votes WHERE dvote_member_id = :parliamentdotuk""")
-    fun getLordsVotesForMember(parliamentdotuk: ParliamentID): LiveDataList<VoteWithDivision>
 
 
     // Insert operations
@@ -128,20 +117,27 @@ interface MemberDao: SharedPartyDao, SharedConstituencyDao, SharedElectionDao {
     suspend fun insertMemberForConstituencies(memberForConstituencies: List<HistoricalConstituency>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertPartyAssociation(partyAssociation: PartyAssociation)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPartyAssociations(partyAssociations: List<PartyAssociation>)
+
 
     /**
      * Retrieve the profile and update its accessed_at timestamp.
      */
-    suspend fun getMemberProfileTimestamped(parliamentdotuk: ParliamentID): LiveData<MemberProfile> {
+    suspend fun getMemberProfileTimestampedFlow(parliamentdotuk: ParliamentID): Flow<MemberProfile> {
         val result = getMemberProfile(parliamentdotuk)
 
-        safeInsertProfile(result.value)
+        safeInsertProfile(result.first())
 
         return result
+    }
+
+    @Transaction
+    suspend fun saveFeaturedPeople(featuredPeople: List<MemberProfile>) {
+        safeInsertProfiles(featuredPeople, ifNotExists = true)
+
+        insertFeaturedPeople(
+            featuredPeople.map { profile -> FeaturedMember(profile.parliamentdotuk) }
+        )
     }
 
     @Transaction
@@ -156,7 +152,7 @@ interface MemberDao: SharedPartyDao, SharedConstituencyDao, SharedElectionDao {
             insertConstituencyIfNotExists(member.profile.constituency)
         }
 
-        safeInsertProfile(member.profile)
+        safeInsertProfile(member.profile.toMemberProfile())
 
         insertPhysicalAddresses(
             member.addresses.physical.map { it.toPhysicalAddress(memberId = parliamentdotuk) }
