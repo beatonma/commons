@@ -16,11 +16,11 @@ import org.junit.runners.Suite
 
 @RunWith(Suite::class)
 @Suite.SuiteClasses(
-    MemberDaoInsertApiCompleteMemberTest::class,
+    MemberDaoInsertCompleteMemberTest::class,
 )
 class MemberDaoTestSuite
 
-class MemberDaoInsertApiCompleteMemberTest: BaseRoomDaoTest<MemberDao>() {
+class MemberDaoInsertCompleteMemberTest: BaseRoomDaoTest<MemberDao>() {
     override val dao: MemberDao
         get() = db.memberDao()
 
