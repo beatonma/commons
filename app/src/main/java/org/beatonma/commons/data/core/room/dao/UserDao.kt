@@ -1,7 +1,7 @@
 package org.beatonma.commons.data.core.room.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
+import kotlinx.coroutines.flow.Flow
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 
 @Dao
@@ -10,10 +10,10 @@ interface UserDao {
     suspend fun insertUserToken(userToken: UserToken)
 
     @Query("""SELECT * FROM user_tokens WHERE google_id = :googleId""")
-    fun getUserToken(googleId: String): LiveData<UserToken>
+    fun getUserTokenFlow(googleId: String): Flow<UserToken>
 
     @Query("""SELECT * FROM user_tokens WHERE google_id = :googleId""")
-    suspend fun getUserTokenSync(googleId: String): UserToken?
+    suspend fun getUserToken(googleId: String): UserToken
 
     @Delete
     fun deleteUserTokens(vararg userTokens: UserToken)
