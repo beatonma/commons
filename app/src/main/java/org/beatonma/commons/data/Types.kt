@@ -13,7 +13,6 @@ typealias IoResultList<T> = IoResult<List<T>>
 typealias ListResponse<T> = Response<List<T>>
 typealias LiveDataIoResult<T> = LiveData<IoResult<T>>
 typealias LiveDataIoResultList<T> = LiveData<IoResultList<T>>
-typealias LiveDataList<T> = LiveData<List<T>>
 typealias IoResultObserver<T> = Observer<IoResult<T>>
 
 typealias FlowIoResult<T> = Flow<IoResult<T>>
