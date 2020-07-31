@@ -10,6 +10,7 @@ import org.junit.runners.Suite
 
 @RunWith(Suite::class)
 @Suite.SuiteClasses(
+    ResultFlowTestSuite::class,
     BillDaoTestSuite::class,
     DivisionDaoTestSuite::class,
     MemberDaoTestSuite::class,

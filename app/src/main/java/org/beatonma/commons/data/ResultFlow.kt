@@ -5,7 +5,6 @@ import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-
 /**
  * Emits cached results of [databaseQuery] then attempts to update data with [networkCall].
  *
@@ -17,29 +16,46 @@ import kotlinx.coroutines.launch
 fun <T, N> cachedResultFlow(
     databaseQuery: () -> Flow<T>,
     networkCall: suspend () -> IoResult<N>,
-    saveCallResult: suspend (N) -> Unit
-): FlowIoResult<T> = channelFlow {
+    saveCallResult: suspend (N) -> Unit,
+    distinctUntilChanged: Boolean = true,
+): FlowIoResult<T> = channelFlow<IoResult<T>> {
     send(LoadingResult())
+    var networkCallSuccessful = false
 
     // Run databaseQuery in separate coroutine and surface results to channelFlow
     launch {
-        databaseQuery.invoke()
-            .distinctUntilChanged()
-            .mapLatest { SuccessResult(it,"DB read") }
-            .collectLatest { send(it) }
+        databaseQuery.invoke().apply {
+            if (distinctUntilChanged) {
+                distinctUntilChanged()
+            }
+        }
+            .filter {
+                /**
+                 * Only emit null/empty [databaseQuery] results if the network call has completed.
+                 */
+                when {
+                    networkCallSuccessful -> true
+                    it is Collection<*> -> it.isNotEmpty()
+                    else -> it != null
+                }
+            }
+            .mapLatest { SuccessResult(it, "DB read") }
+            .collectLatest(::send)
     }
 
-    submitAndSaveNetworkResult(networkCall, saveCallResult)
+    networkCallSuccessful = submitAndSaveNetworkResult(networkCall, saveCallResult)
 }.flowOn(Dispatchers.IO)
 
 /**
  * [networkCall] will only execute if [databaseQuery] does not emit a useful value.
  */
 fun <T, N> resultFlowLocalPreferred(
-    databaseQuery: suspend () -> Flow<T>,
+    databaseQuery: () -> Flow<T>,
     networkCall: suspend () -> IoResult<N>,
     saveCallResult: suspend (N) -> Unit,
 ): FlowIoResult<T> = channelFlow<IoResult<T>> {
+    send(LoadingResult<T>())
+
     databaseQuery.invoke()
         .collect { queryResult ->
             when {
@@ -76,11 +92,12 @@ private suspend fun <E> ProducerScope<E>.sendAndClose(element: E, cause: Throwab
 
 /**
  * Shared network handling block for updating local cache.
+ * Returns true if saveCallResult completes successfully.
  */
 private suspend inline fun <E, N> ProducerScope<IoResult<E>>.submitAndSaveNetworkResult(
     networkCall: suspend () -> IoResult<N>,
     saveCallResult: suspend (N) -> Unit
-) {
+): Boolean {
     val response = networkCall.invoke()
     when(response) {
         is SuccessResult -> {
@@ -89,7 +106,7 @@ private suspend inline fun <E, N> ProducerScope<IoResult<E>>.submitAndSaveNetwor
                     saveCallResult(response.data)
                 }
                 catch (e: Exception) {
-                    sendAndClose(LocalError("Unable to save network result: $e", e))
+                    sendAndClose(LocalError("Unable to save network result: $e", e), e)
                 }
             }
             else {
@@ -98,7 +115,8 @@ private suspend inline fun <E, N> ProducerScope<IoResult<E>>.submitAndSaveNetwor
         }
 
         is IoError -> {
-            sendAndClose(NetworkError(response.message, response.error))
+            sendAndClose(NetworkError(response.message, response.error), response.error)
         }
     }
+    return true
 }
