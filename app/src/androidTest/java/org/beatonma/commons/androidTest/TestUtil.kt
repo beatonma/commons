@@ -17,7 +17,7 @@ import java.util.concurrent.TimeoutException
  */
 fun <T> Flow<T>.awaitValue(
     latchCount: Int = 1,
-    timeout: Long = 1000,
+    timeout: Long = 500,
     timeUnit: TimeUnit = TimeUnit.MILLISECONDS,
     timeoutThrows: Boolean = true,
 ): Flow<T> = channelFlow {
@@ -57,7 +57,7 @@ fun <T> Flow<T>.awaitValue(
  */
 fun <T> Flow<T>.awaitValues(
     latchCount: Int,
-    timeout: Long = 1000,
+    timeout: Long = 500,
     timeUnit: TimeUnit = TimeUnit.MILLISECONDS,
     timeoutThrows: Boolean = true,
 ): Flow<List<T>> = channelFlow {

@@ -5,7 +5,6 @@ import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.runBlocking
 import org.beatonma.commons.androidTest.assertEach
 import org.beatonma.commons.androidTest.awaitValues
-import org.beatonma.commons.androidTest.dump
 import org.beatonma.commons.data.core.room.entities.member.ApiMemberProfile
 import org.beatonma.commons.data.testdata.EXAMPLE_MEMBER_PROFILE_BORIS_JOHNSON
 import org.beatonma.commons.data.testdata.EXAMPLE_MEMBER_PROFILE_KEIR_STARMER
@@ -32,12 +31,11 @@ class CacheResultFlowTest: ResultFlowTest() {
         runBlocking {
             cachedResultFlow(
                 databaseQuery = { getProfileFromDatabase(MEMBER_PUK_KEIR_STARMER) },
-                networkCall = { makeNetworkCall() },
+                networkCall = { makeSuccessfulNetworkCall() },
                 saveCallResult = ::saveProfiles
             )
                 .awaitValues(latchCount = 3, timeoutThrows = false)
                 .single()
-                .dump()
                 .assertEach(
                     { it shouldBeInstanceOf LoadingResult::class },
                     { it.data!!.parliamentdotuk shouldbe MEMBER_PUK_KEIR_STARMER },
@@ -58,7 +56,7 @@ class CacheResultFlowTest: ResultFlowTest() {
 
             cachedResultFlow(
                 databaseQuery = { getProfileFromDatabase(MEMBER_PUK_BORIS_JOHNSON) },
-                networkCall = { makeNetworkCall(listOf(editedNetworkResult)) },
+                networkCall = { makeSuccessfulNetworkCall(listOf(editedNetworkResult)) },
                 saveCallResult = ::saveProfiles
             )
                 .awaitValues(latchCount = 3)
@@ -67,6 +65,44 @@ class CacheResultFlowTest: ResultFlowTest() {
                     { it shouldBeInstanceOf LoadingResult::class },
                     { it.data!!.name shouldbe "Boris Johnson" }, // Cached before network call
                     { it.data!!.name shouldbe "Joris Bohnson" }, // After network call
+                )
+        }
+    }
+
+    @Test
+    fun cachedResultFlow_should_emit_cached_result_and_network_errors() {
+        runBlocking {
+            // Local cached version
+            saveProfiles(listOf(EXAMPLE_MEMBER_PROFILE_BORIS_JOHNSON))
+
+            cachedResultFlow(
+                databaseQuery = { getProfileFromDatabase(MEMBER_PUK_BORIS_JOHNSON) },
+                networkCall = ::makeErrorfulNetworkCall,
+                saveCallResult = ::saveProfiles
+            )
+                .awaitValues(latchCount = 3)
+                .single()
+                .assertEach(
+                    { it shouldBeInstanceOf LoadingResult::class },
+                    { it.data!!.name shouldbe "Boris Johnson" }, // Cached before network call
+                    { it shouldBeInstanceOf NetworkError::class }
+                )
+        }
+    }
+
+    @Test
+    fun cachedResultFlow_with_no_cache_should_emit_loading_and_network_errors() {
+        runBlocking {
+            cachedResultFlow(
+                databaseQuery = { getProfileFromDatabase(MEMBER_PUK_BORIS_JOHNSON) },
+                networkCall = ::makeErrorfulNetworkCall,
+                saveCallResult = ::saveProfiles
+            )
+                .awaitValues(latchCount = 3, timeoutThrows = false)
+                .single()
+                .assertEach(
+                    { it shouldBeInstanceOf LoadingResult::class },
+                    { it shouldBeInstanceOf NetworkError::class }
                 )
         }
     }
@@ -88,10 +124,10 @@ class ResultFlowLocalPreferredTest: ResultFlowTest() {
 
             val results = resultFlowLocalPreferred(
                 databaseQuery = { getProfileFromDatabase(MEMBER_PUK_BORIS_JOHNSON) },
-                networkCall = { makeNetworkCall(listOf(editedNetworkResult)) },
+                networkCall = { makeSuccessfulNetworkCall(listOf(editedNetworkResult)) },
                 saveCallResult = ::saveProfiles
             )
-                .awaitValues(latchCount = 3, timeout = 500, timeoutThrows = false)
+                .awaitValues(latchCount = 3, timeoutThrows = false)
                 .single()
 
             results.assertEach(
@@ -117,13 +153,31 @@ class ResultFlowLocalPreferredTest: ResultFlowTest() {
 
             resultFlowLocalPreferred(
                 databaseQuery = { getProfileFromDatabase(MEMBER_PUK_BORIS_JOHNSON) },
-                networkCall = { makeNetworkCall(listOf(editedNetworkResult)) },
+                networkCall = { makeSuccessfulNetworkCall(listOf(editedNetworkResult)) },
                 saveCallResult = ::saveProfiles
-            ).awaitValues(latchCount = 3, timeout = 500, timeoutThrows = false)
+            ).awaitValues(latchCount = 3, timeoutThrows = false)
                 .single()
                 .assertEach(
                     { it shouldBeInstanceOf LoadingResult::class },
                     { it.data!!.name shouldbe "Joris Bohnson" }  // Updated network name - no pre-cached version exists
+                )
+        }
+    }
+
+    @Test
+    fun resultFlowLocalPreferred_should_emit_network_errors() {
+        runBlocking {
+            // No local cached version
+
+            resultFlowLocalPreferred(
+                databaseQuery = { getProfileFromDatabase(MEMBER_PUK_BORIS_JOHNSON) },
+                networkCall = ::makeErrorfulNetworkCall,
+                saveCallResult = ::saveProfiles
+            ).awaitValues(latchCount = 3, timeoutThrows = false)
+                .single()
+                .assertEach(
+                    { it shouldBeInstanceOf LoadingResult::class },
+                    { it shouldBeInstanceOf NetworkError::class }
                 )
         }
     }
@@ -135,7 +189,7 @@ class ResultFlowNoCacheTest: ResultFlowTest() {
     fun resultFlowNoCache_should_emit_loading_then_network_result_with_no_database() {
         runBlocking {
             resultFlowNoCache {
-                makeNetworkCall(
+                makeSuccessfulNetworkCall(
                     listOf(
                         EXAMPLE_MEMBER_PROFILE_BORIS_JOHNSON,
                         EXAMPLE_MEMBER_PROFILE_KEIR_STARMER
@@ -152,6 +206,20 @@ class ResultFlowNoCacheTest: ResultFlowTest() {
                 )
         }
     }
+
+
+    @Test
+    fun resultFlowNoCache_should_emit_loading_then_network_errors() {
+        runBlocking {
+            resultFlowNoCache(::makeErrorfulNetworkCall)
+                .awaitValues(2)
+                .single()
+                .assertEach(
+                    { it shouldBeInstanceOf LoadingResult::class },
+                    { it shouldBeInstanceOf NetworkError::class }
+                )
+        }
+    }
 }
 
 
@@ -165,7 +233,7 @@ abstract class ResultFlowTest: BaseRoomTest() {
         db.memberDao().safeInsertProfiles(profiles.map { it.toMemberProfile() }, ifNotExists = false)
     }
 
-    protected suspend fun makeNetworkCall(
+    protected suspend fun makeSuccessfulNetworkCall(
         responseData: List<ApiMemberProfile> = listOf(EXAMPLE_MEMBER_PROFILE_KEIR_STARMER)
     ): IoResult<List<ApiMemberProfile>> {
         delay(100)
@@ -173,5 +241,10 @@ abstract class ResultFlowTest: BaseRoomTest() {
             responseData,
             "Fake network result"
         )
+    }
+
+    protected suspend fun makeErrorfulNetworkCall(): NetworkError {
+        delay(100)
+        return NetworkError("Fake network error", error = null)
     }
 }
