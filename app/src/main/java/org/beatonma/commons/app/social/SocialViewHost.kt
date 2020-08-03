@@ -14,6 +14,7 @@ import kotlinx.coroutines.withContext
 import org.beatonma.commons.R
 import org.beatonma.commons.annotations.SignInRequired
 import org.beatonma.commons.app.ui.navigation.BackPressConsumer
+import org.beatonma.commons.app.ui.recyclerview.adapter.AsyncDiffHost
 import org.beatonma.commons.data.IoResultObserver
 import org.beatonma.commons.data.NoBodySuccessResult
 import org.beatonma.commons.data.core.interfaces.Sociable
@@ -22,14 +23,14 @@ import org.beatonma.commons.data.core.social.SocialVoteType
 
 private const val TAG = "SocialViewHost"
 
-interface SocialViewHost: LifecycleOwner, BackPressConsumer {
+interface SocialViewHost: LifecycleOwner, BackPressConsumer, AsyncDiffHost {
     val socialViewModel: SocialViewModel
     val socialViewController: SocialViewController
 
     val socialObserver: IoResultObserver<SocialContent>
 
     fun createSocialObserver() = IoResultObserver<SocialContent> { result ->
-        socialViewController.updateUi(result.data)
+        socialViewController.updateUi(result.data, this)
     }
 
     fun observeSocialViewModel() {

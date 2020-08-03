@@ -24,7 +24,7 @@ abstract class CollapsibleAdapter<T>(
         }
     }
 
-    fun isCollapsible(): Boolean = items?.size ?: 0 > collapsedItemsVisible
+    val isCollapsible: Boolean get() = items?.size ?: 0 > collapsedItemsVisible
 
     fun collapse() {
         collapsed = true

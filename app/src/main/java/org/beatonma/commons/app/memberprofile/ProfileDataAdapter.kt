@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.TransitionManager
+import kotlinx.coroutines.Job
 import org.beatonma.commons.R
 import org.beatonma.commons.app.memberprofile.adapter.CurrentAdapter
 import org.beatonma.commons.app.memberprofile.adapter.FinancialInterestsAdapter
@@ -16,7 +17,6 @@ import org.beatonma.commons.app.ui.data.WeblinkData
 import org.beatonma.commons.app.ui.recyclerview.adapter.*
 import org.beatonma.commons.app.ui.recyclerview.defaultSpace
 import org.beatonma.commons.app.ui.recyclerview.setup
-import org.beatonma.commons.app.ui.recyclerview.setupGrid
 import org.beatonma.commons.app.ui.recyclerview.viewholder.staticViewHolderOf
 import org.beatonma.commons.data.core.interfaces.Temporal
 import org.beatonma.commons.data.core.room.entities.member.FinancialInterest
@@ -63,11 +63,7 @@ internal enum class LayoutType {
             recyclerView.setup(adapter, showSeparators = showSeparators)
         }
     },
-    STAGGERED_GRID {
-        override fun setup(recyclerView: RecyclerView, adapter: BaseRecyclerViewAdapter, showSeparators: Boolean) {
-            recyclerView.setupGrid(adapter, columnCount = 1)
-        }
-    };
+    ;
 
     abstract fun setup(recyclerView: RecyclerView, adapter: BaseRecyclerViewAdapter, showSeparators: Boolean = false)
 }
@@ -77,7 +73,9 @@ internal enum class LayoutType {
  * Top level adapter - many child RecyclerViews for [ProfileData] types.
  */
 
-class ProfileDataAdapter: LoadingAdapter<ProfileData<Any>>(), Themed {
+class ProfileDataAdapter(
+    private var asyncDiffHost: AsyncDiffHost? = null
+): LoadingAdapter<ProfileData<Any>>(), Themed {
 
     override var theme: PartyColors? = null
 
@@ -99,7 +97,7 @@ class ProfileDataAdapter: LoadingAdapter<ProfileData<Any>>(), Themed {
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val data = items?.get(position) ?: return
         when (holder) {
-            is AbstractProfileDataHolder<*> -> holder.bind(data, theme)
+            is AbstractProfileDataHolder<*> -> holder.bind(data, theme, asyncDiffHost)
             is GenericTypedViewHolder<*> -> {
                 @Suppress("UNCHECKED_CAST")
                 (holder as GenericTypedViewHolder<ProfileData<*>>).bind(data)
@@ -151,12 +149,17 @@ internal abstract class AbstractProfileDataHolder<D>(
     parent: ViewGroup,
     @LayoutRes layoutId: Int,
     val adapter: TypedAdapter<D>
-): RecyclerView.ViewHolder(parent.inflate(layoutId)) {
+): RecyclerView.ViewHolder(parent.inflate(layoutId)), AsyncDiff {
+    override var diffJob: Job? = null  // Each child adapter should have its own diffJob to avoid collisions.
 
     @Suppress("UNCHECKED_CAST")
-    open fun bind(data: ProfileData<Any>, theme: PartyColors?) {
+    open fun bind(data: ProfileData<Any>, theme: PartyColors?, asyncDiffHost: AsyncDiffHost?) {
         if (adapter is Themed) adapter.theme = theme
-        adapter.items = data.items as List<D>
+
+        when (asyncDiffHost) {
+            null -> adapter.diffSync(data.items as List<D>)
+            else -> diffAdapterItems(asyncDiffHost, adapter, data.items as List<D>)
+        }
     }
 }
 
@@ -192,9 +195,10 @@ internal abstract class CollapsibleProfileDataHolder<D>(
         vh.title.text = title
     }
 
-    override fun bind(data: ProfileData<Any>, theme: PartyColors?) {
-        super.bind(data, theme)
-        when((adapter as CollapsibleAdapter).isCollapsible()) {
+    override fun bind(data: ProfileData<Any>, theme: PartyColors?, asyncDiffHost: AsyncDiffHost?) {
+        super.bind(data, theme, asyncDiffHost)
+
+        when((adapter as CollapsibleAdapter).isCollapsible) {
             true -> {
                 vh.header.setOnClickListener { toggle() }
                 vh.toggle.show()

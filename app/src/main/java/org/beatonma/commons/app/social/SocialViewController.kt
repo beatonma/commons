@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.scopes.FragmentScoped
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.navigation.BackPressConsumer
+import org.beatonma.commons.app.ui.recyclerview.adapter.AsyncDiffHost
 import org.beatonma.commons.app.ui.recyclerview.adapter.LoadingAdapter
 import org.beatonma.commons.app.ui.recyclerview.setup
 import org.beatonma.commons.data.core.social.SocialComment
@@ -136,9 +137,10 @@ class SocialViewController(
         return true
     }
 
-    fun updateUi(content: SocialContent?) {
+    fun updateUi(content: SocialContent?, asyncDiffHost: AsyncDiffHost) {
         currentVote = content?.userVote
-        adapter.items = content?.comments ?: listOf()
+
+        asyncDiffHost.diffAdapterItems(adapter, content?.comments ?: listOf())
 
         val numComments = content?.commentCount() ?: 0
         val numUpvotes = content?.ayeVotes() ?: 0

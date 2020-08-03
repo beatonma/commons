@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.HORIZONTAL
 import dagger.hilt.android.AndroidEntryPoint
@@ -80,6 +81,7 @@ class BillDetailFragment : CommonsFragment(), SocialViewHost {
         binding.sponsorsRecyclerview.setup(sponsorsAdapter, orientation = HORIZONTAL)
 
         viewmodel.liveData.observe(viewLifecycleOwner) { result ->
+            result.data.dump("__UpdateUI__")
             result.report()
 
             withNotNull(result.data) { data ->
@@ -97,7 +99,7 @@ class BillDetailFragment : CommonsFragment(), SocialViewHost {
                 title to bill.bill?.title,
                 description to bill.bill?.description,
                 typeAndSession to context?.dotted(
-                    stringCompat(R.string.bill_session, bill.session?.name),
+                    bill.session?.name,
                     bill.type?.name
                 ),
                 publications to stringCompat(R.string.bill_publications_count,
@@ -105,12 +107,12 @@ class BillDetailFragment : CommonsFragment(), SocialViewHost {
             )
         }
 
-        sponsorsAdapter.items = bill.sponsors
+        diffAdapterItems(sponsorsAdapter, bill.sponsors)
 
         lifecycleScope.launch {
             val annotated = viewmodel.getAnnotatedStages(bill)
             withContext(Dispatchers.Main) {
-                stagesAdapter.items = annotated
+                diffAdapterItems(stagesAdapter, annotated)
             }
         }
     }

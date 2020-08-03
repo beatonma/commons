@@ -13,16 +13,22 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.observe
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.beatonma.commons.R
+import org.beatonma.commons.app.search.SearchEnabled
 import org.beatonma.commons.app.search.SearchHost
 import org.beatonma.commons.app.search.SearchViewModel
+import org.beatonma.commons.app.signin.SignInHost
 import org.beatonma.commons.app.ui.navigation.BackPressConsumer
+import org.beatonma.commons.app.ui.recyclerview.adapter.AsyncDiffHost
 import org.beatonma.commons.app.ui.recyclerview.adapter.LoadingAdapter
 import org.beatonma.commons.app.ui.recyclerview.setup
 import org.beatonma.commons.app.ui.recyclerview.viewholder.staticViewHolderOf
@@ -40,26 +46,29 @@ import org.beatonma.commons.network.retrofit.CommonsService
 private const val TAG = "MainActivity"
 
 @AndroidEntryPoint
-class MainActivity : DayNightActivity(), SearchHost {
+class MainActivity : DayNightActivity(), SearchHost, SignInHost, AsyncDiffHost {
 
     override val searchViewModel: SearchViewModel by viewModels()
 
     private lateinit var binding: ActivityNavhostMainBinding
     override lateinit var searchView: SearchView
 
+    override var diffJob: Job? = null
+
     override val searchAdapter = SearchResultsAdapter()
     lateinit var navController: NavController
+
 
     private val updateSearchEnabled = {
         lifecycleScope.launch(Dispatchers.Main) {
             // Arbitrary delay to avoid clashes with fragment transitions/child layout animations
             // on fragment change
-            // TODO currently disabled while making other transitions
-//            delay(300)
-//            when (getContentFragment()) {
-//                is SearchEnabled -> enableSearch()
-//                else -> disableSearch()
-//            }
+            // TODO currently disabled while making other transitions - fixme
+            delay(300)
+            when (getContentFragment()) {
+                is SearchEnabled -> enableSearch()
+                else -> disableSearch()
+            }
         }
         Unit
     }
@@ -128,11 +137,15 @@ class MainActivity : DayNightActivity(), SearchHost {
         binding.overlay.setOnClickListener { hideSearch() }
 
         searchViewModel.resultLiveData.observe(this@MainActivity) { results ->
-            searchAdapter.items = results
+            searchAdapter.diffItems(results)
         }
 
         // Update search UI visibility - we may have entered via deep-link to arbitrary destination.
         updateSearchEnabled.invoke()
+
+        binding.signinButton.setOnClickListener { button ->
+            showSignIn(this)
+        }
     }
 
     /**

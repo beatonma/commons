@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.observe
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.MarginPageTransformer
 import dagger.hilt.android.AndroidEntryPoint
@@ -51,10 +52,6 @@ class ExperimentalFrontPageFragment : CommonsFragment(), SearchEnabled {
             it.setPageTransformer(MarginPageTransformer(it.context.dp(16)))
         }
 
-        binding.signinButton.setOnClickListener { button ->
-            button.navigateTo(R.id.action_frontPageFragment_to_signInFragment)
-        }
-
         viewmodel.motd.observe(viewLifecycleOwner) { result ->
             result.report()
 
@@ -64,7 +61,7 @@ class ExperimentalFrontPageFragment : CommonsFragment(), SearchEnabled {
                     view.context.openUrl(url)
                 }
             }
-            snackbar(motd.description ?: motd.title, action = action)
+            snackbar("${motd.title} ${motd.description}", action = action)
         }
     }
 
@@ -100,7 +97,7 @@ abstract class AbstractFeatureFragment<T>(val livedata: LiveDataIoResultList<T>)
 
         livedata.observe(viewLifecycleOwner) { result ->
             result.report()
-            adapter.items = result.data
+            adapter.diffItems(result.data)
         }
     }
 }

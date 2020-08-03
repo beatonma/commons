@@ -54,7 +54,7 @@ interface SearchHost {
 
     fun executeSearch(query: String?) {
         if (query.isNullOrBlank()) {
-            searchAdapter.items = null
+            searchAdapter.diffSync(null)
         } else {
             searchViewModel.submitSearch(query)
         }

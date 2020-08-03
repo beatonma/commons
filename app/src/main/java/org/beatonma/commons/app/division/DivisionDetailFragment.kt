@@ -9,6 +9,7 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -101,11 +102,11 @@ class DivisionDetailFragment : CommonsFragment(),
         with (binding) {
             when (division.house) {
                 House.lords -> bindText(
-                    title to division.title,
+                    title to division.title.dump("TITLE"),
                     description to division.description,
                 )
                 House.commons -> bindText(
-                    title to stringCompat(R.string.division_title),
+                    title to stringCompat(R.string.division_title).dump("TITLE"),
                     description to division.title
                 )
             }
@@ -128,11 +129,11 @@ class DivisionDetailFragment : CommonsFragment(),
             bindText(didNotVotes, division.didNotVote) { stringCompat(R.string.division_did_not_vote, division.didNotVote)}
             bindText(abstentions, division.abstentions) { stringCompat(R.string.division_did_not_vote, division.abstentions)}
 
-            setDependantVisibility(parent = didNotVotes, didNotVotesColor, didNotVotesFlow)
-            setDependantVisibility(parent = abstentions, abstentionsColor, abstentionsFlow)
+            setDependantVisibility(didNotVotes, didNotVotesColor, didNotVotesFlow)
+            setDependantVisibility(abstentions, abstentionsColor, abstentionsFlow)
         }
 
-        adapter.items = votes
+        adapter.diffItems(votes)
     }
 }
 

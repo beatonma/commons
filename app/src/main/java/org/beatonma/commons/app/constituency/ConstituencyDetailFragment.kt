@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.observe
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
@@ -116,10 +117,10 @@ class ConstituencyDetailFragment : CommonsFragment(), ViewTreeObserver.OnGlobalL
             moveCameraTo(viewmodel.getUkBounds())
         }
 
-        viewmodel.liveData.observe(viewLifecycleOwner) {
-            updateConstituencyUi(it.constituency, it.theme)
-            updateGeometryUi(it.geometry)
-            resultsAdapter.items = it.electionResults
+        viewmodel.liveData.observe(viewLifecycleOwner) { data ->
+            updateConstituencyUi(data.constituency, data.theme)
+            updateGeometryUi(data.geometry)
+            resultsAdapter.diffItems(data.electionResults)
         }
     }
 

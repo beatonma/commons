@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.observe
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -46,7 +47,7 @@ class MemberProfileFragment : CommonsFragment(),
     override val socialObserver: IoResultObserver<SocialContent> = createSocialObserver()
 
 
-    private val adapter = ProfileDataAdapter()
+    private val adapter = ProfileDataAdapter(asyncDiffHost = this)
 
     override var theme: PartyColors? = null
 
@@ -99,7 +100,7 @@ class MemberProfileFragment : CommonsFragment(),
 
         lifecycleScope.launch(Dispatchers.Main) {
             @Suppress("UNCHECKED_CAST")
-            adapter.items = viewmodel.toProfileData(member) as List<ProfileData<Any>>
+            diffAdapterItems(adapter, viewmodel.toProfileData(member) as List<ProfileData<Any>>)
         }
 
         updateUiToolbarText(member)
