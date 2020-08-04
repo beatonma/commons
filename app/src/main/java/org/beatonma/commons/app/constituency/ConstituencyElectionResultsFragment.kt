@@ -107,9 +107,9 @@ class ConstituencyElectionResultsFragment : CommonsFragment() {
         )
 
         with (adapter) {
-            winningVoteCount = data.candidates?.minBy { it.order }?.votes ?: 0
+            winningVoteCount = data.candidates?.minByOrNull { it.order }?.votes ?: 0
             totalVotes = details.turnout
-            items = viewmodel.composeCandidateData(data)
+            diffItems(viewmodel.composeCandidateData(data))
         }
     }
 
