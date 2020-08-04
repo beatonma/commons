@@ -32,11 +32,37 @@ private const val CONSTITUENCY_API_PATH = "$API_PATH/constituency"
 private const val SOCIAL_API_PATH = "/social"
 private const val SOCIAL_TARGET_PATH = "$SOCIAL_API_PATH/{target_type}/{parliamentdotuk}"
 
-private const val TOKEN = "token"
-private const val TARGET_TYPE = "target_type"
 
 
-interface CommonsService: SocialCommonsService {
+private object Endpoints {
+    const val PING = "$API_PATH/ping/"
+    const val SEARCH = "$MEMBER_API_PATH/?page_size=5"
+    const val MOTD = "$API_PATH/motd/"
+
+    const val MEMBER_PROFILE = "$MEMBER_API_PATH/profile/{$PARLIAMENTDOTUK}/"
+    const val VOTES_BY_MEMBER = "$MEMBER_API_PATH/votes/{${Contract.HOUSE}}/{$PARLIAMENTDOTUK}/"
+
+    const val BILL = "$BILL_API_PATH/{$PARLIAMENTDOTUK}/"
+
+    const val DIVISION = "$DIVISION_API_PATH/{${Contract.HOUSE}}/{$PARLIAMENTDOTUK}/"
+
+    const val CONSTITUENCY = "$CONSTITUENCY_API_PATH/{$PARLIAMENTDOTUK}/"
+    const val CONSTITUENCY_ELECTION_RESULTS = "$CONSTITUENCY_API_PATH/{${Contract.CONSTITUENCY_ID}}/election/{${Contract.ELECTION_ID}}/"
+
+    const val FEATURED_MEMBERS = "$FEATURED_API_PATH/members/"
+    const val FEATURED_BILLS = "$FEATURED_API_PATH/bills/"
+    const val FEATURED_DIVISIONS = "$FEATURED_API_PATH/divisions/"
+
+    object Social {
+        const val GAUTH = "$SOCIAL_API_PATH/auth/g/"
+        const val ALL = "$SOCIAL_TARGET_PATH/all/"
+        const val VOTES = "$SOCIAL_TARGET_PATH/votes/"
+        const val COMMENTS = "$SOCIAL_TARGET_PATH/comments/"
+    }
+}
+
+
+interface CommonsService: SnommocService, CommonsDataService, CommonsSocialService {
     companion object {
         const val BASE_URL = "https://snommoc.org"
 
@@ -47,103 +73,116 @@ interface CommonsService: SocialCommonsService {
         fun getConstituencyUrl(parliamentdotuk: ParliamentID) = getUrl("$CONSTITUENCY_API_PATH/$parliamentdotuk/")
         fun getSocialUrl(target: SocialTarget) = getUrl("$SOCIAL_API_PATH/${target.targetType}/${target.parliamentdotuk}/all/")
     }
+}
 
-    @GET("$API_PATH/ping/")
+
+/**
+ * Basic service-orientated content. Featured content, search, that sort of thing.
+ */
+interface SnommocService {
+    @GET(Endpoints.PING)
     suspend fun ping(): Response<String>
 
-    // Members
-    @GET("$MEMBER_API_PATH/profile/{$PARLIAMENTDOTUK}/")
-    suspend fun getMember(@Path(PARLIAMENTDOTUK) parliamentdotuk: ParliamentID): Response<ApiCompleteMember>
-
     @EnvelopePayload
-    @GET("$FEATURED_API_PATH/members/")
+    @GET(Endpoints.FEATURED_MEMBERS)
     suspend fun getFeaturedPeople(): ListResponse<ApiMemberProfile>
 
     // Bills
     @EnvelopePayload
-    @GET("$FEATURED_API_PATH/bills/")
+    @GET(Endpoints.FEATURED_BILLS)
     suspend fun getFeaturedBills(): ListResponse<ApiBill>
-
-    @GET("$BILL_API_PATH/{$PARLIAMENTDOTUK}/")
-    suspend fun getBill(@Path(PARLIAMENTDOTUK) parliamentdotuk: ParliamentID): Response<ApiBill>
 
     // Divisions
     @EnvelopePayload
-    @GET("$FEATURED_API_PATH/divisions/")
+    @GET(Endpoints.FEATURED_DIVISIONS)
     suspend fun getFeaturedDivisions(): ListResponse<ApiDivision>
-
-    /**
-     * Votes by a particular member on all divisions
-     */
-    @EnvelopePayload
-    @GET("$MEMBER_API_PATH/votes/{house}/{$PARLIAMENTDOTUK}/")
-    suspend fun getVotesForMember(@Path("house") house: House, @Path(PARLIAMENTDOTUK) parliamentdotuk: ParliamentID): ListResponse<ApiMemberVote>
-
-    @GET("$DIVISION_API_PATH/{house}/{$PARLIAMENTDOTUK}/")
-    suspend fun getDivision(@Path("house") house: House, @Path(PARLIAMENTDOTUK) parliamentdotuk: ParliamentID): Response<ApiDivision>
-
-    // Constituencies
-    @GET("$CONSTITUENCY_API_PATH/{$PARLIAMENTDOTUK}/")
-    suspend fun getConstituency(@Path(PARLIAMENTDOTUK) parliamentdotuk: ParliamentID): Response<ApiConstituency>
-
-    @GET("$CONSTITUENCY_API_PATH/{constituency_id}/election/{election_id}/")
-    suspend fun getConstituencyElectionResults(
-        @Path("constituency_id") constituencyId: ParliamentID,
-        @Path("election_id") electionId: ParliamentID,
-    ): Response<ApiConstituencyElectionDetails>
 
     /**
      * Member search by name, constituency name, current post title.
      */
     @EnvelopePayload
-    @GET("$MEMBER_API_PATH/?page_size=5")
-    suspend fun getSearchResults(@Query("search") query: String): ListResponse<MemberSearchResult>
+    @GET(Endpoints.SEARCH)
+    suspend fun getSearchResults(
+        @Query("search") query: String
+    ): ListResponse<MemberSearchResult>
 
     @EnvelopePayload
-    @GET("$API_PATH/motd/")
+    @GET(Endpoints.MOTD)
     suspend fun getMessageOfTheDay(): ListResponse<MessageOfTheDay>
 }
 
 
-interface SocialCommonsService {
+/**
+ * Methods for getting data about political entities.
+ */
+interface CommonsDataService {
+    @GET(Endpoints.MEMBER_PROFILE)
+    suspend fun getMember(@Path(PARLIAMENTDOTUK) parliamentdotuk: ParliamentID): Response<ApiCompleteMember>
 
+    @GET(Endpoints.BILL)
+    suspend fun getBill(@Path(PARLIAMENTDOTUK) parliamentdotuk: ParliamentID): Response<ApiBill>
+
+    /**
+     * Votes by a particular member on all divisions
+     */
+    @EnvelopePayload
+    @GET(Endpoints.VOTES_BY_MEMBER)
+    suspend fun getVotesForMember(@Path(Contract.HOUSE) house: House, @Path(PARLIAMENTDOTUK) parliamentdotuk: ParliamentID): ListResponse<ApiMemberVote>
+
+    @GET(Endpoints.DIVISION)
+    suspend fun getDivision(@Path(Contract.HOUSE) house: House, @Path(PARLIAMENTDOTUK) parliamentdotuk: ParliamentID): Response<ApiDivision>
+
+    @GET(Endpoints.CONSTITUENCY)
+    suspend fun getConstituency(@Path(PARLIAMENTDOTUK) parliamentdotuk: ParliamentID): Response<ApiConstituency>
+
+    @GET(Endpoints.CONSTITUENCY_ELECTION_RESULTS)
+    suspend fun getConstituencyElectionResults(
+        @Path(Contract.CONSTITUENCY_ID) constituencyId: ParliamentID,
+        @Path(Contract.ELECTION_ID) electionId: ParliamentID,
+    ): Response<ApiConstituencyElectionDetails>
+}
+
+
+/**
+ * Methods to submit and retrieve social content - votes, comments, user management...
+ */
+interface CommonsSocialService {
     @FormUrlEncoded
-    @POST("$SOCIAL_API_PATH/auth/g/")
-    suspend fun registerGoogleSignIn(@Field(TOKEN) googleToken: String): Response<ApiUserToken>
+    @POST(Endpoints.Social.GAUTH)
+    suspend fun registerGoogleSignIn(@Field(Contract.SNOMMOC_TOKEN) googleToken: String): Response<ApiUserToken>
 
-    @GET("$SOCIAL_TARGET_PATH/all/")
+    @GET(Endpoints.Social.ALL)
     suspend fun getSocialContentForTarget(
-        @Path(TARGET_TYPE) targetStr: String,
-        @Path(PARLIAMENTDOTUK) parliamentdotuk: ParliamentID,
-        @Query(TOKEN) snommocToken: SnommocToken?,
+        @Path(Contract.TARGET_TYPE) targetStr: String,
+        @Path(Contract.PARLIAMENTDOTUK) parliamentdotuk: ParliamentID,
+        @Query(Contract.SNOMMOC_TOKEN) snommocToken: SnommocToken?,
     ): Response<SocialContent>
 
     @SignInRequired
     @FormUrlEncoded
-    @POST("$SOCIAL_TARGET_PATH/comments/")
+    @POST(Endpoints.Social.COMMENTS)
     suspend fun postComment(
-
-        @Path(TARGET_TYPE) targetStr: String,
-        @Path(PARLIAMENTDOTUK) parliamentdotuk: ParliamentID,
-        @Field(TOKEN) snommocToken: SnommocToken,
-        @Field("text") text: String,
+        @Path(Contract.TARGET_TYPE) targetStr: String,
+        @Path(Contract.PARLIAMENTDOTUK) parliamentdotuk: ParliamentID,
+        @Field(Contract.SNOMMOC_TOKEN) snommocToken: SnommocToken,
+        @Field(Contract.TEXT) text: String,
     ): Response<Void>
 
     @SignInRequired
     @FormUrlEncoded
-    @POST("$SOCIAL_TARGET_PATH/votes/")
+    @POST(Endpoints.Social.VOTES)
     suspend fun postVote(
-        @Path(TARGET_TYPE) targetStr: String,
-        @Path(PARLIAMENTDOTUK) parliamentdotuk: ParliamentID,
-        @Field(TOKEN) snommocToken: SnommocToken,
-        @Field("vote") voteType: String,
+        @Path(Contract.TARGET_TYPE) targetStr: String,
+        @Path(Contract.PARLIAMENTDOTUK) parliamentdotuk: ParliamentID,
+        @Field(Contract.SNOMMOC_TOKEN) snommocToken: SnommocToken,
+        @Field(Contract.VOTE) voteType: String,
     ): Response<Void>
 
     @SignInRequired
-    @HTTP(method = "DELETE", path = "$SOCIAL_TARGET_PATH/votes/", hasBody = true)
+    @HTTP(method = "DELETE", path = Endpoints.Social.VOTES, hasBody = true)
     suspend fun deleteVote(
-        @Path(TARGET_TYPE) targetStr: String,
-        @Path(PARLIAMENTDOTUK) parliamentdotuk: ParliamentID,
+        @Path(Contract.TARGET_TYPE) targetStr: String,
+        @Path(Contract.PARLIAMENTDOTUK) parliamentdotuk: ParliamentID,
         @Body snommocToken: DeletedVote,
     ): Response<Void>
 }
