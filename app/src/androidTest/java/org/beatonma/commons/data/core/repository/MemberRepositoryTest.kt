@@ -11,15 +11,15 @@ import org.beatonma.commons.data.CommonsRemoteDataSource
 import org.beatonma.commons.data.core.room.dao.MemberDao
 import org.beatonma.commons.data.core.room.entities.member.House
 import org.beatonma.commons.data.core.room.entities.member.Post
-import org.beatonma.commons.data.testdata.API_MEMBER
-import org.beatonma.commons.data.testdata.MEMBER_PUK
+import org.beatonma.commons.data.testdata.API_MEMBER_BORIS_JOHNSON
+import org.beatonma.commons.data.testdata.MEMBER_PUK_BORIS_JOHNSON
 import org.beatonma.commons.kotlin.extensions.dump
 import org.beatonma.lib.testing.kotlin.extensions.assertions.shouldbe
 import org.junit.Before
 import org.junit.Test
 
 class MemberRepositoryTest: BaseRoomTest() {
-    lateinit var repository: MemberRepository
+    lateinit var repository: MemberRepositoryImpl
     private val dao: MemberDao
         get() = db.memberDao()
 
@@ -27,7 +27,7 @@ class MemberRepositoryTest: BaseRoomTest() {
     override fun setUp() {
         super.setUp()
 
-        repository = MemberRepository(
+        repository = MemberRepositoryImpl(
             fakeIt(CommonsRemoteDataSource::class, object {
 
             }),
@@ -35,7 +35,7 @@ class MemberRepositoryTest: BaseRoomTest() {
         )
 
         runBlocking(Dispatchers.Main) {
-            dao.insertCompleteMember(MEMBER_PUK, API_MEMBER)
+            dao.insertCompleteMember(MEMBER_PUK_BORIS_JOHNSON, API_MEMBER_BORIS_JOHNSON)
         }
     }
 
@@ -51,13 +51,13 @@ class MemberRepositoryTest: BaseRoomTest() {
     @Test
     fun ensure_getCompleteMember_is_constructed_correctly() {
         runBlocking(Dispatchers.Main) {
-            repository.getCompleteMember(MEMBER_PUK)
+            repository.getCompleteMember(MEMBER_PUK_BORIS_JOHNSON)
                 .awaitValue(latchCount = 13)
                 .single()
                 .run {
                     dump()
                     profile!!.run {
-                        parliamentdotuk shouldbe MEMBER_PUK
+                        parliamentdotuk shouldbe MEMBER_PUK_BORIS_JOHNSON
                         name shouldbe "Boris Johnson"
                         isMp shouldbe true
                         isLord shouldbe false

@@ -2,14 +2,16 @@ package org.beatonma.commons.data.testdata
 
 import org.beatonma.commons.androidTest.asDate
 import org.beatonma.commons.data.core.ApiCompleteMember
+import org.beatonma.commons.data.core.CompleteMember
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import org.beatonma.commons.data.core.room.entities.election.ApiElection
 import org.beatonma.commons.data.core.room.entities.member.*
 
-const val MEMBER_PUK = 1423
+const val MEMBER_PUK_BORIS_JOHNSON = 1423
+const val MEMBER_PUK_KEIR_STARMER = 4514
 
 val EXAMPLE_MEMBER_PROFILE_BORIS_JOHNSON = ApiMemberProfile(
-    parliamentdotuk = MEMBER_PUK,
+    parliamentdotuk = MEMBER_PUK_BORIS_JOHNSON,
     name = "Boris Johnson",
     party = Party(
         name = "Conservative",
@@ -34,7 +36,7 @@ val EXAMPLE_MEMBER_PROFILE_BORIS_JOHNSON = ApiMemberProfile(
 )
 
 val EXAMPLE_MEMBER_PROFILE_KEIR_STARMER = ApiMemberProfile(
-    parliamentdotuk = MEMBER_PUK,
+    parliamentdotuk = MEMBER_PUK_KEIR_STARMER,
     name = "Keir Starmer",
     party = Party(
         name = "Labour",
@@ -62,7 +64,7 @@ val EXAMPLE_MEMBER_PROFILE_KEIR_STARMER = ApiMemberProfile(
  * Edited API response - items have been added/removed for usefulness, compiled from several
  * actual responses.
  */
-val API_MEMBER = ApiCompleteMember(
+val API_MEMBER_BORIS_JOHNSON = ApiCompleteMember(
     profile = EXAMPLE_MEMBER_PROFILE_BORIS_JOHNSON,
     addresses = ApiAddresses(
         physical = listOf(
@@ -206,6 +208,44 @@ val API_MEMBER = ApiCompleteMember(
     ),
 )
 
-val EXAMPLE_FEATURED_PERSON = FeaturedMember(
-    memberId = MEMBER_PUK
+
+fun ApiCompleteMember.toCompleteMember() = CompleteMember(
+    profile = profile.toMemberProfile(),
+    party = profile.party,
+    constituency = profile.constituency,
+    addresses = addresses.physical.map { it.toPhysicalAddress(MEMBER_PUK_BORIS_JOHNSON) },
+    weblinks = addresses.web.map { it.toWebAddress(MEMBER_PUK_BORIS_JOHNSON) },
+    posts = listOf(
+        posts.governmental.map { it.toPost(MEMBER_PUK_BORIS_JOHNSON, Post.PostType.GOVERNMENTAL) },
+        posts.parliamentary.map { it.toPost(MEMBER_PUK_BORIS_JOHNSON, Post.PostType.PARLIAMENTARY) },
+        posts.opposition.map { it.toPost(MEMBER_PUK_BORIS_JOHNSON, Post.PostType.OPPOSITION) },
+    ).flatten(),
+    committees = committees.map { committee ->
+        CommitteeMemberWithChairs(
+            membership = committee.toCommitteeMembership(profile.parliamentdotuk),
+            chairs = committee.chairs.map { chairship ->
+                chairship.toCommitteeChairship(
+                    committeeId = committee.parliamentdotuk,
+                    memberId = profile.parliamentdotuk,
+                )
+            },
+        )
+    },
+    experiences = experiences.map { it.toExperience(profile.parliamentdotuk) },
+    financialInterests = financialInterests.map { it.toFinancialInterest(profile.parliamentdotuk) },
+    topicsOfInterest = topicsOfInterest.map { it.toTopicOfInterest(profile.parliamentdotuk) },
+    houses = houses.map { it.toHouseMembership(profile.parliamentdotuk) },
+    historicConstituencies = constituencies.map {
+        HistoricalConstituencyWithElection(
+            constituency = it.constituency,
+            historicalConstituency = it.toHistoricalConstituency(profile.parliamentdotuk),
+            election = it.election.toElection(),
+        )
+    },
+    parties = parties.map {
+        PartyAssociationWithParty(
+            partyAssocation = it.toPartyAssociation(profile.parliamentdotuk),
+            party = profile.party,
+        )
+    },
 )

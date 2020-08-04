@@ -6,8 +6,8 @@ import org.beatonma.commons.androidTest.asDate
 import org.beatonma.commons.data.BaseRoomDaoTest
 import org.beatonma.commons.data.core.room.entities.member.House
 import org.beatonma.commons.data.core.room.entities.member.Post
-import org.beatonma.commons.data.testdata.API_MEMBER
-import org.beatonma.commons.data.testdata.MEMBER_PUK
+import org.beatonma.commons.data.testdata.API_MEMBER_BORIS_JOHNSON
+import org.beatonma.commons.data.testdata.MEMBER_PUK_BORIS_JOHNSON
 import org.beatonma.lib.testing.kotlin.extensions.assertions.shouldbe
 import org.junit.Before
 import org.junit.Test
@@ -24,21 +24,21 @@ class MemberDaoInsertCompleteMemberTest: BaseRoomDaoTest<MemberDao>() {
     override val dao: MemberDao
         get() = db.memberDao()
 
-    override val testPukId: Int = MEMBER_PUK
+    override val testPukId: Int = MEMBER_PUK_BORIS_JOHNSON
 
     @Before
     override fun setUp() {
         super.setUp()
 
         runBlocking(Dispatchers.Main) {
-            dao.insertCompleteMember(MEMBER_PUK, API_MEMBER)
+            dao.insertCompleteMember(MEMBER_PUK_BORIS_JOHNSON, API_MEMBER_BORIS_JOHNSON)
         }
     }
 
     @Test
     fun ensure_MemberProfile_is_written_and_retrieved_correctly() {
         daoTest(MemberDao::getMemberProfile) {
-            parliamentdotuk shouldbe MEMBER_PUK
+            parliamentdotuk shouldbe MEMBER_PUK_BORIS_JOHNSON
             name shouldbe "Boris Johnson"
             isMp shouldbe true
             isLord shouldbe false
