@@ -1,5 +1,3 @@
-import annotation.HexColor
-
 private fun String.toColorInt(): Int {
     // Use a long to avoid rollovers on #ffXXXXXX
     var color = this.substring(1).toLong(16)
@@ -13,14 +11,9 @@ private fun String.toColorInt(): Int {
 const val TEXT_DARK = 1
 const val TEXT_LIGHT = 2
 
-//private val DARK_PRIMARY: @HexColor String = "#D8000000"
-//private val DARK_SECONDARY: @HexColor String = "#89000000"
-//private val LIGHT_PRIMARY: @HexColor String = "#D8FFFFFF"
-//private val LIGHT_SECONDARY: @HexColor String = "#89FFFFFF"
-
-private val RED: @HexColor String = "#F44336"
-private val AMBER: @HexColor String = "#FFC107"
-private val BLUE: @HexColor String = "#2196F3"
+private val RED: String = "#F44336"
+private val AMBER: String = "#FFC107"
+private val BLUE: String = "#2196F3"
 
 
 val AllPartyThemes = mapOf(
