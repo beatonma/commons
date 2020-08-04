@@ -9,8 +9,8 @@ import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
 import org.beatonma.commons.data.core.interfaces.Periodic
 import org.beatonma.commons.data.core.room.entities.election.ApiConstituencyResult
 import org.beatonma.commons.data.core.room.entities.election.ConstituencyResultWithDetails
+import org.beatonma.commons.data.core.room.entities.member.ApiMemberProfile
 import org.beatonma.commons.data.core.room.entities.member.BasicProfileWithParty
-import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 import org.beatonma.commons.network.retrofit.Contract
 import java.time.LocalDate
 
@@ -32,7 +32,7 @@ data class ApiConstituency(
     @field:Json(name = Contract.NAME) override val name: String,
     @field:Json(name = Contract.START) override val start: LocalDate?,
     @field:Json(name = Contract.END) override val end: LocalDate?,
-    @field:Json(name = Contract.MP) val memberProfile: MemberProfile?,
+    @field:Json(name = Contract.MP) val memberProfile: ApiMemberProfile?,
     @field:Json(name = Contract.BOUNDARY) val boundary: ApiConstituencyBoundary?,
     @field:Json(name = Contract.RESULTS) val results: List<ApiConstituencyResult>,
 ): Parliamentdotuk,
@@ -48,6 +48,16 @@ data class ApiConstituency(
     }
 }
 
+data class ApiConstituencyMinimal(
+    @field:Json(name = Contract.PARLIAMENTDOTUK) val parliamentdotuk: ParliamentID,
+    @field:Json(name = Contract.NAME) val name: String,
+) {
+    fun toConstituency(): Constituency = Constituency(
+        parliamentdotuk = parliamentdotuk,
+        name = name
+    )
+}
+
 
 data class ConstituencyWithBoundary(
     @Embedded
@@ -59,8 +69,8 @@ data class ConstituencyWithBoundary(
 
 
 data class CompleteConstituency(
-    val constituency: Constituency? = null,
-    val member: BasicProfileWithParty? = null,
-    val electionResults: List<ConstituencyResultWithDetails>? = null,
-    val boundary: ConstituencyBoundary? = null,
+    var constituency: Constituency? = null,
+    var member: BasicProfileWithParty? = null,
+    var electionResults: List<ConstituencyResultWithDetails>? = null,
+    var boundary: ConstituencyBoundary? = null,
 )
