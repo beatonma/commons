@@ -5,6 +5,9 @@
     <color name="Tabletop">#111111</color>
     <color name="CardHeader">#424242</color>
 
+    <color name="TextOpaque">@color/White</color>
+    <color name="TextOpaqueInverted">@color/Black</color>
+
     <color name="TextPrimary">@color/TextPrimaryLight</color>
     <color name="TextSecondary">@color/TextSecondaryLight</color>
     <color name="TextPrimaryInverted">@color/TextPrimaryDark</color>
@@ -14,4 +17,13 @@
 
     <color name="Ripple">#10ffffff</color>
     <color name="TextField">@color/Ripple</color>
+    <color name="Divider">@color/TextTertiary</color>
+
+    <color name="Primary">#444444</color>
+    <color name="PrimaryDark">#333333</color>
+    <!--    <color name="Accent">#2680D0</color>-->
+    <color name="Accent">#96DCBE</color>
+
+    <!--    <color name="SearchBar">#2d4051</color>-->
+    <color name="SearchBar">#373151</color>
 </resources>

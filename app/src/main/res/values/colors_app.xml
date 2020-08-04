@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="Primary">#444444</color>
-    <color name="PrimaryDark">#333333</color>
-    <color name="Accent">#2680D0</color>
-
-    <color name="SearchBar">#2d4051</color>
-
     <color name="Positive">@color/Green500</color>
     <color name="Negative">@color/Red500</color>
 
