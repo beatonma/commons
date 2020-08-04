@@ -14,7 +14,10 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.LayoutRes
 import androidx.core.view.iterator
+import org.beatonma.commons.kotlin.data.Dimensions
 import org.beatonma.commons.kotlin.data.asStateList
+
+private const val TAG = "Views.ext"
 
 val View.ratio: Float
     get() = width.toFloat() / height.toFloat()
@@ -22,6 +25,11 @@ val View.widthF: Float
     get() = width.toFloat()
 val View.heightF: Float
     get() = height.toFloat()
+
+fun View.size(out: Dimensions = Dimensions()): Dimensions {
+    out.set(width, height)
+    return out
+}
 
 fun View.center(outPoint: Point? = null): Point {
     return (outPoint ?: Point()).apply {
@@ -40,6 +48,24 @@ fun View.boundsF(outRect: RectF = RectF()): RectF {
     return outRect
 }
 
+fun ViewGroup.getRelativeBoundsOfChild(child: View, outRect: Rect = Rect()): Rect {
+    child.getDrawingRect(outRect)
+    offsetDescendantRectToMyCoords(child, outRect)
+    return outRect
+}
+
+fun View.boundsRelativeToParent(outRect: Rect = Rect()): Rect {
+    val parent = parent as? ViewGroup
+    if (parent == null) {
+        Log.w(TAG, "boundsRelativeToParent failed: Parent could not be cast to ViewGroup")
+        return outRect
+    }
+
+    getDrawingRect(outRect)
+    parent.offsetDescendantRectToMyCoords(this, outRect)
+    return outRect
+}
+
 fun View.show() {
     visibility = View.VISIBLE
 }
@@ -54,6 +80,22 @@ fun showViews(vararg views: View) {
 
 fun hideViews(vararg views: View) {
     views.forEach { it.visibility = View.GONE }
+}
+
+fun showViews(showIf: Boolean, vararg views: View) {
+    views.forEach { view ->
+        view.visibility = when {
+            showIf -> View.VISIBLE
+            else -> View.GONE
+        }
+    }
+}
+
+fun setDependantVisibility(parent: View, vararg dependants: View) {
+    val visibility = parent.visibility
+    dependants.forEach { dependant ->
+        dependant.visibility = visibility
+    }
 }
 
 fun View.toggleVisibility() {
@@ -111,6 +153,21 @@ fun bindText(vararg pairs: Pair<TextView, CharSequence?>, textColor: Int? = null
     }
 }
 
+/**
+ * Bind text and show the view only if [ifNotNull] is not null.
+ */
+inline fun <T> bindText(view: TextView, ifNotNull: T?, binder: (T) -> String) {
+    if (ifNotNull == null) {
+        view.text = null
+        view.hide()
+        return
+    }
+    view.text = binder.invoke(ifNotNull)
+    view.show()
+}
+
+
+
 fun bindContentDescription(vararg pairs: Pair<View, CharSequence?>, tooltip: Boolean = true) {
     pairs.forEach { (view, text) ->
         view.contentDescription = text
@@ -139,6 +196,30 @@ fun Menu.applyTint(color: Int) {
 fun ViewGroup.inflate(@LayoutRes layoutId: Int, attachToRoot: Boolean = false): View =
     LayoutInflater.from(context)
         .inflate(layoutId, this, attachToRoot)
+
+
+typealias MeasureMode = Int
+typealias MeasureSize = Int
+fun measureSpec(measureSpec: Int) = MSpec(measureSpec)
+data class MSpec internal constructor(val mode: MeasureMode, val size: MeasureSize) {
+    constructor(measureSpec: Int): this(
+        View.MeasureSpec.getMode(measureSpec),
+        View.MeasureSpec.getSize(measureSpec)
+    )
+}
+
+inline fun View.withMeasureSpec(
+    widthMeasureSpec: Int,
+    heightMeasureSpec: Int,
+    crossinline block: (widthSize: MeasureSize, widthMode: MeasureMode, heightSize: MeasureSize, heightMode: MeasureMode) -> Unit,
+) {
+    val widthMode = View.MeasureSpec.getMode(widthMeasureSpec)
+    val widthSize = View.MeasureSpec.getSize(widthMeasureSpec)
+    val heightMode = View.MeasureSpec.getMode(heightMeasureSpec)
+    val heightSize = View.MeasureSpec.getSize(heightMeasureSpec)
+
+    block(widthMode, widthSize, heightMode, heightSize)
+}
 
 
 /**
