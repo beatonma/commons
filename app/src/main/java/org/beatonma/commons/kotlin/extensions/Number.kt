@@ -10,5 +10,5 @@ object CommonsNumberFormat {
     }
 }
 
-fun Int.formatted(): String = CommonsNumberFormat.numberFormatter.format(this)
-fun Float.formatPercent(): String = CommonsNumberFormat.percentFormatter.format(this)
+fun Int?.formatted(default: Int = 0): String = CommonsNumberFormat.numberFormatter.format(this ?: default)
+fun Float?.formatPercent(default: Float = 0F): String = CommonsNumberFormat.percentFormatter.format(this ?: default)
