@@ -14,31 +14,16 @@ import javax.inject.Singleton
 class SocialRepository @Inject constructor(
     private val remoteSource: CommonsRemoteDataSource,
 ) {
-    private fun observeSocialContent(
+    private fun getSocialContent(
         targetType: SocialTargetType,
         parliamentdotuk: ParliamentID,
         snommocToken: SnommocToken?
-    ) =
-        resultLiveDataNoCache { remoteSource.getSocialForTarget(targetType, parliamentdotuk, snommocToken) }
+    ) = resultFlowNoCache {
+            remoteSource.getSocialForTarget(targetType, parliamentdotuk, snommocToken)
+        }
 
-    fun observeSocialContent(target: Sociable, snommocToken: SnommocToken?) =
-        observeSocialContent(target.getSocialContentTarget(), target.parliamentdotuk, snommocToken)
-
-    fun observeSocialContent(target: SocialTarget, snommocToken: SnommocToken?) =
-        observeSocialContent(target.targetType, target.parliamentdotuk, snommocToken)
-
-    fun observeMemberContent(parliamentdotuk: ParliamentID, snommocToken: SnommocToken?) =
-        observeSocialContent(SocialTargetType.member, parliamentdotuk, snommocToken)
-
-    fun observeBillContent(parliamentdotuk: ParliamentID, snommocToken: SnommocToken?) =
-        observeSocialContent(SocialTargetType.bill, parliamentdotuk, snommocToken)
-
-    fun observeCommonsDivisionContent(parliamentdotuk: ParliamentID, snommocToken: SnommocToken?) =
-        observeSocialContent(SocialTargetType.division_commons, parliamentdotuk, snommocToken)
-
-    fun observeLordsDivisionContent(parliamentdotuk: ParliamentID, snommocToken: SnommocToken?) =
-        observeSocialContent(SocialTargetType.division_lords, parliamentdotuk, snommocToken)
-
+    fun getSocialContent(target: SocialTarget, snommocToken: SnommocToken?) =
+        getSocialContent(target.targetType, target.parliamentdotuk, snommocToken)
 
     suspend fun postComment(comment: CreatedComment) = remoteSource.postComment(comment)
     suspend fun postVote(vote: CreatedVote) = remoteSource.postVote(vote)

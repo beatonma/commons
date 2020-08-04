@@ -1,9 +1,7 @@
 package org.beatonma.commons.data.core.repository
 
 import org.beatonma.commons.data.CommonsRemoteDataSource
-import org.beatonma.commons.data.LiveDataIoResultList
-import org.beatonma.commons.data.core.MessageOfTheDay
-import org.beatonma.commons.data.resultLiveDataNoCache
+import org.beatonma.commons.data.resultFlowNoCache
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -11,6 +9,5 @@ import javax.inject.Singleton
 class SnommocRepository @Inject constructor(
     private val remoteSource: CommonsRemoteDataSource,
 ) {
-    fun observeMotd(): LiveDataIoResultList<MessageOfTheDay> =
-        resultLiveDataNoCache { remoteSource.getMessageOfTheDay() }
+    fun getMotd() = resultFlowNoCache { remoteSource.getMessageOfTheDay() }
 }
