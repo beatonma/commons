@@ -42,9 +42,10 @@ android {
             "THEME_TEXT_LIGHT" to TEXT_LIGHT
         ), asBuildConfig = true, asResValue = true)
 
-        manifestPlaceholders = mapOf(
+        manifestPlaceholders.putAll(mapOf(
             "googleMapsApiKey" to LocalConfig.Api.Google.MAPS
-        )
+        ))
+        manifestPlaceholders["googleMapsApiKey"] = LocalConfig.Api.Google.MAPS
 
         // Party colors as @color resources and build config constants
         AllPartyThemes.forEach { (key, theme) ->
@@ -57,7 +58,7 @@ android {
         }
 
         testApplicationId = "org.beatonma.commons.test"
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "org.beatonma.commons.androidTest.HiltTestRunner"
 
         vectorDrawables.useSupportLibrary = true
 
@@ -71,7 +72,6 @@ android {
     }
 
     buildFeatures {
-//        compose = true
         viewBinding = true
     }
     buildTypes {
@@ -121,6 +121,21 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = Versions.COMPOSE
     }
+    packagingOptions {
+        exclude("META-INF/DEPENDENCIES")
+        exclude("META-INF/LICENSE")
+        exclude("META-INF/LICENSE.txt")
+        exclude("META-INF/license.txt")
+        exclude("META-INF/NOTICE")
+        exclude("META-INF/NOTICE.txt")
+        exclude("META-INF/notice.txt")
+        exclude("META-INF/ASL2.0")
+        exclude("META-INF/AL2.0")
+        exclude("META-INF/LGPL2.1")
+        exclude("META-INF/*.kotlin_module")
+        exclude("META-INF/licenses/*")
+        exclude("**/attach_hotspot_windows.dll")
+    }
 }
 
 dependencies {
@@ -133,46 +148,49 @@ dependencies {
     testAnnotationProcessors.forEach { kaptTest(it) }
     arrayOf(
         bmalib("testing"),
-        Dependencies.Test.AndroidX.CORE,
+        Dependencies.Dagger.DAGGER,
+        Dependencies.Kotlin.REFLECT,
+        Dependencies.Kotlin.Coroutines.TEST,
         Dependencies.Test.JUNIT,
         Dependencies.Test.MOCKITO,
-        Dependencies.Kotlin.REFLECT,
         Dependencies.Test.RETROFIT_MOCK,
-        Dependencies.Dagger.DAGGER,
-        Dependencies.Test.OKHTTP_MOCK_SERVER
+        Dependencies.Test.OKHTTP_MOCK_SERVER,
+        Dependencies.Test.AndroidX.CORE
     ).forEach { testImplementation(it) }
 
     // Instrumentation tests
     testAnnotationProcessors.forEach { kaptAndroidTest(it) }
     arrayOf(
         bmalib("testing"),
+        Dependencies.Hilt.TESTING,
+        Dependencies.Kotlin.Coroutines.TEST,
         Dependencies.Test.AndroidX.CORE,
+        Dependencies.Test.AndroidX.LIVEDATA,
         Dependencies.Test.AndroidX.RULES,
         Dependencies.Test.AndroidX.RUNNER,
-        Dependencies.Test.AndroidX.Espresso.CORE,
         Dependencies.Test.AndroidX.Espresso.CONTRIB,
-        Dependencies.Test.AndroidX.LIVEDATA
+        Dependencies.Test.AndroidX.Espresso.CORE
     ).forEach { androidTestImplementation(it) }
 
     val kotlin = arrayOf(
         Dependencies.Kotlin.STDLIB,
-        Dependencies.Kotlin.Coroutines.CORE,
         Dependencies.Kotlin.Coroutines.ANDROID,
+        Dependencies.Kotlin.Coroutines.CORE,
         Dependencies.Kotlin.Coroutines.PLAY
     )
 
     val annotationProcessors = arrayOf(
-        Dependencies.Dagger.COMPILER,
         Dependencies.Dagger.ANNOTATION_PROCESSOR,
-        Dependencies.Room.AP,
+        Dependencies.Dagger.COMPILER,
         Dependencies.Glide.COMPILER,
+        Dependencies.Hilt.AX_KAPT,
         Dependencies.Hilt.KAPT,
-        Dependencies.Hilt.AX_KAPT
+        Dependencies.Room.AP
     )
 
     val dagger = arrayOf(
-        Dependencies.Dagger.DAGGER,
         Dependencies.Dagger.ANDROID,
+        Dependencies.Dagger.DAGGER,
         Dependencies.Dagger.SUPPORT
     )
     val hilt = arrayOf(
@@ -182,27 +200,21 @@ dependencies {
     )
 
     val room = arrayOf(
-        Dependencies.Room.RUNTIME,
-        Dependencies.Room.KTX
+        Dependencies.Room.KTX,
+        Dependencies.Room.RUNTIME
     )
 
     val androidx = arrayOf(
         Dependencies.AndroidX.APPCOMPAT,
         Dependencies.AndroidX.CONSTRAINTLAYOUT,
         Dependencies.AndroidX.CORE_KTX,
-        Dependencies.AndroidX.RECYCLERVIEW,
         Dependencies.AndroidX.LIFECYCLE_RUNTIME,
         Dependencies.AndroidX.LIVEDATA_KTX,
-        Dependencies.AndroidX.VIEWMODEL_KTX,
-        Dependencies.AndroidX.NAVIGATION_UI,
         Dependencies.AndroidX.NAVIGATION_FRAGMENT,
+        Dependencies.AndroidX.NAVIGATION_UI,
+        Dependencies.AndroidX.RECYCLERVIEW,
+        Dependencies.AndroidX.VIEWMODEL_KTX,
         Dependencies.AndroidX.WORK
-    )
-
-    val compose = arrayOf(
-        Dependencies.AndroidX.COMPOSE_LAYOUT,
-        Dependencies.AndroidX.COMPOSE_TOOLING,
-        Dependencies.AndroidX.COMPOSE_MATERIAL
     )
 
     val retrofit = arrayOf(
@@ -225,24 +237,17 @@ dependencies {
 
     val implementations = arrayOf(
         androidx,
-//        compose,
         dagger,
         hilt,
+        glide,
         google,
         kotlin,
-        glide,
         retrofit,
         room
     ).flatten()
 
     annotationProcessors.forEach { kapt(it) }
     implementations.forEach { implementation(it) }
-
-    val bmalib = arrayOf(
-        "graphic-core",
-        "paintedview"
-    )
-    bmalib.forEach { implementation(bmalib(it)) }
 
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
 }
@@ -262,10 +267,8 @@ fun DefaultConfig.injectPartyTheme(name: String, theme: PartyColors) {
     buildConfigField("int",
         "COLOR_PARTY_${name}_ACCENT_TEXT".toUpperCase(),
         "${theme.accentText}")
-    resValue("color", "party_${name}_primary", theme.primary.toString())
-    resValue("color", "party_${name}_accent", theme.accent.toString())
-//    resValue("int", "party_${name}_primary_text", theme.primaryText.toString())
-//    resValue("int", "party_${name}_accent_text", theme.accentText.toString())
+    resValue("color", "party_${name}_primary", theme.primary)
+    resValue("color", "party_${name}_accent", theme.accent)
 }
 
 fun DefaultConfig.injectStrings(mapping: Map<String, String>, asBuildConfig: Boolean, asResValue: Boolean) {
