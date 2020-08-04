@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="stacked_bar_chart_height">12dp</dimen>
+    <dimen name="stacked_bar_chart_height">16dp</dimen>
 </resources>
