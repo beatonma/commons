@@ -23,7 +23,7 @@
 
     <TextView
         android:id="@+id/member_party"
-        tools:text="@tools:sample/cities"
+        tools:text="@sample/parties.json/data/name"
         style="@style/Text.Secondary.Condensed"/>
 
     <androidx.constraintlayout.helper.widget.Flow
