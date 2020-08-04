@@ -42,6 +42,9 @@ object Contract {
     const val CENTER_LATITUDE = "center_latitude"
     const val CENTER_LONGITUDE = "center_longitude"
 
+    const val CONSTITUENCY_ID = "constituency_id"
+    const val ELECTION_ID = "election_id"
+
 
     // Divisions
     const val DIVISION = "division"
@@ -137,5 +140,6 @@ object Contract {
     const val TEXT = "text"
     const val CREATED_ON = "created_on"
     const val MODIFIED_ON = "modified_on"
+    const val TARGET_TYPE = "target_type"
 }
 
