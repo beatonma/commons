@@ -4,6 +4,18 @@
 
     </style>
 
+    <style name="Commons.Flow.Horizontal">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="flow_horizontalBias">0</item>
+        <item name="flow_verticalBias">0</item>
+        <item name="flow_verticalAlign">center</item>
+        <item name="flow_horizontalGap">@dimen/flow_gap_horizontal</item>
+        <item name="flow_verticalGap">@dimen/flow_gap_vertical</item>
+        <item name="flow_horizontalStyle">packed</item>
+    </style>
+
     <style name="Commons.Flow.Vertical">
         <item name="android:layout_height">0dp</item>
         <item name="android:layout_width">0dp</item>
