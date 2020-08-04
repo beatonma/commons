@@ -22,24 +22,24 @@ fun Any?.log(message: String, loglevel: Char = 'd', tag: String = autotag) {
  * If the resulting string is very long it will be broken into chunks.
  * Should only be used for debugging purposes
  */
-fun <T: Any?> T.dump(message: String = ""): T {
+fun <T: Any?> T.dump(message: String = "", maxLength: Int = -1): T {
     when (this) {
         is Collection<*> -> {
             if (message.isNotEmpty()) println("$message [$size]:")
-            forEach { item -> item.dump("  ") }
+            forEach { item -> item.dump("  ", maxLength) }
         }
 
         is Array<*> -> {
             if (message.isNotEmpty()) println("$message [$size]:")
-            forEach { item -> item.dump("  ") }
+            forEach { item -> item.dump("  ", maxLength) }
         }
 
         is IntArray -> {
-            println("${if (message.isNotEmpty()) "$message " else ""}[$size]: ${ joinToString(separator = ", ") { "$it" } }")
+            println("${if (message.isNotEmpty()) "$message " else ""}[$size]: ${ joinToString(separator = ", ") { "$it" } }".clipToLength(maxLength))
         }
 
         else -> {
-            val str = toString()
+            val str = toString().clipToLength(maxLength)
             val step = 2048
             val length = str.length
             var pos = 0
