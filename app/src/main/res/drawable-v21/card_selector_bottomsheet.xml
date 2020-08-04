@@ -7,8 +7,8 @@
       <item>
         <shape>
           <corners
-            android:topLeftRadius="@dimen/card_corner_radius"
-            android:topRightRadius="@dimen/card_corner_radius"/>
+            android:topLeftRadius="@dimen/card_bottomsheet_corner_radius"
+            android:topRightRadius="@dimen/card_bottomsheet_corner_radius"/>
           <solid
             android:color="@color/Card"/>
         </shape>
