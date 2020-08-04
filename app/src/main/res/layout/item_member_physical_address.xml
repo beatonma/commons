@@ -36,10 +36,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:id="@+id/actions"/>
 
-    <View
-        android:id="@+id/separator"
-        style="@style/Separator.Horizontal"/>
-
     <androidx.constraintlayout.helper.widget.Flow
         android:id="@+id/flow_text"
         android:layout_width="0dp"
@@ -58,7 +54,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:constraint_referenced_ids="flow_text,actions,separator"
+        app:constraint_referenced_ids="flow_text,actions"
         app:flow_firstHorizontalBias="0"
         app:flow_verticalGap="@dimen/whitespace_section"
         app:layout_constraintTop_toTopOf="parent"

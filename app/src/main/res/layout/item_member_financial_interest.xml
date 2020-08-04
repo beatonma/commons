@@ -12,6 +12,7 @@
         android:layout_width="0dp"
         android:id="@+id/description"
         style="@style/Text.Primary.H2"
+        android:layout_marginTop="0dp"
         tools:text="description"
         />
 
@@ -29,10 +30,6 @@
         style="@style/Text.Primary"
         />
 
-    <View
-        android:id="@+id/separator"
-        style="@style/Separator.Horizontal"/>
-
     <androidx.constraintlayout.helper.widget.Flow
         android:id="@+id/flow_text"
         android:layout_width="0dp"
@@ -43,20 +40,9 @@
         app:flow_horizontalAlign="start"
         app:flow_verticalGap="@dimen/text_line_spacing"
         app:flow_wrapMode="none"
-        />
-
-
-    <androidx.constraintlayout.helper.widget.Flow
-        android:id="@+id/flow"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:constraint_referenced_ids="flow_text,separator"
-        app:flow_firstHorizontalBias="0"
-        app:flow_verticalGap="@dimen/whitespace_section"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
