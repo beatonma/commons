@@ -5,7 +5,6 @@ plugins {
 }
 
 buildscript {
-    var kotlin_version: String by extra
     repositories {
         google()
         jcenter()
@@ -15,7 +14,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:4.0.0")
+        classpath("com.android.tools.build:gradle:4.1.0-beta05")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.KOTLIN}")
         classpath("com.github.ben-manes:gradle-versions-plugin:0.28.0")
         classpath("com.google.dagger:hilt-android-gradle-plugin:${Versions.HILT}")
@@ -29,14 +28,6 @@ allprojects {
         google()
         jcenter()
         maven("https://dl.bintray.com/kotlin/kotlin-eap")
-//        maven(url = "http://localhost:8081/artifactory/gradle-release") {
-//            val artifactory_username: String by project
-//            val artifactory_password: String by project
-//            credentials {
-//                username = artifactory_username
-//                password = artifactory_password
-//            }
-//        }
     }
 }
 
