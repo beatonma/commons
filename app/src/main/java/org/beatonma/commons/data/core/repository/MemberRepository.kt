@@ -13,16 +13,19 @@ import org.beatonma.commons.data.core.CompleteMember
 import org.beatonma.commons.data.core.room.dao.MemberDao
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import org.beatonma.commons.data.core.room.entities.member.*
-import org.beatonma.commons.kotlin.extensions.dump
 import javax.inject.Inject
 import javax.inject.Singleton
 
+interface MemberRepository {
+    fun getMember(parliamentdotuk: ParliamentID): FlowIoResult<CompleteMember>
+}
+
 @Singleton
-class MemberRepository @Inject constructor(
+class MemberRepositoryImpl @Inject constructor(
     private val remoteSource: CommonsRemoteDataSource,
     private val memberDao: MemberDao,
-) {
-    fun getMember(parliamentdotuk: ParliamentID): FlowIoResult<CompleteMember> = cachedResultFlow(
+): MemberRepository {
+    override fun getMember(parliamentdotuk: ParliamentID): FlowIoResult<CompleteMember> = cachedResultFlow(
         databaseQuery = { getCompleteMember(parliamentdotuk) },
         networkCall = { remoteSource.getMember(parliamentdotuk) },
         saveCallResult = { member -> memberDao.insertCompleteMember(parliamentdotuk, member) },
@@ -30,7 +33,7 @@ class MemberRepository @Inject constructor(
     )
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun getCompleteMember(parliamentdotuk: ParliamentID): Flow<CompleteMember> = channelFlow<CompleteMember> {
+    fun getCompleteMember(parliamentdotuk: ParliamentID): Flow<CompleteMember> = channelFlow {
         val builder = CompleteMember()
 
         val profile = memberDao.getMemberProfileTimestampedFlow(parliamentdotuk)
@@ -57,7 +60,6 @@ class MemberRepository @Inject constructor(
         )
 
         mergedFlow.collect { data: Any? ->
-            data.dump("DATA")
             if (data is List<*>) {
                 val first = data.firstOrNull()
 
