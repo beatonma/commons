@@ -7,4 +7,7 @@ import org.beatonma.commons.data.core.room.entities.election.Election
 interface SharedElectionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertElections(elections: List<Election>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertElection(election: Election)
 }
