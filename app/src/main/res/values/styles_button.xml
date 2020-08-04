@@ -5,7 +5,7 @@
     </style>
 
     <style name="Button.Outline" parent="Widget.MaterialComponents.Button.OutlinedButton">
-
+        <item name="android:textColor">?attr/colorAccent</item>
     </style>
 
     <style name="Button.Flat" parent="Widget.MaterialComponents.Button.TextButton.Dialog.Flush">
