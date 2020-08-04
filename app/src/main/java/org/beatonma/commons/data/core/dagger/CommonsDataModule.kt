@@ -9,7 +9,6 @@ import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.beatonma.commons.data.CommonsRemoteDataSource
 import org.beatonma.commons.data.CommonsRemoteDataSourceImpl
-import org.beatonma.commons.data.core.repository.*
 import org.beatonma.commons.data.core.room.COMMONS_DB_FILENAME
 import org.beatonma.commons.data.core.room.CommonsDatabase
 import org.beatonma.commons.data.core.room.dao.*
@@ -36,55 +35,6 @@ class CommonsDataModule {
         COMMONS_DB_FILENAME
     ).fallbackToDestructiveMigration()
         .build()
-
-    @Suppress("UNUSED_PARAMETER")  // context is used to retrieve DAO instances.
-    @Singleton @Provides
-    fun providesMemberRepository(
-        @ApplicationContext context: Context,
-        remoteSource: CommonsRemoteDataSource,
-        memberDao: MemberDao,
-        divisionDao: DivisionDao
-    ): MemberRepository = MemberRepository(remoteSource, memberDao, divisionDao)
-
-    @Suppress("UNUSED_PARAMETER")  // context is used to retrieve DAO instances.
-    @Singleton @Provides
-    fun providesConstituencyRepository(
-        @ApplicationContext context: Context,
-        remoteSource: CommonsRemoteDataSource,
-        constituencyDao: ConstituencyDao,
-        memberDao: MemberDao
-    ): ConstituencyRepository = ConstituencyRepository(remoteSource, constituencyDao, memberDao)
-
-    @Suppress("UNUSED_PARAMETER")  // context is used to retrieve DAO instances.
-    @Singleton @Provides
-    fun providesDivisionRepository(
-        @ApplicationContext context: Context,
-        remoteSource: CommonsRemoteDataSource,
-        divisionDao: DivisionDao,
-    ): DivisionRepository = DivisionRepository(remoteSource, divisionDao)
-
-    @Suppress("UNUSED_PARAMETER")  // context is used to retrieve DAO instances.
-    @Singleton @Provides
-    fun providesBillRepository(
-        @ApplicationContext context: Context,
-        remoteSource: CommonsRemoteDataSource,
-        billDao: BillDao,
-    ): BillRepository = BillRepository(remoteSource, billDao)
-
-    @Suppress("UNUSED_PARAMETER")  // context is used to retrieve DAO instances.
-    @Singleton @Provides
-    fun providesUserRepository(
-        @ApplicationContext context: Context,
-        remoteSource: CommonsRemoteDataSource,
-        userDao: UserDao,
-    ): UserRepository = UserRepository(remoteSource, userDao)
-
-    @Suppress("UNUSED_PARAMETER")  // context is used to retrieve DAO instances.
-    @Singleton @Provides
-    fun providesSocialRepository(
-        @ApplicationContext context: Context,
-        remoteSource: CommonsRemoteDataSource,
-    ): SocialRepository = SocialRepository(remoteSource)
 
     @Singleton @Provides
     fun providesCommonsRemoteDataSource(
