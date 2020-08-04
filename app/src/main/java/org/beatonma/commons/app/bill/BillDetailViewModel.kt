@@ -3,9 +3,13 @@ package org.beatonma.commons.app.bill
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.launch
 import org.beatonma.commons.app.ui.BaseIoAndroidViewModel
+import org.beatonma.commons.data.IoResult
 import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.repository.BillRepository
 import org.beatonma.commons.data.core.room.entities.bill.BillStageWithSittings
@@ -19,10 +23,25 @@ class BillDetailViewModel @ViewModelInject constructor(
     private val repository: BillRepository,
     @ApplicationContext context: Context,
 ) : BaseIoAndroidViewModel<CompleteBill>(context) {
-
+    internal val stagesLiveData: MutableLiveData<List<AnnotatedBillStage>> = MutableLiveData()
+    private val stagesObserver =  { result: IoResult<CompleteBill> ->
+        val bill = result.data
+        if (bill != null) {
+            viewModelScope.launch {
+                val annotated = getAnnotatedStages(result.data)
+                stagesLiveData.postValue(annotated)
+            }
+        }
+    }
 
     fun forBill(parliamentdotuk: ParliamentID) {
         liveData = repository.getBill(parliamentdotuk).asLiveData()
+        liveData.observeForever(stagesObserver)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        liveData.removeObserver(stagesObserver)
     }
 
     /**

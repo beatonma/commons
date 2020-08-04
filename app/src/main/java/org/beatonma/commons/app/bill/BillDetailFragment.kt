@@ -5,14 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.HORIZONTAL
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.beatonma.commons.R
 import org.beatonma.commons.app.social.SocialViewController
 import org.beatonma.commons.app.social.SocialViewHost
@@ -81,16 +76,21 @@ class BillDetailFragment : CommonsFragment(), SocialViewHost {
         binding.sponsorsRecyclerview.setup(sponsorsAdapter, orientation = HORIZONTAL)
 
         viewmodel.liveData.observe(viewLifecycleOwner) { result ->
-            result.data.dump("__UpdateUI__")
-            result.report()
-
-            withNotNull(result.data) { data ->
-                updateUi(data)
-                withNotNull(data.bill) { bill ->
-                    observeSocialContent(bill)
+            result.handle(
+                withData = { data ->
+                    updateUi(data)
+                    withNotNull(data.bill) { bill ->
+                        observeSocialContent(bill)
+                    }
+                },
+                noData = {
+                    updateSponsorsUi(listOf())
+                    updateStagesUi(listOf())
                 }
-            }
+            )
         }
+
+        viewmodel.stagesLiveData.observe(viewLifecycleOwner) { updateStagesUi(it) }
     }
 
     private fun updateUi(bill: CompleteBill) {
@@ -107,15 +107,11 @@ class BillDetailFragment : CommonsFragment(), SocialViewHost {
             )
         }
 
-        diffAdapterItems(sponsorsAdapter, bill.sponsors)
-
-        lifecycleScope.launch {
-            val annotated = viewmodel.getAnnotatedStages(bill)
-            withContext(Dispatchers.Main) {
-                diffAdapterItems(stagesAdapter, annotated)
-            }
-        }
+        updateSponsorsUi(bill.sponsors ?: listOf())
     }
+
+    private fun updateSponsorsUi(sponsors: List<BillSponsorWithParty>?) = sponsorsAdapter.diffItems(sponsors)
+    private fun updateStagesUi(stages: List<AnnotatedBillStage>?) = stagesAdapter.diffItems(stages)
 
     private inner class BillStagesAdapter : TypedAdapter<AnnotatedBillStage>(), StickyHeaderAdapter {
 
