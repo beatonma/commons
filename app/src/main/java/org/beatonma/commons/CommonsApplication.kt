@@ -5,15 +5,10 @@ import android.app.Application
 import android.content.Context
 import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.fragment.app.Fragment
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.lifecycle.AndroidViewModel
-import androidx.work.Constraints
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
 import dagger.hilt.android.HiltAndroidApp
 import org.beatonma.commons.app.SystemTheme
-import org.beatonma.commons.data.cleanup.CommonsCleanupWorker
 import org.beatonma.commons.kotlin.extensions.getPrefs
 import javax.inject.Inject
 import android.content.res.Configuration as ResConfiguration
@@ -22,8 +17,7 @@ import androidx.work.Configuration as WorkConfiguration
 private const val TAG = "CommonsApp"
 
 @HiltAndroidApp
-class CommonsApplication : Application(), WorkConfiguration.Provider {
-
+open class CommonsApplication: Application(), WorkConfiguration.Provider {
     @Inject lateinit var workerFactory: HiltWorkerFactory
 
     override fun onCreate() {
@@ -43,34 +37,26 @@ class CommonsApplication : Application(), WorkConfiguration.Provider {
         }
     }
 
-    fun isNightMode(): Boolean {
-        val currentNightMode = resources.configuration.uiMode and ResConfiguration.UI_MODE_NIGHT_MASK
-        return when (currentNightMode) {
-            ResConfiguration.UI_MODE_NIGHT_YES -> true
-            ResConfiguration.UI_MODE_NIGHT_NO -> false
-            else -> false
-        }
-    }
-
     fun scheduleDatabaseCleanup() {
-        Log.d(TAG, "Scheduling database cleanup with WorkManager")
-
-        WorkManager.getInstance(this)
-            .enqueue(
-                OneTimeWorkRequestBuilder<CommonsCleanupWorker>()
-                    .setConstraints(
-                        Constraints.Builder()
-                            .setRequiresBatteryNotLow(true)
-                            .build()
-                    )
-                    .build()
-            )
+        Log.w(TAG, "Database cleanup is disabled!")
+//        Log.d(TAG, "Scheduling database cleanup with WorkManager")
+//
+//        WorkManager.getInstance(this)
+//            .enqueue(
+//                OneTimeWorkRequestBuilder<CommonsCleanupWorker>()
+//                    .setConstraints(
+//                        Constraints.Builder()
+//                            .setRequiresBatteryNotLow(true)
+//                            .build()
+//                    )
+//                    .build()
+//            )
     }
 
     override fun getWorkManagerConfiguration() =
-        WorkConfiguration.Builder()
-            .setWorkerFactory(workerFactory)
-            .build()
+            WorkConfiguration.Builder()
+                .setWorkerFactory(workerFactory)
+                .build()
 }
 
 val Activity.commonsApp: CommonsApplication
@@ -79,13 +65,17 @@ val Activity.commonsApp: CommonsApplication
 val Context.commonsApp: CommonsApplication
     get() = applicationContext as CommonsApplication
 
-val Fragment.commonsApp: CommonsApplication?
-    get() = context?.commonsApp
+val Context.app: Application
+    get() = applicationContext as Application
 
-fun Context.isNightMode() = commonsApp.isNightMode()
+fun Context.isNightMode(): Boolean {
+    val currentNightMode = resources.configuration.uiMode and ResConfiguration.UI_MODE_NIGHT_MASK
+    return when (currentNightMode) {
+        ResConfiguration.UI_MODE_NIGHT_YES -> true
+        ResConfiguration.UI_MODE_NIGHT_NO -> false
+        else -> false
+    }
+}
 
 val AndroidViewModel.context: Context
     get() = getApplication()
-
-val AndroidViewModel.commonsApp: CommonsApplication
-    get() = getApplication() as CommonsApplication
