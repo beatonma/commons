@@ -38,9 +38,11 @@ class PhysicalAddressAdapter: ThemedCollapsibleAdapter<PhysicalAddress>() {
                     )
                 }
 
-                adapter.items = listOfNotNull(
-                    if (item.phone != null) ChipData.forPhoneNumber(context, item.phone) else null,
-                    if (item.email != null) ChipData.forEmail(context, item.email) else null
+                adapter.diffSync(
+                    listOfNotNull(
+                        if (item.phone != null) ChipData.forPhoneNumber(context, item.phone) else null,
+                        if (item.email != null) ChipData.forEmail(context, item.email) else null
+                    )
                 )
             }
         }
