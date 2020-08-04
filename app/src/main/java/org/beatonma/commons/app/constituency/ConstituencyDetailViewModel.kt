@@ -2,10 +2,7 @@ package org.beatonma.commons.app.constituency
 
 import android.content.Context
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MapStyleOptions
@@ -13,9 +10,9 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.beatonma.commons.R
+import org.beatonma.commons.app
 import org.beatonma.commons.app.ui.colors.PartyColors
 import org.beatonma.commons.app.ui.colors.getTheme
-import org.beatonma.commons.commonsApp
 import org.beatonma.commons.context
 import org.beatonma.commons.data.IoResultObserver
 import org.beatonma.commons.data.LiveDataIoResult
@@ -39,7 +36,7 @@ private const val MAP_OUTLINE_WIDTH_DP = 2F
 class ConstituencyDetailViewModel @ViewModelInject constructor(
     private val repository: ConstituencyRepository,
     @ApplicationContext application: Context,
-): AndroidViewModel(application.commonsApp) {
+): AndroidViewModel(application.app) {
 
     private lateinit var constituencyLiveData: LiveDataIoResult<CompleteConstituency>
     private val geometryLiveData: MutableLiveData<Geometry> = MutableLiveData()
@@ -58,7 +55,7 @@ class ConstituencyDetailViewModel @ViewModelInject constructor(
 
 
     fun forConstituency(parliamentdotuk: ParliamentID) {
-        constituencyLiveData = repository.observeConstituency(parliamentdotuk)
+        constituencyLiveData = repository.getConstituency(parliamentdotuk).asLiveData()
         constituencyLiveData.observeForever(geometryObserver)
 
         liveData.apply {

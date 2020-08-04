@@ -2,6 +2,7 @@ package org.beatonma.commons.app.constituency
 
 import android.content.Context
 import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.asLiveData
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.beatonma.commons.app.ui.BaseIoAndroidViewModel
 import org.beatonma.commons.context
@@ -19,7 +20,7 @@ class ConstituencyElectionResultsViewModel @ViewModelInject constructor(
 ): BaseIoAndroidViewModel<ConstituencyElectionDetailsWithExtras>(context) {
 
     fun forConstituencyInElection(constituencyId: ParliamentID, electionId: ParliamentID) {
-        liveData = repository.observeConstituencyResultsForElection(constituencyId, electionId)
+        liveData = repository.getConstituencyResultsForElection(constituencyId, electionId).asLiveData()
     }
 
     private fun getPercentage(value: Int, outOf: Int): Float =

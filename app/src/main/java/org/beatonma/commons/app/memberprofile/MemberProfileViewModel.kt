@@ -3,19 +3,18 @@ package org.beatonma.commons.app.memberprofile
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.asLiveData
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.Snippet
 import org.beatonma.commons.app.ui.SnippetGeneratorAndroidViewModel
 import org.beatonma.commons.app.ui.data.WeblinkData
 import org.beatonma.commons.app.ui.toSnippets
-import org.beatonma.commons.data.LiveDataIoResultList
 import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.CompleteMember
 import org.beatonma.commons.data.core.interfaces.Temporal
 import org.beatonma.commons.data.core.interfaces.compressConsecutiveItems
 import org.beatonma.commons.data.core.repository.MemberRepository
-import org.beatonma.commons.data.core.room.entities.division.VoteWithDivision
 import org.beatonma.commons.data.core.room.entities.member.*
 import org.beatonma.commons.kotlin.extensions.*
 
@@ -27,23 +26,20 @@ class MemberProfileViewModel
     @ApplicationContext context: Context,
 ) : SnippetGeneratorAndroidViewModel<CompleteMember>(context) {
 
-    lateinit var memberVoteLiveData: LiveDataIoResultList<VoteWithDivision>
-
     fun forMember(parliamentdotuk: ParliamentID) {
-        liveData = repository.observeMember(parliamentdotuk)
-        memberVoteLiveData = repository.observeCommonsVotesForMember(parliamentdotuk)
+        liveData = repository.getMember(parliamentdotuk).asLiveData()
         observe()
     }
 
-    override suspend fun generateSnippets(data: CompleteMember): List<Snippet> = listOfNotNull(
-        *profileSnippets(data.profile),
-        *webAddressSnippets(data.weblinks),
-        *postSnippets(data.posts),
-        *committeeMembershipSnippets(data.committees),
-        *houseMembershipSnippets(data.houses),
-        *financialInterestSnippets(data.financialInterests),
-        *experienceSnippets(data.experiences),
-        *topicOfInterestSnippets(data.topicsOfInterest)
+    override suspend fun generateSnippets(data: CompleteMember): List<Snippet> = listOfNotNull<Snippet>(
+//        *profileSnippets(data.profile),
+//        *webAddressSnippets(data.weblinks),
+//        *postSnippets(data.posts),
+//        *committeeMembershipSnippets(data.committees),
+//        *houseMembershipSnippets(data.houses),
+//        *financialInterestSnippets(data.financialInterests),
+//        *experienceSnippets(data.experiences),
+//        *topicOfInterestSnippets(data.topicsOfInterest)
     ).shuffled()
 
     private fun profileSnippets(profile: MemberProfile?): Array<Snippet> {
