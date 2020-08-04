@@ -55,16 +55,18 @@
 
         <item name="android:fitsSystemWindows">false</item>
         <item name="android:windowBackground">@color/Tabletop</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">false</item>
+        <item name="android:statusBarColor">?attr/colorPrimaryDark</item>
+        <item name="android:navigationBarColor">@color/Tabletop</item>
 
         <item name="android:editTextColor">@color/TextPrimary</item>
         <item name="android:textColorHint">@color/TextSecondary</item>
 
         <item name="android:popupTheme">@style/Commons.Popup</item>
         <item name="extendedFloatingActionButtonStyle">@style/Commons.Fab</item>
+        <item name="android:buttonStyle">@style/Button.Outline</item>
         <item name="buttonStyle">@style/Button.Outline</item>
-        <item name="android:textAppearance">@style/Text.Primary</item>
+        <item name="materialButtonStyle">@style/Button.Outline</item>
     </style>
 
     <style name="Text.Primary.Outline">
@@ -78,5 +80,11 @@
         <item name="android:background">@drawable/round_selector</item>
         <item name="android:padding">8dp</item>
         <item name="android:tint">@color/TextSecondary</item>
+    </style>
+
+    <!-- Apply to ShapeableImageView -->
+    <style name="RoundShape" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
     </style>
 </resources>
