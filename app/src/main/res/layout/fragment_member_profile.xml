@@ -10,24 +10,6 @@
     app:layoutDescription="@xml/fragment_member_profile_scene"
     >
 
-    <androidx.constraintlayout.widget.Guideline
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/inset_start"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="@dimen/whitespace_edge"
-        />
-    <androidx.constraintlayout.widget.Guideline
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/inset_end"
-        android:orientation="vertical"
-        app:layout_constraintGuide_end="@dimen/whitespace_edge"
-        />
-
-    <!--    app:layoutDescription="@xml/socialhost_motion_scene"-->
-    <!--    app:layoutDescription="@xml/fragment_member_profile_scene"-->
-
     <ImageView
         android:id="@+id/portrait"
         android:layout_width="0dp"
@@ -75,7 +57,7 @@
         tools:background="@color/party_accent_green"
         />
 
-    <androidx.recyclerview.widget.RecyclerView
+    <org.beatonma.commons.app.ui.views.NestedParentRecyclerView
         android:id="@+id/recyclerview"
         app:layout_constraintTop_toBottomOf="@+id/accent"
         app:layout_constraintStart_toStartOf="parent"
