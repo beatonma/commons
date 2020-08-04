@@ -116,8 +116,8 @@ data class ConstituencyElectionDetailsWithCandidates(
 
 
 data class ConstituencyElectionDetailsWithExtras(
-    val details: ConstituencyElectionDetails? = null,
-    val candidates: List<ConstituencyCandidate>? = null,
-    val election: Election? = null,
-    val constituency: Constituency? = null,
+    var details: ConstituencyElectionDetails? = null,
+    var candidates: List<ConstituencyCandidate>? = null,
+    var election: Election? = null,
+    var constituency: Constituency? = null,
 )
