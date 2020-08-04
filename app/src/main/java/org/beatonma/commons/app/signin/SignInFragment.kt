@@ -7,24 +7,22 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.SignInButton
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
-import org.beatonma.commons.app.ui.CommonsFragment
+import org.beatonma.commons.R
 import org.beatonma.commons.data.core.repository.UserAccount
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.databinding.FragmentSigninBinding
-import org.beatonma.commons.kotlin.extensions.*
-import javax.inject.Inject
+import org.beatonma.commons.kotlin.extensions.bindText
+import org.beatonma.commons.kotlin.extensions.load
+import org.beatonma.commons.kotlin.extensions.snackbar
 
 private const val RC_GOOGLE_SIGNIN = 9913
 
 @AndroidEntryPoint
-class SignInFragment : CommonsFragment() {
+class SignInFragment : BottomSheetDialogFragment() {
     private lateinit var binding: FragmentSigninBinding
-
-    @Inject
-    lateinit var googleSignInClient: GoogleSignInClient
 
     private val viewmodel: SignInViewModel by viewModels()
 
@@ -70,11 +68,11 @@ class SignInFragment : CommonsFragment() {
     }
 
     private fun googleSignIn() {
-        startActivityForResult(googleSignInClient.signInIntent, RC_GOOGLE_SIGNIN)
+        startActivityForResult(viewmodel.signInIntent, RC_GOOGLE_SIGNIN)
     }
 
     private fun googleSignOut() {
-        googleSignInClient.signOut().addOnCompleteListener {
+        viewmodel.signOut().addOnCompleteListener {
             updateUI(null)
             snackbar("Signed out!")
         }
@@ -98,22 +96,21 @@ class SignInFragment : CommonsFragment() {
     }
 
     private fun updateUI(token: UserToken?) {
-        if (token == null) {
-            binding.apply {
-                showViews(rationale, gSignInButton)
-            }
+        val state = when(token) {
+            null -> R.id.state_signed_out
+            else -> R.id.state_signed_in
         }
-        else {
-            binding.apply {
-                hideViews(rationale, gSignInButton)
+        binding.root.transitionToState(state)
 
-                accountName.text = token.name
-                accountUsername.text = token.username
-                accountId.text = token.snommocToken
+        if (token != null) {
+            binding.apply {
+                bindText(
+                    accountName to token.name,
+                    accountUsername to token.username,
+                    accountId to token.snommocToken,
+                )
 
                 accountAvatar.load(token.photoUrl)
-
-                signoutButton.show()
             }
         }
     }
