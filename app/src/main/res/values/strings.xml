@@ -30,7 +30,29 @@
     <string name="constituency_election_turnout" translatable="true">Turnout: %s of %s - %s</string>
     <string name="constituency_candidate_votes" translatable="true">%s - %s</string>
     <string name="constituency_candidate_deposit_info" translatable="true">Candidates who receive less than 5% of the total vote lose their deposit (currently £500)</string>
-<!--    <string name="fraction_percentage">%d / %d (%s)</string>-->
+
+    <!-- House -->
+    <string name="house_of_generic">House of %s</string>
+    <string name="house_of_lords">House of Lords</string>
+    <string name="house_of_commons">House of Commons</string>
+
+    <!-- Divisions -->
+    <string name="division_title" translatable="true">Division results</string>
+    <string name="division_ayes" translatable="true">%d ayes</string>
+    <string name="division_noes" translatable="true">%d noes</string>
+    <string name="division_did_not_vote" translatable="true">%d did not vote</string>
+    <string name="division_abstained" translatable="true">%d abstentions</string>
+
+    <!-- Bills -->
+    <string name="bill_publications_count" translatable="true">%d publications</string>
+    <string name="bill_sponsors_count" translatable="true">%d sponsors</string>
+    <string name="bill_stages_count" translatable="true">%d stages</string>
+    <string name="bill_session" translatable="true">%s</string>
+    <plurals name="bill_sittings">
+        <item quantity="one"></item> <!-- If only one sitting we just show the date it occurred -->
+        <item quantity="other">%d sittings</item>
+    </plurals>
+
 
     <!-- Snippets -->
     <string name="snippet_birth_date" translatable="true">Born %s</string>
@@ -47,9 +69,6 @@
     <string name="snippet_financial_interest" translatable="true">Financial interest: %s</string>
     <string name="snippet_experience" translatable="true">%s @ %s</string>
 
-    <string name="division_ayes" translatable="true">%d ayes</string>
-    <string name="division_noes" translatable="true">%d noes</string>
-
     <!-- Actions -->
     <string name="action_open_url" translatable="true">Open</string>
     <string name="action_open_wifi_settings" translatable="true">Open wifi settings</string>
@@ -61,7 +80,7 @@
 
     <!-- User account sign-in -->
     <string name="account_sign_in" translatable="true">Sign in</string>
-    <string name="account_sigh_out" translatable="true">Sign out</string>
+    <string name="account_sign_out" translatable="true">Sign out</string>
     <string name="account_sign_in_already_signed_in" translatable="true">You are signed in with account \'%s:%s\'</string>
     <string name="account_sign_in_rationale" translatable="true">You need to sign in before you can vote or comment</string>
 
@@ -85,6 +104,7 @@
     <string name="date_present" translatable="true">Present</string>
 
     <!-- Generic -->
+    <string name="dot" translatable="false">&#8226;</string>
     <string name="hyphenated" translatable="false">%s - %s</string>
     <string name="dotted" translatable="false">%s &#183; %s</string>
     <string name="integer" translatable="false">%s</string>
@@ -97,6 +117,7 @@
     <!-- Fragment tags -->
     <string name="fragment_social">fragment_social</string>
     <string name="fragment_search">fragment_search</string>
+    <string name="fragment_signin">fragment_signin</string>
 
     <!-- Transition names -->
     <string name="transition_social" translatable="false">transition_social</string>
