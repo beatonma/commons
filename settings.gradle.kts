@@ -6,8 +6,6 @@ pluginManagement {
     }
 }
 include (
-    ":bmalib:graphic-core",
-    ":bmalib:paintedview",
     ":bmalib:testing"
 )
 include(":app")
