@@ -8,7 +8,7 @@ sealed class IoResult<out T>(
 )
 
 class SuccessResult<T>(data: T, message: String?): IoResult<T>(data, message)
-class NoBodySuccessResult<T>(val responseCode: Int, message: String?): IoResult<T>(null, message) {
+class NoBodySuccessResult(val responseCode: Int, message: String?): IoResult<Nothing>(null, message) {
     override fun toString(): String {
         return "[${this.javaClass.canonicalName}] responseCode=$responseCode"
     }
