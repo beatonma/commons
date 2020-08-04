@@ -5,6 +5,7 @@ import kotlinx.coroutines.Job
 import org.beatonma.commons.app.ui.recyclerview.adapter.AsyncDiffHost
 import org.beatonma.commons.data.IoResult
 import org.beatonma.commons.data.NetworkError
+import org.beatonma.commons.data.SuccessResult
 import org.beatonma.commons.kotlin.extensions.networkErrorSnackbar
 
 abstract class CommonsFragment : Fragment(), AsyncDiffHost {
@@ -12,5 +13,22 @@ abstract class CommonsFragment : Fragment(), AsyncDiffHost {
 
     fun <T> IoResult<T>.report() {
         if (this is NetworkError) networkErrorSnackbar(this)
+    }
+
+    inline fun <T> IoResult<T>.handle(
+        noData: () -> Unit = {},
+        withData: (T) -> Unit
+    ) {
+        when (this) {
+            is NetworkError -> networkErrorSnackbar(this)
+            is SuccessResult -> {
+                if (data != null) {
+                    withData.invoke(data)
+                }
+                else {
+                    noData.invoke()
+                }
+            }
+        }
     }
 }
