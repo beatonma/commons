@@ -12,6 +12,7 @@ import org.beatonma.commons.data.core.interfaces.Named
 import org.beatonma.commons.data.core.interfaces.Periodic
 import org.beatonma.commons.data.core.interfaces.Temporal
 import org.beatonma.commons.data.resolution.description
+import org.beatonma.commons.kotlin.data.Dimensions
 import org.beatonma.commons.kotlin.extensions.*
 import java.time.LocalDate
 import java.time.Period
@@ -43,9 +44,9 @@ class TimelineView @JvmOverloads constructor(
         isNestedScrollingEnabled = true
     }
 
-    override val maxSize: Point
+    override val maxSize: Dimensions
         get() = context.displaySize().apply {
-            y /= 2
+            height /= 2
         }
 
     private val now: LocalDate = LocalDate.now()
@@ -118,7 +119,9 @@ class TimelineView @JvmOverloads constructor(
 
     private fun calculateScrollableWidth(renderData: HistoryRenderData): Int {
         paddingExtraForLabels = 0
-        val minX = renderData.data.minOf { it.getTextStartX(textPaint) }
+        val minX = renderData.data
+            .map { it.getTextStartX(textPaint) }
+            .minByOrNull { it } ?: 0
         if (minX < 0) paddingExtraForLabels = (minX.absoluteValue + labelMargin).toInt()
 
         return xForMonth(renderData.durationMonths + paddingMonths).toInt()
@@ -301,8 +304,8 @@ class TimelineView @JvmOverloads constructor(
         val totalDuration: Long
 
         init {
-            val first = data.minBy { it.start }!!
-            val last = data.maxBy { it.end }!!
+            val first = data.minByOrNull { it.start }!!
+            val last = data.maxByOrNull { it.end }!!
 
             start = first.start
             end = last.end
@@ -352,6 +355,7 @@ class TimelineView @JvmOverloads constructor(
 
 
 internal data class Decade(val year: Int, val inEpoch: Long)
+
 /**
  * Return decades (years where it % 10 == 0) between start and end, for showing helper lines.
  */
