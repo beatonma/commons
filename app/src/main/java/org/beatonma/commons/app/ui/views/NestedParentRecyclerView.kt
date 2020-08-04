@@ -1,6 +1,7 @@
 package org.beatonma.commons.app.ui.views
 
 import android.content.Context
+import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -13,6 +14,9 @@ private const val TAG = "NestedParentRv"
 
 /**
  * RecyclerView that implements NestedScrollingParent
+ * Scrolling child views may scroll in any direction but it is assumed
+ * that this recyclerview only scrolls vertically.
+ *
  *
  * Modified from https://medium.com/widgetlabs-engineering/scrollable-nestedscrollviews-inside-recyclerview-ca65050d828a
  *
@@ -38,74 +42,106 @@ open class NestedParentRecyclerView
         View.SCROLL_AXIS_HORIZONTAL,
     )
 
+    private val scrollIsOngoing: Boolean get() = nestedScrollTarget != null
+
     private var nestedScrollTarget: View? = null
-    private var nestedScrollTargetWasUnableToScroll = false
-    private var skipsTouchInterception = false
+
+    // Flags for tracking state across event callbacks
+    private var preventTouchInterception: Boolean = false
+    private var targetUnableToScroll: Boolean = false
+    private var targetConsumedScroll: Boolean = false
+
+    private val rect: Rect = Rect()
+
 
     private fun directionSupported(axes: Int): Boolean = axes.hasAnyFlag(*scrollDirections)
 
-    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-        val temporarilySkipsInterception = nestedScrollTarget != null
-        if (temporarilySkipsInterception) {
-            // If a descendant view is scrolling we set a flag to temporarily skip our onInterceptTouchEvent implementation
-            skipsTouchInterception = true
-        }
+    /**
+     * super calls [onInterceptTouchEvent], then [onTouchEvent] on child views
+     */
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        // nestedScrollTarget is only set while a scroll is ongoing
+        // We should let the target have first refusal of events
+        preventTouchInterception = scrollIsOngoing
 
-        // First dispatch, potentially skipping our onInterceptTouchEvent
-        var handled = super.dispatchTouchEvent(ev)
+        var handled = super.dispatchTouchEvent(event)
 
-        if (temporarilySkipsInterception) {
-            skipsTouchInterception = false
-
-            // If the first dispatch yielded no result or we noticed that the descendant view is unable to scroll in the
-            // direction the user is scrolling, we dispatch once more but without skipping our onInterceptTouchEvent.
-            // Note that RecyclerView automatically cancels active touches of all its descendants once it starts scrolling
-            // so we don't have to do that.
-            if (!handled || nestedScrollTargetWasUnableToScroll) {
-                handled = super.dispatchTouchEvent(ev)
+        if (preventTouchInterception) {
+            preventTouchInterception = false
+            if (!handled || targetUnableToScroll) {
+                handled = super.dispatchTouchEvent(event)
             }
         }
 
         return handled
     }
 
-
-    // Skips RecyclerView's onInterceptTouchEvent if requested
+    /**
+     * Called during super.[dispatchTouchEvent]
+     * Return true to prevent child views from seeing event
+     */
     override fun onInterceptTouchEvent(e: MotionEvent) =
-        !skipsTouchInterception && super.onInterceptTouchEvent(e)
+        !preventTouchInterception && super.onInterceptTouchEvent(e)
 
-    override fun onNestedScroll(target: View, dxConsumed: Int, dyConsumed: Int, dxUnconsumed: Int, dyUnconsumed: Int) {
-        if (target === nestedScrollTarget) {
-            if (dxUnconsumed != 0 || dyUnconsumed != 0) {
-                nestedScrollTargetWasUnableToScroll = !(dyConsumed != 0 || dxConsumed != 0)
-            }
+
+    override fun onNestedPreScroll(target: View, dx: Int, dy: Int, consumed: IntArray) {
+        target.getDrawingRect(rect)
+        offsetDescendantRectToMyCoords(target, rect)
+
+        // Position of child view inside this parent view.
+        val childRelativeTop = rect.top
+        val childRelativeBottom = rect.bottom
+        consumed[0] = 0
+        consumed[1] = 0
+
+        if (childRelativeTop >= 0 && childRelativeBottom < height) {
+//            Log.d(TAG, "No pre-scroll $childRelativeTop,$childRelativeBottom (height=$height)")
+            return
+        }
+        else {
+//            Log.d(TAG, "super.onNestedPreScroll $childRelativeTop,$childRelativeBottom (height=$height)")
+            super.onNestedPreScroll(target, dx, dy, consumed)
         }
     }
 
+    override fun onNestedScroll(target: View, dxConsumed: Int, dyConsumed: Int, dxUnconsumed: Int, dyUnconsumed: Int) {
+        if (target === nestedScrollTarget) {// && !targetConsumedScroll) {
+            val wasScrolledX = dxConsumed != 0
+            val wasScrolledY = dyConsumed != 0
 
-    override fun onNestedScrollAccepted(child: View, target: View, axes: Int) {
-        if (directionSupported(axes)) {
-            // A descendant started scrolling, so we'll observe it.
-            nestedScrollTarget = target
-            nestedScrollTargetWasUnableToScroll = false
+            if (wasScrolledX || wasScrolledY) {
+                targetConsumedScroll = true
+                targetUnableToScroll = false
+                if (wasScrolledY && dyUnconsumed != 0) {
+                    scrollBy(0, dyUnconsumed)
+                }
+            }
+            else {
+                val wasUnableToScrollY = dyConsumed == 0 && dyUnconsumed != 0
+
+                if (wasUnableToScrollY) {
+                    targetConsumedScroll = false
+                    targetUnableToScroll = true
+                }
+            }
         }
-
-        super.onNestedScrollAccepted(child, target, axes)
     }
 
     override fun onStartNestedScroll(child: View, target: View, nestedScrollAxes: Int) : Boolean {
         return child is NestedScrollingChild && directionSupported(nestedScrollAxes)
     }
 
+    override fun onNestedScrollAccepted(child: View, target: View, axes: Int) {
+        if (directionSupported(axes)) {
+            nestedScrollTarget = child
+        }
 
-    override fun onStopNestedScroll(child: View) {
-        // The descendant finished scrolling. Clean up!
-        nestedScrollTarget = null
-        skipsTouchInterception = false
-        nestedScrollTargetWasUnableToScroll = false
+        super.onNestedScrollAccepted(child, target, axes)
     }
 
-    override fun toString(): String {
-        return "$nestedScrollTarget, targetDragged:nestedScrollTargetIsBeingDragged, targetNotScrolled:$nestedScrollTargetWasUnableToScroll, skipsInterception:$skipsTouchInterception"
+    override fun onStopNestedScroll(child: View) {
+        nestedScrollTarget = null
+        targetUnableToScroll = false
+        targetConsumedScroll = false
     }
 }
