@@ -15,6 +15,7 @@
     <dimen name="card_raise_z">2dp</dimen>
     <dimen name="card_max_width">-1px</dimen>  <!-- -1px == max_width -->
     <dimen name="card_corner_radius">8dp</dimen>
+    <dimen name="card_bottomsheet_corner_radius">8dp</dimen>
 
     <dimen name="card_bottom_controls_margin_top">12dp</dimen>
 </resources>
