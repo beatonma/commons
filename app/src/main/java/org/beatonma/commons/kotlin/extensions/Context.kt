@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.AndroidViewModel
 import androidx.recyclerview.widget.RecyclerView
 import org.beatonma.commons.device.Sdk
+import org.beatonma.commons.kotlin.data.Dimensions
 
 private const val DEFAULT_PREFS = "prefs"
 
@@ -52,13 +53,27 @@ fun Context.toast(@StringRes resId: Int, duration: Int = Toast.LENGTH_SHORT) {
     Toast.makeText(this, resId, duration).show()
 }
 
+// Strings
 @Suppress("DEPRECATION")
-fun Context?.stringCompat(@StringRes resId: Int, vararg formatArgs: Any?): String =
-    when {
-        this == null -> ""
-        Sdk.isMarshmallow -> getString(resId, *formatArgs)
-        else -> resources.getString(resId, *formatArgs)
-    }
+fun Context?.stringCompat(@StringRes @PluralsRes resId: Int, vararg formatArgs: Any?, quantity: Int = Int.MIN_VALUE): String = when {
+    this == null -> ""
+    quantity != Int.MIN_VALUE -> resources.getQuantityString(resId, quantity, *formatArgs)
+    Sdk.isMarshmallow -> getString(resId, *formatArgs)
+    else -> resources.getString(resId, *formatArgs)
+}
+
+fun AndroidViewModel.stringCompat(@StringRes @PluralsRes resId: Int, vararg formatArgs: Any, quantity: Int = Int.MIN_VALUE): String =
+    getApplication<Application>().stringCompat(resId, *formatArgs, quantity = quantity)
+
+fun Fragment.stringCompat(@StringRes @PluralsRes resId: Int, vararg formatArgs: Any?, quantity: Int = Int.MIN_VALUE): String =
+    context.stringCompat(resId, *formatArgs, quantity = quantity)
+
+fun View?.stringCompat(@StringRes @PluralsRes resId: Int, vararg formatArgs: Any, quantity: Int = Int.MIN_VALUE): String =
+    this?.context?.stringCompat(resId, *formatArgs, quantity = quantity) ?: ""
+
+fun RecyclerView.ViewHolder.stringCompat(@StringRes @PluralsRes resId: Int, vararg formatArgs: Any, quantity: Int = Int.MIN_VALUE): String =
+    itemView.context.stringCompat(resId, *formatArgs, quantity = quantity)
+
 
 @Suppress("DEPRECATION")
 fun Context?.htmlCompat(@StringRes resId: Int, vararg formatArgs: Any?): Spanned =
@@ -102,20 +117,13 @@ fun Context?.dimenCompat(@DimenRes resId: Int): Int = this?.resources?.getDimens
 @ColorInt
 fun View?.colorCompat(@ColorRes resId: Int): Int = this?.context?.colorCompat(resId) ?: 0
 fun View?.drawableCompat(@DrawableRes resId: Int, tint: Int? = null): Drawable? = this?.context?.drawableCompat(resId, tint)
-fun View?.stringCompat(@StringRes resId: Int, vararg formatArgs: Any): String =
-    this?.context?.stringCompat(resId, *formatArgs) ?: ""
 fun View?.dimenCompat(@DimenRes resId: Int) = this?.context?.dimenCompat(resId) ?: 0
 
 
-fun AndroidViewModel.stringCompat(@StringRes resId: Int, vararg formatArgs: Any): String =
-    getApplication<Application>().stringCompat(resId, *formatArgs)
 
 fun AndroidViewModel.colorCompat(@ColorRes resId: Int): Int =
     getApplication<Application>().colorCompat(resId)
 
-
-fun Fragment.stringCompat(@StringRes resId: Int, vararg formatArgs: Any?): String =
-    context.stringCompat(resId, *formatArgs)
 
 fun Fragment.colorCompat(@ColorRes resId: Int): Int = context.colorCompat(resId)
 
@@ -124,9 +132,6 @@ fun Fragment.dimenCompat(@DimenRes resId: Int): Int =
 
 fun Fragment.htmlCompat(@StringRes resId: Int, vararg formatArgs: Any?): Spanned =
     context.htmlCompat(resId, *formatArgs)
-
-fun RecyclerView.ViewHolder.stringCompat(@StringRes resId: Int, vararg formatArgs: Any): String =
-    itemView.context.stringCompat(resId, *formatArgs)
 
 fun RecyclerView.ViewHolder.colorCompat(@ColorRes resId: Int): Int =
     itemView.context.colorCompat(resId)
@@ -175,6 +180,13 @@ val Context.deviceWidthDp: Int
 
 val Context.deviceHeightDp: Int
     get() = (deviceHeight / resources.displayMetrics.density).toInt()
+
+fun Context.displaySize(out: Dimensions = Dimensions()): Dimensions {
+    with (resources.displayMetrics) {
+        out.set(widthPixels, heightPixels)
+    }
+    return out
+}
 
 /**
  * Convert pixel value to dp
