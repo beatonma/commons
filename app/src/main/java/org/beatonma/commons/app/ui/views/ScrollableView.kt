@@ -2,7 +2,6 @@ package org.beatonma.commons.app.ui.views
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Point
 import android.util.AttributeSet
 import android.view.GestureDetector
 import android.view.MotionEvent
@@ -12,6 +11,7 @@ import androidx.core.view.GestureDetectorCompat
 import androidx.core.view.NestedScrollingChild
 import androidx.core.view.NestedScrollingChildHelper
 import androidx.core.view.ViewCompat
+import org.beatonma.commons.kotlin.data.Dimensions
 import org.beatonma.commons.kotlin.extensions.combineFlags
 import org.beatonma.commons.kotlin.extensions.displaySize
 import org.beatonma.commons.kotlin.extensions.withMeasureSpec
@@ -33,7 +33,7 @@ abstract class ScrollableView @JvmOverloads constructor(
         ViewCompat.SCROLL_AXIS_HORIZONTAL,
     )
 
-    protected open val maxSize: Point = context.displaySize()
+    protected open val maxSize: Dimensions = context.displaySize()
 
     protected open val gestureDetector = GestureDetectorCompat(context, GestureListener())
     protected val scroller = OverScroller(context)
@@ -134,13 +134,13 @@ abstract class ScrollableView @JvmOverloads constructor(
             val wSize: Int = when (widthMode) {
                 MeasureSpec.EXACTLY -> widthSize
                 MeasureSpec.AT_MOST -> scrollableWidth.coerceAtMost(widthSize)
-                else -> scrollableWidth.coerceAtMost(maxSize.x)
+                else -> scrollableWidth.coerceAtMost(maxSize.width)
             }
 
             val hSize: Int = when (heightMode) {
                 MeasureSpec.EXACTLY -> heightSize
                 MeasureSpec.AT_MOST -> scrollableHeight.coerceAtMost(heightSize)
-                else -> scrollableHeight.coerceAtMost(maxSize.y)
+                else -> scrollableHeight.coerceAtMost(maxSize.height)
             }
 
             super.onMeasure(
