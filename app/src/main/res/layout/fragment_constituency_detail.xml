@@ -7,9 +7,11 @@
     android:layout_height="match_parent"
     >
 
+    <!-- Keep layout_width="match_parent" instead of "0dp" to avoid
+         layout issues with map initiation/callbacks! -->
     <com.google.android.gms.maps.MapView
         android:id="@+id/mapview"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintDimensionRatio="3:2"
         app:layout_constraintEnd_toEndOf="parent"
@@ -19,6 +21,7 @@
 
     <TextView
         android:id="@+id/constituency_name"
+        app:layout_constraintStart_toStartOf="parent"
         style="@style/Text.Primary.H1"
         tools:text="ConstituencyName"
         />
@@ -26,6 +29,8 @@
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         android:id="@+id/election_results_recyclerview"
         />
 
