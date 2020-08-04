@@ -23,6 +23,8 @@
     <dimen name="whitespace_edge">8dp</dimen><!-- start/end padding to keep text away from edge of display -->
     <dimen name="whitespace_section">12dp</dimen>
 
+    <dimen name="whitespace_quotation_padding">16dp</dimen>
+
     <dimen name="text_line_spacing">4dp</dimen>
     <dimen name="text_horizontal_item_spacing">6dp</dimen>
 </resources>
