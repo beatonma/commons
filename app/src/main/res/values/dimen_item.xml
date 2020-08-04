@@ -9,4 +9,11 @@
 
     <dimen name="selected_item_margin">@dimen/card_margin</dimen>
     <dimen name="selected_item_raise_elevation">4dp</dimen>
+
+    <!-- Space between a item icon and any text that follows it -->
+    <dimen name="item_icon_margin_start">@dimen/whitespace_edge</dimen>
+    <dimen name="item_icon_margin_end">16dp</dimen>
+    <dimen name="item_icon_margin_vertical">8dp</dimen>
+    <dimen name="item_icon_margin_top">@dimen/item_icon_margin_vertical</dimen>
+    <dimen name="item_icon_margin_bottom">@dimen/item_icon_margin_vertical</dimen>
 </resources>
