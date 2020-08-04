@@ -13,6 +13,7 @@ private const val TIME_PATTERN = "HH:mm"
 private const val DAY_PATTERN = "dd"
 private const val MONTH_PATTERN = "MMMM"
 private const val YEAR_PATTERN = "yyyy"
+private const val ONGOING_PATTERN = ""
 
 sealed class CommonsDateFormat {
     abstract val formatter: DateTimeFormatter
@@ -51,15 +52,20 @@ sealed class CommonsDateFormat {
     object Year: CommonsDateFormat() {
         override val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern(YEAR_PATTERN)
     }
+
+    object Ongoing: CommonsDateFormat() {
+        override val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern(ONGOING_PATTERN)
+    }
 }
 
 
 fun LocalDate?.formatted(
     default: String = "",
-    formatter: CommonsDateFormat = CommonsDateFormat.Date
+    today: LocalDate = LocalDate.now(),
+    formatter: CommonsDateFormat? = null
 ): String = when (this) {
     null -> default
-    else -> formatter.format(this)
+    else -> formatter?.format(this) ?: chooseDateFormatter(today = today).format(this)
 }
 
 fun Context?.dateRange(
@@ -90,13 +96,13 @@ fun AndroidViewModel.dateRange(
     context.dateRange(start, end, formatter)
 
 
-fun LocalDateTime.formatted(
+fun LocalDateTime?.formatted(
     default: String = "",
     today: LocalDate = LocalDate.now(),
-    formatter: CommonsDateFormat = chooseTimeFormatter(today),
+    formatter: CommonsDateFormat? = null,
 ): String = when(this) {
     null -> default
-    else -> formatter.format(this)
+    else -> formatter?.format(this) ?: chooseTimeFormatter(today).format(this)
 }
 
 private fun LocalDateTime.chooseTimeFormatter(today: LocalDate = LocalDate.now()): CommonsDateFormat {
@@ -106,5 +112,13 @@ private fun LocalDateTime.chooseTimeFormatter(today: LocalDate = LocalDate.now()
         date == today.minusDays(1) -> CommonsDateFormat.TimeYesterday
         year == date.year -> CommonsDateFormat.TimeDateThisYear
         else -> CommonsDateFormat.TimeDateFull
+    }
+}
+
+private fun LocalDate.chooseDateFormatter(today: LocalDate = LocalDate.now()): CommonsDateFormat {
+    return when {
+        this == today -> CommonsDateFormat.Ongoing
+        year == today.year -> CommonsDateFormat.DateThisYear
+        else -> CommonsDateFormat.Date
     }
 }
