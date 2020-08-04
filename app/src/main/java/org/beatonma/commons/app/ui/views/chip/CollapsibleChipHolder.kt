@@ -12,9 +12,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.beatonma.commons.R
+import org.beatonma.commons.app.ui.Interpolation
 import org.beatonma.commons.databinding.ViewCollapsibleChipBinding
 import org.beatonma.commons.kotlin.extensions.inflate
-import org.beatonma.lib.graphic.core.utility.AnimationUtils
 
 
 open class CollapsibleChipHolder(
@@ -24,7 +24,7 @@ open class CollapsibleChipHolder(
 ), CollapsibleChip {
     private var motionCollapsedWidth = Integer.MAX_VALUE
     private var motionExpandedWidth = Integer.MIN_VALUE
-    private val interpolator = AnimationUtils.getMotionInterpolator()
+    private val interpolator = Interpolation.motion
     private var autoCollapseJob: Job? = null
 
     val vh = ViewCollapsibleChipBinding.bind(itemView)

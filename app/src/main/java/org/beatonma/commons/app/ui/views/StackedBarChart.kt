@@ -11,11 +11,11 @@ import androidx.annotation.ColorInt
 import androidx.annotation.FloatRange
 import androidx.core.content.withStyledAttributes
 import org.beatonma.commons.R
+import org.beatonma.commons.app.ui.Interpolation
 import org.beatonma.commons.kotlin.extensions.boolean
 import org.beatonma.commons.kotlin.extensions.color
 import org.beatonma.commons.kotlin.extensions.enum
 import org.beatonma.commons.kotlin.extensions.long
-import org.beatonma.lib.graphic.core.utility.AnimationUtils
 import java.lang.Float.min
 
 private const val TAG = "StackedBarChart"
@@ -50,7 +50,7 @@ class StackedBarChart @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr, defStyleRes) {
 
     private val paint: Paint = Paint(ANTI_ALIAS_FLAG)
-    private val interpolator = AnimationUtils.getMotionInterpolator()
+    private val interpolator = Interpolation.motion
     private var actualWidth: Float = 0F
     private var actualHeight: Float = 0F
 

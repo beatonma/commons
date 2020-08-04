@@ -6,7 +6,7 @@ import android.animation.ObjectAnimator
 import android.view.View
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
-import org.beatonma.lib.graphic.core.utility.AnimationUtils
+import org.beatonma.commons.app.ui.Interpolation
 
 /**
  * Created by Michael on 24/06/2016.
@@ -22,8 +22,8 @@ class FadeItemAnimator(
     private val pendingAdds = ArrayList<RecyclerView.ViewHolder>()
     private val pendingRemoves = ArrayList<RecyclerView.ViewHolder>()
 
-    private val enterInterpolator = AnimationUtils.getEnterInterpolator()
-    private val exitInterpolator = AnimationUtils.getExitInterpolator()
+    private val enterInterpolator = Interpolation.enter
+    private val exitInterpolator = Interpolation.exit
 
     init {
         addDuration = 160L
