@@ -52,7 +52,7 @@
         android:id="@+id/billFragment"
         android:name="org.beatonma.commons.app.bill.BillDetailFragment"
         android:label="BillFragment"
-        tools:layout="@layout/fragment_bill_profile">
+        tools:layout="@layout/fragment_bill_detail">
         <argument
             android:name="@string/parliamentdotuk"
             app:argType="integer" />
@@ -60,27 +60,29 @@
             android:id="@+id/deeplink_bill_detail"
             android:autoVerify="true"
             app:uri="https://snommoc.org/api/bill/{parliamentdotuk}/" />
+        <action
+            android:id="@+id/action_billFragment_to_memberProfileFragment"
+            app:destination="@id/memberProfileFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/divisionProfileFragment"
         android:name="org.beatonma.commons.app.division.DivisionDetailFragment"
         android:label="DivisionProfileFragment"
-        tools:layout="@layout/fragment_division_profile">
+        tools:layout="@layout/fragment_division_detail">
         <action
             android:id="@+id/action_divisionProfileFragment_to_memberProfileFragment"
             app:destination="@id/memberProfileFragment" />
         <argument
             android:name="@string/parliamentdotuk"
             app:argType="integer" />
+        <argument
+            android:name="house"
+            app:argType="org.beatonma.commons.data.core.room.entities.member.House"/>
         <deepLink
-            android:id="@+id/deeplink_division_commons"
+            android:id="@+id/deeplink_division"
             android:autoVerify="true"
-            app:uri="https://snommoc.org/api/division/commons/{parliamentdotuk}/" />
-        <deepLink
-            android:id="@+id/deeplink_division_lords"
-            android:autoVerify="true"
-            app:uri="https://snommoc.org/api/division/lords/{parliamentdotuk}/" />
+            app:uri="https://snommoc.org/api/division/{house}/{parliamentdotuk}/" />
     </fragment>
 
     <fragment
