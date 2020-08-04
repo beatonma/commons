@@ -58,8 +58,8 @@
         app:flow_horizontalAlign="start"
         app:flow_horizontalBias="0"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toEnd="@+id/inset_start"
-        app:layout_constraintEnd_toStartEndOf="@+id/inset_end"
+        app:layout_constraintStart_toEndOf="@+id/inset_start"
+        app:layout_constraintEnd_toStartOf="@+id/inset_end"
         />
 
     <androidx.recyclerview.widget.RecyclerView

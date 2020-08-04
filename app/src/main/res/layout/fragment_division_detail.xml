@@ -8,25 +8,8 @@
     app:layoutDescription="@xml/fragment_division_detail_scene"
     >
 
-    <androidx.constraintlayout.widget.Guideline
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/inset_start"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="@dimen/whitespace_edge"
-        />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/inset_end"
-        android:orientation="vertical"
-        app:layout_constraintGuide_end="@dimen/whitespace_edge"
-        />
-
     <TextView
         android:id="@+id/title"
-        android:layout_width="0dp"
         android:text="@string/division_title"
         style="@style/Text.Primary.H1"
         app:layout_constraintEnd_toEndOf="parent"
@@ -58,8 +41,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:constraint_referenced_ids="title,house_and_date,description"
-        app:layout_constraintGuide_begin="@+id/inset_start"
-        app:layout_constraintGuide_end="@+id/inset_end"
         app:flow_horizontalAlign="start"
         app:flow_horizontalBias="0"
         app:layout_constraintTop_toTopOf="parent"

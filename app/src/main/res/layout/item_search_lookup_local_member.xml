@@ -19,8 +19,8 @@
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/appCompatImageView"
-        android:layout_width="@dimen/list_icon_size"
-        android:layout_height="@dimen/list_icon_size"
+        android:layout_width="@dimen/icon_size_listitem"
+        android:layout_height="@dimen/icon_size_listitem"
         app:srcCompat="@drawable/ic_location"
         app:tint="@color/Accent"
         tools:layout_editor_absoluteY="8dp"
@@ -33,7 +33,7 @@
         android:orientation="horizontal"
         app:constraint_referenced_ids="appCompatImageView,textView"
         app:flow_horizontalBias="0"
-        app:flow_horizontalGap="@dimen/list_horizontal_padding"
+        app:flow_horizontalGap="@dimen/flow_gap_horizontal"
         app:flow_horizontalStyle="packed"
         app:flow_verticalAlign="center"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -40,24 +40,26 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/candidates"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constrainedHeight="true"
         tools:listitem="@layout/item_constituency_candidate"
         />
 
     <androidx.constraintlayout.helper.widget.Flow
-        android:id="@+id/flow3"
+        android:id="@+id/flow"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:orientation="vertical"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:constraint_referenced_ids="election_name,constituency_name,election_date,turnout,candidates"
         style="@style/Commons.Flow.Vertical.AlignStart"
+        app:constraint_referenced_ids="election_name,constituency_name,election_date,turnout,candidates"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
