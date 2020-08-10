@@ -2,6 +2,7 @@
     xmlns:motion="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     >
+
     <KeyPosition
         motion:motionTarget="@+id/social_vote_up"
         motion:framePosition="25"
@@ -113,11 +114,17 @@
         motion:percentX="1.0"
         />
 
+    <KeyPosition
+        motion:motionTarget="@+id/social_title"
+        motion:framePosition="80"
+        motion:percentHeight="1.0"
+        motion:percentY="1.0"
+        motion:percentWidth="1.0"
+        motion:percentX="1.0"/>
+
     <KeyAttribute
         motion:motionTarget="@+id/social_expanded_alpha_layer"
         motion:framePosition="80"
-        android:scaleX="@fraction/transition_scale_start"
-        android:scaleY="@fraction/transition_scale_start"
         android:alpha="0.0"/>
 
 </KeyFrameSet>

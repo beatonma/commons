@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<injected xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:motion="http://schemas.android.com/apk/res-auto">
+    <Constraint
+        android:id="@+id/social_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="gone"/>
+
+    <!-- Icons -->
+    <Constraint
+        android:id="@+id/social_comment_count_icon"
+        android:layout_width="@dimen/touchable_icon_size"
+        android:layout_height="@dimen/touchable_icon_size"
+        android:padding="@dimen/touchable_icon_padding"/>
+
+    <Constraint
+        android:id="@+id/social_vote_up"
+        android:layout_width="@dimen/touchable_icon_size"
+        android:layout_height="@dimen/touchable_icon_size"
+        android:padding="@dimen/touchable_icon_padding"/>
+
+    <Constraint
+        android:id="@+id/social_vote_down"
+        android:layout_width="@dimen/touchable_icon_size"
+        android:layout_height="@dimen/touchable_icon_size"
+        android:padding="@dimen/touchable_icon_padding"/>
+    <!-- End icons -->
+
+    <!-- Flows -->
+
+    <Constraint
+        android:id="@+id/social_comments"
+        android:layout_width="wrap_content"
+        android:orientation="horizontal"
+        motion:constraint_referenced_ids="social_comment_count_icon,social_comment_count"
+        />
+
+    <Constraint
+        android:id="@+id/social_upvotes"
+        android:layout_width="wrap_content"
+        android:orientation="horizontal"
+        motion:constraint_referenced_ids="social_vote_up,social_vote_up_count"
+        />
+
+    <Constraint
+        android:id="@+id/social_downvotes"
+        android:layout_width="wrap_content"
+        android:orientation="horizontal"
+        app:constraint_referenced_ids="social_vote_down,social_vote_down_count"
+        />
+
+    <!-- End flows -->
+
+    <Constraint
+        android:id="@+id/social_create_comment_background"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="@+id/social_create_comment_fab"
+        app:layout_constraintBottom_toBottomOf="@+id/social_create_comment_fab"
+        app:layout_constraintStart_toStartOf="@+id/social_create_comment_fab"
+        app:layout_constraintEnd_toEndOf="@+id/social_create_comment_fab"
+        >
+        <CustomAttribute
+            motion:attributeName="elevation"
+            motion:customDimension="0dp"/>
+        <CustomAttribute
+            motion:attributeName="roundPercent"
+            motion:customFloatValue="1" />
+    </Constraint>
+
+    <Constraint
+        android:id="@+id/social_create_comment_alpha_layer"
+        android:visibility="gone"
+        android:alpha="0.0"/>
+
+    <Constraint
+        android:id="@+id/social_expanded_alpha_layer"
+        android:visibility="gone"
+        android:alpha="0.0"/>
+
+    <Constraint
+        android:id="@+id/social_summary_flow"
+        app:layout_constraintTop_toTopOf="@+id/social_parent_container"
+        app:layout_constraintBottom_toBottomOf="@+id/social_parent_container"
+        app:layout_constraintStart_toStartOf="@+id/social_parent_container"
+        app:layout_constraintEnd_toEndOf="@+id/social_parent_container"
+        app:constraint_referenced_ids="social_comments,social_upvotes,social_downvotes"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/social_compact_view_height"
+        android:orientation="horizontal"
+        app:flow_horizontalGap="@dimen/flow_gap_horizontal"
+        app:flow_verticalAlign="center"
+        />
+
+    <Constraint
+        android:id="@+id/social_shared_background"
+        app:layout_constraintTop_toTopOf="@+id/social_parent_container"
+        app:layout_constraintBottom_toBottomOf="@+id/social_parent_container"
+        app:layout_constraintStart_toStartOf="@+id/social_parent_container"
+        app:layout_constraintEnd_toEndOf="@+id/social_parent_container"
+        />
+</injected>
