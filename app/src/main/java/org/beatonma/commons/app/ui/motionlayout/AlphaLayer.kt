@@ -6,6 +6,8 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintHelper
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.withStyledAttributes
+import org.beatonma.commons.R
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -14,24 +16,17 @@ import kotlin.math.sin
  * alpha of referenced views.
  */
 class AlphaLayer @JvmOverloads constructor(
-    context: Context,
+    context: Context?,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0,
+    defStyleAttr: Int = 0
 ) : ConstraintHelper(context, attrs, defStyleAttr) {
-
-    private var layerAlpha: Float = 1.0F
-
-    override fun setAlpha(alpha: Float) {
-        layerAlpha = alpha
-        transform()
-    }
 
     private var container: ConstraintLayout? = null
     private var rotationCenterX: Float? = null
     private var rotationCenterY: Float? = null
     private var groupRotateAngle: Float? = null
-    private var layerScaleX: Float = 1.0F
-    private var layerScaleY: Float = 1.0F
+    private var layerScaleX = 1.0f
+    private var layerScaleY = 1.0f
     private var computedCenterX: Float? = null
     private var computedCenterY: Float? = null
     private var computedMaxX: Float? = null
@@ -40,98 +35,129 @@ class AlphaLayer @JvmOverloads constructor(
     private var computedMinY: Float? = null
     private var needBounds = true
     private var views: Array<View?>? = null
-    private var mShiftX = 0.0F
-    private var mShiftY = 0.0F
+    private var shiftX = 0.0f
+    private var shiftY = 0.0f
+    private var applyVisibilityOnAttach = false
+    private var applyElevationOnAttach = false
+
+    private var layerAlpha: Float = 1.0F
+
+    override fun setAlpha(alpha: Float) {
+        layerAlpha = alpha
+        transform()
+    }
 
     override fun init(attrs: AttributeSet?) {
         super.init(attrs)
         mUseViewMeasure = false
-    }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        this.container = this.parent as ConstraintLayout
-    }
-
-    override fun updatePreDraw(container: ConstraintLayout) {
-        this.container = container
-        val visibility = this.visibility
-        val rotate = this.rotation
-        if (rotate == 0.0f) {
-            if (groupRotateAngle == null) groupRotateAngle = rotate
-        }
-        else {
-            this.groupRotateAngle = rotate
-        }
-        var elevation = 0.0f
-        if (VERSION.SDK_INT >= 21) {
-            elevation = this.elevation
-        }
-        if (mReferenceIds != null) {
-            setIds(mReferenceIds)
-        }
-        for (i in 0 until mCount) {
-            val id = mIds[i]
-            val view = container.getViewById(id)
-            if (view != null) {
-                view.visibility = visibility
-                if (elevation > 0.0f && VERSION.SDK_INT >= 21) {
-                    view.elevation = elevation
+        if (attrs != null) {
+            val a = context.obtainStyledAttributes(attrs, R.styleable.ConstraintLayout_Layout)
+            context.withStyledAttributes(attrs, R.styleable.ConstraintLayout_Layout) {
+                val n = a.indexCount
+                for (i in 0 until n) {
+                    val attr = a.getIndex(i)
+                    when (attr) {
+                        R.styleable.ConstraintLayout_Layout_android_visibility -> applyVisibilityOnAttach = true
+                        R.styleable.ConstraintLayout_Layout_android_elevation -> applyElevationOnAttach = true
+                    }
                 }
             }
         }
     }
 
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        container = parent as ConstraintLayout
+        if (applyVisibilityOnAttach || applyElevationOnAttach) {
+            val visibility = this.visibility
+            var elevation = 0.0F
+            if (VERSION.SDK_INT >= 21) {
+                this.elevation = elevation
+            }
+            for (i in 0 until mCount) {
+                val id = mIds[i]
+                val view = container?.getViewById(id) ?: continue
+                if (applyVisibilityOnAttach) {
+                    view.visibility = visibility
+                }
+                if (applyElevationOnAttach && elevation > 0.0f && VERSION.SDK_INT >= 21) {
+                    view.translationZ = view.translationZ + elevation
+                }
+            }
+        }
+    }
+
+    override fun updatePreDraw(container: ConstraintLayout) {
+        this.container = container
+        val rotate = this.rotation
+        if (rotate == 0.0f) {
+            if (groupRotateAngle != null) {
+                groupRotateAngle = rotate
+            }
+        }
+        else {
+            groupRotateAngle = rotate
+        }
+    }
+
     override fun setRotation(angle: Float) {
-        this.groupRotateAngle = angle
+        groupRotateAngle = angle
         transform()
     }
 
     override fun setScaleX(scaleX: Float) {
-        this.layerScaleX = scaleX
+        layerScaleX = scaleX
         transform()
     }
 
     override fun setScaleY(scaleY: Float) {
-        this.layerScaleY = scaleY
+        layerScaleY = scaleY
         transform()
     }
 
     override fun setPivotX(pivotX: Float) {
-        this.rotationCenterX = pivotX
+        rotationCenterX = pivotX
         transform()
     }
 
     override fun setPivotY(pivotY: Float) {
-        this.rotationCenterY = pivotY
+        rotationCenterY = pivotY
         transform()
     }
 
     override fun setTranslationX(dx: Float) {
-        this.mShiftX = dx
+        shiftX = dx
         transform()
     }
 
     override fun setTranslationY(dy: Float) {
-        this.mShiftY = dy
+        shiftY = dy
         transform()
     }
 
-    // Not called by MotionLayout!
+    override fun setVisibility(visibility: Int) {
+        super.setVisibility(visibility)
+        applyLayoutFeatures()
+    }
+
+    override fun setElevation(elevation: Float) {
+        super.setElevation(elevation)
+        applyLayoutFeatures()
+    }
+
     override fun updatePostLayout(container: ConstraintLayout) {
         reCacheViews()
-        this.computedCenterX = 0.0F
-        this.computedCenterY = 0.0F
-        val params = layoutParams as ConstraintLayout.LayoutParams
+        computedCenterX = null
+        computedCenterY = null
+        val params = this.layoutParams as ConstraintLayout.LayoutParams
         val widget = params.constraintWidget
         widget.width = 0
         widget.height = 0
         calcCenters()
-
-        val left = (computedMinX?.toInt() ?: 0) - paddingLeft
-        val top = (computedMinY?.toInt() ?: 0) - paddingTop
-        val right = (computedMaxX?.toInt() ?: 0) + paddingRight
-        val bottom = (computedMaxY?.toInt() ?: 0) + paddingBottom
+        val left = (computedMinX?.toInt() ?: 0) - this.paddingLeft
+        val top = (computedMinY?.toInt() ?: 0) - this.paddingTop
+        val right = (computedMaxX?.toInt() ?: 0) + this.paddingRight
+        val bottom = (computedMaxY?.toInt() ?: 0) + this.paddingBottom
         layout(left, top, right, bottom)
         if (groupRotateAngle != null) {
             transform()
@@ -139,53 +165,48 @@ class AlphaLayer @JvmOverloads constructor(
     }
 
     private fun reCacheViews() {
-        val container = this.container ?: return
-        if (mCount != 0) {
-            val localViews = when (views?.size) {
-                mCount -> views!!
-                else -> arrayOfNulls<View?>(mCount)
+        if (container != null && mCount != 0) {
+            if (this.views == null || this.views!!.size != mCount) {
+                this.views = arrayOfNulls(mCount)
             }
             for (i in 0 until mCount) {
                 val id = mIds[i]
-                localViews[i] = container.getViewById(id)
+                this.views!![i] = container!!.getViewById(id)
             }
-            this.views = localViews
         }
     }
 
-    private fun calcCenters() {
+    protected fun calcCenters() {
         if (container != null) {
-            if (
-                needBounds || computedCenterX == null || computedCenterY == null
-            ) {
+            if (needBounds || computedCenterX != null || computedCenterY != null) {
                 if (rotationCenterX != null && rotationCenterY != null) {
                     computedCenterY = rotationCenterY
                     computedCenterX = rotationCenterX
                 }
                 else {
                     val views = getViews(container)
-                    var minX = views[0].left + paddingLeft
-                    var minY = views[0].top + paddingTop
-                    var maxX = views[0].right - paddingEnd
-                    var maxY = views[0].bottom - paddingBottom
+                    var minx = views[0].left
+                    var miny = views[0].top
+                    var maxx = views[0].right
+                    var maxy = views[0].bottom
                     for (i in 0 until mCount) {
                         val view = views[i]
-                        minX = minX.coerceAtMost(view.left + paddingLeft)
-                        minY = minY.coerceAtMost(view.top + paddingTop)
-                        maxX = maxX.coerceAtLeast(view.right - paddingEnd)
-                        maxY = maxY.coerceAtLeast(view.bottom - paddingBottom)
+                        minx = minx.coerceAtMost(view.left)
+                        miny = miny.coerceAtMost(view.top)
+                        maxx = maxx.coerceAtLeast(view.right)
+                        maxy = maxy.coerceAtLeast(view.bottom)
                     }
-                    computedMaxX = maxX.toFloat()
-                    computedMaxY = maxY.toFloat()
-                    computedMinX = minX.toFloat()
-                    computedMinY = minY.toFloat()
-                    computedCenterX = when (rotationCenterX) {
-                        null -> ((minX + maxX) / 2F)
-                        else -> rotationCenterX
+                    computedMaxX = maxx.toFloat()
+                    computedMaxY = maxy.toFloat()
+                    computedMinX = minx.toFloat()
+                    computedMinY = miny.toFloat()
+                    computedCenterX = when(rotationCenterX) {
+                        null -> rotationCenterX
+                        else -> ((minx + maxx) / 2).toFloat()
                     }
-                    computedCenterY = when (rotationCenterY) {
-                        null -> ((minY + maxY) / 2F)
-                        else -> rotationCenterY
+                    computedCenterY = when(rotationCenterY) {
+                        null -> rotationCenterY
+                        else -> ((miny + maxy) / 2).toFloat()
                     }
                 }
             }
@@ -194,11 +215,11 @@ class AlphaLayer @JvmOverloads constructor(
 
     private fun transform() {
         if (container != null) {
-            if (views == null) {
+            if (this.views == null) {
                 reCacheViews()
             }
             calcCenters()
-            val rad = Math.toRadians(groupRotateAngle?.toDouble() ?: 0.0)
+            val rad = Math.toRadians((groupRotateAngle ?: 0).toDouble())
             val sin = sin(rad).toFloat()
             val cos = cos(rad).toFloat()
             val m11 = layerScaleX * cos
@@ -206,19 +227,21 @@ class AlphaLayer @JvmOverloads constructor(
             val m21 = layerScaleX * sin
             val m22 = layerScaleY * cos
             for (i in 0 until mCount) {
-                val view = views?.get(i) ?: continue
+                val view = this.views?.get(i) ?: continue
                 val x = (view.left + view.right) / 2
                 val y = (view.top + view.bottom) / 2
                 val dx = x.toFloat() - (computedCenterX ?: 0F)
                 val dy = y.toFloat() - (computedCenterY ?: 0F)
-                val shiftx = m11 * dx + m12 * dy - dx + mShiftX
-                val shifty = m21 * dx + m22 * dy - dy + mShiftY
-                view.translationX = shiftx
-                view.translationY = shifty
-                view.scaleY = layerScaleY
-                view.scaleX = layerScaleX
-                view.rotation = groupRotateAngle ?: 0F
-                view.alpha = layerAlpha
+                val shiftx = m11 * dx + m12 * dy - dx + shiftX
+                val shifty = m21 * dx + m22 * dy - dy + shiftY
+                view.apply {
+                    translationX = shiftx
+                    translationY = shifty
+                    scaleY = scaleY
+                    scaleX = scaleX
+                    rotation = groupRotateAngle ?: 0F
+                    alpha = layerAlpha
+                }
             }
         }
     }
