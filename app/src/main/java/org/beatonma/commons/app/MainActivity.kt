@@ -13,7 +13,6 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
@@ -26,6 +25,7 @@ import org.beatonma.commons.R
 import org.beatonma.commons.app.search.SearchEnabled
 import org.beatonma.commons.app.search.SearchHost
 import org.beatonma.commons.app.search.SearchViewModel
+import org.beatonma.commons.app.signin.SignInEnabled
 import org.beatonma.commons.app.signin.SignInHost
 import org.beatonma.commons.app.ui.navigation.BackPressConsumer
 import org.beatonma.commons.app.ui.recyclerview.adapter.AsyncDiffHost
@@ -37,13 +37,17 @@ import org.beatonma.commons.data.core.search.MemberSearchResult
 import org.beatonma.commons.data.core.search.SearchResult
 import org.beatonma.commons.databinding.ActivityNavhostMainBinding
 import org.beatonma.commons.databinding.ItemSearchResultBinding
-import org.beatonma.commons.kotlin.extensions.bindText
-import org.beatonma.commons.kotlin.extensions.inflate
-import org.beatonma.commons.kotlin.extensions.toast
-import org.beatonma.commons.kotlin.extensions.withPermission
+import org.beatonma.commons.kotlin.extensions.*
 import org.beatonma.commons.network.retrofit.CommonsService
 
 private const val TAG = "MainActivity"
+
+private typealias Flag = Int
+private object State {
+    const val SEARCH_ENABLED: Flag = 0b1
+    const val SEARCH_EXPANDED: Flag = 0b10
+    const val SIGNIN_ENABLED: Flag = 0b100
+}
 
 @AndroidEntryPoint
 class MainActivity : DayNightActivity(), SearchHost, SignInHost, AsyncDiffHost {
@@ -58,17 +62,23 @@ class MainActivity : DayNightActivity(), SearchHost, SignInHost, AsyncDiffHost {
     override val searchAdapter = SearchResultsAdapter()
     lateinit var navController: NavController
 
+    private var uiStateFlags = State.SEARCH_ENABLED or State.SIGNIN_ENABLED
+        set(value) {
+            field = value
+            transitionToState(getMotionState(value))
+        }
+
 
     private val updateSearchEnabled = {
         lifecycleScope.launch(Dispatchers.Main) {
-            // Arbitrary delay to avoid clashes with fragment transitions/child layout animations
+            // Semi-arbitrary delay to avoid clashes with fragment transitions/child layout animations
             // on fragment change
-            // TODO currently disabled while making other transitions - fixme
-            delay(300)
-            when (getContentFragment()) {
-                is SearchEnabled -> enableSearch()
-                else -> disableSearch()
-            }
+            delay(longCompat(R.integer.animation_window_duration))
+            val contentFragment = getContentFragment()
+            setUiFeatures(
+                searchEnabled = contentFragment is SearchEnabled,
+                signinEnabled = contentFragment is SignInEnabled,
+            )
         }
         Unit
     }
@@ -144,7 +154,7 @@ class MainActivity : DayNightActivity(), SearchHost, SignInHost, AsyncDiffHost {
         updateSearchEnabled.invoke()
 
         binding.signinButton.setOnClickListener { button ->
-            showSignIn(this)
+            showSignInDialog(this)
         }
     }
 
@@ -184,20 +194,40 @@ class MainActivity : DayNightActivity(), SearchHost, SignInHost, AsyncDiffHost {
         // TODO
     }
 
+    /**
+     * Compose new UI state with the specified features as a single value change to avoid
+     * making multiple calls to [transitionToState].
+     */
+    private fun setUiFeatures(searchEnabled: Boolean, signinEnabled: Boolean) {
+        var newState = uiStateFlags
+        newState = newState.setFlag(State.SEARCH_ENABLED, searchEnabled)
+        newState = newState.setFlag(State.SIGNIN_ENABLED, signinEnabled)
+
+        uiStateFlags = newState
+    }
+
+    override fun enableSignIn() {
+        uiStateFlags = uiStateFlags.addFlag(State.SIGNIN_ENABLED)
+    }
+
+    override fun disableSignIn() {
+        uiStateFlags = uiStateFlags.removeFlag(State.SIGNIN_ENABLED)
+    }
+
     override fun enableSearch() {
-        transitionToState(R.id.hide_search_results)
+        uiStateFlags = uiStateFlags.addFlag(State.SEARCH_ENABLED)
     }
 
     override fun disableSearch() {
-        transitionToState(R.id.disable_search)
+        uiStateFlags = uiStateFlags.removeFlag(State.SEARCH_ENABLED)
     }
 
     override fun isSearchUiVisible(): Boolean {
-        return binding.mainActivityMotion.currentState == R.id.show_search_results
+        return uiStateFlags.hasFlag(State.SEARCH_EXPANDED)
     }
 
     override fun showSearch() {
-        transitionToState(R.id.show_search_results)
+        uiStateFlags = uiStateFlags.addFlag(State.SEARCH_EXPANDED)
     }
 
     override fun hideSearch() {
@@ -207,12 +237,12 @@ class MainActivity : DayNightActivity(), SearchHost, SignInHost, AsyncDiffHost {
     }
 
     override fun onSearchViewClosed() {
-        transitionToState(R.id.hide_search_results)
+        uiStateFlags = uiStateFlags.removeFlag(State.SEARCH_EXPANDED)
     }
 
     override fun openSearchResult(searchResult: SearchResult) {
         searchView.onActionViewCollapsed()
-        transitionToState(R.id.hide_search_results)
+        uiStateFlags = uiStateFlags.removeFlag(State.SEARCH_EXPANDED)
         navController.navigate(searchResult.toUri())
     }
 
@@ -229,6 +259,20 @@ class MainActivity : DayNightActivity(), SearchHost, SignInHost, AsyncDiffHost {
     override fun onDestroy() {
         commonsApp.scheduleDatabaseCleanup()
         super.onDestroy()
+    }
+
+    /**
+     * Given some combination of State flags, return the corresponding MotionLayout state ID.
+     */
+    @IdRes
+    private fun getMotionState(state: Int): Int {
+        return when {
+            state.hasFlag(State.SEARCH_EXPANDED) -> R.id.state_search_show_results
+            state.hasAllFlags(State.SEARCH_ENABLED, State.SIGNIN_ENABLED) -> R.id.state_enable_search_signin
+            state.hasFlag(State.SEARCH_ENABLED) -> R.id.state_enable_search
+            state.hasFlag(State.SIGNIN_ENABLED) -> R.id.state_enable_signin
+            else -> R.id.state_disable_search_signin
+        }
     }
 
     private fun transitionToState(@IdRes stateId: Int) {

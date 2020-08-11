@@ -14,7 +14,7 @@
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
         tools:context=".app.MainActivity"
-        app:layoutDescription="@xml/search_scene"
+        app:layoutDescription="@xml/main_scene"
         >
 
         <fragment

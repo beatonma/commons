@@ -6,13 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.observe
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.MarginPageTransformer
 import dagger.hilt.android.AndroidEntryPoint
 import org.beatonma.commons.R
 import org.beatonma.commons.app.featured.FeaturedContentViewModel
 import org.beatonma.commons.app.search.SearchEnabled
+import org.beatonma.commons.app.signin.SignInEnabled
 import org.beatonma.commons.app.ui.CommonsFragment
 import org.beatonma.commons.app.ui.colors.getTheme
 import org.beatonma.commons.app.ui.recyclerview.adapter.LoadingAdapter
@@ -28,7 +28,7 @@ import org.beatonma.commons.databinding.ViewpagerBinding
 import org.beatonma.commons.kotlin.extensions.*
 
 @AndroidEntryPoint
-class ExperimentalFrontPageFragment : CommonsFragment(), SearchEnabled {
+class ExperimentalFrontPageFragment : CommonsFragment(), SearchEnabled, SignInEnabled {
     private lateinit var binding: ViewpagerBinding
 
     private val viewmodel: FeaturedContentViewModel by viewModels()
