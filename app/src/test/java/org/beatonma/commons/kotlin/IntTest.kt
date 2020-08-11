@@ -82,6 +82,15 @@ class IntTest {
     }
 
     @Test
+    fun int_setFlag_isCorrect() {
+        0b101.setFlag(0b010, true) shouldbe 0b111
+        0b111.setFlag(0b010, true) shouldbe 0b111
+
+        0b101.setFlag(0b010, false) shouldbe 0b101
+        0b111.setFlag(0b010, false) shouldbe 0b101
+    }
+
+    @Test
     fun int_roundUp_isCorrect() {
         0.roundUp(10) shouldbe 0
         for (n in 1..9) {

@@ -76,6 +76,15 @@ fun Int.replaceFlag(removed: Int, added: Int): Int {
 }
 
 /**
+ * Add the flag if condition is true, remove otherwise.
+ */
+fun Int.setFlag(flag: Int, condition: Boolean): Int =
+    when (condition) {
+        true -> this.addFlag(flag)
+        false -> this.removeFlag(flag)
+    }
+
+/**
  * Get the closest multiple of [nearest] AFTER the receiver.
  */
 fun Int.roundUp(nearest: Int): Int {
@@ -98,3 +107,6 @@ fun Int.roundDown(nearest: Int): Int {
         else this - mod
     }
 }
+
+
+fun Int.asBinaryString(): String = Integer.toBinaryString(this)
