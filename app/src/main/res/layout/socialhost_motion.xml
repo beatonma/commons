@@ -28,21 +28,21 @@
         android:id="@+id/social_comment_count"
         android:layout_width="wrap_content"
         android:tooltipText="@string/content_description_social_comment_count"
-        style="@style/Text.Primary"
+        style="@style/Social.Expanded.Count.Text"
         tools:text="201"
         />
 
     <TextView
         android:id="@+id/social_vote_up_count"
         android:layout_width="wrap_content"
-        style="@style/Text.Primary"
+        style="@style/Social.Expanded.Count.Text"
         tools:text="32"
         />
 
     <TextView
         android:id="@+id/social_vote_down_count"
         android:layout_width="wrap_content"
-        style="@style/Text.Primary"
+        style="@style/Social.Expanded.Count.Text"
         tools:text="23"
         />
 

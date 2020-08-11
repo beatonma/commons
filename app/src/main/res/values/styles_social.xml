@@ -46,10 +46,10 @@
     </style>
 
     <style name="Social.Expanded.Count" parent="">
+        <item name="android:layout_width">@dimen/social_expanded_touch_target</item>
+        <item name="android:layout_height">@dimen/social_expanded_touch_target</item>
         <item name="android:background">@drawable/round_selector</item>
         <item name="layout_constraintDimensionRatio">1:1</item>
-        <item name="flow_horizontalStyle">packed</item>
-        <item name="android:orientation">vertical</item>
         <item name="android:elevation">@dimen/social_expanded_elevation</item>
     </style>
 
@@ -61,5 +61,13 @@
         <item name="android:layout_width">@dimen/icon_size_large</item>
         <item name="android:layout_height">@dimen/icon_size_large</item>
         <item name="android:padding">@dimen/touchable_icon_padding</item>
+    </style>
+
+    <style name="Social.Compact.Count.Text" parent="Text.Primary">
+        <item name="android:text">@string/social_comment_count_nodata</item>
+    </style>
+
+    <style name="Social.Expanded.Count.Text" parent="Social.Compact.Count.Text">
+
     </style>
 </resources>

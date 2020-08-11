@@ -90,6 +90,7 @@
     <string name="social_comment_post" translatable="true">Send</string>
     <string name="social_comment_invalid_too_long" translatable="true">Comments are limited to %d characters</string>
     <string name="social_comment_no_comments" translatable="true">No comments here yet!</string>
+    <string name="social_comment_count_nodata" translatable="false">-</string>
 
     <string name="content_description_social_comment_count" translatable="true">Comments: %d</string>
     <string name="content_description_social_votes_count_for" translatable="true">Votes in favour: %d</string>
