@@ -49,7 +49,9 @@ abstract class ScrollableView @JvmOverloads constructor(
     protected fun canScroll(): Boolean = canScrollX() || canScrollY()
 
     protected var horizontalScrollRange: Int = 0
+        private set
     protected var verticalScrollRange: Int = 0
+        private set
 
     override fun computeHorizontalScrollRange(): Int = scrollableWidth - width
     override fun computeVerticalScrollRange(): Int = scrollableHeight - height
@@ -153,8 +155,16 @@ abstract class ScrollableView @JvmOverloads constructor(
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
 
-        horizontalScrollRange = scrollableWidth - w
-        verticalScrollRange = scrollableHeight - h
+        calculateScrollRangeX()
+        calculateScrollRangeY()
+    }
+
+    protected fun calculateScrollRangeX() {
+        horizontalScrollRange = (scrollableWidth - width).coerceAtLeast(0)
+    }
+
+    protected fun calculateScrollRangeY() {
+        verticalScrollRange = (scrollableHeight - height).coerceAtLeast(0)
     }
 
     /**

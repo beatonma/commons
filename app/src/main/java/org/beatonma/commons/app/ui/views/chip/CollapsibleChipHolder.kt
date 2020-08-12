@@ -16,7 +16,15 @@ import org.beatonma.commons.app.ui.Interpolation
 import org.beatonma.commons.databinding.ViewCollapsibleChipBinding
 import org.beatonma.commons.kotlin.extensions.inflate
 
+@Deprecated(
+    message = """
+Replace the RecyclerView with a [ScrollableChipContainer] which handles chip rendering directly
+to canvas with a single View. Much more reliable animations and click handling!
 
+[CollapsibleChipHolder] was an interesting experiment with MotionLayout but involved a lot of
+view remeasuring which was always going to be janky.
+"""
+)
 open class CollapsibleChipHolder(
     parent: ViewGroup
 ): RecyclerView.ViewHolder(
