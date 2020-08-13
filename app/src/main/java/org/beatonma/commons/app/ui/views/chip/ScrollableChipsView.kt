@@ -105,6 +105,10 @@ class ScrollableChipsView @JvmOverloads constructor(
     }
 
     private fun onDataChanged() {
+        scrollableHeight = when (chipData.size) {
+            0 -> 0
+            else -> context.dimenCompat(R.dimen.chip_min_height)
+        }
         scrollableWidth = chipData.sumBy { it.maxWidth }
         postInvalidateOnAnimation()
     }

@@ -31,7 +31,7 @@
 
     <org.beatonma.commons.app.ui.views.chip.ScrollableChipsView
         android:layout_width="0dp"
-        android:layout_height="@dimen/chip_min_height"
+        android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:id="@+id/actions"/>
