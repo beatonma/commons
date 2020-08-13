@@ -49,10 +49,20 @@ class ScrollableChipsView @JvmOverloads constructor(
     private val spaceBetween: Int = context.dimenCompat(R.dimen.flow_gap_horizontal)
     private val iconSize: Int = context.dimenCompat(R.dimen.chip_icon_size)
 
-    private val coroutineScope = CoroutineScope(Job() + Dispatchers.Main)
+    private var coroutineScope: CoroutineScope? = null
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        coroutineScope = CoroutineScope(Job() + Dispatchers.Main)
+        chipData.forEach {
+            // Reinstate auto-close timers for any chips that were left in an expanded state before detaching.
+            scheduleAutoClose(it)
+        }
+    }
 
     override fun onDetachedFromWindow() {
-        coroutineScope.cancel()
+        coroutineScope?.cancel()
+        coroutineScope = null
         super.onDetachedFromWindow()
     }
 
@@ -157,8 +167,8 @@ class ScrollableChipsView @JvmOverloads constructor(
     }
 
     private fun scheduleAutoClose(data: ChipRenderData) {
-        if (data.isAnimating() && data.targetState == ChipState.EXPANDED) {
-            coroutineScope.launch {
+        if (data.targetState == ChipState.EXPANDED) {
+            data.autoCollapseJob = coroutineScope?.launch {
                 delay(CollapsibleChip.AUTO_COLLAPSE_TIME_MILLIS)
                 withContext(Dispatchers.Main) {
                     chipData.safeGet(data.index)?.targetState = ChipState.COLLAPSED
@@ -230,7 +240,14 @@ internal class ChipRenderData(
         set(value) {
             if (value != field) {
                 animationStarted = System.currentTimeMillis()
+                autoCollapseJob?.cancel()
             }
+            field = value
+        }
+
+    var autoCollapseJob: Job? = null
+        set(value) {
+            field?.cancel()
             field = value
         }
 
