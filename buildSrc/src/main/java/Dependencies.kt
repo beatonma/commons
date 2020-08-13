@@ -3,43 +3,82 @@ import org.gradle.api.JavaVersion
 
 object Versions {
     const val BMA = "0.9.29"
-    const val COMPOSE = "0.1.0-dev07"
-    const val COROUTINES = "1.3.8-1.4.0-rc"
-    const val DAGGER = "2.28.1"
-    const val ESPRESSO = "3.3.0-beta02"
-    const val GLIDE = "4.11.0"
-    const val GROUPIE = "2.8.0"
-    const val HILT = "2.28.1-alpha"
-    const val AX_HILT = "1.0.0-alpha01"
+
+    // Core
+    const val COROUTINES = "1.3.8-1.4.0-rc-218"
     val JAVA = JavaVersion.VERSION_1_8
     const val KOTLIN = "1.4.0-rc"
-    const val RETROFIT = "2.9.0"
-    const val ROOM = "2.2.5"
+
+    // Data
+    const val ROOM = "2.3.0-alpha02"
     const val MOSHI = "1.9.2"
+    const val RETROFIT = "2.9.0"
+
+    // Dependency injection
+    const val DAGGER = "2.28.3"
+    const val HILT = "2.28.3-alpha"
+    const val AX_HILT = "1.0.0-alpha02"
+
+    // Google
+    const val GP_AUTH = "18.1.0"
+    const val GP_LOCATION = "17.0.0"
+    const val GP_MAPS = "17.0.0"
+    const val GP_MAPS_UTIL = "0.1"
+    const val MATERIAL = "1.3.0-alpha02"
+
+    // Android X
+    const val AX_ANNOTATIONS = "1.1.0"
+    const val AX_APPCOMPAT = "1.3.0-alpha01"
+    const val AX_COMPOSE = "0.1.0-dev07"
+    const val AX_CONSTRAINTLAYOUT = "2.0.0-rc1"
+    const val AX_CORE_KTX = "1.5.0-alpha01"
+    const val AX_LIFECYCLE = "2.3.0-alpha06"
     const val AX_NAVIGATION = "2.3.0"
-    const val AX_WORK = "2.4.0-rc01"
+    const val AX_RECYCLERVIEW = "1.2.0-alpha05"
+    const val AX_SWIPEREFRESH = "1.1.0-rc01"
+    const val AX_WORK = "2.4.0"
+    const val AX_VIEWBINDING = "4.1.0-alpha09"
+
+    // 3rd party UI
+    const val GLIDE = "4.11.0"
+    const val GROUPIE = "2.8.0"
+
+    // Testing
+    const val AX_TEST_CORE = "1.3.0-rc03"
+    const val AX_TEST_LIVEDATA = "2.1.0"
+    const val ESPRESSO = "3.3.0-rc03"
+    const val MOCKITO = "3.4.6"
+    const val MOCKK = "1.10.0"
+    const val JUNIT = "4.13"
+    const val OKHTTP_MOCK = "4.8.1"
+
+    // Debug
+    const val LEAK_CANARY = "2.4"
+
+    // Build
+    const val GRADLE_DEPENDENCY_UPDATES = "0.29.0"
 }
 
 object Dependencies {
     object AndroidX {
-        val APPCOMPAT = androidx("appcompat", version = "1.3.0-alpha01")
-        val CONSTRAINTLAYOUT = androidx("constraintlayout", version = "2.0.0-beta8")
-        val CORE_KTX = androidx(group = "core", artifact = "core-ktx", version = "1.5.0-alpha01")
-        val LIFECYCLE_RUNTIME = androidx(group = "lifecycle", artifact = "lifecycle-runtime-ktx", version = "2.3.0-alpha05")
-        val LIVEDATA_KTX = androidx(group = "lifecycle", artifact = "lifecycle-livedata-ktx", version = "2.3.0-alpha05")
-        val VIEWMODEL_KTX = androidx(group = "lifecycle", artifact = "lifecycle-viewmodel-ktx", version = "2.3.0-alpha05")
-        val ANNOTATIONS = androidx("annotation", version = "1.1.0")
-        val RECYCLERVIEW = androidx(artifact = "recyclerview", version = "1.2.0-alpha03")
-        val SWIPE_REFRESH_LAYOUT = androidx(artifact = "swiperefreshlayout", version = "1.1.0-rc01")
+        val APPCOMPAT = androidx("appcompat", version = Versions.AX_APPCOMPAT)
+        val CONSTRAINTLAYOUT = androidx("constraintlayout", version = Versions.AX_CONSTRAINTLAYOUT)
+        val CORE_KTX = androidx(group = "core", artifact = "core-ktx", version = Versions.AX_CORE_KTX)
+        val LIFECYCLE_RUNTIME = androidx(group = "lifecycle", artifact = "lifecycle-runtime-ktx", version = Versions.AX_LIFECYCLE)
+        val LIVEDATA_KTX = androidx(group = "lifecycle", artifact = "lifecycle-livedata-ktx", version = Versions.AX_LIFECYCLE)
+        val VIEWMODEL_KTX = androidx(group = "lifecycle", artifact = "lifecycle-viewmodel-ktx", version = Versions.AX_LIFECYCLE)
+        val ANNOTATIONS = androidx("annotation", version = Versions.AX_ANNOTATIONS)
+        val RECYCLERVIEW = androidx(artifact = "recyclerview", version = Versions.AX_RECYCLERVIEW)
+        val SWIPE_REFRESH_LAYOUT = androidx(artifact = "swiperefreshlayout", version = Versions.AX_SWIPEREFRESH)
 
         val NAVIGATION_FRAGMENT = androidx(group = "navigation", artifact = "navigation-fragment-ktx", version = Versions.AX_NAVIGATION)
         val NAVIGATION_UI = androidx(group = "navigation", artifact = "navigation-ui-ktx", version = Versions.AX_NAVIGATION)
 
-        val COMPOSE_TOOLING = androidx(group = "ui", artifact = "ui-tooling", version = Versions.COMPOSE)
-        val COMPOSE_LAYOUT = androidx(group = "ui", artifact = "ui-layout", version = Versions.COMPOSE)
-        val COMPOSE_MATERIAL = androidx(group = "ui", artifact = "ui-material", version = Versions.COMPOSE)
+        val COMPOSE_TOOLING = androidx(group = "ui", artifact = "ui-tooling", version = Versions.AX_COMPOSE)
+        val COMPOSE_LAYOUT = androidx(group = "ui", artifact = "ui-layout", version = Versions.AX_COMPOSE)
+        val COMPOSE_MATERIAL = androidx(group = "ui", artifact = "ui-material", version = Versions.AX_COMPOSE)
 
-        val VIEWBINDING = androidx(group="databinding", artifact = "viewbinding", version = "4.1.0-alpha09")
+        val VIEWBINDING = androidx(group="databinding", artifact = "viewbinding", version = Versions.AX_VIEWBINDING)
 
         val WORK = androidx(group = "work", artifact = "work-runtime-ktx", version = Versions.AX_WORK)
     }
@@ -56,7 +95,7 @@ object Dependencies {
     }
 
     object Build {
-        val VERSIONS = dependency("com.github.ben-manes", "gradle-versions-plugin", "0.21.0")
+        val VERSIONS = dependency("com.github.ben-manes", "gradle-versions-plugin", Versions.GRADLE_DEPENDENCY_UPDATES)
     }
 
     object Dagger {
@@ -89,13 +128,13 @@ object Dependencies {
     }
 
     object Google {
-        val MATERIAL = dependency("com.google.android.material", "material", "1.2.0-alpha06")
+        val MATERIAL = dependency("com.google.android.material", "material", Versions.MATERIAL)
 
         object Play {
-            val AUTH = gms("play-services-auth", "18.0.0")
-            val LOCATION = gms("play-services-location", "17.0.0")
-            val MAPS = gms("play-services-maps", "17.0.0")
-            val MAPS_UTIL = dependency("com.google.maps.android", artifact = "android-maps-utils-sdk-v3-compat", version = "0.1")
+            val AUTH = gms("play-services-auth", Versions.GP_AUTH)
+            val LOCATION = gms("play-services-location", Versions.GP_LOCATION)
+            val MAPS = gms("play-services-maps", Versions.GP_MAPS)
+            val MAPS_UTIL = dependency("com.google.maps.android", artifact = "android-maps-utils-sdk-v3-compat", version = Versions.GP_MAPS_UTIL)
         }
     }
 
@@ -140,11 +179,10 @@ object Dependencies {
 
     object Test {
         object AndroidX {
-            val CORE = androidx(group = "test", artifact = "core", version = "1.3.0-beta02")
-            val RUNNER = androidx(group = "test", artifact = "runner", version = "1.3.0-beta02")
-//            val ESPRESSO = androidx(group = "test.espresso", artifact = "espresso-core", version = "3.3.0-beta02")
-            val LIVEDATA = androidx(group = "arch.core", artifact = "core-testing", version = "2.1.0")
-            val RULES = androidx(group = "test", artifact = "rules", version = "1.2.0")
+            val CORE = androidx(group = "test", artifact = "core", version = Versions.AX_TEST_CORE)
+            val RULES = androidx(group = "test", artifact = "rules", version = Versions.AX_TEST_CORE)
+            val RUNNER = androidx(group = "test", artifact = "runner", version = Versions.AX_TEST_CORE)
+            val LIVEDATA = androidx(group = "arch.core", artifact = "core-testing", version = Versions.AX_TEST_LIVEDATA)
             object Espresso {
                 val CORE = espresso("espresso-core")
                 val CONTRIB = espresso("espresso-contrib")
@@ -153,14 +191,17 @@ object Dependencies {
             }
         }
 
-
-
         val BMA_TESTING = bma("testing")
-        val MOCKITO = dependency("org.mockito", "mockito-core", "3.3.3")
-        val JUNIT = dependency("junit", "junit", "4.13")
+        val MOCKITO = dependency("org.mockito", "mockito-core", Versions.MOCKITO)
+        val MOCKK = dependency("io.mockk", "mockk", Versions.MOCKK)
+        val JUNIT = dependency("junit", "junit", Versions.JUNIT)
         val RETROFIT_MOCK = retrofit("retrofit-mock")
         val ROOM = room("room-testing")
-        val OKHTTP_MOCK_SERVER = dependency("com.squareup.okhttp3", "mockwebserver", "4.7.2")
+        val OKHTTP_MOCK_SERVER = dependency("com.squareup.okhttp3", "mockwebserver", Versions.OKHTTP_MOCK)
+    }
+
+    object Debug {
+        val LEAK_CANARY = dependency(group = "com.squareup.leakcanary", artifact = "leakcanary-android", version = Versions.LEAK_CANARY)
     }
 }
 
