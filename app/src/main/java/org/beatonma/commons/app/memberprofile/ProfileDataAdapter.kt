@@ -10,7 +10,7 @@ import org.beatonma.commons.R
 import org.beatonma.commons.app.memberprofile.adapter.CurrentAdapter
 import org.beatonma.commons.app.memberprofile.adapter.FinancialInterestsAdapter
 import org.beatonma.commons.app.memberprofile.adapter.PhysicalAddressAdapter
-import org.beatonma.commons.app.memberprofile.adapter.WeblinkAdapter
+import org.beatonma.commons.app.ui.Interpolation
 import org.beatonma.commons.app.ui.colors.PartyColors
 import org.beatonma.commons.app.ui.colors.Themed
 import org.beatonma.commons.app.ui.data.WeblinkData
@@ -24,11 +24,11 @@ import org.beatonma.commons.data.core.room.entities.member.PhysicalAddress
 import org.beatonma.commons.databinding.HistoryviewBinding
 import org.beatonma.commons.databinding.RecyclerviewBinding
 import org.beatonma.commons.databinding.ViewCollapsingGroupBinding
+import org.beatonma.commons.databinding.ViewScrollableChipsBinding
 import org.beatonma.commons.kotlin.extensions.hide
 import org.beatonma.commons.kotlin.extensions.inflate
 import org.beatonma.commons.kotlin.extensions.show
 import org.beatonma.commons.kotlin.extensions.stringCompat
-import org.beatonma.lib.graphic.core.utility.AnimationUtils
 
 private const val TAG = "ProfileDataAdapter"
 
@@ -107,6 +107,7 @@ class ProfileDataAdapter(
     }
 }
 
+
 private fun createHistoryHolder(parent: ViewGroup): GenericTypedViewHolder<ProfileData<Temporal>> =
     object: GenericTypedViewHolder<ProfileData<Temporal>>(parent.inflate(R.layout.historyview)) {
         val vh = HistoryviewBinding.bind(itemView)
@@ -115,6 +116,7 @@ private fun createHistoryHolder(parent: ViewGroup): GenericTypedViewHolder<Profi
         }
     }
 
+
 private fun createCurrentHolder(parent: ViewGroup): AbstractProfileDataHolder<Any> =
     object: CollapsibleProfileDataHolder<Any>(
         parent,
@@ -122,11 +124,15 @@ private fun createCurrentHolder(parent: ViewGroup): AbstractProfileDataHolder<An
         title = parent.context.stringCompat(R.string.member_current_title),
     ) {}
 
-private fun createWeblinksHolder(parent: ViewGroup): AbstractProfileDataHolder<WeblinkData> =
-    object: ProfileDataHolder<WeblinkData>(parent,
-        WeblinkAdapter(),
-        LayoutType.HORIZONTAL,
-    ) {}
+
+private fun createWeblinksHolder(parent: ViewGroup): GenericTypedViewHolder<ProfileData<WeblinkData>> =
+    object: GenericTypedViewHolder<ProfileData<WeblinkData>>(parent.inflate(R.layout.view_scrollable_chips)) {
+        val vh = ViewScrollableChipsBinding.bind(itemView)
+        override fun bind(item: ProfileData<WeblinkData>) {
+            vh.chipsView.setData(item.items)
+        }
+    }
+
 
 private fun createAddressHolder(parent: ViewGroup): AbstractProfileDataHolder<PhysicalAddress> =
     object: CollapsibleProfileDataHolder<PhysicalAddress>(
@@ -135,6 +141,7 @@ private fun createAddressHolder(parent: ViewGroup): AbstractProfileDataHolder<Ph
         title = parent.context.stringCompat(R.string.member_write_to),
         showSeparators = true
     ) {}
+
 
 private fun createFinancialInterestsHolder(parent: ViewGroup): AbstractProfileDataHolder<FinancialInterest> =
     object: CollapsibleProfileDataHolder<FinancialInterest>(
@@ -224,7 +231,7 @@ internal abstract class CollapsibleProfileDataHolder<D>(
             addUpdateListener { animator ->
                 vh.toggle.rotation = animator.animatedValue as Float
             }
-            interpolator = AnimationUtils.getMotionInterpolator()
+            interpolator = Interpolation.motion
             duration = 300
         }.start()
     }

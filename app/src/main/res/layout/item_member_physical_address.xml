@@ -29,9 +29,9 @@
         style="@style/Text.Primary"
         />
 
-    <androidx.recyclerview.widget.RecyclerView
+    <org.beatonma.commons.app.ui.views.chip.ScrollableChipsView
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/chip_min_height"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:id="@+id/actions"/>
@@ -47,7 +47,6 @@
         app:flow_verticalGap="@dimen/text_line_spacing"
         app:flow_wrapMode="none"
         />
-
 
     <androidx.constraintlayout.helper.widget.Flow
         android:id="@+id/flow"
