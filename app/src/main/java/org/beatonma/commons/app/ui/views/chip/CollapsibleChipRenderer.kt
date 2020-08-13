@@ -7,6 +7,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.drawable.Drawable
 import android.text.TextPaint
+import android.view.Gravity
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.withTranslation
 import org.beatonma.commons.R
@@ -58,7 +59,7 @@ class CollapsibleChipRenderer(
     private val animationDuration: Long,
     private val interpolator: TimeInterpolator = Interpolation.motion,
 ) {
-    private val textPaint = TextPaint(Paint.ANTI_ALIAS_FLAG)
+    private val textPaint: TextPaint = TextPaint(Paint.ANTI_ALIAS_FLAG)
     private val debugPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val alphaPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val separatorPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -69,7 +70,7 @@ class CollapsibleChipRenderer(
     private val separatorAlpha: Int = separatorPaint.alpha
 
     private val iconOffset = (collapsedHeight - iconSize) / 2F
-    private val textY = (collapsedHeight / 2) + textPaint.textSize
+    private val centerY: Int get() = collapsedHeight / 2
 
     constructor(context: Context): this(
         collapsedHeight = context.dimenCompat(R.dimen.chip_min_height),
@@ -122,6 +123,7 @@ class CollapsibleChipRenderer(
      * Return with of rendered content.
      */
     private fun draw(canvas: Canvas, chipRenderData: ChipRenderData, progress: Float): Int {
+        // Apply interpolator to width animation.
         val widthProgress = interpolator.getInterpolation(progress.normalizeIn(0F, PROGRESS_FULL_WIDTH))
         val width = collapsedWidth + (widthProgress * (chipRenderData.maxWidth - collapsedWidth)).toInt()
 
@@ -141,8 +143,8 @@ class CollapsibleChipRenderer(
     private fun drawDebugGuidelines(canvas: Canvas, width: Float) {
         val middleX = (width / 2)
         val middleY = (collapsedHeight / 2).toFloat()
-        canvas.drawLine(0F, middleY, width, middleY, debugPaint)
-        canvas.drawLine(middleX, 0F, middleX, collapsedHeight.toFloat(), debugPaint)
+        canvas.vLine(middleX, debugPaint)
+        canvas.hLine(middleY, debugPaint)
     }
 
     private fun drawBackground(canvas: Canvas, progress: Float) {
@@ -171,8 +173,10 @@ class CollapsibleChipRenderer(
     }
 
     private fun drawText(canvas: Canvas, text: String, progress: Float) {
-        canvas.drawText(text, calculateTextX(progress), textY,
-            textPaint.withAlpha(progress.normalizeIn(PROGRESS_START_SHOW_TEXT, 1F)))
+        canvas.drawTextAligned(text, calculateTextX(progress), centerY.toFloat(),
+            textPaint.withAlpha(progress.normalizeIn(PROGRESS_START_SHOW_TEXT, 1F)),
+            alignment = combineFlags(Gravity.START, Gravity.CENTER_VERTICAL)
+        )
     }
 
     private fun drawIcon(canvas: Canvas, icon: Drawable?, progress: Float) {
@@ -212,5 +216,5 @@ class CollapsibleChipRenderer(
     internal fun measureMaxWidth(text: String): Int =
         (calculateTextX(1F) + measureText(text) + iconOffset).toInt()
 
-    private inline fun Paint.withAlpha(alpha: Float) = apply { this.alpha = alpha.mapToByte() }
+    private inline fun <T: Paint> T.withAlpha(alpha: Float): T = apply { this.alpha = alpha.mapToByte() }
 }
