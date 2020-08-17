@@ -6,9 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.beatonma.commons.R
 import org.beatonma.commons.app.social.SocialViewController
@@ -46,7 +44,6 @@ class MemberProfileFragment : CommonsFragment(),
     override lateinit var socialViewController: SocialViewController
     override val socialObserver: IoResultObserver<SocialContent> = createSocialObserver()
 
-
     private val adapter = ProfileDataAdapter(asyncDiffHost = this)
 
     override var theme: PartyColors? = null
@@ -72,7 +69,6 @@ class MemberProfileFragment : CommonsFragment(),
         socialViewController = setupViewController(
             binding.root,
             collapsedConstraintsId = R.id.state_default,
-            expandedConstraintsId = R.id.state_social_expended_ext,
         )
 
         binding.recyclerview.setup(
@@ -81,9 +77,7 @@ class MemberProfileFragment : CommonsFragment(),
         )
 
         viewmodel.liveData.observe(viewLifecycleOwner) { result ->
-            result.report()
-
-            result.data?.let { member ->
+            result.handle { member ->
                 updateUI(member)
 
                 withNotNull(member.profile) { profile ->
@@ -97,10 +91,12 @@ class MemberProfileFragment : CommonsFragment(),
         applyUiTheme(context?.getPartyTheme(member.party?.parliamentdotuk))
 
         binding.portrait.load(member.profile?.portraitUrl)
-
-        lifecycleScope.launch(Dispatchers.Main) {
+//
+        lifecycleScope.launch {
             @Suppress("UNCHECKED_CAST")
-            diffAdapterItems(adapter, viewmodel.toProfileData(member) as List<ProfileData<Any>>)
+            adapter.diffItems(viewmodel.toProfileData(member) as List<ProfileData<Any>>)?.invokeOnCompletion {
+                binding.recyclerview.scrollToPosition(0)
+            }
         }
 
         updateUiToolbarText(member)
@@ -127,11 +123,4 @@ class MemberProfileFragment : CommonsFragment(),
 
         socialViewController.collapsedTheme = SocialViewTheme(theme.textSecondaryOnPrimary, theme.textPrimaryOnPrimary)
     }
-
-//    private fun observeMemberVotes() {
-//        // TODO load votes when user requests them and display soemwhere
-//        viewmodel.memberVoteLiveData.observe(viewLifecycleOwner) {
-//            it.data.dump()
-//        }
-//    }
 }
