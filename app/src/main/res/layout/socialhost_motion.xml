@@ -29,21 +29,21 @@
         android:layout_width="wrap_content"
         android:tooltipText="@string/content_description_social_comment_count"
         style="@style/Social.Expanded.Count.Text"
-        tools:text="201"
+        tools:text="@sample/numbers.json/integers/value"
         />
 
     <TextView
         android:id="@+id/social_vote_up_count"
         android:layout_width="wrap_content"
         style="@style/Social.Expanded.Count.Text"
-        tools:text="32"
+        tools:text="@sample/numbers.json/integers/value"
         />
 
     <TextView
         android:id="@+id/social_vote_down_count"
         android:layout_width="wrap_content"
         style="@style/Social.Expanded.Count.Text"
-        tools:text="23"
+        tools:text="@sample/numbers.json/integers/value"
         />
 
     <androidx.appcompat.widget.AppCompatImageView
@@ -102,6 +102,7 @@
         app:flow_verticalAlign="center"
         />
 
+    <!-- Position placeholder for social_summary_flow to fit into when social content is expanded  -->
     <View
         android:id="@+id/social_summary_expanded_container"
         style="@style/Social.Expanded.Container"
@@ -132,6 +133,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         style="@style/Social.Comments"
+        tools:itemCount="3"
+        tools:listitem="@layout/item_social_comment"
         />
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -147,6 +150,7 @@
         style="@style/Commons.Fab"
         />
 
+    <!-- BottomSheet-like background for compose comment UI -->
     <androidx.constraintlayout.utils.widget.ImageFilterView
         android:id="@+id/social_create_comment_background"
         android:layout_width="0dp"
@@ -194,6 +198,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minLines="5"
+            tools:text="@sample/social.json/comments/text"
             style="@style/Text.Edit"
             />
     </com.google.android.material.textfield.TextInputLayout>
