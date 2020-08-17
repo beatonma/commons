@@ -101,7 +101,7 @@ fun Context?.drawableCompat(@DrawableRes resId: Int, tint: Int? = null): Drawabl
                 ContextCompat.getDrawable(this, resId)
             }
             else {
-                ContextCompat.getDrawable(this, resId)?.mutate()?.apply {
+                ContextCompat.getDrawable(this, resId)?.constantState?.newDrawable()?.apply {
                     setTint(tint)
                 }
             }
@@ -112,6 +112,8 @@ fun Context?.drawableCompat(@DrawableRes resId: Int, tint: Int? = null): Drawabl
  * Keep ...Compat name for consistency with above methods
  */
 fun Context?.dimenCompat(@DimenRes resId: Int): Int = this?.resources?.getDimensionPixelSize(resId) ?: 0
+fun Context?.intCompat(@IntegerRes resId: Int): Int = this?.resources?.getInteger(resId) ?: 0
+fun Context?.longCompat(@IntegerRes resId: Int): Long = this?.resources?.getInteger(resId)?.toLong() ?: 0L
 
 
 @ColorInt
