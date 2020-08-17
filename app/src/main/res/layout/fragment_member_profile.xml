@@ -10,6 +10,20 @@
     app:layoutDescription="@xml/fragment_member_profile_scene"
     >
 
+    <View
+        android:layout_width="@dimen/whitespace_edge"
+        android:layout_height="wrap_content"
+        android:id="@+id/inset_start"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <View
+        android:layout_width="@dimen/whitespace_edge"
+        android:layout_height="wrap_content"
+        android:id="@+id/inset_end"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
     <ImageView
         android:id="@+id/portrait"
         android:layout_width="0dp"
