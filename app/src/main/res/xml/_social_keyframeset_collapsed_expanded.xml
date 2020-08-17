@@ -127,4 +127,18 @@
         motion:framePosition="80"
         android:alpha="0.0"/>
 
+    <KeyPosition
+        motion:motionTarget="@+id/social_create_comment_fab"
+        motion:framePosition="1"
+        motion:percentHeight="1.0"
+        motion:percentY="1.0"
+        motion:percentWidth="1.0"
+        motion:percentX="1.0"
+        />
+
+    <KeyAttribute
+        motion:motionTarget="@+id/social_create_comment_fab"
+        motion:framePosition="20"
+        android:alpha="0.0"/>
+
 </KeyFrameSet>

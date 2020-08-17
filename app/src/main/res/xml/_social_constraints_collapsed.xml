@@ -2,6 +2,15 @@
 <injected xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:motion="http://schemas.android.com/apk/res-auto">
+
+    <Constraint
+        android:id="@+id/social_shared_background"
+        app:layout_constraintTop_toTopOf="@+id/social_parent_container"
+        app:layout_constraintBottom_toBottomOf="@+id/social_parent_container"
+        app:layout_constraintStart_toStartOf="@+id/social_parent_container"
+        app:layout_constraintEnd_toEndOf="@+id/social_parent_container"
+        />
+
     <Constraint
         android:id="@+id/social_title"
         android:layout_width="wrap_content"
@@ -63,6 +72,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/social_create_comment_fab"
         app:layout_constraintStart_toStartOf="@+id/social_create_comment_fab"
         app:layout_constraintEnd_toEndOf="@+id/social_create_comment_fab"
+        android:visibility="gone"
         >
         <CustomAttribute
             motion:attributeName="elevation"
@@ -71,6 +81,17 @@
             motion:attributeName="roundPercent"
             motion:customFloatValue="1" />
     </Constraint>
+
+    <Constraint
+        android:id="@+id/social_create_comment_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/fab_margin_horizontal"
+        android:layout_marginVertical="@dimen/fab_margin_vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="gone"
+        />
 
     <Constraint
         android:id="@+id/social_create_comment_alpha_layer"
@@ -94,13 +115,5 @@
         android:orientation="horizontal"
         app:flow_horizontalGap="@dimen/flow_gap_horizontal"
         app:flow_verticalAlign="center"
-        />
-
-    <Constraint
-        android:id="@+id/social_shared_background"
-        app:layout_constraintTop_toTopOf="@+id/social_parent_container"
-        app:layout_constraintBottom_toBottomOf="@+id/social_parent_container"
-        app:layout_constraintStart_toStartOf="@+id/social_parent_container"
-        app:layout_constraintEnd_toEndOf="@+id/social_parent_container"
         />
 </injected>
