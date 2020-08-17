@@ -10,23 +10,23 @@ You should edit the source file '_fragment_member_profile_scene.xml' instead.
     xmlns:app="http://schemas.android.com/apk/res-auto"
     motion:defaultDuration="@integer/animation_debug_duration">
 
-    <StateSet motion:defaultState="@+id/_default">
-        <State
-            android:id="@+id/_default"
-            motion:constraints="@+id/state_default"
-            />
-        <State
-            android:id="@+id/_scrolled"
-            motion:constraints="@+id/state_scrolled"
-            />
-        <State
-            android:id="@+id/_social_expanded"
-            motion:constraints="@+id/state_social_expanded"/>
-        <State
-            android:id="@+id/_social_compose"
-            motion:constraints="@+id/state_social_compose_comment"
-            />
-    </StateSet>
+<!--    <StateSet motion:defaultState="@+id/_default">-->
+<!--        <State-->
+<!--            android:id="@+id/_default"-->
+<!--            motion:constraints="@+id/state_default"-->
+<!--            />-->
+<!--        <State-->
+<!--            android:id="@+id/_scrolled"-->
+<!--            motion:constraints="@+id/state_scrolled"-->
+<!--            />-->
+<!--        <State-->
+<!--            android:id="@+id/_social_expanded"-->
+<!--            motion:constraints="@+id/state_social_expanded"/>-->
+<!--        <State-->
+<!--            android:id="@+id/_social_compose"-->
+<!--            motion:constraints="@+id/state_social_compose_comment"-->
+<!--            />-->
+<!--    </StateSet>-->
 
     <Transition
         android:id="@+id/transition_default"
@@ -46,7 +46,7 @@ You should edit the source file '_fragment_member_profile_scene.xml' instead.
         motion:constraintSetStart="@id/state_default"
         motion:constraintSetEnd="@+id/state_social_expanded"
         >
-<!-- Start injected content from '_transition_social_collapsed_expanded.xml' -->
+<!-- Start injected content from '_social_keyframeset_collapsed_expanded.xml' -->
         <KeyFrameSet
             >
         
@@ -174,8 +174,22 @@ You should edit the source file '_fragment_member_profile_scene.xml' instead.
                 motion:framePosition="80"
                 android:alpha="0.0"/>
         
+            <KeyPosition
+                motion:motionTarget="@+id/social_create_comment_fab"
+                motion:framePosition="1"
+                motion:percentHeight="1.0"
+                motion:percentY="1.0"
+                motion:percentWidth="1.0"
+                motion:percentX="1.0"
+                />
+        
+            <KeyAttribute
+                motion:motionTarget="@+id/social_create_comment_fab"
+                motion:framePosition="20"
+                android:alpha="0.0"/>
+        
         </KeyFrameSet>
-<!-- End injected content from '_transition_social_collapsed_expanded.xml' -->
+<!-- End injected content from '_social_keyframeset_collapsed_expanded.xml' -->
 
         <KeyFrameSet>
             <KeyAttribute
@@ -185,149 +199,6 @@ You should edit the source file '_fragment_member_profile_scene.xml' instead.
         </KeyFrameSet>
     </Transition>
 
-    <Transition
-        android:id="@+id/transition_scrolled_collapsed_expanded"
-        motion:constraintSetStart="@id/state_scrolled"
-        motion:constraintSetEnd="@+id/state_social_expanded"
-        >
-<!-- Start injected content from '_transition_social_collapsed_expanded.xml' -->
-        <KeyFrameSet
-            >
-        
-            <KeyPosition
-                motion:motionTarget="@+id/social_vote_up"
-                motion:framePosition="25"
-                motion:percentX=".15"
-                motion:percentY="0.0"
-                motion:pathMotionArc="startHorizontal"
-                />
-        
-            <KeyPosition
-                motion:motionTarget="@+id/social_vote_down"
-                motion:framePosition="25"
-                motion:percentX=".15"
-                motion:percentY="0.0"
-                motion:pathMotionArc="startHorizontal"
-                />
-        
-            <KeyPosition
-                motion:motionTarget="@+id/social_comment_count_icon"
-                motion:framePosition="25"
-                motion:percentX=".15"
-                motion:percentY="0.0"
-                motion:pathMotionArc="startHorizontal"
-                />
-        
-            <KeyPosition
-                motion:motionTarget="@+id/social_vote_up_count"
-                motion:framePosition="40"
-                motion:percentY="0.0"
-                motion:pathMotionArc="startHorizontal"
-                />
-        
-            <KeyPosition
-                motion:motionTarget="@+id/social_vote_down_count"
-                motion:framePosition="40"
-                motion:percentY="0.0"
-                motion:pathMotionArc="startHorizontal"
-                />
-        
-            <KeyPosition
-                motion:motionTarget="@+id/social_comment_count"
-                motion:framePosition="40"
-                motion:percentY="0.0"
-                motion:pathMotionArc="startHorizontal"
-                />
-        
-            <!-- Icon anim end -->
-            <KeyPosition
-                motion:motionTarget="@+id/social_vote_up"
-                motion:framePosition="80"
-                motion:percentX="1.0"
-                motion:percentY="1.0"
-                />
-        
-            <KeyPosition
-                motion:motionTarget="@+id/social_vote_down"
-                motion:framePosition="80"
-                motion:percentX="1.0"
-                motion:percentY="1.0"
-                />
-        
-            <KeyPosition
-                motion:motionTarget="@+id/social_comment_count_icon"
-                motion:framePosition="80"
-                motion:percentX="1.0"
-                motion:percentY="1.0"
-                />
-        
-            <KeyPosition
-                motion:motionTarget="@+id/social_vote_up_count"
-                motion:framePosition="80"
-                motion:percentX="1.0"
-                motion:percentY="1.0"
-                />
-        
-            <KeyPosition
-                motion:motionTarget="@+id/social_vote_down_count"
-                motion:framePosition="80"
-                motion:percentX="1.0"
-                motion:percentY="1.0"
-                />
-        
-            <KeyPosition
-                motion:motionTarget="@+id/social_comment_count"
-                motion:framePosition="80"
-                motion:percentX="1.0"
-                motion:percentY="1.0"
-                />
-            <!-- Icon anim end -->
-        
-            <KeyAttribute
-                motion:motionTarget="@+id/social_shared_background"
-                motion:framePosition="10"
-                android:alpha="1.0"
-                />
-        
-            <KeyPosition
-                motion:motionTarget="@+id/social_shared_background"
-                motion:framePosition="20"
-                motion:percentWidth="1.0"
-                motion:percentX="1.0"
-                />
-        
-            <KeyPosition
-                motion:motionTarget="@+id/social_shared_background"
-                motion:framePosition="40"
-                motion:percentHeight="1.0"
-                motion:percentY="1.0"
-                motion:percentWidth="1.0"
-                motion:percentX="1.0"
-                />
-        
-            <KeyPosition
-                motion:motionTarget="@+id/social_title"
-                motion:framePosition="80"
-                motion:percentHeight="1.0"
-                motion:percentY="1.0"
-                motion:percentWidth="1.0"
-                motion:percentX="1.0"/>
-        
-            <KeyAttribute
-                motion:motionTarget="@+id/social_expanded_alpha_layer"
-                motion:framePosition="80"
-                android:alpha="0.0"/>
-        
-        </KeyFrameSet>
-<!-- End injected content from '_transition_social_collapsed_expanded.xml' -->
-
-        <KeyFrameSet>
-            <KeyAttribute
-                motion:motionTarget="@+id/name"
-                motion:framePosition="20"
-                android:alpha="0.0"/>
-        </KeyFrameSet>
-    </Transition>
 
     <Transition
         android:id="@+id/transition_social_expanded_compose"
@@ -335,7 +206,7 @@ You should edit the source file '_fragment_member_profile_scene.xml' instead.
         motion:constraintSetEnd="@+id/state_social_compose_comment"
         >
 
-<!-- Start injected content from '_transition_social_expanded_compose.xml' -->
+<!-- Start injected content from '_social_keyframeset_expanded_compose.xml' -->
         <KeyFrameSet
             >
             <!-- Scrim -->
@@ -399,7 +270,7 @@ You should edit the source file '_fragment_member_profile_scene.xml' instead.
         
             <!-- End comment layer -->
         </KeyFrameSet>
-<!-- End injected content from '_transition_social_expanded_compose.xml' -->
+<!-- End injected content from '_social_keyframeset_expanded_compose.xml' -->
 
     </Transition>
 
@@ -432,7 +303,16 @@ You should edit the source file '_fragment_member_profile_scene.xml' instead.
     <ConstraintSet
         android:id="@+id/state_social_collapsed">
 
-<!-- Start injected content from '_state_social_collapsed.xml' -->
+<!-- Start injected content from '_social_constraints_collapsed.xml' -->
+
+
+    <Constraint
+        android:id="@+id/social_shared_background"
+        app:layout_constraintTop_toTopOf="@+id/social_parent_container"
+        app:layout_constraintBottom_toBottomOf="@+id/social_parent_container"
+        app:layout_constraintStart_toStartOf="@+id/social_parent_container"
+        app:layout_constraintEnd_toEndOf="@+id/social_parent_container"
+        />
 
     <Constraint
         android:id="@+id/social_title"
@@ -495,6 +375,7 @@ You should edit the source file '_fragment_member_profile_scene.xml' instead.
         app:layout_constraintBottom_toBottomOf="@+id/social_create_comment_fab"
         app:layout_constraintStart_toStartOf="@+id/social_create_comment_fab"
         app:layout_constraintEnd_toEndOf="@+id/social_create_comment_fab"
+        android:visibility="gone"
         >
         <CustomAttribute
             motion:attributeName="elevation"
@@ -503,6 +384,17 @@ You should edit the source file '_fragment_member_profile_scene.xml' instead.
             motion:attributeName="roundPercent"
             motion:customFloatValue="1" />
     </Constraint>
+
+    <Constraint
+        android:id="@+id/social_create_comment_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/fab_margin_horizontal"
+        android:layout_marginVertical="@dimen/fab_margin_vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="gone"
+        />
 
     <Constraint
         android:id="@+id/social_create_comment_alpha_layer"
@@ -527,15 +419,7 @@ You should edit the source file '_fragment_member_profile_scene.xml' instead.
         app:flow_horizontalGap="@dimen/flow_gap_horizontal"
         app:flow_verticalAlign="center"
         />
-
-    <Constraint
-        android:id="@+id/social_shared_background"
-        app:layout_constraintTop_toTopOf="@+id/social_parent_container"
-        app:layout_constraintBottom_toBottomOf="@+id/social_parent_container"
-        app:layout_constraintStart_toStartOf="@+id/social_parent_container"
-        app:layout_constraintEnd_toEndOf="@+id/social_parent_container"
-        />
-<!-- End injected content from '_state_social_collapsed.xml' -->
+<!-- End injected content from '_social_constraints_collapsed.xml' -->
 
 
         <Constraint
@@ -563,7 +447,7 @@ You should edit the source file '_fragment_member_profile_scene.xml' instead.
     <ConstraintSet
         android:id="@+id/state_social_expanded">
 
-<!-- Start injected content from '_state_social_expanded.xml' -->
+<!-- Start injected content from '_social_constraints_expanded.xml' -->
 
     <Constraint
         android:id="@+id/social_parent_container"
@@ -687,7 +571,7 @@ You should edit the source file '_fragment_member_profile_scene.xml' instead.
         android:id="@+id/social_expanded_alpha_layer"
         android:visibility="visible"
         android:alpha="1.0"/>
-<!-- End injected content from '_state_social_expanded.xml' -->
+<!-- End injected content from '_social_constraints_expanded.xml' -->
 
 
         <Constraint
@@ -721,7 +605,7 @@ You should edit the source file '_fragment_member_profile_scene.xml' instead.
     <ConstraintSet
         android:id="@+id/state_social_compose_comment"
         >
-<!-- Start injected content from '_state_social_compose_comment.xml' -->
+<!-- Start injected content from '_social_constraints_compose_comment.xml' -->
 
     <Constraint
         android:id="@+id/social_summary_flow"
@@ -821,7 +705,7 @@ You should edit the source file '_fragment_member_profile_scene.xml' instead.
         android:id="@+id/social_expanded_alpha_layer"
         android:visibility="visible"
         android:alpha="1.0"/>
-<!-- End injected content from '_state_social_compose_comment.xml' -->
+<!-- End injected content from '_social_constraints_compose_comment.xml' -->
 
 
         <Constraint

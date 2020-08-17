@@ -5,23 +5,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     motion:defaultDuration="@integer/animation_debug_duration">
 
-    <StateSet motion:defaultState="@+id/_default">
-        <State
-            android:id="@+id/_default"
-            motion:constraints="@+id/state_default"
-            />
-        <State
-            android:id="@+id/_scrolled"
-            motion:constraints="@+id/state_scrolled"
-            />
-        <State
-            android:id="@+id/_social_expanded"
-            motion:constraints="@+id/state_social_expanded"/>
-        <State
-            android:id="@+id/_social_compose"
-            motion:constraints="@+id/state_social_compose_comment"
-            />
-    </StateSet>
+<!--    <StateSet motion:defaultState="@+id/_default">-->
+<!--        <State-->
+<!--            android:id="@+id/_default"-->
+<!--            motion:constraints="@+id/state_default"-->
+<!--            />-->
+<!--        <State-->
+<!--            android:id="@+id/_scrolled"-->
+<!--            motion:constraints="@+id/state_scrolled"-->
+<!--            />-->
+<!--        <State-->
+<!--            android:id="@+id/_social_expanded"-->
+<!--            motion:constraints="@+id/state_social_expanded"/>-->
+<!--        <State-->
+<!--            android:id="@+id/_social_compose"-->
+<!--            motion:constraints="@+id/state_social_compose_comment"-->
+<!--            />-->
+<!--    </StateSet>-->
 
     <Transition
         android:id="@+id/transition_default"
@@ -41,7 +41,7 @@
         motion:constraintSetStart="@id/state_default"
         motion:constraintSetEnd="@+id/state_social_expanded"
         >
-        <inject src="_transition_social_collapsed_expanded"/>
+        <inject src="_social_keyframeset_collapsed_expanded"/>
         <KeyFrameSet>
             <KeyAttribute
                 motion:motionTarget="@+id/name"
@@ -50,19 +50,6 @@
         </KeyFrameSet>
     </Transition>
 
-    <Transition
-        android:id="@+id/transition_scrolled_collapsed_expanded"
-        motion:constraintSetStart="@id/state_scrolled"
-        motion:constraintSetEnd="@+id/state_social_expanded"
-        >
-        <inject src="_transition_social_collapsed_expanded"/>
-        <KeyFrameSet>
-            <KeyAttribute
-                motion:motionTarget="@+id/name"
-                motion:framePosition="20"
-                android:alpha="0.0"/>
-        </KeyFrameSet>
-    </Transition>
 
     <Transition
         android:id="@+id/transition_social_expanded_compose"
@@ -70,7 +57,7 @@
         motion:constraintSetEnd="@+id/state_social_compose_comment"
         >
 
-        <inject src="_transition_social_expanded_compose"/>
+        <inject src="_social_keyframeset_expanded_compose"/>
     </Transition>
 
     <ConstraintSet
@@ -102,7 +89,7 @@
     <ConstraintSet
         android:id="@+id/state_social_collapsed">
 
-        <inject src="_state_social_collapsed"/>
+        <inject src="_social_constraints_collapsed"/>
 
         <Constraint
             android:id="@+id/name"
@@ -129,7 +116,7 @@
     <ConstraintSet
         android:id="@+id/state_social_expanded">
 
-        <inject src="_state_social_expanded"/>
+        <inject src="_social_constraints_expanded"/>
 
         <Constraint
             android:id="@+id/name"
@@ -162,7 +149,7 @@
     <ConstraintSet
         android:id="@+id/state_social_compose_comment"
         >
-        <inject src="_state_social_compose_comment"/>
+        <inject src="_social_constraints_compose_comment"/>
 
         <Constraint
             android:id="@+id/name"
