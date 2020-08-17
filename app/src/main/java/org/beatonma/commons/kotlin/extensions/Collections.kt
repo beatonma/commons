@@ -20,3 +20,11 @@ fun Collection<Any?>.allNotNull(): Boolean {
 
 fun <T> firstNotNull(vararg args: T?): T? = args.firstOrNull { it != null }
 fun <T> Collection<T?>.firstNotNull() = firstOrNull { it != null }
+
+
+fun <T> List<T>.safeGet(position: Int): T? {
+    return when {
+        this.size > position -> this[position]
+        else -> null
+    }
+}
