@@ -1,17 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<HorizontalScrollView
+<org.beatonma.commons.app.ui.views.TimelineView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:scrollbars="horizontal"
-    android:overScrollMode="always"
-    android:scrollbarAlwaysDrawHorizontalTrack="false"
-    android:fadeScrollbars="true"
-    >
-    <org.beatonma.commons.app.ui.views.HistoryView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="4dp"
-        android:background="@color/Debug"
-        android:id="@+id/historyview"/>
-</HorizontalScrollView>
+    android:layout_marginVertical="4dp"
+    android:id="@+id/historyview"/>
