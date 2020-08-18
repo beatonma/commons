@@ -5,5 +5,5 @@
     <dimen name="separator_width">@dimen/separator_thickness</dimen>
     <dimen name="separator_indent_horizontal">16dp</dimen>
     <dimen name="separator_indent_vertical">6dp</dimen>
-    <dimen name="separator_margin">@dimen/flow_gap</dimen>
+    <dimen name="separator_margin">8dp</dimen>
 </resources>
