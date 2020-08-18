@@ -50,7 +50,7 @@ class SocialViewModel @ViewModelInject constructor(
     suspend fun postComment(text: String): IoResult<*> {
         return withUserAccount { account ->
             val token = userRepository.getActiveUserToken(account)
-                ?: return NotSignedInError("", null)
+                ?: return NotSignedInError("User must be signed in to post a comment")
 
             val comment = CreatedComment(
                 userToken = token,
@@ -66,7 +66,7 @@ class SocialViewModel @ViewModelInject constructor(
     suspend fun postVote(voteType: SocialVoteType): IoResult<*> {
         return withUserAccount { account ->
             val token = userRepository.getActiveUserToken(account)
-                ?: return NotSignedInError("User must be signed in to vote", null)
+                ?: return NotSignedInError("User must be signed in to vote")
 
             val vote = CreatedVote(
                 userToken = token,
@@ -102,7 +102,7 @@ class SocialViewModel @ViewModelInject constructor(
         return currentGoogleAccount?.toUserAccount()
     }
 
-    private suspend inline fun withUserAccount(block: (UserAccount) -> IoResult<*>):IoResult<*> {
+    private suspend inline fun withUserAccount(block: (UserAccount) -> IoResult<*>): IoResult<*> {
         val userAccount = getUserAccount()
 
         return if (userAccount == null) {
@@ -113,7 +113,7 @@ class SocialViewModel @ViewModelInject constructor(
         }
     }
 
-    private suspend inline fun withOptionalUserAccount(block: (UserAccount?) -> IoResult<*>):IoResult<*> {
+    private suspend inline fun withOptionalUserAccount(block: (UserAccount?) -> IoResult<*>): IoResult<*> {
         return block.invoke(getUserAccount())
     }
 
