@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Avatar" parent="">
+        <item name="android:layout_width">@dimen/user_avatar_size</item>
+        <item name="android:layout_height">@dimen/user_avatar_size</item>
+        <item name="android:scaleType">centerCrop</item>
+        <item name="shapeAppearanceOverlay">@style/Avatar.Shape</item>
+        <item name="strokeColor">?attr/colorAccent</item>
+        <item name="strokeWidth">2dp</item>
+        <item name="android:background">@color/AccentPurple</item>
+        <item name="android:padding">2dp</item>
+    </style>
+
+    <style name="Avatar.User">
+
+    </style>
+    
+    <style name="Avatar.Shape" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+</resources>

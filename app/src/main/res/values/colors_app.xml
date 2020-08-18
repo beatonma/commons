@@ -7,4 +7,7 @@
     <color name="colorControlDark">@color/TextSecondaryDark</color>
 
     <color name="menu_action_icon">@color/TextPrimary</color>
+
+    <color name="AccentPurple">#5F2DB4</color>
+    <color name="AccentMint">#96DCBE</color>
 </resources>

@@ -46,7 +46,7 @@
         android:id="@+id/state_enable_search_signin">
         <!-- Show signin and search in their collapsed states -->
         <inject src="_search_constraints_enabled"/>
-        <inject src="_signin_constraints_enabled"/>
+        <inject src="_signin_button_constraints_enabled"/>
     </ConstraintSet>
 
     <ConstraintSet
@@ -64,7 +64,7 @@
     <ConstraintSet
         android:id="@+id/state_enable_signin">
         <!-- Display search in collapsed state -->
-        <inject src="_signin_constraints_enabled"/>
+        <inject src="_signin_button_constraints_enabled"/>
     </ConstraintSet>
 
     <ConstraintSet
@@ -72,6 +72,6 @@
         <!-- Completely hide search and signin views -->
 
         <inject src="_search_constraints_disabled"/>
-        <inject src="_signin_constraints_disabled"/>
+        <inject src="_signin_button_constraints_disabled"/>
     </ConstraintSet>
 </MotionScene>

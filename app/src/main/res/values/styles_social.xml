@@ -21,6 +21,11 @@
         <item name="android:textColor">?attr/colorAccent</item>
     </style>
 
+    <style name="Social.Profile.Username" parent="Text.Primary.H2">
+        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:textColor">?attr/colorAccent</item>
+    </style>
+
     <style name="Social.Comment.Timestamp" parent="Text.Secondary">
         <item name="android:fontFamily">sans-serif-condensed</item>
     </style>

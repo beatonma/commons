@@ -1,87 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.constraintlayout.motion.widget.MotionLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/card_selector_bottomsheet"
+    android:paddingHorizontal="@dimen/card_padding_horizontal"
+    style="@style/Card.FullWidthOnSmall"
+    app:layoutDescription="@xml/fragment_signin_scene"
     >
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/account_avatar"
         android:layout_width="@dimen/user_avatar_size"
         android:layout_height="@dimen/user_avatar_size"
         android:layout_margin="@dimen/user_avatar_margin"
+        app:layout_constraintTop_toBottomOf="@+id/barrier_header"
         tools:src="@tools:sample/avatars"
+        style="@style/Avatar.User"
         />
 
     <TextView
-        app:layout_constraintStart_toStartOf="parent"
-        android:id="@+id/account_name"
-        style="@style/Text.Primary"
-        tools:text="@tools:sample/full_names"
-        />
-
-    <TextView
-        app:layout_constraintStart_toStartOf="parent"
         android:id="@+id/account_username"
-        style="@style/Text.Primary"
+        android:textAlignment="viewStart"
+        style="@style/Social.Profile.Username"
         tools:text="@tools:sample/last_names"
         />
 
     <TextView
-        app:layout_constraintStart_toStartOf="parent"
+        android:id="@+id/account_name_and_email"
+        android:textAlignment="viewStart"
+        style="@style/Text.Primary.Condensed"
+        tools:text="@tools:sample/full_names"
+        />
+
+    <TextView
         android:id="@+id/account_id"
-        style="@style/Text.Primary"
-        tools:text="##account_id##"
+        android:textAlignment="viewStart"
+        style="@style/Text.Secondary.Condensed"
+        tools:text="@sample/social.json/accounts/shortid"
         />
 
     <TextView
         android:id="@+id/rationale"
-        style="@style/Text.Primary"
         android:text="@string/account_sign_in_rationale"
+        style="@style/Text.Primary"
         />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/signout_button"
-        style="@style/Button"
+    <View
+        android:id="@+id/barrier_account_avatar"
+        android:layout_width="@dimen/flow_gap_large"
+        android:layout_height="1dp"
+        app:layout_constraintStart_toEndOf="@+id/account_avatar"
+        />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/bottom_guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/account_sigh_out"
-        />
-
-    <androidx.constraintlayout.helper.widget.Flow
-        android:id="@+id/flow_signin"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        app:constraint_referenced_ids="rationale,g_sign_in_button,signout_button"
-        app:flow_verticalStyle="packed"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
-
-    <androidx.constraintlayout.helper.widget.Flow
-        android:id="@+id/flow_account_details_vertical"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:constraint_referenced_ids="account_name,account_username,account_id"
-        app:flow_horizontalAlign="start"
-        app:layout_constraintStart_toEndOf="@id/account_avatar"
-        />
-
-    <androidx.constraintlayout.helper.widget.Flow
-        android:id="@+id/flow_account_details_horizontal"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:constraint_referenced_ids="account_avatar,flow_account_details_vertical"
-        app:flow_firstHorizontalStyle="packed"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="@dimen/toolbar_height"
         />
 
     <com.google.android.gms.common.SignInButton
@@ -90,4 +69,14 @@
         android:layout_height="wrap_content"
         />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/signout_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/account_sign_out"
+        style="@style/Button.Outline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/account_id"
+        />
+
+</androidx.constraintlayout.motion.widget.MotionLayout>
