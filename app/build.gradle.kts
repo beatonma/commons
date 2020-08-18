@@ -45,7 +45,6 @@ android {
         manifestPlaceholders.putAll(mapOf(
             "googleMapsApiKey" to LocalConfig.Api.Google.MAPS
         ))
-        manifestPlaceholders["googleMapsApiKey"] = LocalConfig.Api.Google.MAPS
 
         // Party colors as @color resources and build config constants
         AllPartyThemes.forEach { (key, theme) ->
@@ -116,10 +115,6 @@ android {
         languageVersion = "1.4"
 
         freeCompilerArgs = listOf("-XXLanguage:+InlineClasses")
-
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = Versions.COMPOSE
     }
     packagingOptions {
         exclude("META-INF/DEPENDENCIES")
@@ -172,6 +167,12 @@ dependencies {
         Dependencies.Test.AndroidX.Espresso.CORE
     ).forEach { androidTestImplementation(it) }
 
+    // Debug build
+    arrayOf(
+        Dependencies.Debug.LEAK_CANARY
+    ).forEach { debugImplementation(it) }
+
+    // Main build
     val kotlin = arrayOf(
         Dependencies.Kotlin.STDLIB,
         Dependencies.Kotlin.Coroutines.ANDROID,
