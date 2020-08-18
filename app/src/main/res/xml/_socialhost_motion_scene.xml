@@ -4,6 +4,7 @@ Archetype MotionScene implementation for use with SocialViewController.
 Not actually used - the relevant chunks should be injected via `scenemerge` to
 -->
 <MotionScene xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:motion="http://schemas.android.com/apk/res-auto">
 
     <ConstraintSet
