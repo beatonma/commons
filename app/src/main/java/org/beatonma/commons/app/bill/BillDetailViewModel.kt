@@ -40,8 +40,8 @@ class BillDetailViewModel @ViewModelInject constructor(
     }
 
     override fun onCleared() {
-        super.onCleared()
         liveData.removeObserver(stagesObserver)
+        super.onCleared()
     }
 
     /**
