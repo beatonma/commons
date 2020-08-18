@@ -15,5 +15,22 @@
     {
       "text":"I was starting to get worried that this update wouldn’t B. Goodenough but you came through in the last bit"
     }
+  ],
+  "accounts": [
+    {
+      "email": "fake@snommoc.org",
+      "uuid": "355eb1f5-ec95-438e-8764-eeb015ac04bb",
+      "shortid": "355eb1f5"
+    },
+    {
+      "email": "noreply@snommoc.org",
+      "uuid": "edda41ab-9aed-438f-ad54-efde66d52da4",
+      "shortid": "edda41ab"
+    },
+    {
+      "email": "commons@snommoc.org",
+      "uuid": "260098bf-2710-4478-97f7-c48019bbc0fa",
+      "shortid": "260098bf"
+    }
   ]
 }
