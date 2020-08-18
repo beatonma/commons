@@ -4,5 +4,6 @@
     <dimen name="social_compact_view_height">@dimen/touchable_min_size</dimen>
     <dimen name="social_expanded_view_height">96dp</dimen>
     <dimen name="social_expanded_elevation">2dp</dimen>
+    <dimen name="social_expanded_touch_target">64dp</dimen>
     <dimen name="social_invalid_comment_shake_amount">8dp</dimen>
 </resources>
