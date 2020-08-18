@@ -24,11 +24,11 @@ abstract class BaseDataSource {
             if (response.isSuccessful) {
                 val body = response.body()
                 return when(body) {
-                    null -> NoBodySuccessResult(response.code(), message = "Network OK")
+                    null -> SuccessCodeResult(response.code(), message = "Network OK")
                     else -> SuccessResult(body, message = "Network OK")
                 }
             }
-            return NetworkError("[${response.code()}] ${response.message()}", null)
+            return NetworkError(response.message(), NetworkException(response))
         }
         catch (e: Exception) {
             return GenericError("getResult error: ${e.message ?: e}", e)

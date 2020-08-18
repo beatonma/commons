@@ -16,7 +16,7 @@ import org.beatonma.commons.annotations.SignInRequired
 import org.beatonma.commons.app.ui.navigation.BackPressConsumer
 import org.beatonma.commons.app.ui.recyclerview.adapter.AsyncDiffHost
 import org.beatonma.commons.data.IoResultObserver
-import org.beatonma.commons.data.NoBodySuccessResult
+import org.beatonma.commons.data.SuccessCodeResult
 import org.beatonma.commons.data.core.interfaces.Sociable
 import org.beatonma.commons.data.core.social.SocialContent
 import org.beatonma.commons.data.core.social.SocialVoteType
@@ -105,7 +105,7 @@ interface SocialViewHost: LifecycleOwner, BackPressConsumer, AsyncDiffHost {
         lifecycleScope.launch {
             val result = socialViewModel.postVote(voteType)
             when (result) {
-                is NoBodySuccessResult -> onVoteSubmissionSuccessful()
+                is SuccessCodeResult -> onVoteSubmissionSuccessful()
                 else -> {
                     Log.w(TAG, result.toString())
                 }
@@ -118,7 +118,7 @@ interface SocialViewHost: LifecycleOwner, BackPressConsumer, AsyncDiffHost {
         lifecycleScope.launch(Dispatchers.IO) {
             val result = socialViewModel.postComment(text)
             when (result) {
-                is NoBodySuccessResult -> onCommentSubmissionSuccessful()
+                is SuccessCodeResult -> onCommentSubmissionSuccessful()
                 else -> {
                     Log.w(TAG, result.toString())
                 }
