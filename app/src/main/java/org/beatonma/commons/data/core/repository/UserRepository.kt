@@ -43,6 +43,7 @@ class UserRepository @Inject constructor(
 data class UserAccount(
     val name: String?,
     val photoUrl: String?,
+    val email: String?,
     val googleId: String,
     val googleIdToken: String,
 )
@@ -51,10 +52,11 @@ data class UserAccount(
 fun GoogleSignInAccount.toUserAccount(): UserAccount? =
     try {
         UserAccount(
-            name = this.displayName,
-            photoUrl = this.photoUrl?.toString(),
-            googleId = this.id!!,
-            googleIdToken = this.idToken!!,
+            name = displayName,
+            photoUrl = photoUrl?.toString(),
+            email = email,
+            googleId = id!!,
+            googleIdToken = idToken!!,
         )
     }
     catch (e: NullPointerException) {

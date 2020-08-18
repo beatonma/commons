@@ -16,6 +16,7 @@ import org.beatonma.commons.network.retrofit.Contract
 data class UserToken(
     @ColumnInfo(name = "name") val name: String?,
     @ColumnInfo(name = "photo_url") val photoUrl: String?,
+    @ColumnInfo(name = "email") val email: String?,
     @ColumnInfo(name = "snommoc_token") val snommocToken: String,
     @ColumnInfo(name = "google_id") val googleId: String,
     @ColumnInfo(name = "username") val username: String,
@@ -29,6 +30,7 @@ data class ApiUserToken(
     fun composeToUserToken(account: UserAccount) = UserToken(
         name = account.name,
         photoUrl = account.photoUrl,
+        email = account.email,
         snommocToken = this.snommocToken,
         googleId = account.googleId,
         username = this.username,

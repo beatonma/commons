@@ -15,6 +15,7 @@ import org.beatonma.commons.data.IoResult
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.databinding.FragmentSigninBinding
 import org.beatonma.commons.kotlin.extensions.bindText
+import org.beatonma.commons.kotlin.extensions.dotted
 import org.beatonma.commons.kotlin.extensions.load
 
 private const val RC_GOOGLE_SIGNIN = 9913
@@ -94,8 +95,8 @@ class SignInFragment : BottomSheetDialogFragment() {
         if (token != null) {
             binding.apply {
                 bindText(
-                    accountName to token.name,
                     accountUsername to token.username,
+                    accountNameAndEmail to context?.dotted(token.name, token.email),
                     accountId to token.snommocToken,
                 )
 

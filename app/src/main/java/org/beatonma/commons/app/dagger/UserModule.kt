@@ -17,8 +17,9 @@ class UserModule {
     @Singleton
     @Provides
     fun providesGoogleSignInOptions(): GoogleSignInOptions = GoogleSignInOptions.Builder(
-            GoogleSignInOptions.DEFAULT_SIGN_IN
-        )
+        GoogleSignInOptions.DEFAULT_SIGN_IN
+    )
+        .requestEmail()
         .requestIdToken(GOOGLE_SIGNIN_CLIENT_ID)
         .build()
 
