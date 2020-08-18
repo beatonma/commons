@@ -7,7 +7,6 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.asLiveData
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
@@ -22,37 +21,51 @@ import org.beatonma.commons.data.core.room.entities.user.UserToken
 
 private const val TAG = "SignInViewModel"
 
-/**
- * Return the registered snommoc.org user token for the current signed-in user, or null if
- * it is not available.
- */
 class SignInViewModel @ViewModelInject constructor(
     private val repository: UserRepository,
-    val googleSignInClient: GoogleSignInClient,
+    private val googleSignInClient: GoogleSignInClient,
     @ApplicationContext application: Context,
 ): AndroidViewModel(application.app) {
 
     val signInIntent: Intent get() = googleSignInClient.signInIntent
+
     var activeToken: LiveDataIoResult<UserToken>? = null
 
-    fun getTokenForCurrentSignedInAccount(): LiveDataIoResult<UserToken>? {
+    /**
+     * If user is signed in with their Google account, use it to retrieve a UserToken that
+     * will enable interaction social features of Commons.
+     */
+    fun getTokenForCurrentSignedInAccount() {
         val currentGoogleAccount = GoogleSignIn.getLastSignedInAccount(context)
         val userAccount = currentGoogleAccount?.toUserAccount()
         if (userAccount != null) {
-            return getTokenForAccount(userAccount)
+            getTokenForAccount(userAccount)
         }
-
-        return null
     }
 
-    fun getTokenForAccount(account: UserAccount): LiveDataIoResult<UserToken>? {
+    /**
+     * Handle the response from [signInIntent]
+     */
+    fun getTokenFromSignInResult(data: Intent?) {
+        val account = getUserAccountFromSignInResult(data)
+        if (account != null) {
+            getTokenForAccount(account)
+        }
+    }
+
+    fun signOut(): Task<Void> {
+        activeToken = null
+        return googleSignInClient.signOut()
+    }
+
+    private fun getTokenForAccount(account: UserAccount) {
         activeToken = repository.getTokenForAccount(account).asLiveData()
-        return activeToken
     }
 
-    fun getGoogleAccountFromSignInResult(completedTask: Task<GoogleSignInAccount>): UserAccount? {
+    private fun getUserAccountFromSignInResult(data: Intent?): UserAccount? {
         try {
-            val account = completedTask.getResult(ApiException::class.java)
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+            val account = task.getResult(ApiException::class.java)
             return account?.toUserAccount()
         }
         catch(e: ApiException) {
@@ -60,6 +73,4 @@ class SignInViewModel @ViewModelInject constructor(
         }
         return null
     }
-
-    fun signOut() = googleSignInClient.signOut()
 }
