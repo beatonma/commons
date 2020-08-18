@@ -3,6 +3,7 @@ package org.beatonma.commons.app.ui
 import androidx.fragment.app.Fragment
 import kotlinx.coroutines.Job
 import org.beatonma.commons.app.ui.recyclerview.adapter.AsyncDiffHost
+import org.beatonma.commons.data.ActionBlock
 import org.beatonma.commons.data.IoResult
 import org.beatonma.commons.data.NetworkError
 import org.beatonma.commons.data.SuccessResult
@@ -16,7 +17,7 @@ abstract class CommonsFragment : Fragment(), AsyncDiffHost {
     }
 
     inline fun <T> IoResult<T>.handle(
-        noData: () -> Unit = {},
+        noData: ActionBlock = {},
         withData: (T) -> Unit
     ) {
         when (this) {

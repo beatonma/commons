@@ -21,5 +21,5 @@ typealias FlowIoResultList<T> = Flow<IoResultList<T>>
 typealias FlowList<T> = Flow<List<T>>
 
 // Common signatures
-typealias Action = () -> Unit
+typealias ActionBlock = () -> Unit
 typealias ClickAction = (View) -> Unit

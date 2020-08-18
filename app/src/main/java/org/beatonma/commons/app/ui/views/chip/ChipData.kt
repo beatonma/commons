@@ -1,10 +1,10 @@
 package org.beatonma.commons.app.ui.views.chip
 
 import android.content.Context
-import android.view.View
 import androidx.annotation.DrawableRes
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.data.WeblinkData
+import org.beatonma.commons.data.ClickAction
 import org.beatonma.commons.kotlin.extensions.dial
 import org.beatonma.commons.kotlin.extensions.openUrl
 import org.beatonma.commons.kotlin.extensions.sendMail
@@ -16,7 +16,7 @@ data class ChipData(
     @DrawableRes val icon: Int,
     val iconTint: Int? = null,
 //    val backgroundTint: Int? = null,
-    val action: ((View) -> Unit)?,
+    val action: ClickAction?,
 ) {
 
     companion object {

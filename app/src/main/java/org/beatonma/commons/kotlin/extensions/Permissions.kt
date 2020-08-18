@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import org.beatonma.commons.data.ActionBlock
 
 /**
  * If the requested permissions are already granted then run the block
@@ -37,7 +38,7 @@ class PermissionResults(
  */
 @SuppressWarnings("MissingPermission") inline fun Context.ifPermissionAvailable(
     requestedPermission: String,
-    @SuppressWarnings("MissingPermission") block: () -> Unit
+    @SuppressWarnings("MissingPermission") block: ActionBlock
 ) {
     if (ContextCompat.checkSelfPermission(this, requestedPermission) == PackageManager.PERMISSION_GRANTED) {
         try {
@@ -48,7 +49,7 @@ class PermissionResults(
 
 inline fun Context.ifPermissionsAvailable(
     permissions: Array<String>,
-    block: () -> Unit
+    block: ActionBlock
 ) {
     permissions.forEach { deniedPermission ->
         if (ContextCompat.checkSelfPermission(this, deniedPermission) != PackageManager.PERMISSION_GRANTED) {
@@ -67,7 +68,7 @@ inline fun Context.withPermission(
     requestCode: Int,
     rationale: PermissionRationale? = null,
     dontAsk: Boolean = false,
-    runIfAllowed: () -> Unit
+    runIfAllowed: ActionBlock
 ) = withPermissions(arrayOf(permission), requestCode, rationale, dontAsk, runIfAllowed)
 
 inline fun Context.withPermissions(
@@ -75,7 +76,7 @@ inline fun Context.withPermissions(
     requestCode: Int,
     rationale: PermissionRationale? = null,
     dontAsk: Boolean = false,
-    runIfAllowed: () -> Unit
+    runIfAllowed: ActionBlock
 ) {
     val notGranted = mutableListOf<String>()
     permissions.forEach { deniedPermission ->

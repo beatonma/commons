@@ -9,6 +9,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
 import org.beatonma.commons.R
+import org.beatonma.commons.data.ClickAction
 import org.beatonma.commons.data.NetworkError
 import org.beatonma.commons.device.Sdk
 
@@ -82,7 +83,7 @@ fun Fragment.networkErrorSnackbar(
     snackbar(R.string.error_network, action = action)
 }
 
-data class SnackbarAction(@StringRes val textResId: Int, val onclick: (View) -> Unit)
+data class SnackbarAction(@StringRes val textResId: Int, val onclick: ClickAction)
 
 private val Fragment.actionOpenWifiSettings: SnackbarAction?
     get() = if (Sdk.isQ) {
