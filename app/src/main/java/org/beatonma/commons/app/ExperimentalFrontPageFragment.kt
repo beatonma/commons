@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.liveData
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.MarginPageTransformer
 import dagger.hilt.android.AndroidEntryPoint
@@ -116,7 +117,7 @@ abstract class AbstractFeatureAdapter<T>(
 }
 
 
-class PeopleFrontPageFragment(livedata: LiveDataIoResultList<FeaturedMemberProfile>): AbstractFeatureFragment<FeaturedMemberProfile>(livedata) {
+class PeopleFrontPageFragment(livedata: LiveDataIoResultList<FeaturedMemberProfile> = liveData {  }): AbstractFeatureFragment<FeaturedMemberProfile>(livedata) {
     override val adapter: AbstractFeatureAdapter<FeaturedMemberProfile> = object : AbstractFeatureAdapter<FeaturedMemberProfile>(
             { item, vh ->
                 val featured = item.profile
@@ -143,7 +144,7 @@ class PeopleFrontPageFragment(livedata: LiveDataIoResultList<FeaturedMemberProfi
         ) {}
 }
 
-class BillsFrontPageFragment(livedata: LiveDataIoResultList<FeaturedBillWithBill>): AbstractFeatureFragment<FeaturedBillWithBill>(livedata) {
+class BillsFrontPageFragment(livedata: LiveDataIoResultList<FeaturedBillWithBill> = liveData {  }): AbstractFeatureFragment<FeaturedBillWithBill>(livedata) {
     override val adapter: AbstractFeatureAdapter<FeaturedBillWithBill> = object :
         AbstractFeatureAdapter<FeaturedBillWithBill>(
             { item, vh ->
@@ -165,7 +166,7 @@ class BillsFrontPageFragment(livedata: LiveDataIoResultList<FeaturedBillWithBill
         ) {}
 }
 
-class DivisionsFrontPageFragment(livedata: LiveDataIoResultList<FeaturedDivisionWithDivision>): AbstractFeatureFragment<FeaturedDivisionWithDivision>(livedata) {
+class DivisionsFrontPageFragment(livedata: LiveDataIoResultList<FeaturedDivisionWithDivision> = liveData {  }): AbstractFeatureFragment<FeaturedDivisionWithDivision>(livedata) {
     override val adapter: AbstractFeatureAdapter<FeaturedDivisionWithDivision> = object :
         AbstractFeatureAdapter<FeaturedDivisionWithDivision>(
             { item, vh ->
