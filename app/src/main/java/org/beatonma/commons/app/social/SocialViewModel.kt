@@ -2,14 +2,13 @@ package org.beatonma.commons.app.social
 
 import android.content.Context
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
-import com.google.android.gms.auth.api.signin.GoogleSignIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.beatonma.commons.BuildConfig
 import org.beatonma.commons.annotations.SignInRequired
 import org.beatonma.commons.app
-import org.beatonma.commons.context
+import org.beatonma.commons.app.signin.BaseUserAccountViewModel
 import org.beatonma.commons.data.IoResult
 import org.beatonma.commons.data.LiveDataIoResult
 import org.beatonma.commons.data.NotSignedInError
@@ -23,59 +22,59 @@ import org.beatonma.commons.data.core.social.SocialVoteType
 private const val TAG = "SocialViewModel"
 
 class SocialViewModel @ViewModelInject constructor(
-    private val userRepository: UserRepository,
+    userRepository: UserRepository,
     private val socialRepository: SocialRepository,
     @ApplicationContext application: Context,
-): AndroidViewModel(application.app) {
+): BaseUserAccountViewModel(userRepository, application.app) {
 
     lateinit var livedata: LiveDataIoResult<SocialContent>
     lateinit var socialTarget: SocialTarget
 
-    suspend fun forTarget(target: SocialTarget) {
-        withOptionalUserToken { token ->
-            livedata = socialRepository.getSocialContent(target, token?.snommocToken ).asLiveData()
-            socialTarget = target
+    private var token: UserToken? = null
+    private val tokenObserver = Observer<IoResult<UserToken>> { token = it.data }
+
+    fun forTarget(target: SocialTarget) {
+        getTokenForCurrentSignedInAccount()
+        activeUserToken?.observeForever(tokenObserver)
+        livedata = socialRepository.getSocialContent(target, token?.snommocToken ).asLiveData()
+        socialTarget = target
+    }
+
+    fun refresh() {
+        if (::socialTarget.isInitialized) {
+            livedata = socialRepository.getSocialContent(socialTarget, token?.snommocToken).asLiveData()
         }
     }
 
-    suspend fun refresh() {
-        if (socialTarget != null) {
-            withOptionalUserToken { token ->
-                livedata = socialRepository.getSocialContent(socialTarget, token?.snommocToken).asLiveData()
-            }
-        }
+    override fun onCleared() {
+        activeUserToken?.removeObserver(tokenObserver)
+        super.onCleared()
     }
 
     @SignInRequired
     suspend fun postComment(text: String): IoResult<*> {
-        return withUserAccount { account ->
-            val token = userRepository.getActiveUserToken(account)
-                ?: return NotSignedInError("User must be signed in to post a comment")
+        val token = token ?: return NotSignedInError("User must be signed in to post a comment")
 
-            val comment = CreatedComment(
-                userToken = token,
-                target = socialTarget,
-                text = text,
-            )
+        val comment = CreatedComment(
+            userToken = token,
+            target = socialTarget,
+            text = text,
+        )
 
-            socialRepository.postComment(comment)
-        }
+        return socialRepository.postComment(comment)
     }
 
     @SignInRequired
     suspend fun postVote(voteType: SocialVoteType): IoResult<*> {
-        return withUserAccount { account ->
-            val token = userRepository.getActiveUserToken(account)
-                ?: return NotSignedInError("User must be signed in to vote")
+        val token = token ?: return NotSignedInError("User must be signed in to vote")
 
-            val vote = CreatedVote(
-                userToken = token,
-                target = socialTarget,
-                voteType = voteType
-            )
+        val vote = CreatedVote(
+            userToken = token,
+            target = socialTarget,
+            voteType = voteType
+        )
 
-            socialRepository.postVote(vote)
-        }
+        return socialRepository.postVote(vote)
     }
 
     internal fun validateComment(text: String): CommentValidation {
@@ -96,38 +95,6 @@ class SocialViewModel @ViewModelInject constructor(
      */
     internal fun shouldRemoveVote(voteType: SocialVoteType) =
         livedata.value?.data?.userVote == voteType
-
-    private fun getUserAccount(): UserAccount? {
-        val currentGoogleAccount = GoogleSignIn.getLastSignedInAccount(context)
-        return currentGoogleAccount?.toUserAccount()
-    }
-
-    private suspend inline fun withUserAccount(block: (UserAccount) -> IoResult<*>): IoResult<*> {
-        val userAccount = getUserAccount()
-
-        return if (userAccount == null) {
-            NotSignedInError("Current Google Account is null")
-        }
-        else {
-            block.invoke(userAccount)
-        }
-    }
-
-    private suspend inline fun withOptionalUserAccount(block: (UserAccount?) -> IoResult<*>): IoResult<*> {
-        return block.invoke(getUserAccount())
-    }
-
-    private suspend inline fun withOptionalUserToken(block: (UserToken?) -> Unit) {
-        val account = getUserAccount()
-
-        if (account == null) {
-            block(null)
-        }
-        else {
-            val userToken = userRepository.getActiveUserToken(account)
-            block(userToken)
-        }
-    }
 }
 
 

@@ -35,12 +35,8 @@ interface SocialViewHost: LifecycleOwner, BackPressConsumer, AsyncDiffHost {
 
     fun observeSocialViewModel() {
         socialViewModel.livedata.removeObserver(socialObserver)
-        lifecycleScope.launch(Dispatchers.IO) {
-            socialViewModel.refresh()
-            withContext(Dispatchers.Main) {
-                socialViewModel.livedata.observe(this@SocialViewHost, socialObserver)
-            }
-        }
+        socialViewModel.refresh()
+        socialViewModel.livedata.observe(this@SocialViewHost, socialObserver)
     }
 
     fun observeSocialContent(sociable: Sociable) {

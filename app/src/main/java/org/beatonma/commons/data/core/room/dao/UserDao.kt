@@ -10,10 +10,7 @@ interface UserDao {
     suspend fun insertUserToken(userToken: UserToken)
 
     @Query("""SELECT * FROM user_tokens WHERE google_id = :googleId""")
-    fun getUserTokenFlow(googleId: String): Flow<UserToken>
-
-    @Query("""SELECT * FROM user_tokens WHERE google_id = :googleId""")
-    suspend fun getUserToken(googleId: String): UserToken
+    fun getUserToken(googleId: String): Flow<UserToken>
 
     @Delete
     fun deleteUserTokens(vararg userTokens: UserToken)

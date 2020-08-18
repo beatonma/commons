@@ -76,12 +76,12 @@ class SignInFragment : BottomSheetDialogFragment() {
 
     private fun observeToken() {
         removeTokenObserver()
-        viewmodel.activeToken?.observe(viewLifecycleOwner, tokenObserver)
+        viewmodel.activeUserToken?.observe(viewLifecycleOwner, tokenObserver)
             ?: updateUI(null)
     }
 
     private fun removeTokenObserver() {
-        viewmodel.activeToken?.removeObserver(tokenObserver)
+        viewmodel.activeUserToken?.removeObserver(tokenObserver)
     }
 
     private fun updateUI(token: UserToken?) {

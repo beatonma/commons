@@ -23,16 +23,10 @@ class UserRepository @Inject constructor(
      * Return local token if exists, otherwise contact web service to get token.
      */
     fun getTokenForAccount(account: UserAccount): FlowIoResult<UserToken> = resultFlowLocalPreferred(
-        databaseQuery = { userDao.getUserTokenFlow(account.googleId) },
+        databaseQuery = { userDao.getUserToken(account.googleId) },
         networkCall = { remoteSource.registerUser(account.googleIdToken) },
         saveCallResult = { apiToken -> saveApiToken(account, apiToken) }
     )
-
-    /**
-     * Local database lookup with no network fallback
-     */
-    suspend fun getActiveUserToken(account: UserAccount): UserToken? =
-        userDao.getUserToken(account.googleId)
 
     private suspend fun saveApiToken(account: UserAccount, apiToken: ApiUserToken) {
         val googleTokenStub = account.googleIdToken.substring(0..31)
