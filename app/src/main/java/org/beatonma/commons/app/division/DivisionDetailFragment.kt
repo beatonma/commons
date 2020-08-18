@@ -9,7 +9,6 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -102,11 +101,11 @@ class DivisionDetailFragment : CommonsFragment(),
         with (binding) {
             when (division.house) {
                 House.lords -> bindText(
-                    title to division.title.dump("TITLE"),
+                    title to division.title,
                     description to division.description,
                 )
                 House.commons -> bindText(
-                    title to stringCompat(R.string.division_title).dump("TITLE"),
+                    title to stringCompat(R.string.division_title),
                     description to division.title
                 )
             }
