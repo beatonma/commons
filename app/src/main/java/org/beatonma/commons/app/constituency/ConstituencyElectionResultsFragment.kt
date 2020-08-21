@@ -35,8 +35,7 @@ private data class BundleData(val constituencyId: ParliamentID, val electionId: 
 
 
 @AndroidEntryPoint
-class ConstituencyElectionResultsFragment : CommonsFragment() {
-    private lateinit var binding: FragmentConstituencyElectionResultsBinding
+class ConstituencyElectionResultsFragment : CommonsFragment<FragmentConstituencyElectionResultsBinding>() {
     private val viewmodel: ConstituencyElectionResultsViewModel by viewModels()
     private val adapter = CandidatesAdapter()
 
@@ -60,14 +59,7 @@ class ConstituencyElectionResultsFragment : CommonsFragment() {
         )
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View? {
-        binding = FragmentConstituencyElectionResultsBinding.inflate(inflater)
-        return binding.root
-    }
+    override fun inflateBinding(inflater: LayoutInflater) = FragmentConstituencyElectionResultsBinding.inflate(inflater)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.candidates.setup(

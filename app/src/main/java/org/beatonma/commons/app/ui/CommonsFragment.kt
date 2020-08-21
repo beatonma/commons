@@ -1,6 +1,11 @@
 package org.beatonma.commons.app.ui
 
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.viewbinding.ViewBinding
 import kotlinx.coroutines.Job
 import org.beatonma.commons.app.ui.recyclerview.adapter.AsyncDiffHost
 import org.beatonma.commons.data.ActionBlock
@@ -9,11 +14,25 @@ import org.beatonma.commons.data.NetworkError
 import org.beatonma.commons.data.SuccessResult
 import org.beatonma.commons.kotlin.extensions.networkErrorSnackbar
 
-abstract class CommonsFragment : Fragment(), AsyncDiffHost {
+abstract class CommonsFragment<B: ViewBinding>: Fragment(), AsyncDiffHost {
     override var diffJob: Job? = null
+
+    protected var _binding: B? = null
+    val binding: B get() = _binding!!
+
+    abstract fun inflateBinding(inflater: LayoutInflater): B
 
     fun <T> IoResult<T>.report() {
         if (this is NetworkError) networkErrorSnackbar(this)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = inflateBinding(inflater)
+        return binding.root
     }
 
     inline fun <T> IoResult<T>.handle(
@@ -31,5 +50,10 @@ abstract class CommonsFragment : Fragment(), AsyncDiffHost {
                 }
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

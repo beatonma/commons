@@ -39,15 +39,17 @@ import org.beatonma.commons.kotlin.extensions.*
 private const val TAG = "DivisionProfileFragment"
 
 @AndroidEntryPoint
-class DivisionDetailFragment : CommonsFragment(),
+class DivisionDetailFragment : CommonsFragment<FragmentDivisionDetailBinding>(),
     BackPressConsumer,
     SocialViewHost {
     companion object {
         const val HOUSE = "house"
     }
 
-    private lateinit var binding: FragmentDivisionDetailBinding
-    private lateinit var voteSummaryBinding: MergeDivisionResultsChartKeyBinding
+    private var _voteSummaryBinding: MergeDivisionResultsChartKeyBinding? = null
+    private val voteSummaryBinding: MergeDivisionResultsChartKeyBinding get() = _voteSummaryBinding!!
+
+
     private val viewmodel: DivisionDetailViewModel by viewModels()
     private val adapter = VotesAdapter()
 
@@ -62,14 +64,16 @@ class DivisionDetailFragment : CommonsFragment(),
         viewmodel.forDivision(getDivisionFromBundle())
     }
 
+    override fun inflateBinding(inflater: LayoutInflater) = FragmentDivisionDetailBinding.inflate(inflater)
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        binding = FragmentDivisionDetailBinding.inflate(inflater)
-        voteSummaryBinding = MergeDivisionResultsChartKeyBinding.bind(binding.root)
-        return binding.root
+        val view = super.onCreateView(inflater, container, savedInstanceState)
+        _voteSummaryBinding = MergeDivisionResultsChartKeyBinding.bind(binding.root)
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -133,6 +137,11 @@ class DivisionDetailFragment : CommonsFragment(),
         }
 
         adapter.diffItems(votes)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _voteSummaryBinding = null
     }
 }
 

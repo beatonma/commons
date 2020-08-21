@@ -33,10 +33,7 @@ import org.beatonma.commons.kotlin.extensions.*
 private const val TAG = "BillDetailFrag"
 
 @AndroidEntryPoint
-class BillDetailFragment : CommonsFragment(), SocialViewHost {
-
-    private lateinit var binding: FragmentBillDetailBinding
-
+class BillDetailFragment : CommonsFragment<FragmentBillDetailBinding>(), SocialViewHost {
     private val viewmodel: BillDetailViewModel by viewModels()
 
     private val stagesAdapter = BillStagesAdapter()
@@ -53,14 +50,7 @@ class BillDetailFragment : CommonsFragment(), SocialViewHost {
         viewmodel.forBill(getBillIdFromBundle())
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        binding = FragmentBillDetailBinding.inflate(inflater)
-        return binding.root
-    }
+    override fun inflateBinding(inflater: LayoutInflater) = FragmentBillDetailBinding.inflate(inflater)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

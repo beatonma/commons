@@ -30,14 +30,11 @@ import org.beatonma.commons.kotlin.extensions.*
 private const val TAG = "MemberProfileFrag"
 
 @AndroidEntryPoint
-class MemberProfileFragment : CommonsFragment(),
+class MemberProfileFragment : CommonsFragment<FragmentMemberProfileBinding>(),
     Themed,
     BackPressConsumer,
     SocialViewHost
 {
-
-    private lateinit var binding: FragmentMemberProfileBinding
-
     private val viewmodel: MemberProfileViewModel by viewModels()
     override val socialViewModel: SocialViewModel by viewModels()
 
@@ -55,14 +52,7 @@ class MemberProfileFragment : CommonsFragment(),
         viewmodel.forMember(getMemberIdFromBundle())
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View? {
-        binding = FragmentMemberProfileBinding.inflate(inflater)
-        return binding.root
-    }
+    override fun inflateBinding(inflater: LayoutInflater) = FragmentMemberProfileBinding.inflate(inflater)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

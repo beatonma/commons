@@ -29,21 +29,11 @@ import org.beatonma.commons.databinding.ViewpagerBinding
 import org.beatonma.commons.kotlin.extensions.*
 
 @AndroidEntryPoint
-class ExperimentalFrontPageFragment : CommonsFragment(), SearchEnabled, SignInEnabled {
-    private lateinit var binding: ViewpagerBinding
-
+class ExperimentalFrontPageFragment : CommonsFragment<ViewpagerBinding>(), SearchEnabled, SignInEnabled {
     private val viewmodel: FeaturedContentViewModel by viewModels()
     private lateinit var adapter: PageAdapter
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View? {
-        binding = ViewpagerBinding.inflate(inflater)
-
-        return binding.root
-    }
+    override fun inflateBinding(inflater: LayoutInflater) = ViewpagerBinding.inflate(inflater)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -77,19 +67,11 @@ class ExperimentalFrontPageFragment : CommonsFragment(), SearchEnabled, SignInEn
     }
 }
 
-abstract class AbstractFeatureFragment<T>(val livedata: LiveDataIoResultList<T>): CommonsFragment() {
-    private lateinit var binding: RecyclerviewBinding
+abstract class AbstractFeatureFragment<T>(val livedata: LiveDataIoResultList<T>): CommonsFragment<RecyclerviewBinding>() {
 
     abstract val adapter: AbstractFeatureAdapter<T>
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View? {
-        binding = RecyclerviewBinding.inflate(inflater)
-        return binding.root
-    }
+    override fun inflateBinding(inflater: LayoutInflater) = RecyclerviewBinding.inflate(inflater)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

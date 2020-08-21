@@ -36,9 +36,7 @@ private const val VIEW_TYPE_FIRST = 1
 private const val VIEW_TYPE_HEADER = 345
 
 @AndroidEntryPoint
-class ConstituencyDetailFragment : CommonsFragment(), ViewTreeObserver.OnGlobalLayoutListener {
-
-    private lateinit var binding: FragmentConstituencyDetailBinding
+class ConstituencyDetailFragment : CommonsFragment<FragmentConstituencyDetailBinding>(), ViewTreeObserver.OnGlobalLayoutListener {
     private val viewmodel: ConstituencyDetailViewModel by viewModels()
     private var constituencyId: ParliamentID = 0
 
@@ -58,15 +56,7 @@ class ConstituencyDetailFragment : CommonsFragment(), ViewTreeObserver.OnGlobalL
         viewmodel.forConstituency(parliamentdotuk)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View? {
-        binding = FragmentConstituencyDetailBinding.inflate(inflater)
-
-        return binding.root
-    }
+    override fun inflateBinding(inflater: LayoutInflater) = FragmentConstituencyDetailBinding.inflate(inflater)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
