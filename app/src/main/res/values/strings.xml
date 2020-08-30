@@ -82,7 +82,18 @@
     <string name="account_sign_in" translatable="true">Sign in</string>
     <string name="account_sign_out" translatable="true">Sign out</string>
     <string name="account_sign_in_already_signed_in" translatable="true">You are signed in with account \'%s:%s\'</string>
-    <string name="account_sign_in_rationale" translatable="true">You need to sign in before you can vote or comment</string>
+    <string name="account_sign_in_rationale" translatable="true">Sign in with your Google account to create an account on the Commons service. This is necessary if you want to vote or comment on any app content.\n\nPlease check our privacy policy for more details: <a href="https://snommoc.org/privacy">https://snommoc.org/privacy</a>
+    </string>
+    <string name="account_submit_new_username" translatable="true">Submit</string>
+
+    <string name="account_delete_account_button" translatable="true">Delete account</string>
+    <string name="account_delete_confirm_button" translatable="true">Confirm deletion</string>
+    <string name="account_delete_confirm_twice_button" translatable="true">I\'m sure</string>
+    <string name="account_delete_explanation" translatable="true">
+        If you confirm deletion your account will be made inaccessible immediately and will be deleted
+        completely within the next 14 days. At that time, all of your votes and comments on the Commons
+        service will also be removed.
+    </string>
 
     <!-- Social -->
     <string name="social_new_comment" translatable="true">Comment</string>
@@ -114,6 +125,8 @@
 
     <!-- Icon image content description -->
     <string name="content_description_expand_collapse" translatable="true">Expand or collapse</string>
+    <string name="content_description_open_account_management" translatable="true">View account manager</string>
+    <string name="content_description_edit_username" translatable="true">Edit username</string>
 
     <!-- Fragment tags -->
     <string name="fragment_social">fragment_social</string>
