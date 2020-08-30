@@ -11,6 +11,7 @@ import androidx.activity.viewModels
 import androidx.annotation.IdRes
 import androidx.appcompat.widget.SearchView
 import androidx.core.net.toUri
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
@@ -124,23 +125,29 @@ class MainActivity : DayNightActivity(), SearchHost, SignInHost, AsyncDiffHost {
     }
 
     override fun onBackPressed() {
-        val fragment = getContentFragment()
-
-        if (fragment is BackPressConsumer) {
-            if (fragment.onBackPressed()) {
-                // Back press consumed by fragment
-                return
-            }
-        }
-
         if (isSearchUiVisible()) {
             hideSearch()
+            return
+        }
+
+        val fragment = getContentFragment()
+
+        if (fragment is BackPressConsumer && fragment.onBackPressed()) {
+            // Back press consumed by fragment
             return
         }
         super.onBackPressed()
     }
 
     private fun initUi() {
+        binding.root.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
+        binding.root.registerInsets(
+            fromStatusBar = listOf(binding.toolbar),
+            fromNavBar = listOf(binding.signinButton),
+        )
+
         binding.searchResultsRecyclerview.setup(searchAdapter)
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -153,9 +160,11 @@ class MainActivity : DayNightActivity(), SearchHost, SignInHost, AsyncDiffHost {
         // Update search UI visibility - we may have entered via deep-link to arbitrary destination.
         updateSearchEnabled.invoke()
 
-        binding.signinButton.setOnClickListener { button ->
+        binding.signinButton.setOnClickListener {
             showSignInDialog(this)
         }
+
+        ViewCompat.requestApplyInsets(binding.signinButton)
     }
 
     /**
