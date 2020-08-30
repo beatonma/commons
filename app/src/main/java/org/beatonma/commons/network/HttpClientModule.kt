@@ -13,15 +13,6 @@ import javax.inject.Named
 import javax.inject.Singleton
 import android.os.Build as Device
 
-internal object HttpHeader {
-    const val USER_AGENT = "User-Agent"
-    const val CONTENT_TYPE = "Content-Type"
-}
-
-internal object HttpContentType {
-    const val JSON = "application/json"
-}
-
 internal object CommonsParam {
     const val API_KEY = "key"
 }
@@ -37,7 +28,7 @@ private val userAgent: String by lazy {
 
 private inline fun Interceptor.Chain.withDefaultHeaders(block: (Request.Builder, HttpUrl) -> Unit): Response {
     return proceed(request().newBuilder().apply {
-        header(HttpHeader.USER_AGENT, userAgent)
+        header(Http.Header.USER_AGENT, userAgent)
         val originalUrl = request().url()
         Log.d(autotag, "Request: $originalUrl")
         block(this, originalUrl)
@@ -62,7 +53,7 @@ class HttpClientModule {
     fun provideCommonsHttpClient(): OkHttpClient = OkHttpClient.Builder()
         .addInterceptor { chain ->
             chain.withDefaultHeaders { requestBuilder, originalUrl ->
-                requestBuilder.addHeader(HttpHeader.CONTENT_TYPE, HttpContentType.JSON)
+                requestBuilder.addHeader(Http.Header.CONTENT_TYPE, Http.ContentType.JSON)
                 requestBuilder.url(originalUrl.newBuilder().apply {
                     addQueryParameter(CommonsParam.API_KEY, COMMONS_API_KEY)
                 }.build())
