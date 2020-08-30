@@ -2,12 +2,10 @@ package org.beatonma.commons.data.core.repository
 
 import android.util.Log
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import org.beatonma.commons.data.CommonsRemoteDataSource
-import org.beatonma.commons.data.FlowIoResult
+import org.beatonma.commons.data.*
 import org.beatonma.commons.data.core.room.dao.UserDao
 import org.beatonma.commons.data.core.room.entities.user.ApiUserToken
 import org.beatonma.commons.data.core.room.entities.user.UserToken
-import org.beatonma.commons.data.resultFlowLocalPreferred
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -27,6 +25,23 @@ class UserRepository @Inject constructor(
         networkCall = { remoteSource.registerUser(account.googleIdToken) },
         saveCallResult = { apiToken -> saveApiToken(account, apiToken) }
     )
+
+    /**
+     * Refresh account token from the server, even if we have a cached token.
+     */
+    fun forceGetTokenForAccount(account: UserAccount): FlowIoResult<UserToken> = cachedResultFlow(
+        databaseQuery = { userDao.getUserToken(account.googleId) },
+        networkCall = { remoteSource.registerUser(account.googleIdToken) },
+        saveCallResult = { apiToken -> saveApiToken(account, apiToken) }
+    )
+
+    fun requestRenameAccount(token: UserToken, newName: String) = resultFlowNoCache {
+        remoteSource.requestRenameAccount(token, newName)
+    }
+
+    fun deleteAccount(token: UserToken) = resultFlowNoCache {
+        remoteSource.deleteUserAccount(token)
+    }
 
     private suspend fun saveApiToken(account: UserAccount, apiToken: ApiUserToken) {
         val googleTokenStub = account.googleIdToken.substring(0..31)
