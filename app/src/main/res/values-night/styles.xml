@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Commons.Theme.App">
+        <item name="android:windowLightStatusBar">false</item>
+
+        <!-- v29 -->
+        <item name="android:isLightTheme">false</item>
+
+        <!-- v27 -->
+        <item name="android:windowLightNavigationBar">false</item>
+    </style>
+</resources>
