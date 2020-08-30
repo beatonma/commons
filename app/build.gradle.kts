@@ -33,13 +33,16 @@ android {
             "USER_AGENT_WEBSITE" to LocalConfig.UserAgent.WEBSITE,
             "USER_AGENT_EMAIL" to LocalConfig.UserAgent.EMAIL,
             "GOOGLE_SIGNIN_CLIENT_ID" to LocalConfig.OAuth.Google.WEB_CLIENT_ID,
-            "GOOGLE_MAPS_API_KEY" to LocalConfig.Api.Google.MAPS
+            "GOOGLE_MAPS_API_KEY" to LocalConfig.Api.Google.MAPS,
+            "ACCOUNT_USERNAME_CHARACTERS" to Commons.Account.Username.ALLOWED_CHARACTERS
         ), asBuildConfig = true, asResValue = true)
 
         injectInts(mapOf(
             "SOCIAL_COMMENT_MAX_LENGTH" to Commons.Social.MAX_COMMENT_LENGTH,
             "THEME_TEXT_DARK" to TEXT_DARK,
-            "THEME_TEXT_LIGHT" to TEXT_LIGHT
+            "THEME_TEXT_LIGHT" to TEXT_LIGHT,
+            "ACCOUNT_USERNAME_MAX_LENGTH" to Commons.Account.Username.MAX_LENGTH,
+            "ACCOUNT_USERNAME_MIN_LENGTH" to Commons.Account.Username.MIN_LENGTH
         ), asBuildConfig = true, asResValue = true)
 
         manifestPlaceholders.putAll(mapOf(
@@ -71,6 +74,7 @@ android {
     }
 
     buildFeatures {
+        compose = false
         viewBinding = true
     }
     buildTypes {
@@ -110,9 +114,13 @@ android {
         sourceCompatibility = Versions.JAVA
         targetCompatibility = Versions.JAVA
     }
+    composeOptions {
+        kotlinCompilerExtensionVersion = Versions.AX_COMPOSE
+    }
     kotlinOptions {
         jvmTarget = "1.8"
         languageVersion = "1.4"
+        useIR = true
 
         freeCompilerArgs = listOf("-XXLanguage:+InlineClasses")
     }
