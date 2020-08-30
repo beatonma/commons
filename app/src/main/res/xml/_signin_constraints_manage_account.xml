@@ -1,35 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <injected xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:motion="http://schemas.android.com/apk/res-auto">
+    >
 
     <Constraint
         android:id="@+id/open_full_account"
         android:layout_width="0dp"
         android:layout_height="@dimen/touchable_icon_size"
-        app:layout_constraintBottom_toTopOf="@+id/account_username"
+        app:layout_constraintBottom_toTopOf="@+id/account_avatar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:visibility="visible"
+        android:visibility="invisible"
         />
 
     <Constraint
         android:id="@+id/account_avatar"
-        android:layout_width="@dimen/user_avatar_size"
-        android:layout_height="@dimen/user_avatar_size"
+        android:layout_width="@dimen/user_avatar_size_large"
+        android:layout_height="@dimen/user_avatar_size_large"
         android:layout_margin="@dimen/user_avatar_margin"
-        app:layout_constraintTop_toTopOf="@+id/account_username"
-        app:layout_constraintBottom_toBottomOf="@+id/account_id"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/account_username"
         android:visibility="visible"
         />
 
     <Constraint
         android:id="@+id/account_username"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@+id/barrier_account_avatar"
+        android:layout_marginTop="@dimen/flow_gap_large"
+        android:textSize="@dimen/text_size_h1"
+        app:layout_constraintHeight_min="@dimen/touchable_min_size"
+        app:layout_constraintStart_toEndOf="@+id/start_guideline"
+        app:layout_constraintEnd_toStartOf="@+id/edit_username_icon"
         app:layout_constraintBottom_toTopOf="@+id/account_name_and_email"
-        app:layout_constraintEnd_toStartOf="@+id/end_guideline"
         android:visibility="visible"
         />
 
@@ -37,19 +41,19 @@
         android:id="@+id/edit_username_icon"
         android:layout_width="@dimen/touchable_icon_size"
         android:layout_height="@dimen/touchable_icon_size"
-        app:layout_constraintStart_toEndOf="@+id/account_username"
         app:layout_constraintTop_toTopOf="@+id/account_username"
         app:layout_constraintBottom_toBottomOf="@+id/account_username"
-        android:visibility="gone"
+        app:layout_constraintStart_toEndOf="@+id/account_username"
+        android:visibility="visible"
         />
 
     <Constraint
         android:id="@+id/account_name_and_email"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@+id/barrier_account_avatar"
-        app:layout_constraintBottom_toTopOf="@+id/account_id"
+        app:layout_constraintStart_toEndOf="@+id/start_guideline"
         app:layout_constraintEnd_toStartOf="@+id/end_guideline"
+        app:layout_constraintBottom_toTopOf="@+id/account_id"
         android:visibility="visible"
         />
 
@@ -57,9 +61,9 @@
         android:id="@+id/account_id"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@+id/barrier_account_avatar"
-        app:layout_constraintBottom_toTopOf="@+id/signout_button"
+        app:layout_constraintStart_toEndOf="@+id/start_guideline"
         app:layout_constraintEnd_toStartOf="@+id/end_guideline"
+        app:layout_constraintBottom_toTopOf="@+id/button_spacer"
         android:visibility="visible"
         />
 
@@ -67,17 +71,19 @@
         android:id="@+id/delete_account_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/account_id"
+        app:layout_constraintStart_toStartOf="@+id/start_guideline"
         app:layout_constraintEnd_toStartOf="@+id/signout_button"
         app:layout_constraintBottom_toTopOf="@+id/bottom_guideline"
-        android:visibility="gone"/>
+        android:visibility="visible"/>
+
 
     <Constraint
         android:id="@+id/signout_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toStartOf="@+id/end_guideline"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_guideline"
+        app:layout_constraintTop_toTopOf="@+id/delete_account_button"
+        app:layout_constraintStart_toEndOf="@+id/delete_account_button"
+        app:layout_constraintEnd_toEndOf="@+id/end_guideline"
         android:visibility="visible"
         />
 
@@ -86,9 +92,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bottom_guideline"
         />
 
     <Constraint
@@ -96,7 +99,5 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@+id/bottom_guideline"
-        app:layout_constraintEnd_toEndOf="parent"
         />
 </injected>

@@ -11,6 +11,32 @@ You should edit the source file '_fragment_signin_scene.xml' instead.
     motion:defaultDuration="@integer/animation_window_duration">
 
     <Transition
+        motion:constraintSetEnd="@+id/state_loading"
+        motion:constraintSetStart="@+id/state_signed_out">
+<!-- Start injected content from '_signin_keyframeset_loading_signedout.xml' -->
+
+
+    <KeyPosition
+        motion:motionTarget="@+id/rationale"
+        motion:framePosition="1"
+        motion:percentWidth="1.0"
+        motion:percentHeight="1.0"
+        motion:percentX="1.0"
+        motion:percentY="1.0"/>
+
+    <KeyPosition
+        motion:motionTarget="@+id/account_avatar"
+        motion:framePosition="1"
+        motion:percentWidth="1.0"
+        motion:percentHeight="1.0"
+        motion:percentX="1.0"
+        motion:percentY="1.0"/>
+
+<!-- End injected content from '_signin_keyframeset_loading_signedout.xml' -->
+
+    </Transition>
+
+    <Transition
         motion:constraintSetStart="@id/state_signed_out"
         motion:constraintSetEnd="@+id/state_signed_in"
         >
@@ -141,16 +167,214 @@ You should edit the source file '_fragment_signin_scene.xml' instead.
 
     </Transition>
 
+    <Transition
+        motion:constraintSetStart="@id/state_signed_in"
+        motion:constraintSetEnd="@+id/state_manage_account"
+        >
+
+        <OnSwipe
+            motion:dragDirection="dragUp"
+            motion:onTouchUp="autoCompleteToEnd"
+            />
+
+<!-- Start injected content from '_signin_keyframeset_signedin_manageaccount.xml' -->
+        <KeyFrameSet >        
+            <KeyPosition
+                motion:motionTarget="@+id/open_full_account"
+                motion:framePosition="30"
+                motion:percentY="0.8"/>
+        
+            <KeyPosition
+                motion:motionTarget="@+id/barrier"
+                motion:framePosition="30"
+                motion:percentY="0.8"/>
+        
+            <KeyPosition
+                motion:motionTarget="@+id/background"
+                motion:framePosition="30"
+                motion:percentHeight="0.8"/>
+            
+        
+            <KeyPosition
+                motion:motionTarget="@+id/account_avatar"
+                motion:framePosition="30"
+                motion:percentWidth="0.0"
+                motion:percentHeight="0.5"
+                motion:percentX="0.0"
+                motion:percentY="0.8"
+                />
+            
+        
+            <KeyPosition
+                motion:motionTarget="@+id/account_username"
+                motion:framePosition="50"
+                motion:percentWidth="0.0"
+                motion:percentHeight="1.0"
+                motion:percentX="-0.2"
+                motion:percentY="1.0"
+                />
+        
+            <KeyPosition
+                motion:motionTarget="@+id/account_name_and_email"
+                motion:framePosition="50"
+                motion:percentWidth="0.0"
+                motion:percentHeight="1.0"
+                motion:percentX="-0.4"
+                motion:percentY="1.0"
+                />
+        
+            <KeyPosition
+                motion:motionTarget="@+id/account_id"
+                motion:framePosition="50"
+                motion:percentWidth="0.0"
+                motion:percentHeight="1.0"
+                motion:percentX="-0.2"
+                motion:percentY="1.0"
+                />
+        
+            <KeyPosition
+                motion:motionTarget="@+id/signout_button"
+                motion:framePosition="50"
+                motion:percentX="1.0"
+                motion:percentY="1.0"
+                />
+        
+            <KeyPosition
+                motion:motionTarget="@+id/delete_account_button"
+                motion:framePosition="1"
+                motion:percentWidth="1.0"
+                motion:percentHeight="1.0"
+                motion:percentX="1.0"
+                motion:percentY="1.0"
+                />
+            
+            
+            
+            
+        
+        <!--    <KeyPosition-->
+        <!--        motion:motionTarget="@+id/account_avatar"-->
+        <!--        motion:framePosition="25"-->
+        <!--        motion:percentWidth="0.0"-->
+        <!--        motion:percentHeight="0.0"-->
+        <!--        motion:percentX="0.0"-->
+        <!--        motion:percentY="0.75"/>-->
+        
+        <!--    <KeyPosition-->
+        <!--        motion:motionTarget="@+id/account_avatar"-->
+        <!--        motion:framePosition="50"-->
+        <!--        motion:percentWidth="1.0"-->
+        <!--        motion:percentHeight="1.0"-->
+        <!--        motion:percentX="1.0"-->
+        <!--        motion:percentY="1.0"/>-->
+        
+        <!--    <KeyPosition-->
+        <!--        motion:motionTarget="@+id/account_username"-->
+        <!--        motion:framePosition="25"-->
+        <!--        motion:percentWidth="0.0"-->
+        <!--        motion:percentHeight="1.0"-->
+        <!--        motion:percentX="0.0"-->
+        <!--        motion:percentY="1.0"/>-->
+        
+        <!--    <KeyPosition-->
+        <!--        motion:motionTarget="@+id/account_name_and_email"-->
+        <!--        motion:framePosition="25"-->
+        <!--        motion:percentWidth="0.0"-->
+        <!--        motion:percentHeight="1.0"-->
+        <!--        motion:percentX="0.0"-->
+        <!--        motion:percentY="1.0"/>-->
+        
+        <!--    <KeyPosition-->
+        <!--        motion:motionTarget="@+id/account_id"-->
+        <!--        motion:framePosition="25"-->
+        <!--        motion:percentWidth="0.0"-->
+        <!--        motion:percentHeight="1.0"-->
+        <!--        motion:percentX="0.0"-->
+        <!--        motion:percentY="1.0"/>-->
+        
+        <!--    <KeyPosition-->
+        <!--        motion:motionTarget="@+id/signout_button"-->
+        <!--        motion:framePosition="25"-->
+        <!--        motion:percentWidth="0.0"-->
+        <!--        motion:percentHeight="1.0"-->
+        <!--        motion:percentX="0.0"-->
+        <!--        motion:percentY="1.0"/>-->
+        
+        </KeyFrameSet>
+<!-- End injected content from '_signin_keyframeset_signedin_manageaccount.xml' -->
+
+
+    </Transition>
+
+    <Transition
+        motion:constraintSetStart="@+id/state_manage_account"
+        motion:constraintSetEnd="@+id/state_edit_username"
+        >
+<!-- Start injected content from '_signin_keyframeset_manageaccount_editusername.xml' -->
+        <KeyFrameSet >            <KeyPosition
+                motion:motionTarget="@+id/account_username_editable_wrapper"
+                motion:framePosition="1"
+                motion:percentHeight="1.0"
+                motion:percentWidth="1.0"
+                motion:percentX="1.0"
+                motion:percentY="1.0"/>
+        
+            <KeyPosition
+                motion:motionTarget="@+id/submit_new_username_button"
+                motion:framePosition="1"
+                motion:percentX="1.0"
+                motion:percentWidth="1.0"
+                motion:percentHeight="1.0"
+                motion:percentY="1.0"/>
+            
+        </KeyFrameSet>
+<!-- End injected content from '_signin_keyframeset_manageaccount_editusername.xml' -->
+
+    </Transition>
+
+    <ConstraintSet android:id="@+id/state_loading"
+        motion:deriveConstraintsFrom="@id/state_signed_out">
+<!-- Start injected content from '_signin_constraints_loading.xml' -->
+
+
+    <Constraint
+        android:id="@+id/rationale"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        />
+    
+    <Constraint
+        android:id="@+id/g_sign_in_button"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        />
+
+<!-- End injected content from '_signin_constraints_loading.xml' -->
+
+    </ConstraintSet>
+
     <ConstraintSet android:id="@+id/state_signed_out">
 <!-- Start injected content from '_signin_constraints_signed_out.xml' -->
 
+
+    <Constraint
+        android:id="@+id/open_full_account"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/touchable_icon_size"
+        app:layout_constraintBottom_toTopOf="@+id/rationale"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="invisible"
+        />
 
     <Constraint
         android:id="@+id/account_avatar"
         android:layout_width="@dimen/user_avatar_size"
         android:layout_height="@dimen/user_avatar_size"
         android:layout_margin="@dimen/user_avatar_margin"
-        app:layout_constraintTop_toTopOf="@+id/account_name"
+        app:layout_constraintTop_toTopOf="@+id/account_username"
         app:layout_constraintBottom_toBottomOf="@+id/account_id"
         android:visibility="gone"
         />
@@ -160,8 +384,18 @@ You should edit the source file '_fragment_signin_scene.xml' instead.
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toEndOf="@+id/barrier_account_avatar"
-        app:layout_constraintBottom_toTopOf="@+id/account_name"
+        app:layout_constraintBottom_toTopOf="@+id/account_name_and_email"
         app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="gone"
+        />
+
+    <Constraint
+        android:id="@+id/edit_username_icon"
+        android:layout_width="@dimen/touchable_icon_size"
+        android:layout_height="@dimen/touchable_icon_size"
+        app:layout_constraintStart_toEndOf="@+id/account_username"
+        app:layout_constraintTop_toTopOf="@+id/account_username"
+        app:layout_constraintBottom_toBottomOf="@+id/account_username"
         android:visibility="gone"
         />
 
@@ -196,13 +430,24 @@ You should edit the source file '_fragment_signin_scene.xml' instead.
         />
 
     <Constraint
-        android:id="@+id/rationale"
+        android:id="@+id/delete_account_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="visible"
+        app:layout_constraintTop_toBottomOf="@+id/account_id"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/g_sign_in_button"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_guideline"
+        android:layout_marginTop="@dimen/flow_gap_large"
+        android:visibility="gone"/>
+
+    <Constraint
+        android:id="@+id/rationale"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:layout_constraintStart_toEndOf="@+id/start_guideline"
+        app:layout_constraintEnd_toStartOf="@+id/end_guideline"
+        app:layout_constraintBottom_toTopOf="@+id/button_spacer"
         />
 
     <Constraint
@@ -211,7 +456,7 @@ You should edit the source file '_fragment_signin_scene.xml' instead.
         android:layout_height="wrap_content"
         android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@+id/bottom_guideline"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/end_guideline"
         />
 <!-- End injected content from '_signin_constraints_signed_out.xml' -->
 
@@ -222,11 +467,21 @@ You should edit the source file '_fragment_signin_scene.xml' instead.
 
 
     <Constraint
+        android:id="@+id/open_full_account"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/touchable_icon_size"
+        app:layout_constraintBottom_toTopOf="@+id/account_username"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="visible"
+        />
+
+    <Constraint
         android:id="@+id/account_avatar"
         android:layout_width="@dimen/user_avatar_size"
         android:layout_height="@dimen/user_avatar_size"
         android:layout_margin="@dimen/user_avatar_margin"
-        app:layout_constraintTop_toTopOf="@+id/account_name"
+        app:layout_constraintTop_toTopOf="@+id/account_username"
         app:layout_constraintBottom_toBottomOf="@+id/account_id"
         android:visibility="visible"
         />
@@ -236,9 +491,19 @@ You should edit the source file '_fragment_signin_scene.xml' instead.
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toEndOf="@+id/barrier_account_avatar"
-        app:layout_constraintBottom_toTopOf="@+id/account_name"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/account_name_and_email"
+        app:layout_constraintEnd_toStartOf="@+id/end_guideline"
         android:visibility="visible"
+        />
+
+    <Constraint
+        android:id="@+id/edit_username_icon"
+        android:layout_width="@dimen/touchable_icon_size"
+        android:layout_height="@dimen/touchable_icon_size"
+        app:layout_constraintStart_toEndOf="@+id/account_username"
+        app:layout_constraintTop_toTopOf="@+id/account_username"
+        app:layout_constraintBottom_toBottomOf="@+id/account_username"
+        android:visibility="gone"
         />
 
     <Constraint
@@ -247,7 +512,7 @@ You should edit the source file '_fragment_signin_scene.xml' instead.
         android:layout_height="wrap_content"
         app:layout_constraintStart_toEndOf="@+id/barrier_account_avatar"
         app:layout_constraintBottom_toTopOf="@+id/account_id"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/end_guideline"
         android:visibility="visible"
         />
 
@@ -257,17 +522,25 @@ You should edit the source file '_fragment_signin_scene.xml' instead.
         android:layout_height="wrap_content"
         app:layout_constraintStart_toEndOf="@+id/barrier_account_avatar"
         app:layout_constraintBottom_toTopOf="@+id/signout_button"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/end_guideline"
         android:visibility="visible"
         />
+
+    <Constraint
+        android:id="@+id/delete_account_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/account_id"
+        app:layout_constraintEnd_toStartOf="@+id/signout_button"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_guideline"
+        android:visibility="gone"/>
 
     <Constraint
         android:id="@+id/signout_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@+id/end_guideline"
         app:layout_constraintBottom_toTopOf="@+id/bottom_guideline"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="@dimen/flow_gap_large"
         android:visibility="visible"
         />
 
@@ -290,6 +563,303 @@ You should edit the source file '_fragment_signin_scene.xml' instead.
         app:layout_constraintEnd_toEndOf="parent"
         />
 <!-- End injected content from '_signin_constraints_signed_in.xml' -->
+
+    </ConstraintSet>
+
+    <ConstraintSet android:id="@+id/state_manage_account">
+<!-- Start injected content from '_signin_constraints_manage_account.xml' -->
+
+
+    <Constraint
+        android:id="@+id/open_full_account"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/touchable_icon_size"
+        app:layout_constraintBottom_toTopOf="@+id/account_avatar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="invisible"
+        />
+
+    <Constraint
+        android:id="@+id/account_avatar"
+        android:layout_width="@dimen/user_avatar_size_large"
+        android:layout_height="@dimen/user_avatar_size_large"
+        android:layout_margin="@dimen/user_avatar_margin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/account_username"
+        android:visibility="visible"
+        />
+
+    <Constraint
+        android:id="@+id/account_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/flow_gap_large"
+        android:textSize="@dimen/text_size_h1"
+        app:layout_constraintHeight_min="@dimen/touchable_min_size"
+        app:layout_constraintStart_toEndOf="@+id/start_guideline"
+        app:layout_constraintEnd_toStartOf="@+id/edit_username_icon"
+        app:layout_constraintBottom_toTopOf="@+id/account_name_and_email"
+        android:visibility="visible"
+        />
+
+    <Constraint
+        android:id="@+id/edit_username_icon"
+        android:layout_width="@dimen/touchable_icon_size"
+        android:layout_height="@dimen/touchable_icon_size"
+        app:layout_constraintTop_toTopOf="@+id/account_username"
+        app:layout_constraintBottom_toBottomOf="@+id/account_username"
+        app:layout_constraintStart_toEndOf="@+id/account_username"
+        android:visibility="visible"
+        />
+
+    <Constraint
+        android:id="@+id/account_name_and_email"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@+id/start_guideline"
+        app:layout_constraintEnd_toStartOf="@+id/end_guideline"
+        app:layout_constraintBottom_toTopOf="@+id/account_id"
+        android:visibility="visible"
+        />
+
+    <Constraint
+        android:id="@+id/account_id"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@+id/start_guideline"
+        app:layout_constraintEnd_toStartOf="@+id/end_guideline"
+        app:layout_constraintBottom_toTopOf="@+id/button_spacer"
+        android:visibility="visible"
+        />
+
+    <Constraint
+        android:id="@+id/delete_account_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@+id/start_guideline"
+        app:layout_constraintEnd_toStartOf="@+id/signout_button"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_guideline"
+        android:visibility="visible"/>
+
+
+    <Constraint
+        android:id="@+id/signout_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@+id/delete_account_button"
+        app:layout_constraintStart_toEndOf="@+id/delete_account_button"
+        app:layout_constraintEnd_toEndOf="@+id/end_guideline"
+        android:visibility="visible"
+        />
+
+    <Constraint
+        android:id="@+id/rationale"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        />
+
+    <Constraint
+        android:id="@+id/g_sign_in_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        />
+<!-- End injected content from '_signin_constraints_manage_account.xml' -->
+
+    </ConstraintSet>
+
+    <ConstraintSet
+        android:id="@+id/state_edit_username"
+        motion:deriveConstraintsFrom="@+id/state_manage_account"
+        >
+<!-- Start injected content from '_signin_constraints_edit_username.xml' -->
+
+
+    <Constraint
+        android:id="@+id/account_avatar"
+        android:layout_width="@dimen/user_avatar_size_large"
+        android:layout_height="@dimen/user_avatar_size_large"
+        android:layout_margin="@dimen/user_avatar_margin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/top_guideline"
+        android:visibility="visible"
+        />
+
+    <Constraint
+        android:id="@+id/account_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/flow_gap_large"
+        android:textSize="@dimen/text_size_h1"
+        app:layout_constraintHeight_min="@dimen/touchable_min_size"
+        app:layout_constraintTop_toBottomOf="@+id/account_avatar"
+        app:layout_constraintStart_toEndOf="@+id/start_guideline"
+        app:layout_constraintEnd_toStartOf="@+id/edit_username"
+        android:visibility="invisible"
+        />
+
+    <Constraint
+        android:id="@+id/account_username_editable_wrapper"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/text_size_h1"
+        app:layout_constraintHeight_min="@dimen/touchable_min_size"
+        app:layout_constraintTop_toTopOf="@+id/account_username"
+        app:layout_constraintStart_toEndOf="@+id/start_guideline"
+        app:layout_constraintEnd_toStartOf="@+id/submit_new_username_button"
+        android:visibility="visible"
+        />
+
+    <Constraint
+        android:id="@+id/edit_username_icon"
+        android:layout_width="@dimen/touchable_icon_size"
+        android:layout_height="@dimen/touchable_icon_size"
+        app:layout_constraintTop_toTopOf="@+id/account_username"
+        app:layout_constraintBottom_toBottomOf="@+id/account_username"
+        app:layout_constraintStart_toEndOf="@+id/account_username"
+        android:visibility="gone"
+        />
+
+    <Constraint
+        android:id="@+id/submit_new_username_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@+id/account_username"
+        app:layout_constraintBottom_toBottomOf="@+id/account_username"
+        app:layout_constraintEnd_toStartOf="@+id/end_guideline"
+        android:visibility="visible"
+        />
+
+    <Constraint
+        android:id="@+id/account_name_and_email"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/account_username_editable_wrapper"
+        app:layout_constraintStart_toEndOf="@+id/start_guideline"
+        app:layout_constraintEnd_toStartOf="@+id/end_guideline"
+        android:visibility="visible"
+        />
+
+    <Constraint
+        android:id="@+id/account_id"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/account_name_and_email"
+        app:layout_constraintStart_toEndOf="@+id/start_guideline"
+        app:layout_constraintEnd_toStartOf="@+id/end_guideline"
+        />
+
+    <Constraint
+        android:id="@+id/button_spacer"
+        android:layout_height="@dimen/flow_gap_large"
+        android:layout_width="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/account_id"
+        />
+
+    <Constraint
+        android:id="@+id/delete_account_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@+id/start_guideline"
+        app:layout_constraintEnd_toStartOf="@+id/signout_button"
+        app:layout_constraintTop_toBottomOf="@+id/button_spacer"
+        android:visibility="invisible"/>
+
+
+    <Constraint
+        android:id="@+id/signout_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@+id/delete_account_button"
+        app:layout_constraintStart_toEndOf="@+id/delete_account_button"
+        app:layout_constraintEnd_toEndOf="@+id/end_guideline"
+        android:visibility="invisible"
+        />
+
+    <Constraint
+        android:id="@+id/rationale"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        />
+
+    <Constraint
+        android:id="@+id/g_sign_in_button"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        />
+
+    <!-- !!! -->
+
+<!--    <Constraint-->
+<!--        android:id="@+id/account_avatar"-->
+<!--        android:layout_width="@dimen/user_avatar_size"-->
+<!--        android:layout_height="@dimen/user_avatar_size"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        />-->
+
+<!--    <Constraint-->
+<!--        android:id="@+id/account_username"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="@dimen/flow_gap_large"-->
+<!--        android:textSize="@dimen/text_size_h1"-->
+<!--        app:layout_constraintHeight_min="@dimen/touchable_min_size"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/account_avatar"-->
+<!--        app:layout_constraintStart_toEndOf="@+id/start_guideline"-->
+<!--        app:layout_constraintEnd_toStartOf="@+id/edit_username"-->
+<!--        android:visibility="invisible"-->
+<!--        />-->
+
+<!--    <Constraint-->
+<!--        android:id="@+id/account_username_editable_wrapper"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:textSize="@dimen/text_size_h1"-->
+<!--        app:layout_constraintHeight_min="@dimen/touchable_min_size"-->
+<!--        app:layout_constraintTop_toTopOf="@+id/account_username"-->
+<!--        app:layout_constraintStart_toEndOf="@+id/start_guideline"-->
+<!--        app:layout_constraintEnd_toStartOf="@+id/submit_new_username_button"-->
+<!--        android:visibility="visible"-->
+<!--        />-->
+
+<!--    <Constraint-->
+<!--        android:id="@+id/account_name_and_email"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/account_username_editable_wrapper"-->
+<!--        app:layout_constraintStart_toEndOf="@+id/start_guideline"-->
+<!--        app:layout_constraintEnd_toStartOf="@+id/end_guideline"-->
+<!--        android:visibility="visible"-->
+<!--        />-->
+
+<!--    <Constraint-->
+<!--        android:id="@+id/edit_username_icon"-->
+<!--        android:layout_width="@dimen/touchable_icon_size"-->
+<!--        android:layout_height="@dimen/touchable_icon_size"-->
+<!--        app:layout_constraintTop_toTopOf="@+id/account_username"-->
+<!--        app:layout_constraintBottom_toBottomOf="@+id/account_username"-->
+<!--        app:layout_constraintStart_toEndOf="@+id/account_username"-->
+<!--        android:visibility="gone"-->
+<!--        />-->
+
+<!--    <Constraint-->
+<!--        android:id="@+id/submit_new_username_button"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:layout_constraintTop_toTopOf="@+id/account_username"-->
+<!--        app:layout_constraintBottom_toBottomOf="@+id/account_username"-->
+<!--        app:layout_constraintEnd_toStartOf="@+id/end_guideline"-->
+<!--        android:visibility="visible"-->
+<!--        />-->
+
+
+<!-- End injected content from '_signin_constraints_edit_username.xml' -->
 
     </ConstraintSet>
 </MotionScene>

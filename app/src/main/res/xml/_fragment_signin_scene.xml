@@ -6,6 +6,12 @@
     motion:defaultDuration="@integer/animation_window_duration">
 
     <Transition
+        motion:constraintSetEnd="@+id/state_loading"
+        motion:constraintSetStart="@+id/state_signed_out">
+        <inject src="_signin_keyframeset_loading_signedout"/>
+    </Transition>
+
+    <Transition
         motion:constraintSetStart="@id/state_signed_out"
         motion:constraintSetEnd="@+id/state_signed_in"
         >
@@ -13,11 +19,48 @@
         <inject src="_signin_keyframeset_signedout_signedin"/>
     </Transition>
 
+    <Transition
+        motion:constraintSetStart="@id/state_signed_in"
+        motion:constraintSetEnd="@+id/state_manage_account"
+        >
+
+        <OnSwipe
+            motion:dragDirection="dragUp"
+            motion:onTouchUp="autoCompleteToEnd"
+            />
+
+        <inject src="_signin_keyframeset_signedin_manageaccount"/>
+
+    </Transition>
+
+    <Transition
+        motion:constraintSetStart="@+id/state_manage_account"
+        motion:constraintSetEnd="@+id/state_edit_username"
+        >
+        <inject src="_signin_keyframeset_manageaccount_editusername"/>
+    </Transition>
+
+    <ConstraintSet android:id="@+id/state_loading"
+        motion:deriveConstraintsFrom="@id/state_signed_out">
+        <inject src="_signin_constraints_loading"/>
+    </ConstraintSet>
+
     <ConstraintSet android:id="@+id/state_signed_out">
         <inject src="_signin_constraints_signed_out"/>
     </ConstraintSet>
 
     <ConstraintSet android:id="@+id/state_signed_in">
         <inject src="_signin_constraints_signed_in"/>
+    </ConstraintSet>
+
+    <ConstraintSet android:id="@+id/state_manage_account">
+        <inject src="_signin_constraints_manage_account"/>
+    </ConstraintSet>
+
+    <ConstraintSet
+        android:id="@+id/state_edit_username"
+        motion:deriveConstraintsFrom="@+id/state_manage_account"
+        >
+        <inject src="_signin_constraints_edit_username"/>
     </ConstraintSet>
 </MotionScene>

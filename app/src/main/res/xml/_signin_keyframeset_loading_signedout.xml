@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<injected
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:motion="http://schemas.android.com/apk/res-auto">
+
+    <KeyPosition
+        motion:motionTarget="@+id/rationale"
+        motion:framePosition="1"
+        motion:percentWidth="1.0"
+        motion:percentHeight="1.0"
+        motion:percentX="1.0"
+        motion:percentY="1.0"/>
+
+    <KeyPosition
+        motion:motionTarget="@+id/account_avatar"
+        motion:framePosition="1"
+        motion:percentWidth="1.0"
+        motion:percentHeight="1.0"
+        motion:percentX="1.0"
+        motion:percentY="1.0"/>
+
+</injected>
