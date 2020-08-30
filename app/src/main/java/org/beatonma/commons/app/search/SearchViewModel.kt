@@ -25,19 +25,19 @@ private const val TAG = "SearchViewModel"
 class SearchViewModel @ViewModelInject constructor(
     private val dataSource: CommonsRemoteDataSource,
     private val locationProvider: FusedLocationProviderClient,
-    private val geocoder: Geocoder
+    private val geocoder: Geocoder,
 ) : ViewModel() {
 
     private var networkJob: Job? = null
     val resultLiveData = MutableLiveData<List<SearchResult>>()
     val localMemberLiveData = MutableLiveData<MemberSearchResult>()
 
-    fun submitSearch(query: String) {
+    fun submit(query: String) {
         networkJob?.cancel()
         networkJob = viewModelScope.launch(Dispatchers.IO) {
             val result = dataSource.getSearchResults(query)
             if (result is SuccessResult) {
-                resultLiveData.postValue(result.data)
+                resultLiveData.postValue(result.data ?: listOf())
             }
         }
     }
@@ -48,12 +48,14 @@ class SearchViewModel @ViewModelInject constructor(
             Log.i(TAG, "Lookup up postcode...")
             val postcode = getLocalPostcode()
             localMemberLiveData.postValue(
-                MemberSearchResult(parliamentdotuk = 0,
+                MemberSearchResult(
+                    parliamentdotuk = 0,
                     name = postcode ?: "NO POSTCODE",
                     portraitUrl = null,
                     party = null,
                     constituency = null,
-                    currentPost = null))
+                    currentPost = null,
+                ))
             TODO("We've got the postcode but we still need to use it to look up the constituency/member!")
         }
         return localMemberLiveData

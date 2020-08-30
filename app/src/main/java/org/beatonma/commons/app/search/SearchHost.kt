@@ -56,7 +56,7 @@ interface SearchHost {
         if (query.isNullOrBlank()) {
             searchAdapter.diffSync(null)
         } else {
-            searchViewModel.submitSearch(query)
+            searchViewModel.submit(query)
         }
     }
 
@@ -65,7 +65,6 @@ interface SearchHost {
         permissions: Array<out String>,
         grantResult: IntArray
     ): Boolean {
-        println("onRequestSearchPermissisonsResult")
         val results = PermissionResults(permissions, grantResult)
         when (requestCode) {
             REQUEST_CODE_LOCATION -> {
