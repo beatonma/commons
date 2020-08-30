@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="user_avatar_size">72dp</dimen>
+    <dimen name="user_avatar_size_large">128dp</dimen>
     <dimen name="user_avatar_margin">16dp</dimen>
 </resources>
