@@ -133,15 +133,15 @@ abstract class ScrollableView @JvmOverloads constructor(
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         withMeasureSpec(widthMeasureSpec, heightMeasureSpec) { widthSize, widthMode, heightSize, heightMode ->
-            val wSize: Int = when (widthMode) {
-                MeasureSpec.EXACTLY -> widthSize
-                MeasureSpec.AT_MOST -> scrollableWidth.coerceAtMost(widthSize)
+            val wSize: Int = when (widthMode.mode) {
+                MeasureSpec.EXACTLY -> widthSize.size
+                MeasureSpec.AT_MOST -> scrollableWidth.coerceAtMost(widthSize.size)
                 else -> scrollableWidth.coerceAtMost(maxSize.width)
             }
 
-            val hSize: Int = when (heightMode) {
-                MeasureSpec.EXACTLY -> heightSize
-                MeasureSpec.AT_MOST -> scrollableHeight.coerceAtMost(heightSize)
+            val hSize: Int = when (heightMode.mode) {
+                MeasureSpec.EXACTLY -> heightSize.size
+                MeasureSpec.AT_MOST -> scrollableHeight.coerceAtMost(heightSize.size)
                 else -> scrollableHeight.coerceAtMost(maxSize.height)
             }
 
