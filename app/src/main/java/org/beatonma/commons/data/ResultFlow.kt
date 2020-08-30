@@ -2,8 +2,10 @@ package org.beatonma.commons.data
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.ProducerScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 
 /**
  * Emits cached results of [databaseQuery] then attempts to update data with [networkCall].
@@ -83,6 +85,27 @@ fun <T> resultFlowNoCache(
 }
 
 
+suspend inline fun <T> Flow<IoResult<T>>.await(
+    timeout: Long = 1000,
+    timeUnit: TimeUnit = TimeUnit.MILLISECONDS,
+    crossinline predicate: (IoResult<T>) -> Boolean,
+) = channelFlow {
+    val timeoutJob = launch {
+        delay(timeUnit.toMillis(timeout))
+        close()
+    }
+
+    launch {
+        this@await.collect {
+            if (predicate(it)) {
+                timeoutJob.cancel()
+                this@channelFlow.send(it)
+                this@channelFlow.close()
+            }
+        }
+    }
+}.single()
+
 
 private suspend fun <E> ProducerScope<E>.sendAndClose(element: E, cause: Throwable? = null) {
     send(element)
@@ -114,7 +137,7 @@ private suspend inline fun <E, N> ProducerScope<IoResult<E>>.submitAndSaveNetwor
             }
         }
 
-        is IoError -> {
+        is IoError<*,*> -> {
             sendAndClose(NetworkError(response.message, response.error), response.error)
         }
     }
