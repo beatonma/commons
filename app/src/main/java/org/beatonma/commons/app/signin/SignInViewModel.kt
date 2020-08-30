@@ -9,10 +9,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import dagger.hilt.android.qualifiers.ApplicationContext
+import org.beatonma.commons.BuildConfig
 import org.beatonma.commons.app
+import org.beatonma.commons.data.*
 import org.beatonma.commons.data.core.repository.UserAccount
 import org.beatonma.commons.data.core.repository.UserRepository
 import org.beatonma.commons.data.core.repository.toUserAccount
+import org.beatonma.commons.network.Http
 
 private const val TAG = "SignInViewModel"
 
@@ -37,20 +40,75 @@ class SignInViewModel @ViewModelInject constructor(
         }
     }
 
+    internal suspend fun requestRename(newName: String): RenameResult {
+        val token = activeUserToken?.value?.data ?: return RenameResult.NOT_SIGNED_IN
+        val localValidationResult = quickValidate(token.username, newName)
+        if (localValidationResult != RenameResult.OK) {
+            return localValidationResult
+        }
+
+        val result = repository.requestRenameAccount(token, newName).await {
+            it !is LoadingResult
+        }
+
+        if (result is SuccessCodeResult && Http.Status.isSuccess(result.responseCode)){
+            return RenameResult.OK
+        }
+
+        else if (result is NetworkError && result.error is NetworkException) {
+            val code = result.error.code
+            return when {
+                code == Http.Status.FORBIDDEN_403 -> RenameResult.SERVER_DENIED
+                Http.Status.isServerError(code) -> RenameResult.SERVER_ERROR
+                else -> RenameResult.SERVER_BAD_REQUEST
+            }
+        }
+        return RenameResult.ERROR
+    }
+
     fun signOut(): Task<Void> {
         activeUserToken = null
         return googleSignInClient.signOut()
     }
+}
 
-    private fun getUserAccountFromSignInResult(data: Intent?): UserAccount? {
-        try {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-            val account = task.getResult(ApiException::class.java)
-            return account?.toUserAccount()
-        }
-        catch(e: ApiException) {
-            Log.w(TAG, "Google sign in failed - code=${e.statusCode}")
-        }
-        return null
+
+internal enum class RenameResult {
+    NO_CHANGE,  // New name is the same as the old one
+    OK,  // Server renamed the account successfully.
+    TOO_SHORT,
+    TOO_LONG,
+    BAD_START_OR_END,  // Name must start and end with alphanumeric characters.
+    SERVER_DENIED,  // Server validation failed or the username is taken/reserved/blocked.
+    SERVER_BAD_REQUEST,  // Request is missing some required content.
+    SERVER_ERROR,  // HTTP response >= 500
+    ERROR,  // Something else went wrong
+    NOT_SIGNED_IN,
+    ;
+}
+
+/**
+ * Check basic validation rules before submitting to server.
+ * The server runs its own validation but we can check some of the basics locally.
+ */
+private suspend fun quickValidate(oldName: String, newName: String): RenameResult = when {
+    oldName == newName -> RenameResult.NO_CHANGE
+    newName.length > BuildConfig.ACCOUNT_USERNAME_MAX_LENGTH -> RenameResult.TOO_LONG
+    newName.length < BuildConfig.ACCOUNT_USERNAME_MIN_LENGTH -> RenameResult.TOO_SHORT
+    !newName.first().isLetterOrDigit() -> RenameResult.BAD_START_OR_END
+    !newName.last().isLetterOrDigit() -> RenameResult.BAD_START_OR_END
+    else -> RenameResult.OK
+}
+
+
+private fun getUserAccountFromSignInResult(data: Intent?): UserAccount? {
+    try {
+        val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+        val account = task.getResult(ApiException::class.java)
+        return account?.toUserAccount()
     }
+    catch(e: ApiException) {
+        Log.w(TAG, "Google sign in failed - code=${e.statusCode}")
+    }
+    return null
 }
