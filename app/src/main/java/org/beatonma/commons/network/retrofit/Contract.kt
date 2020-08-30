@@ -141,5 +141,10 @@ object Contract {
     const val CREATED_ON = "created_on"
     const val MODIFIED_ON = "modified_on"
     const val TARGET_TYPE = "target_type"
+
+    // Account management
+    const val ACCOUNT_NEW_USERNAME = "new_username"
+    const val ACCOUNT_ACTION_CHANGE_USERNAME = "rename"
+    const val ACCOUNT_ACTION = "action"
 }
 

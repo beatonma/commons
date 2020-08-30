@@ -11,6 +11,9 @@ import org.beatonma.commons.data.core.room.entities.division.ApiMemberVote
 import org.beatonma.commons.data.core.room.entities.member.ApiMemberProfile
 import org.beatonma.commons.data.core.room.entities.member.House
 import org.beatonma.commons.data.core.room.entities.user.ApiUserToken
+import org.beatonma.commons.data.core.room.entities.user.DeleteUserRequest
+import org.beatonma.commons.data.core.room.entities.user.RenameAccountRequest
+import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.data.core.search.MemberSearchResult
 import org.beatonma.commons.data.core.social.*
 import org.beatonma.commons.network.retrofit.CommonsService
@@ -65,6 +68,10 @@ interface CommonsRemoteDataSource {
 
     // WRITE
     suspend fun registerUser(googleToken: String): IoResult<ApiUserToken>
+
+    suspend fun requestRenameAccount(userToken: UserToken, newName: String): IoResult<Void>
+
+    suspend fun deleteUserAccount(token: UserToken): IoResult<Void>
 
     // Social
     @SignInRequired
@@ -131,11 +138,30 @@ class CommonsRemoteDataSourceImpl @Inject constructor(
         service.getSocialContentForTarget(targetType.name, parliamentdotuk, snommocToken)
     }
 
+    // Write
+
     override suspend fun registerUser(googleToken: String) = getResult {
         service.registerGoogleSignIn(googleToken)
     }
 
-    // Write
+    override suspend fun requestRenameAccount(
+        userToken: UserToken,
+        newName: String
+    ): IoResult<Void> = getResult {
+        service.requestRenameAccount(RenameAccountRequest(
+            currentUsername = userToken.username,
+            token = userToken.snommocToken,
+            newUsername = newName
+        ))
+    }
+
+    override suspend fun deleteUserAccount(token: UserToken): IoResult<Void> = getResult {
+        service.deleteUserAccount(DeleteUserRequest(
+            gtoken = token.googleId,
+            token = token.snommocToken
+        ))
+    }
+
 
     @SignInRequired
     override suspend fun postComment(comment: CreatedComment) = getResult {

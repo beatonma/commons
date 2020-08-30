@@ -16,9 +16,12 @@ import org.beatonma.commons.data.core.room.entities.division.ApiMemberVote
 import org.beatonma.commons.data.core.room.entities.member.ApiMemberProfile
 import org.beatonma.commons.data.core.room.entities.member.House
 import org.beatonma.commons.data.core.room.entities.user.ApiUserToken
+import org.beatonma.commons.data.core.room.entities.user.DeleteUserRequest
+import org.beatonma.commons.data.core.room.entities.user.RenameAccountRequest
 import org.beatonma.commons.data.core.search.MemberSearchResult
 import org.beatonma.commons.data.core.social.DeletedVote
 import org.beatonma.commons.data.core.social.SocialContent
+import org.beatonma.commons.network.Http
 import org.beatonma.commons.network.retrofit.converters.EnvelopePayload
 import retrofit2.Response
 import retrofit2.http.*
@@ -54,6 +57,7 @@ private object Endpoints {
     const val FEATURED_DIVISIONS = "$FEATURED_API_PATH/divisions/"
 
     object Social {
+        const val ACCOUNT = "$SOCIAL_API_PATH/account/"
         const val GAUTH = "$SOCIAL_API_PATH/auth/g/"
         const val ALL = "$SOCIAL_TARGET_PATH/all/"
         const val VOTES = "$SOCIAL_TARGET_PATH/votes/"
@@ -149,7 +153,22 @@ interface CommonsDataService {
 interface CommonsSocialService {
     @FormUrlEncoded
     @POST(Endpoints.Social.GAUTH)
-    suspend fun registerGoogleSignIn(@Field(Contract.SNOMMOC_TOKEN) googleToken: String): Response<ApiUserToken>
+    suspend fun registerGoogleSignIn(
+        @Field(Contract.SNOMMOC_TOKEN) googleToken: String,
+    ): Response<ApiUserToken>
+
+    @SignInRequired
+    @POST(Endpoints.Social.ACCOUNT)
+    suspend fun requestRenameAccount(
+        @Body renameAccountRequest: RenameAccountRequest,
+    ): Response<Void>
+
+    @SignInRequired
+    @HTTP(method = Http.Method.DELETE, path = Endpoints.Social.ACCOUNT, hasBody = true)
+    suspend fun deleteUserAccount(
+        @Body user: DeleteUserRequest,
+    ): Response<Void>
+
 
     @GET(Endpoints.Social.ALL)
     suspend fun getSocialContentForTarget(
@@ -179,7 +198,7 @@ interface CommonsSocialService {
     ): Response<Void>
 
     @SignInRequired
-    @HTTP(method = "DELETE", path = Endpoints.Social.VOTES, hasBody = true)
+    @HTTP(method = Http.Method.DELETE, path = Endpoints.Social.VOTES, hasBody = true)
     suspend fun deleteVote(
         @Path(Contract.TARGET_TYPE) targetStr: String,
         @Path(Contract.PARLIAMENTDOTUK) parliamentdotuk: ParliamentID,
