@@ -19,11 +19,23 @@
     <style name="Social.Comment.Username" parent="Text.Secondary">
         <item name="android:fontFamily">sans-serif-condensed</item>
         <item name="android:textColor">?attr/colorAccent</item>
+        <item name="maxLines">1</item>
     </style>
 
     <style name="Social.Profile.Username" parent="Text.Primary.H2">
         <item name="android:fontFamily">sans-serif-condensed</item>
         <item name="android:textColor">?attr/colorAccent</item>
+        <item name="maxLines">1</item>
+    </style>
+
+    <style name="Social.Profile.Username.Edit">
+        <item name="android:padding">8dp</item>
+        <item name="android:minWidth">@dimen/touchable_min_size</item>
+        <item name="android:textColorHint">@color/AccentPurple</item>
+        <item name="android:textCursorDrawable">@null</item><!-- Use textColor for cursor -->
+        <item name="android:inputType">text</item>
+        <item name="android:digits">@string/account_username_characters</item>
+        <item name="android:maxLength">@integer/account_username_max_length</item>
     </style>
 
     <style name="Social.Comment.Timestamp" parent="Text.Secondary">
