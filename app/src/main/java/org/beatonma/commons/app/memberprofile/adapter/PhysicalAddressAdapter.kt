@@ -26,8 +26,8 @@ class PhysicalAddressAdapter: ThemedCollapsibleAdapter<PhysicalAddress>() {
                 }
 
                 vh.actions.setChipData(listOfNotNull(
-                    if (item.phone != null) ChipData.forPhoneNumber(context, item.phone) else null,
-                    if (item.email != null) ChipData.forEmail(context, item.email) else null
+                    if (item.phone != null) ChipData.forPhoneNumber(context, item.phone as String) else null,
+                    if (item.email != null) ChipData.forEmail(context, item.email as String) else null
                 ))
             }
         }

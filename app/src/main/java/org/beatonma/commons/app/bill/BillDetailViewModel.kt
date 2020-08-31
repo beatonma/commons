@@ -28,7 +28,7 @@ class BillDetailViewModel @ViewModelInject constructor(
         val bill = result.data
         if (bill != null) {
             viewModelScope.launch {
-                val annotated = getAnnotatedStages(result.data)
+                val annotated = getAnnotatedStages(result.data as CompleteBill)
                 stagesLiveData.postValue(annotated)
             }
         }

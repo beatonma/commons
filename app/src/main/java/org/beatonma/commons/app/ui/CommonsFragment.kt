@@ -35,7 +35,7 @@ abstract class CommonsFragment<B: ViewBinding>: Fragment(), AsyncDiffHost {
         return binding.root
     }
 
-    inline fun <T> IoResult<T>.handle(
+    inline fun <reified T> IoResult<T>.handle(
         noData: ActionBlock = {},
         withData: (T) -> Unit
     ) {
@@ -43,7 +43,7 @@ abstract class CommonsFragment<B: ViewBinding>: Fragment(), AsyncDiffHost {
             is NetworkError -> networkErrorSnackbar(this)
             is SuccessResult -> {
                 if (data != null) {
-                    withData.invoke(data)
+                    withData.invoke(data as T)
                 }
                 else {
                     noData.invoke()

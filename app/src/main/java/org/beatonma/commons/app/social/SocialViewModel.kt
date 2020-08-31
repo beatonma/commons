@@ -6,18 +6,20 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.beatonma.commons.BuildConfig
-import org.beatonma.commons.annotations.SignInRequired
 import org.beatonma.commons.app
 import org.beatonma.commons.app.signin.BaseUserAccountViewModel
 import org.beatonma.commons.data.IoResult
 import org.beatonma.commons.data.LiveDataIoResult
 import org.beatonma.commons.data.NotSignedInError
-import org.beatonma.commons.data.core.repository.*
+import org.beatonma.commons.data.core.repository.SocialRepository
+import org.beatonma.commons.data.core.repository.SocialTarget
+import org.beatonma.commons.data.core.repository.UserRepository
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.data.core.social.CreatedComment
 import org.beatonma.commons.data.core.social.CreatedVote
 import org.beatonma.commons.data.core.social.SocialContent
 import org.beatonma.commons.data.core.social.SocialVoteType
+import org.beatonma.commons.snommoc.annotations.SignInRequired
 
 private const val TAG = "SocialViewModel"
 

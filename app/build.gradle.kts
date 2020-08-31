@@ -259,6 +259,9 @@ dependencies {
     implementations.forEach { implementation(it) }
 
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
+
+    implementation(project(":snommoc"))
+    implementation(project(":data"))
 }
 
 repositories {

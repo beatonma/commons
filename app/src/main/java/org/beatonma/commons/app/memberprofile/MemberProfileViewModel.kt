@@ -128,7 +128,7 @@ class MemberProfileViewModel
                 experience.title
             }
             else {
-                stringCompat(R.string.snippet_experience, experience.title, experience.organisation)
+                stringCompat(R.string.snippet_experience, experience.title, experience.organisation as String)
             }
 
             Snippet(

@@ -5,7 +5,8 @@ pluginManagement {
         maven("https://plugins.gradle.org/m2/")
     }
 }
-include (
-    ":bmalib:testing"
-)
+include(":core")
+include(":snommoc")
+include(":data")
 include(":app")
+include(":bmalib:testing")

@@ -20,7 +20,14 @@ private fun String?.execute(workingDir: File, fallback: String): String {
     }
 }
 
+data class GitData(val sha: String, val tag: String, val commitCount: Int)
 object Git {
+    fun resolveData(project: Project) = GitData(
+        sha = sha(project),
+        tag = tag(project),
+        commitCount = commitCount(project)
+    )
+
     fun sha(project: Project): String {
         // query git for the SHA, Tag and commit count. Use these to automate versioning.
         return "git rev-parse --short HEAD".execute(project.rootDir, "none")

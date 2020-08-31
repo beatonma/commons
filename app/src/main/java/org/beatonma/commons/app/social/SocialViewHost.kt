@@ -10,9 +10,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.beatonma.commons.R
-import org.beatonma.commons.annotations.SignInRequired
 import org.beatonma.commons.app.ui.navigation.BackPressConsumer
 import org.beatonma.commons.app.ui.recyclerview.adapter.AsyncDiffHost
 import org.beatonma.commons.data.IoResultObserver
@@ -20,6 +18,7 @@ import org.beatonma.commons.data.SuccessCodeResult
 import org.beatonma.commons.data.core.interfaces.Sociable
 import org.beatonma.commons.data.core.social.SocialContent
 import org.beatonma.commons.data.core.social.SocialVoteType
+import org.beatonma.commons.snommoc.annotations.SignInRequired
 
 private const val TAG = "SocialViewHost"
 

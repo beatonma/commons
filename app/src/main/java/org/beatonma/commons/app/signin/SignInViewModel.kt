@@ -56,7 +56,7 @@ class SignInViewModel @ViewModelInject constructor(
         }
 
         else if (result is NetworkError && result.error is NetworkException) {
-            val code = result.error.code
+            val code = (result.error as NetworkException).code
             return when {
                 code == Http.Status.FORBIDDEN_403 -> RenameResult.SERVER_DENIED
                 Http.Status.isServerError(code) -> RenameResult.SERVER_ERROR
