@@ -1,7 +1,10 @@
+import com.android.build.gradle.internal.dsl.DefaultConfig
+
 plugins {
     id("com.android.library")
     kotlin("android")
     id("kotlin-android-extensions")
+    id("dagger.hilt.android.plugin")
     kotlin("kapt")
     id("com.github.ben-manes.versions")
 }
@@ -18,13 +21,10 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 //        consumerProguardFiles = "consumer-rules.pro"
 
-        kapt {
-            arguments {
-                arg("room.schemaLocation", "$projectDir/schemas")
-                arg("room.incremental", "true")
-                arg("room.expandProjection", "true")
-            }
-        }
+        injectStrings(mapOf(
+            "COMMONS_API_KEY" to local.LocalConfig.Api.Commons.API_KEY
+        ), asBuildConfig = true, asResValue = false)
+
     }
 
     compileOptions {
@@ -42,23 +42,53 @@ android {
 }
 
 dependencies {
-//    val annotationProcessors = arrayOf(
-//
-//    )
-
-    val kotlin = arrayOf(
-        Dependencies.Kotlin.STDLIB
+    val annotationProcessors = arrayOf(
+        Dependencies.Dagger.ANNOTATION_PROCESSOR,
+        Dependencies.Dagger.COMPILER,
+        Dependencies.Hilt.AX_KAPT,
+        Dependencies.Hilt.KAPT
     )
 
     val implementations = arrayOf(
-        kotlin
-    ).flatten()
+        Dependencies.AndroidX.CORE_KTX,
 
-//    annotationProcessors.forEach(::kapt)
+        Dependencies.Dagger.ANDROID,
+        Dependencies.Dagger.DAGGER,
+        Dependencies.Dagger.SUPPORT,
+
+        Dependencies.Hilt.CORE,
+
+        Dependencies.Kotlin.STDLIB,
+        Dependencies.Kotlin.Coroutines.ANDROID,
+        Dependencies.Kotlin.Coroutines.CORE,
+
+        Dependencies.Retrofit.RETROFIT,
+        Dependencies.Retrofit.Converter.MOSHI,
+        Dependencies.Retrofit.Converter.TEXT,
+
+        project(":core"),
+        project(":network-core")
+    )
+
+
+    annotationProcessors.forEach(::kapt)
     implementations.forEach(::implementation)
 }
 
 repositories {
     mavenCentral()
     maven("https://dl.bintray.com/kotlin/kotlin-eap")
+}
+
+
+
+fun DefaultConfig.injectStrings(mapping: Map<String, String>, asBuildConfig: Boolean, asResValue: Boolean) {
+    mapping.forEach { (key, value) ->
+        if (asBuildConfig) {
+            buildConfigField("String", key.toUpperCase(), "\"$value\"")
+        }
+        if (asResValue) {
+            resValue("string", key.toLowerCase(), value)
+        }
+    }
 }

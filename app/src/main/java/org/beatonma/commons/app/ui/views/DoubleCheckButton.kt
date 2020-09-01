@@ -10,7 +10,6 @@ import kotlinx.coroutines.*
 import org.beatonma.commons.R
 import org.beatonma.commons.data.ClickAction
 import org.beatonma.commons.kotlin.extensions.string
-import org.beatonma.commons.kotlin.extensions.withNotNull
 
 private const val REVERT_STATE_TIMEOUT = 1800L
 
@@ -33,7 +32,7 @@ class DoubleCheckButton @JvmOverloads constructor(
     private var state: State = State.UNSURE
         set(value) {
             field = value
-            withNotNull(parent as? ViewGroup) {
+            org.beatonma.commons.core.extensions.withNotNull(parent as? ViewGroup) {
                 TransitionManager.beginDelayedTransition(it)
             }
 
@@ -63,7 +62,7 @@ class DoubleCheckButton @JvmOverloads constructor(
     }
 
     override fun setOnClickListener(l: OnClickListener?) {
-        withNotNull(l) {
+        org.beatonma.commons.core.extensions.withNotNull(l) {
             unsureAction = {}
             certainAction = it::onClick
         }

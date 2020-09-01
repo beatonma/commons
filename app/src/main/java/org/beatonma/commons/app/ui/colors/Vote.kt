@@ -1,7 +1,7 @@
 package org.beatonma.commons.app.ui.colors
 
 import org.beatonma.commons.R
-import org.beatonma.commons.data.core.room.entities.division.VoteType
+import org.beatonma.commons.core.VoteType
 
 val VoteType.colorResId
     get() = when (this) {

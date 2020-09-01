@@ -16,12 +16,12 @@ import org.beatonma.commons.app.ui.navigation.BackPressConsumer
 import org.beatonma.commons.app.ui.recyclerview.adapter.AsyncDiffHost
 import org.beatonma.commons.app.ui.recyclerview.adapter.LoadingAdapter
 import org.beatonma.commons.app.ui.recyclerview.setup
-import org.beatonma.commons.data.core.social.SocialComment
-import org.beatonma.commons.data.core.social.SocialContent
-import org.beatonma.commons.data.core.social.SocialVoteType
 import org.beatonma.commons.databinding.ItemSocialCommentBinding
 import org.beatonma.commons.kotlin.data.asStateList
 import org.beatonma.commons.kotlin.extensions.*
+import org.beatonma.commons.snommoc.models.social.SocialComment
+import org.beatonma.commons.snommoc.models.social.SocialContent
+import org.beatonma.commons.snommoc.models.social.SocialVoteType
 import java.time.LocalDate
 
 private const val TAG = "SocialViewController"

@@ -6,13 +6,13 @@ import androidx.lifecycle.asLiveData
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.beatonma.commons.app.ui.BaseIoAndroidViewModel
 import org.beatonma.commons.context
-import org.beatonma.commons.data.ParliamentID
-import org.beatonma.commons.data.core.repository.ConstituencyRepository
+import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyCandidate
 import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyElectionDetails
 import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyElectionDetailsWithExtras
 import org.beatonma.commons.data.resolution.PartyResolution
 import org.beatonma.commons.kotlin.extensions.formatPercent
+import org.beatonma.commons.repo.repository.ConstituencyRepository
 
 class ConstituencyElectionResultsViewModel @ViewModelInject constructor(
     private val repository: ConstituencyRepository,

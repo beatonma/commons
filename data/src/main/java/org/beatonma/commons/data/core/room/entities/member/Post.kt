@@ -3,13 +3,11 @@ package org.beatonma.commons.data.core.room.entities.member
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import com.squareup.moshi.Json
-import org.beatonma.commons.data.PARLIAMENTDOTUK
-import org.beatonma.commons.data.ParliamentID
+import org.beatonma.commons.core.PARLIAMENTDOTUK
+import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.interfaces.Named
 import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
 import org.beatonma.commons.data.core.interfaces.Periodic
-import org.beatonma.commons.snommoc.Contract
 import java.time.LocalDate
 
 @Entity(
@@ -44,25 +42,3 @@ data class Post(
         OPPOSITION
     }
 }
-
-data class ApiPost(
-    @field:Json(name = Contract.PARLIAMENTDOTUK) val parliamentdotuk: ParliamentID,
-    @field:Json(name = Contract.NAME) val name: String,
-    @field:Json(name = Contract.START) val start: LocalDate?,
-    @field:Json(name = Contract.END) val end: LocalDate?
-) {
-    fun toPost(memberId: ParliamentID, postType: Post.PostType) = Post(
-        parliamentdotuk = parliamentdotuk,
-        memberId = memberId,
-        name = name,
-        postType = postType,
-        start = start,
-        end = end
-    )
-}
-
-data class ApiPosts(
-    @field:Json(name = Contract.GOVERNMENTAL) val governmental: List<ApiPost>,
-    @field:Json(name = Contract.PARLIAMENTARY) val parliamentary: List<ApiPost>,
-    @field:Json(name = Contract.OPPOSITION) val opposition: List<ApiPost>
-)

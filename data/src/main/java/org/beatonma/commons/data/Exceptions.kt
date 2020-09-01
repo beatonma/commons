@@ -1,7 +1,5 @@
 package org.beatonma.commons.data
 
-import retrofit2.Response
-
 /**
  * Indicates that a code branch should never be reached because of a previous precondition.
  * e.g. In a Map with non-null values:
@@ -19,8 +17,3 @@ class ShouldNotHappen(
     "ShouldNotHappen because: $whyNot",
     throwable
 )
-
-
-class NetworkException(val code: Int, message: String): Exception(message) {
-    constructor(response: Response<*>): this(response.code(), response.message())
-}

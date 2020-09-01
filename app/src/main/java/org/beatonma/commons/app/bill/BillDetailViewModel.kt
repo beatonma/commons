@@ -9,14 +9,14 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import org.beatonma.commons.app.ui.BaseIoAndroidViewModel
+import org.beatonma.commons.core.House
+import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.IoResult
-import org.beatonma.commons.data.ParliamentID
-import org.beatonma.commons.data.core.repository.BillRepository
 import org.beatonma.commons.data.core.room.entities.bill.BillStageWithSittings
 import org.beatonma.commons.data.core.room.entities.bill.CompleteBill
-import org.beatonma.commons.data.core.room.entities.member.House
 import org.beatonma.commons.data.extensions.BillStageCanonicalNames
 import org.beatonma.commons.data.extensions.startedIn
+import org.beatonma.commons.repo.repository.BillRepository
 import java.util.*
 
 class BillDetailViewModel @ViewModelInject constructor(

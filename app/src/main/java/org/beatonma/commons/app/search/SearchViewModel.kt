@@ -15,15 +15,15 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import org.beatonma.commons.data.CommonsRemoteDataSource
 import org.beatonma.commons.data.SuccessResult
-import org.beatonma.commons.data.core.search.MemberSearchResult
-import org.beatonma.commons.data.core.search.SearchResult
+import org.beatonma.commons.repo.CommonsApi
+import org.beatonma.commons.snommoc.models.search.MemberSearchResult
+import org.beatonma.commons.snommoc.models.search.SearchResult
 
 private const val TAG = "SearchViewModel"
 
 class SearchViewModel @ViewModelInject constructor(
-    private val dataSource: CommonsRemoteDataSource,
+    private val dataSource: CommonsApi,
     private val locationProvider: FusedLocationProviderClient,
     private val geocoder: Geocoder,
 ) : ViewModel() {

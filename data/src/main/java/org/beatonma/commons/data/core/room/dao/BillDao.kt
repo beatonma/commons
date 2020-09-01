@@ -2,8 +2,8 @@ package org.beatonma.commons.data.core.room.dao
 
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
+import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.FlowList
-import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.room.entities.bill.*
 
 @Dao
@@ -63,27 +63,50 @@ interface BillDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertParliamentarySession(parliamentarySession: ParliamentarySession)
 
-    @Transaction
-    suspend fun insertCompleteBill(parliamentdotuk: ParliamentID, apiBill: ApiBill) {
-        if (apiBill.type != null) {
-            insertBillType(apiBill.type)
-        }
-        if (apiBill.session != null) {
-            insertParliamentarySession(apiBill.session)
-        }
+//    @Transaction
+//    suspend fun insertCompleteBill(parliamentdotuk: ParliamentID, apiBill: ApiBill) {
+//        if (apiBill.type != null) {
+//            insertBillType(apiBill.type)
+//        }
+//        if (apiBill.session != null) {
+//            insertParliamentarySession(apiBill.session)
+//        }
+//
+//        insertBill(apiBill.toBill())
+//
+//        insertBillStages(apiBill.stages.map { apiStage -> apiStage.toBillStage(parliamentdotuk) })
+//
+//        insertBillStageSittings(
+//        apiBill.stages.map { stage ->
+//            stage.sittings.map { sitting ->
+//                sitting.toBillStageSitting(billStageId = stage.parliamentdotuk)
+//            }
+//        }.flatten())
+//
+//        insertBillSponsors(apiBill.sponsors.map { it.toBillSponsor(billId = parliamentdotuk) })
+//        insertBillPublications(apiBill.publications.map { it.toBillPublication(billId = parliamentdotuk) })
+//    }
 
-        insertBill(apiBill.toBill())
-
-        insertBillStages(apiBill.stages.map { apiStage -> apiStage.toBillStage(parliamentdotuk) })
-
-        insertBillStageSittings(
-        apiBill.stages.map { stage ->
-            stage.sittings.map { sitting ->
-                sitting.toBillStageSitting(billStageId = stage.parliamentdotuk)
-            }
-        }.flatten())
-
-        insertBillSponsors(apiBill.sponsors.map { it.toBillSponsor(billId = parliamentdotuk) })
-        insertBillPublications(apiBill.publications.map { it.toBillPublication(billId = parliamentdotuk) })
-    }
+//    @Transaction
+//    suspend fun insertCompleteBill(parliamentdotuk: ParliamentID, complete: CompleteBill) {
+//        withNotNull(complete.type) {
+//            insertBillType(it)
+//        }
+//        withNotNull(complete.session) {
+//            insertParliamentarySession(it)
+//        }
+//        withNotNull(complete.bill) {
+//            insertBill(it)
+//        }
+//        withNotNull(complete.stages) { stages ->
+//            insertBillStages(stages.map { it.stage })
+//            insertBillStageSittings(stages.flatMap { it.sittings })
+//        }
+//        withNotNull(complete.sponsors) { sponsors ->
+//            insertBillSponsors(sponsors.map { it.sponsor })
+//        }
+//        withNotNull(complete.publications) {
+//            insertBillPublications(it)
+//        }
+//    }
 }

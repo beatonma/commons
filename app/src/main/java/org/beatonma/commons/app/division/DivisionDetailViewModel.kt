@@ -7,12 +7,12 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.BaseIoAndroidViewModel
 import org.beatonma.commons.app.ui.views.BarChartCategory
-import org.beatonma.commons.data.core.repository.DivisionRepository
 import org.beatonma.commons.data.core.room.entities.division.Division
 import org.beatonma.commons.data.core.room.entities.division.DivisionWithVotes
 import org.beatonma.commons.data.core.room.entities.division.VoteWithParty
 import org.beatonma.commons.kotlin.extensions.BundledDivision
 import org.beatonma.commons.kotlin.extensions.colorCompat
+import org.beatonma.commons.repo.repository.DivisionRepository
 
 class DivisionDetailViewModel @ViewModelInject constructor(
     private val repository: DivisionRepository,

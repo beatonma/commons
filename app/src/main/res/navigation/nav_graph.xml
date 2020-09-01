@@ -78,7 +78,7 @@
             app:argType="integer" />
         <argument
             android:name="house"
-            app:argType="org.beatonma.commons.data.core.room.entities.member.House"/>
+            app:argType="org.beatonma.commons.core.House"/>
         <deepLink
             android:id="@+id/deeplink_division"
             android:autoVerify="true"

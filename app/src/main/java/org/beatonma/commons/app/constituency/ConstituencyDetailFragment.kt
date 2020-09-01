@@ -21,7 +21,7 @@ import org.beatonma.commons.app.ui.colors.PartyColors
 import org.beatonma.commons.app.ui.colors.getTheme
 import org.beatonma.commons.app.ui.recyclerview.adapter.LoadingAdapter
 import org.beatonma.commons.app.ui.recyclerview.setup
-import org.beatonma.commons.data.ParliamentID
+import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import org.beatonma.commons.data.parse.Geometry
 import org.beatonma.commons.databinding.FragmentConstituencyDetailBinding

@@ -23,18 +23,18 @@ import org.beatonma.commons.app.ui.navigation.BackPressConsumer
 import org.beatonma.commons.app.ui.recyclerview.adapter.LoadingAdapter
 import org.beatonma.commons.app.ui.recyclerview.defaultPrimaryContentSpacing
 import org.beatonma.commons.app.ui.recyclerview.setup
+import org.beatonma.commons.core.House
+import org.beatonma.commons.core.VoteType
 import org.beatonma.commons.data.IoResultObserver
 import org.beatonma.commons.data.core.room.entities.division.Division
-import org.beatonma.commons.data.core.room.entities.division.VoteType
 import org.beatonma.commons.data.core.room.entities.division.VoteWithParty
-import org.beatonma.commons.data.core.room.entities.member.House
-import org.beatonma.commons.data.core.social.SocialContent
 import org.beatonma.commons.data.resolution.describe
 import org.beatonma.commons.databinding.FragmentDivisionDetailBinding
 import org.beatonma.commons.databinding.ItemDivisionVoteBinding
 import org.beatonma.commons.databinding.MergeDivisionResultsChartKeyBinding
 import org.beatonma.commons.kotlin.data.asStateList
 import org.beatonma.commons.kotlin.extensions.*
+import org.beatonma.commons.snommoc.models.social.SocialContent
 
 private const val TAG = "DivisionProfileFragment"
 
@@ -89,7 +89,7 @@ class DivisionDetailFragment : CommonsFragment<FragmentDivisionDetailBinding>(),
         viewmodel.liveData.observe(viewLifecycleOwner) { result ->
             result.report()
 
-            withNotNull(result.data) { data ->
+            org.beatonma.commons.core.extensions.withNotNull(result.data) { data ->
                 lifecycleScope.launch {
                     val votes = viewmodel.sortedVotes(data.votes)
                     withContext(Dispatchers.Main) {

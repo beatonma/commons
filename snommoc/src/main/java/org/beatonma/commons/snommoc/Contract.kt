@@ -6,6 +6,8 @@ package org.beatonma.commons.snommoc
 object Contract {
     const val PARLIAMENTDOTUK = "parliamentdotuk"
 
+    const val API_KEY = "key"
+
     // Generic
     const val NAME = "name"
     const val TITLE = "title"

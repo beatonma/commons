@@ -3,7 +3,6 @@ package org.beatonma.commons.app.memberprofile
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,12 +19,12 @@ import org.beatonma.commons.app.ui.colors.getPartyTheme
 import org.beatonma.commons.app.ui.navigation.BackPressConsumer
 import org.beatonma.commons.app.ui.recyclerview.defaultPrimaryContentSpacing
 import org.beatonma.commons.app.ui.recyclerview.setup
+import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.IoResultObserver
-import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.CompleteMember
-import org.beatonma.commons.data.core.social.SocialContent
 import org.beatonma.commons.databinding.FragmentMemberProfileBinding
 import org.beatonma.commons.kotlin.extensions.*
+import org.beatonma.commons.snommoc.models.social.SocialContent
 
 private const val TAG = "MemberProfileFrag"
 
@@ -70,7 +69,7 @@ class MemberProfileFragment : CommonsFragment<FragmentMemberProfileBinding>(),
             result.handle { member ->
                 updateUI(member)
 
-                withNotNull(member.profile) { profile ->
+                org.beatonma.commons.core.extensions.withNotNull(member.profile) { profile ->
                     observeSocialContent(profile)
                 }
             }

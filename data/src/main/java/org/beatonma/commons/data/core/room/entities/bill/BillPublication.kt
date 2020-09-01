@@ -4,11 +4,9 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.squareup.moshi.Json
-import org.beatonma.commons.data.PARLIAMENTDOTUK
-import org.beatonma.commons.data.ParliamentID
+import org.beatonma.commons.core.PARLIAMENTDOTUK
+import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
-import org.beatonma.commons.snommoc.Contract
 
 private const val TAG = "BillPublication"
 
@@ -30,14 +28,3 @@ data class BillPublication(
     @ColumnInfo(name = "bill_pub_title") val title: String,
 ) : Parliamentdotuk
 
-
-data class ApiBillPublication(
-    @field:Json(name = Contract.PARLIAMENTDOTUK) override val parliamentdotuk: ParliamentID,
-    @field:Json(name = Contract.TITLE) val title: String,
-) : Parliamentdotuk {
-    fun toBillPublication(billId: ParliamentID) = BillPublication(
-        parliamentdotuk = parliamentdotuk,
-        title = title,
-        billId = billId
-    )
-}

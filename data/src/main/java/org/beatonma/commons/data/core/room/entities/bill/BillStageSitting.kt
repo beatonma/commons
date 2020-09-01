@@ -4,12 +4,10 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.squareup.moshi.Json
-import org.beatonma.commons.data.PARLIAMENTDOTUK
-import org.beatonma.commons.data.ParliamentID
+import org.beatonma.commons.core.PARLIAMENTDOTUK
+import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.interfaces.Dated
 import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
-import org.beatonma.commons.snommoc.Contract
 import java.time.LocalDate
 
 @Entity(
@@ -32,20 +30,3 @@ data class BillStageSitting(
     @ColumnInfo(name = "billstagesitting_provisional") val isProvisional: Boolean,
 ): Parliamentdotuk,
     Dated
-
-
-data class ApiBillStageSitting(
-    @field:Json(name = Contract.PARLIAMENTDOTUK) override val parliamentdotuk: ParliamentID,
-    @field:Json(name = Contract.DATE) override val date: LocalDate,
-    @field:Json(name = Contract.FORMAL) val isFormal: Boolean,
-    @field:Json(name = Contract.PROVISIONAL) val isProvisional: Boolean,
-): Parliamentdotuk,
-    Dated {
-    fun toBillStageSitting(billStageId: ParliamentID) = BillStageSitting(
-        parliamentdotuk = parliamentdotuk,
-        billStageId = billStageId,
-        date = date,
-        isFormal = isFormal,
-        isProvisional = isProvisional
-    )
-}

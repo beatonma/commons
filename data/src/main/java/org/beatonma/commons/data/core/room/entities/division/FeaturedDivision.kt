@@ -1,8 +1,8 @@
 package org.beatonma.commons.data.core.room.entities.division
 
 import androidx.room.*
-import org.beatonma.commons.data.PARLIAMENTDOTUK
-import org.beatonma.commons.data.ParliamentID
+import org.beatonma.commons.core.PARLIAMENTDOTUK
+import org.beatonma.commons.core.ParliamentID
 
 @Entity(
     tableName = "featured_divisions",

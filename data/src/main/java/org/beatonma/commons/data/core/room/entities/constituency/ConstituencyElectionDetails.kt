@@ -1,13 +1,10 @@
 package org.beatonma.commons.data.core.room.entities.constituency
 
 import androidx.room.*
-import com.squareup.moshi.Json
-import org.beatonma.commons.data.PARLIAMENTDOTUK
-import org.beatonma.commons.data.ParliamentID
+import org.beatonma.commons.core.PARLIAMENTDOTUK
+import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
-import org.beatonma.commons.data.core.room.entities.election.ApiElection
 import org.beatonma.commons.data.core.room.entities.election.Election
-import org.beatonma.commons.snommoc.Contract
 
 @Entity(
     foreignKeys = [
@@ -40,31 +37,6 @@ data class ConstituencyElectionDetails(
 ): Parliamentdotuk
 
 
-data class ApiConstituencyElectionDetails(
-    @field:Json(name = Contract.PARLIAMENTDOTUK) override val parliamentdotuk: ParliamentID,
-    @field:Json(name = Contract.ELECTORATE) val electorate: Int,
-    @field:Json(name = Contract.TURNOUT) val turnout: Int,
-    @field:Json(name = Contract.TURNOUT_FRACTION) val turnoutFraction: String,
-    @field:Json(name = Contract.RESULT) val result: String,
-    @field:Json(name = Contract.MAJORITY) val majority: Int,
-    @field:Json(name = Contract.CANDIDATES) val candidates: List<ApiConstituencyCandidate>,
-    @field:Json(name = Contract.CONSTITUENCY) val constituency: ApiConstituencyMinimal,
-    @field:Json(name = Contract.ELECTION) val election: ApiElection,
-): Parliamentdotuk {
-    fun toConstituencyElectionDetails() = ConstituencyElectionDetails(
-        parliamentdotuk = parliamentdotuk,
-        electorate = electorate,
-        turnout = turnout,
-        turnoutFraction = turnoutFraction,
-        result = result,
-        majority = majority,
-        constituencyId = constituency.parliamentdotuk,
-        electionId = election.parliamentdotuk,
-    )
-}
-
-
-
 /* Candidates */
 @Entity(
     foreignKeys = [
@@ -89,22 +61,6 @@ data class ConstituencyCandidate(
     @ColumnInfo(name = "candidate_order") val order: Int,
     @ColumnInfo(name = "candidate_votes") val votes: Int,
 )
-
-
-data class ApiConstituencyCandidate(
-    @field:Json(name = Contract.NAME) val name: String,
-    @field:Json(name = Contract.PARTY_NAME) val partyName: String,
-    @field:Json(name = Contract.ORDER) val order: Int,
-    @field:Json(name = Contract.VOTES) val votes: Int,
-) {
-    fun toConstituencyCandidate(resultsId: Int) = ConstituencyCandidate(
-        resultsId = resultsId,
-        name = name,
-        partyName = partyName,
-        order = order,
-        votes = votes
-    )
-}
 
 
 data class ConstituencyElectionDetailsWithCandidates(

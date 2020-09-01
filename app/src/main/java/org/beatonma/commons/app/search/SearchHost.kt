@@ -3,8 +3,8 @@ package org.beatonma.commons.app.search
 import android.Manifest
 import androidx.appcompat.widget.SearchView
 import org.beatonma.commons.app.ui.recyclerview.adapter.TypedAdapter
-import org.beatonma.commons.data.core.search.SearchResult
 import org.beatonma.commons.kotlin.extensions.PermissionResults
+import org.beatonma.commons.snommoc.models.search.SearchResult
 
 private const val TAG = "SearchHost"
 

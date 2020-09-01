@@ -34,12 +34,12 @@ import org.beatonma.commons.app.ui.recyclerview.adapter.LoadingAdapter
 import org.beatonma.commons.app.ui.recyclerview.setup
 import org.beatonma.commons.app.ui.recyclerview.viewholder.staticViewHolderOf
 import org.beatonma.commons.commonsApp
-import org.beatonma.commons.data.core.search.MemberSearchResult
-import org.beatonma.commons.data.core.search.SearchResult
 import org.beatonma.commons.databinding.ActivityNavhostMainBinding
 import org.beatonma.commons.databinding.ItemSearchResultBinding
 import org.beatonma.commons.kotlin.extensions.*
-import org.beatonma.commons.network.retrofit.CommonsService
+import org.beatonma.commons.snommoc.CommonsService
+import org.beatonma.commons.snommoc.models.search.MemberSearchResult
+import org.beatonma.commons.snommoc.models.search.SearchResult
 
 private const val TAG = "MainActivity"
 

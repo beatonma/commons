@@ -1,12 +1,10 @@
 package org.beatonma.commons.data.core.room.entities.bill
 
 import androidx.room.*
-import com.squareup.moshi.Json
-import org.beatonma.commons.data.PARLIAMENTDOTUK
-import org.beatonma.commons.data.ParliamentID
+import org.beatonma.commons.core.PARLIAMENTDOTUK
+import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.interfaces.Named
 import org.beatonma.commons.data.core.room.entities.member.Party
-import org.beatonma.commons.snommoc.Contract
 
 /**
  * [parliamentdotuk] may be used to look up the member profile, but it may be null if the server
@@ -21,20 +19,6 @@ data class BillSponsor(
     @ColumnInfo(name = "sponsor_$PARLIAMENTDOTUK") val parliamentdotuk: ParliamentID?,
     @ColumnInfo(name = "sponsor_party_id") val partyId: ParliamentID?,
 ): Named
-
-
-data class ApiBillSponsor(
-    @field:Json(name = Contract.NAME) override val name: String,
-    @field:Json(name = Contract.PARLIAMENTDOTUK) val parliamentdotuk: ParliamentID?,
-    @field:Json(name = Contract.PARTY) val party: Party?
-): Named {
-    fun toBillSponsor(billId: ParliamentID) = BillSponsor(
-        name = name,
-        billId = billId,
-        parliamentdotuk = parliamentdotuk,
-        partyId = party?.parliamentdotuk
-    )
-}
 
 
 data class BillSponsorWithParty(

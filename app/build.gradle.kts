@@ -255,13 +255,20 @@ dependencies {
         room
     ).flatten()
 
+    val localImplementations = arrayOf(
+        ":core",
+        ":network-core",
+        ":snommoc",
+        ":data",
+        ":repo"
+    )
+
     annotationProcessors.forEach { kapt(it) }
     implementations.forEach { implementation(it) }
+    localImplementations.forEach { implementation(project(it)) }
 
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
 
-    implementation(project(":snommoc"))
-    implementation(project(":data"))
 }
 
 repositories {

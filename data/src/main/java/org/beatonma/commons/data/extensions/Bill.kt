@@ -1,7 +1,7 @@
 package org.beatonma.commons.data.extensions
 
+import org.beatonma.commons.core.House
 import org.beatonma.commons.data.core.room.entities.bill.Bill
-import org.beatonma.commons.data.core.room.entities.member.House
 
 fun Bill.startedIn(): House = when {
     this.title.contains("[HL]") -> House.lords

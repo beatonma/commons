@@ -15,8 +15,11 @@ import kotlinx.coroutines.*
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.data.WeblinkData
 import org.beatonma.commons.app.ui.views.ScrollableView
+import org.beatonma.commons.core.extensions.safeGet
 import org.beatonma.commons.data.ClickAction
-import org.beatonma.commons.kotlin.extensions.*
+import org.beatonma.commons.kotlin.extensions.dimenCompat
+import org.beatonma.commons.kotlin.extensions.drawableCompat
+import org.beatonma.commons.kotlin.extensions.openUrl
 
 private const val TAG = "ScrollChips"
 
@@ -189,7 +192,7 @@ class ScrollableChipsView @JvmOverloads constructor(
     inner class TouchHandler: GestureDetector.SimpleOnGestureListener() {
         override fun onSingleTapUp(e: MotionEvent): Boolean {
             val target = findTouchTarget(e.x, e.y)
-            withNotNull(target) { data ->
+            org.beatonma.commons.core.extensions.withNotNull(target) { data ->
                 val action = renderer.getTouchAction(
                     data,
                     x = e.x + scrollX - data.currentStartX,

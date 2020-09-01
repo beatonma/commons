@@ -10,13 +10,16 @@ import org.beatonma.commons.app.ui.Snippet
 import org.beatonma.commons.app.ui.SnippetGeneratorAndroidViewModel
 import org.beatonma.commons.app.ui.data.WeblinkData
 import org.beatonma.commons.app.ui.toSnippets
-import org.beatonma.commons.data.ParliamentID
+import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.CompleteMember
 import org.beatonma.commons.data.core.interfaces.Temporal
 import org.beatonma.commons.data.core.interfaces.compressConsecutiveItems
-import org.beatonma.commons.data.core.repository.MemberRepository
 import org.beatonma.commons.data.core.room.entities.member.*
-import org.beatonma.commons.kotlin.extensions.*
+import org.beatonma.commons.kotlin.extensions.dateRange
+import org.beatonma.commons.kotlin.extensions.formatted
+import org.beatonma.commons.kotlin.extensions.openUrl
+import org.beatonma.commons.kotlin.extensions.stringCompat
+import org.beatonma.commons.repo.repository.MemberRepository
 
 private const val TAG = "MemberProfViewModel"
 
@@ -185,12 +188,13 @@ class MemberProfileViewModel
 
 private suspend fun constructHistoryOf(member: CompleteMember): List<Temporal> {
     fun <T : Temporal> MutableList<Temporal>.addEvents(items: List<T>?) {
-        withNotNull(items) { safeItems ->
+        org.beatonma.commons.core.extensions.withNotNull(items) { safeItems ->
             addAll(
                 safeItems.mapNotNull {
                     try {
                         it
-                    } catch(e: Exception) {
+                    }
+                    catch (e: Exception) {
                         null
                     }
                 }

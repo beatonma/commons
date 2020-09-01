@@ -3,14 +3,13 @@ package org.beatonma.commons.data.core.room.entities.member
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import com.squareup.moshi.Json
-import org.beatonma.commons.data.PARLIAMENTDOTUK
-import org.beatonma.commons.data.ParliamentID
+import org.beatonma.commons.core.PARLIAMENTDOTUK
+import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.interfaces.Dated
 import org.beatonma.commons.data.core.interfaces.Named
 import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
-import org.beatonma.commons.snommoc.Contract
 import java.time.LocalDate
+
 
 @Entity(
     foreignKeys = [
@@ -43,26 +42,4 @@ data class FinancialInterest(
     override val name: String
         get() = description
     override val date: LocalDate? get() = dateCreated
-}
-
-
-data class ApiFinancialInterest(
-    @field:Json(name = Contract.PARLIAMENTDOTUK) val parliamentdotuk: ParliamentID,
-    @field:Json(name = Contract.CATEGORY) val category: String,
-    @field:Json(name = Contract.DESCRIPTION) val description: String,
-    @field:Json(name = Contract.CREATED) val dateCreated: LocalDate?,
-    @field:Json(name = Contract.AMENDED) val dateAmended: LocalDate?,
-    @field:Json(name = Contract.DELETED) val dateDeleted: LocalDate?,
-    @field:Json(name = Contract.REGISTERED_LATE) val registeredLate: Boolean
-) {
-    fun toFinancialInterest(memberId: ParliamentID) = FinancialInterest(
-        memberId = memberId,
-        parliamentdotuk = parliamentdotuk,
-        category = category,
-        description = description,
-        dateCreated = dateCreated,
-        dateAmended = dateAmended,
-        dateDeleted = dateDeleted,
-        registeredLate = registeredLate
-    )
 }

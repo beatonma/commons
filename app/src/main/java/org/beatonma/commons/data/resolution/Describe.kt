@@ -3,6 +3,7 @@ package org.beatonma.commons.data.resolution
 import android.content.Context
 import android.util.Log
 import org.beatonma.commons.R
+import org.beatonma.commons.core.House
 import org.beatonma.commons.data.core.interfaces.Named
 import org.beatonma.commons.data.core.room.entities.member.*
 import org.beatonma.commons.kotlin.extensions.dump

@@ -10,13 +10,13 @@ import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.FragmentNavigator
 import org.beatonma.commons.app.division.DivisionDetailFragment.Companion.HOUSE
-import org.beatonma.commons.data.PARLIAMENTDOTUK
-import org.beatonma.commons.data.ParliamentID
+import org.beatonma.commons.core.House
+import org.beatonma.commons.core.PARLIAMENTDOTUK
+import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
 import org.beatonma.commons.data.core.room.entities.bill.BillSponsor
 import org.beatonma.commons.data.core.room.entities.division.FeaturedDivisionWithDivision
 import org.beatonma.commons.data.core.room.entities.division.Vote
-import org.beatonma.commons.data.core.room.entities.member.House
 
 fun View.navigateTo(
     @IdRes navigationAction: Int,

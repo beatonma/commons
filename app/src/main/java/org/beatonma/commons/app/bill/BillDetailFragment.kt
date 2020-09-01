@@ -20,10 +20,10 @@ import org.beatonma.commons.app.ui.recyclerview.defaultHorizontalOverscroll
 import org.beatonma.commons.app.ui.recyclerview.itemdecorator.sticky.HorizontalStickyHeaderDecoration
 import org.beatonma.commons.app.ui.recyclerview.itemdecorator.sticky.StickyHeader
 import org.beatonma.commons.app.ui.recyclerview.setup
-import org.beatonma.commons.data.ParliamentID
+import org.beatonma.commons.core.House
+import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.room.entities.bill.BillSponsorWithParty
 import org.beatonma.commons.data.core.room.entities.bill.CompleteBill
-import org.beatonma.commons.data.core.room.entities.member.House
 import org.beatonma.commons.data.resolution.describe
 import org.beatonma.commons.databinding.FragmentBillDetailBinding
 import org.beatonma.commons.databinding.ItemBillStageBinding
@@ -69,7 +69,7 @@ class BillDetailFragment : CommonsFragment<FragmentBillDetailBinding>(), SocialV
             result.handle(
                 withData = { data ->
                     updateUi(data)
-                    withNotNull(data.bill) { bill ->
+                    org.beatonma.commons.core.extensions.withNotNull(data.bill) { bill ->
                         observeSocialContent(bill)
                     }
                 },

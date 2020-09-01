@@ -74,47 +74,29 @@ dependencies {
         Dependencies.AndroidX.CORE_KTX,
         Dependencies.Google.Play.AUTH,
 
-//    val dagger = arrayOf(
         Dependencies.Dagger.ANDROID,
         Dependencies.Dagger.DAGGER,
         Dependencies.Dagger.SUPPORT,
-//    )
-//    val hilt = arrayOf(
+
         Dependencies.Hilt.CORE,
-        Dependencies.Hilt.LIFECYCLE_VIEWMODEL,
-        Dependencies.Hilt.WORK,
-//    )
-//    val kotlin = arrayOf(
+//        Dependencies.Hilt.LIFECYCLE_VIEWMODEL,
+
         Dependencies.Kotlin.STDLIB,
         Dependencies.Kotlin.Coroutines.ANDROID,
         Dependencies.Kotlin.Coroutines.CORE,
-//    )
 
-//    val retrofit = arrayOf(
-        Dependencies.Retrofit.RETROFIT,
-        Dependencies.Retrofit.Converter.MOSHI,
-        Dependencies.Retrofit.Converter.TEXT,
-//    )
+//        Dependencies.Retrofit.RETROFIT,
+//        Dependencies.Retrofit.Converter.MOSHI,
+//        Dependencies.Retrofit.Converter.TEXT,
 
-//    val room = arrayOf(
         Dependencies.Room.KTX,
         Dependencies.Room.RUNTIME
     )
-//    )
-//
-//    val implementations = arrayOf(
-//        dagger,
-//        hilt,
-//        kotlin,
-//        retrofit, // TODO remove
-//        room
-//    ).flatten()
 
     annotationProcessors.forEach { kapt(it) }
     implementations.forEach { implementation(it) }
 
     implementation(project(":core"))
-    implementation(project(":snommoc"))
 }
 
 repositories {

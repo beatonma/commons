@@ -1,16 +1,19 @@
 package org.beatonma.commons.app.signin
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.asLiveData
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import org.beatonma.commons.app
 import org.beatonma.commons.context
 import org.beatonma.commons.data.LiveDataIoResult
-import org.beatonma.commons.data.core.repository.UserAccount
-import org.beatonma.commons.data.core.repository.UserRepository
-import org.beatonma.commons.data.core.repository.toUserAccount
 import org.beatonma.commons.data.core.room.entities.user.UserToken
+import org.beatonma.commons.repo.repository.UserAccount
+import org.beatonma.commons.repo.repository.UserRepository
+
+private const val TAG = "BaseUserAccountVM"
 
 abstract class BaseUserAccountViewModel constructor(
     protected val repository: UserRepository,
@@ -43,3 +46,19 @@ abstract class BaseUserAccountViewModel constructor(
         }
     }
 }
+
+
+fun GoogleSignInAccount.toUserAccount(): UserAccount? =
+    try {
+        UserAccount(
+            name = displayName,
+            photoUrl = photoUrl?.toString(),
+            email = email,
+            googleId = id!!,
+            googleIdToken = idToken!!,
+        )
+    }
+    catch (e: NullPointerException) {
+        Log.w(TAG, "Unable to retrieve required ID from account.")
+        null
+    }

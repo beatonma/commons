@@ -1,19 +1,17 @@
 package org.beatonma.commons.data.core.room.entities.division
 
 import androidx.room.*
-import com.squareup.moshi.Json
-import org.beatonma.commons.data.PARLIAMENTDOTUK
-import org.beatonma.commons.data.ParliamentID
-import org.beatonma.commons.data.core.room.entities.member.Party
-import org.beatonma.commons.snommoc.Contract
+import org.beatonma.commons.core.PARLIAMENTDOTUK
+import org.beatonma.commons.core.ParliamentID
+import org.beatonma.commons.core.VoteType
 
-enum class VoteType {
-    AyeVote,
-    NoVote,
-    Abstains,
-    DidNotVote,
-    SuspendedOrExpelledVote,
-}
+//enum class VoteType {
+//    AyeVote,
+//    NoVote,
+//    Abstains,
+//    DidNotVote,
+//    SuspendedOrExpelledVote,
+//}
 
 @Entity(
     foreignKeys = [
@@ -39,20 +37,6 @@ data class Vote(
     @ColumnInfo(name = "party_id") val partyId: ParliamentID?,
 )
 
-data class ApiVote(
-    @field:Json(name = PARLIAMENTDOTUK) val memberId: ParliamentID,
-    @field:Json(name = Contract.NAME) val memberName: String,
-    @field:Json(name = Contract.VOTE) val voteType: VoteType,
-    @field:Json(name = Contract.PARTY) val party: Party?,
-) {
-    fun toVote(divisionId: ParliamentID) = Vote(
-            divisionId = divisionId,
-            memberId = memberId,
-            memberName = memberName,
-            voteType = voteType,
-            partyId = party?.parliamentdotuk
-        )
-}
 
 data class VoteWithDivision(
     @Embedded val vote: Vote,
@@ -60,15 +44,3 @@ data class VoteWithDivision(
     val division: Division
 )
 
-data class ApiMemberVote(
-    @field:Json(name = Contract.DIVISION) val division: Division,
-    @field:Json(name = Contract.VOTE_TYPE) val voteType: VoteType,
-) {
-    fun toVote(memberId: ParliamentID) = Vote(
-        memberId = memberId,
-        divisionId = division.parliamentdotuk,
-        voteType = voteType,
-        memberName = "",
-        partyId = 0
-    )
-}

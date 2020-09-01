@@ -1,15 +1,12 @@
 package org.beatonma.commons.data.core.room.entities.bill
 
 import androidx.room.*
-import com.squareup.moshi.Json
-import org.beatonma.commons.data.PARLIAMENTDOTUK
-import org.beatonma.commons.data.ParliamentID
+import org.beatonma.commons.core.PARLIAMENTDOTUK
+import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.interfaces.Commentable
 import org.beatonma.commons.data.core.interfaces.Dated
 import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
 import org.beatonma.commons.data.core.interfaces.Votable
-import org.beatonma.commons.data.core.social.SocialTargetType
-import org.beatonma.commons.snommoc.Contract
 import java.time.LocalDate
 
 /**
@@ -36,47 +33,7 @@ data class Bill(
 ): Parliamentdotuk,
     Dated,
     Commentable,
-    Votable {
-    override fun getSocialContentTarget(): SocialTargetType = SocialTargetType.bill
-}
-
-data class ApiBill(
-    @field:Json(name = Contract.PARLIAMENTDOTUK) @PrimaryKey override val parliamentdotuk: ParliamentID,
-    @field:Json(name = Contract.TITLE) val title: String,
-    @field:Json(name = Contract.DESCRIPTION) val description: String?,
-    @field:Json(name = Contract.ACT_NAME) val actName: String?,
-    @field:Json(name = Contract.LABEL) val label: String?,
-    @field:Json(name = Contract.HOMEPAGE) val homepage: String?,
-    @field:Json(name = Contract.DATE) override val date: LocalDate,
-    @field:Json(name = Contract.BALLOT_NUMBER) val ballotNumber: Int?,
-    @field:Json(name = Contract.BILL_CHAPTER) val billChapter: String?,
-    @field:Json(name = Contract.IS_PRIVATE) val isPrivate: Boolean = false,
-    @field:Json(name = Contract.IS_MONEY_BILL) val isMoneyBill: Boolean = false,
-    @field:Json(name = Contract.PUBLIC_INVOLVEMENT_ALLOWED) val publicInvolvementAllowed: Boolean = false,
-    @field:Json(name = Contract.PUBLICATIONS) val publications: List<ApiBillPublication> = listOf(),
-    @field:Json(name = Contract.SESSION) val session: ParliamentarySession?,
-    @field:Json(name = Contract.TYPE) val type: BillType?,
-    @field:Json(name = Contract.SPONSORS) @Ignore val sponsors: List<ApiBillSponsor> = listOf(),
-    @field:Json(name = Contract.STAGES) @Ignore val stages: List<ApiBillStage> = listOf(),
-): Parliamentdotuk,
-    Dated {
-    fun toBill() = Bill(
-        parliamentdotuk = parliamentdotuk,
-        title = title,
-        description = description,
-        actName = actName,
-        label = label,
-        homepage = homepage,
-        date = date,
-        ballotNumber = ballotNumber,
-        billChapter = billChapter,
-        isPrivate = isPrivate,
-        isMoneyBill = isMoneyBill,
-        publicInvolvementAllowed = publicInvolvementAllowed,
-        sessionId = session?.parliamentdotuk,
-        typeId = type?.name
-    )
-}
+    Votable
 
 
 data class MinimalBill(

@@ -3,7 +3,7 @@ package org.beatonma.commons.data.resolution
 import android.content.Context
 import org.beatonma.commons.BuildConfig.*
 import org.beatonma.commons.R
-import org.beatonma.commons.data.ParliamentID
+import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.kotlin.extensions.stringCompat
 import java.util.*
 

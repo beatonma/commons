@@ -6,7 +6,9 @@ pluginManagement {
     }
 }
 include(":core")
+include(":network-core")
 include(":snommoc")
 include(":data")
+include(":repo")
 include(":app")
 include(":bmalib:testing")

@@ -1,13 +1,10 @@
 package org.beatonma.commons.data.core.room.entities.member
 
 import androidx.room.*
-import com.squareup.moshi.Json
-import org.beatonma.commons.data.PARLIAMENTDOTUK
-import org.beatonma.commons.data.ParliamentID
+import org.beatonma.commons.core.PARLIAMENTDOTUK
+import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.interfaces.*
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
-import org.beatonma.commons.data.core.social.SocialTargetType
-import org.beatonma.commons.snommoc.Contract
 import java.time.LocalDate
 
 @Entity(
@@ -57,53 +54,16 @@ data class MemberProfile(
 
     @Ignore override val start: LocalDate? = dateOfBirth
     @Ignore override val end: LocalDate? = dateOfDeath
-
-    override fun getSocialContentTarget(): SocialTargetType = SocialTargetType.member
-}
-
-
-data class ApiMemberProfile(
-    @field:Json(name = Contract.PARLIAMENTDOTUK)val parliamentdotuk: ParliamentID,
-    @field:Json(name = Contract.NAME) val name: String,
-    @field:Json(name = Contract.PARTY) val party: Party,  // Use Party object for api response, serialized to id for storage
-    @field:Json(name = Contract.CONSTITUENCY) val constituency: Constituency?,  // Use Constituency object for api response, serialized to id for storage
-    @field:Json(name = Contract.ACTIVE) val active: Boolean? = null,
-    @field:Json(name = Contract.IS_MP) val isMp: Boolean? = null,
-    @field:Json(name = Contract.IS_LORD) val isLord: Boolean? = null,
-    @field:Json(name = Contract.AGE) val age: Int? = null,
-    @field:Json(name = Contract.DATE_OF_BIRTH) val dateOfBirth: LocalDate? = null,
-    @field:Json(name = Contract.DATE_OF_DEATH) val dateOfDeath: LocalDate? = null,
-    @field:Json(name = Contract.GENDER) val gender: String? = null,
-    @field:Json(name = Contract.PLACE_OF_BIRTH) val placeOfBirth: Town? = null,
-    @field:Json(name = Contract.PORTRAIT) val portraitUrl: String? = null,
-    @field:Json(name = Contract.CURRENT_POST) val currentPost: String? = null,
-) {
-    fun toMemberProfile() = MemberProfile(
-        parliamentdotuk = parliamentdotuk,
-        name = name,
-        party = party,
-        constituency = constituency,
-        active = active,
-        isMp = isMp,
-        isLord = isLord,
-        age = age,
-        dateOfBirth = dateOfBirth,
-        dateOfDeath = dateOfDeath,
-        gender = gender,
-        placeOfBirth = placeOfBirth,
-        portraitUrl = portraitUrl,
-        currentPost = currentPost
-    )
 }
 
 
 data class BasicProfile(
-    @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = PARLIAMENTDOTUK) override val parliamentdotuk: ParliamentID,
-    @field:Json(name = Contract.NAME) @ColumnInfo(name = "name") override val name: String,
-    @field:Json(name = Contract.PORTRAIT) @ColumnInfo(name = "portrait_url") val portraitUrl: String? = null,
-    @field:Json(name = Contract.CURRENT_POST) @ColumnInfo(name = "current_post") val currentPost: String? = null,
-    @field:Json(name = Contract.PARTY) @ColumnInfo(name = "party_id", index = true) val party: Party,  // Use Party object for api response, serialized to id for storage
-    @field:Json(name = Contract.CONSTITUENCY) @ColumnInfo(name = "constituency_id", index = true) val constituency: Constituency?  // Use Constituency object for api response, serialized to id for storage
+    @ColumnInfo(name = PARLIAMENTDOTUK) override val parliamentdotuk: ParliamentID,
+    @ColumnInfo(name = "name") override val name: String,
+    @ColumnInfo(name = "portrait_url") val portraitUrl: String? = null,
+    @ColumnInfo(name = "current_post") val currentPost: String? = null,
+    @ColumnInfo(name = "party_id", index = true) val party: Party,  // Use Party object for api response, serialized to id for storage
+    @ColumnInfo(name = "constituency_id", index = true) val constituency: Constituency?  // Use Constituency object for api response, serialized to id for storage
 ): Parliamentdotuk,
     Named {
     fun toMemberProfile() = MemberProfile(
@@ -115,6 +75,26 @@ data class BasicProfile(
         constituency = constituency
     )
 }
+
+
+//data class BasicProfile(
+//    @field:Json(name = PARLIAMENTDOTUK) @ColumnInfo(name = PARLIAMENTDOTUK) override val parliamentdotuk: ParliamentID,
+//    @field:Json(name = Contract.NAME) @ColumnInfo(name = "name") override val name: String,
+//    @field:Json(name = Contract.PORTRAIT) @ColumnInfo(name = "portrait_url") val portraitUrl: String? = null,
+//    @field:Json(name = Contract.CURRENT_POST) @ColumnInfo(name = "current_post") val currentPost: String? = null,
+//    @field:Json(name = Contract.PARTY) @ColumnInfo(name = "party_id", index = true) val party: Party,  // Use Party object for api response, serialized to id for storage
+//    @field:Json(name = Contract.CONSTITUENCY) @ColumnInfo(name = "constituency_id", index = true) val constituency: Constituency?  // Use Constituency object for api response, serialized to id for storage
+//): Parliamentdotuk,
+//    Named {
+//    fun toMemberProfile() = MemberProfile(
+//        parliamentdotuk = parliamentdotuk,
+//        name = name,
+//        portraitUrl = portraitUrl,
+//        currentPost = currentPost,
+//        party = party,
+//        constituency = constituency
+//    )
+//}
 
 data class BasicProfileWithParty(
     @Embedded

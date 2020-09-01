@@ -3,7 +3,7 @@ package org.beatonma.commons.app.ui.colors
 import android.content.Context
 import org.beatonma.commons.BuildConfig.*
 import org.beatonma.commons.R
-import org.beatonma.commons.data.ParliamentID
+import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.room.entities.member.Party
 import org.beatonma.commons.isNightMode
 import org.beatonma.commons.kotlin.data.Color

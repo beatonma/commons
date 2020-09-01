@@ -17,13 +17,17 @@ import org.beatonma.commons.app.ui.data.WeblinkData
 import org.beatonma.commons.app.ui.recyclerview.adapter.*
 import org.beatonma.commons.app.ui.recyclerview.setup
 import org.beatonma.commons.app.ui.recyclerview.viewholder.staticViewHolderOf
+import org.beatonma.commons.core.extensions.safeGet
 import org.beatonma.commons.data.core.interfaces.Temporal
 import org.beatonma.commons.data.core.room.entities.member.FinancialInterest
 import org.beatonma.commons.data.core.room.entities.member.PhysicalAddress
 import org.beatonma.commons.databinding.HistoryviewBinding
 import org.beatonma.commons.databinding.ViewCollapsingGroupBinding
 import org.beatonma.commons.databinding.ViewScrollableChipsBinding
-import org.beatonma.commons.kotlin.extensions.*
+import org.beatonma.commons.kotlin.extensions.hide
+import org.beatonma.commons.kotlin.extensions.inflate
+import org.beatonma.commons.kotlin.extensions.show
+import org.beatonma.commons.kotlin.extensions.stringCompat
 
 private const val TAG = "ProfileDataAdapter"
 

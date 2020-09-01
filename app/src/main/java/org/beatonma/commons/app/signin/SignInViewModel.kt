@@ -11,11 +11,14 @@ import com.google.android.gms.tasks.Task
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.beatonma.commons.BuildConfig
 import org.beatonma.commons.app
-import org.beatonma.commons.data.*
-import org.beatonma.commons.data.core.repository.UserAccount
-import org.beatonma.commons.data.core.repository.UserRepository
-import org.beatonma.commons.data.core.repository.toUserAccount
-import org.beatonma.commons.network.Http
+import org.beatonma.commons.data.LoadingResult
+import org.beatonma.commons.data.NetworkError
+import org.beatonma.commons.data.SuccessCodeResult
+import org.beatonma.commons.data.await
+import org.beatonma.commons.network.core.Http
+import org.beatonma.commons.network.core.NetworkException
+import org.beatonma.commons.repo.repository.UserAccount
+import org.beatonma.commons.repo.repository.UserRepository
 
 private const val TAG = "SignInViewModel"
 

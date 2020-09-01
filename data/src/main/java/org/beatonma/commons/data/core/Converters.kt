@@ -1,16 +1,14 @@
 package org.beatonma.commons.data.core
 
 import androidx.room.TypeConverter
-import com.squareup.moshi.Moshi
+import org.beatonma.commons.core.House
+import org.beatonma.commons.core.VoteType
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
-import org.beatonma.commons.data.core.room.entities.division.VoteType
-import org.beatonma.commons.data.core.room.entities.member.House
 import org.beatonma.commons.data.core.room.entities.member.Party
 import org.beatonma.commons.data.core.room.entities.member.Post
 import java.time.LocalDate
 
 object Converters {
-    private val moshi = Moshi.Builder().build()
 
     @TypeConverter
     @JvmStatic
@@ -56,10 +54,4 @@ object Converters {
     fun deserializeDivisionVoteType(ordinal: Int): VoteType? = ordinal.toEnum<VoteType>()
 
     private inline fun <reified T : Enum<T>> Int.toEnum(): T = enumValues<T>()[this]
-
-    private inline fun <reified T> T.toJson(): String = moshi.adapter(T::class.java).toJson(this)
-
-    private fun <T> String.fromJson(
-        cls: Class<*>,
-    ): T? = moshi.adapter<T>(cls).fromJson(this)
 }

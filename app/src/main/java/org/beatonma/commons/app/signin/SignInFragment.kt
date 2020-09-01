@@ -243,7 +243,7 @@ class SignInFragment : BottomSheetDialogFragment(), BackPressConsumer {
 
     private fun transitionToState(state: State) {
         if (state == currentState) return
-        withNotNull(binding.root.parent as? ViewGroup) {
+        org.beatonma.commons.core.extensions.withNotNull(binding.root.parent as? ViewGroup) {
             TransitionManager.beginDelayedTransition(it)
         }
 

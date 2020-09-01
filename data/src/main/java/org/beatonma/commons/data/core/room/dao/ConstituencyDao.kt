@@ -2,8 +2,8 @@ package org.beatonma.commons.data.core.room.dao
 
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
+import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.FlowList
-import org.beatonma.commons.data.ParliamentID
 import org.beatonma.commons.data.core.room.dao.shared.SharedConstituencyDao
 import org.beatonma.commons.data.core.room.dao.shared.SharedElectionDao
 import org.beatonma.commons.data.core.room.entities.constituency.*

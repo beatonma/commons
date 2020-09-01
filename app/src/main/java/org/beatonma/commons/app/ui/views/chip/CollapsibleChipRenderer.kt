@@ -12,6 +12,7 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.withTranslation
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.Interpolation
+import org.beatonma.commons.core.extensions.withNotNull
 import org.beatonma.commons.data.ClickAction
 import org.beatonma.commons.kotlin.extensions.*
 
@@ -166,8 +167,10 @@ class CollapsibleChipRenderer(
     private fun drawCancelIcon(canvas: Canvas, progress: Float) {
         withNotNull(cancelBitmap) { bitmap ->
             canvas.withTranslation(x = calculateCancelIconX(progress), y = iconOffset) {
-                canvas.drawBitmap(bitmap, 0F, 0F,
-                    alphaPaint.withAlpha(progress.normalizeIn(PROGRESS_START_SHOW_CANCEL, 1F)))
+                canvas.drawBitmap(
+                    bitmap, 0F, 0F,
+                    alphaPaint.withAlpha(progress.normalizeIn(PROGRESS_START_SHOW_CANCEL, 1F))
+                )
             }
         }
     }
