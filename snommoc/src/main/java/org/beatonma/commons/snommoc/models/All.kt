@@ -18,7 +18,7 @@ data class ApiMemberProfile(
     @field:Json(name = Contract.PARLIAMENTDOTUK)val parliamentdotuk: ParliamentID,
     @field:Json(name = Contract.NAME) val name: String,
     @field:Json(name = Contract.PARTY) val party: ApiParty,  // Use Party object for api response, serialized to id for storage
-    @field:Json(name = Contract.CONSTITUENCY) val constituency: ApiConstituency?,  // Use Constituency object for api response, serialized to id for storage
+    @field:Json(name = Contract.CONSTITUENCY) val constituency: ApiConstituencyMinimal?,  // Use Constituency object for api response, serialized to id for storage
     @field:Json(name = Contract.ACTIVE) val active: Boolean? = null,
     @field:Json(name = Contract.IS_MP) val isMp: Boolean? = null,
     @field:Json(name = Contract.IS_LORD) val isLord: Boolean? = null,
@@ -157,7 +157,7 @@ data class ApiTopicOfInterest(
 )
 
 data class ApiHistoricalConstituency(
-    @field:Json(name = Contract.CONSTITUENCY) val constituency: ApiConstituency,
+    @field:Json(name = Contract.CONSTITUENCY) val constituency: ApiConstituencyMinimal,
     @field:Json(name = Contract.START) val start: LocalDate,
     @field:Json(name = Contract.END) val end: LocalDate?,
     @field:Json(name = Contract.ELECTION) val election: ApiElection
