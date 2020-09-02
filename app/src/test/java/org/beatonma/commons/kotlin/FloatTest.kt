@@ -3,8 +3,8 @@ package org.beatonma.commons.kotlin
 import org.beatonma.commons.kotlin.extensions.map
 import org.beatonma.commons.kotlin.extensions.mapTo
 import org.beatonma.commons.kotlin.extensions.normalizeIn
-import org.beatonma.lib.testing.kotlin.extensions.assertions.assertFuzzyEquals
-import org.beatonma.lib.testing.kotlin.extensions.assertions.shouldbe
+import org.beatonma.commons.test.extensions.assertions.assertFuzzyEquals
+import org.beatonma.commons.test.extensions.assertions.shouldbe
 import org.junit.Test
 
 class FloatTest {

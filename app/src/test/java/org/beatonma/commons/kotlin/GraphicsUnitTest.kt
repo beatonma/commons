@@ -4,9 +4,9 @@ import android.graphics.Rect
 import android.graphics.RectF
 import org.beatonma.commons.kotlin.extensions.update
 import org.beatonma.commons.kotlin.extensions.updateBy
-import org.beatonma.lib.testing.kotlin.extensions.assertions.shouldbe
-import org.beatonma.lib.testing.kotlin.extensions.mock
-import org.beatonma.lib.testing.kotlin.extensions.whenever
+import org.beatonma.commons.test.extensions.assertions.shouldbe
+import org.beatonma.commons.test.extensions.mock
+import org.beatonma.commons.test.extensions.whenever
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyFloat
 import org.mockito.ArgumentMatchers.anyInt

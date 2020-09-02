@@ -1,7 +1,7 @@
 package org.beatonma.commons
 
 import org.beatonma.commons.app.bill.BillStageProgress
-import org.beatonma.commons.data.ParliamentID
+import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.room.entities.bill.BillStage
 import org.beatonma.commons.data.core.room.entities.bill.BillStageSitting
 import java.time.LocalDate

@@ -2,7 +2,7 @@ package org.beatonma.commons.kotlin
 
 import android.view.Gravity
 import org.beatonma.commons.kotlin.extensions.*
-import org.beatonma.lib.testing.kotlin.extensions.assertions.shouldbe
+import org.beatonma.commons.test.extensions.assertions.shouldbe
 import org.junit.Test
 
 class IntTest {

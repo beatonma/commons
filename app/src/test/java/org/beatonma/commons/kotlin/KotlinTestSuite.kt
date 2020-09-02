@@ -7,7 +7,6 @@ import org.junit.runners.Suite
 @Suite.SuiteClasses(
     GraphicsUnitTest::class,
     FloatTest::class,
-    IntTest::class,
-    RecursiveKtTest::class
+    IntTest::class
 )
 class KotlinUtilTestSuite
