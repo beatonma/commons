@@ -1,4 +1,4 @@
-package org.beatonma.commons.data
+package org.beatonma.commons.repo.result
 
 private const val TAG = "IoResult"
 

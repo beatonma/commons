@@ -1,9 +1,6 @@
 package org.beatonma.commons.repo.repository
 
 import kotlinx.coroutines.flow.Flow
-import org.beatonma.commons.data.FlowIoResultList
-import org.beatonma.commons.data.IoResultList
-import org.beatonma.commons.data.cachedResultFlow
 import org.beatonma.commons.data.core.room.dao.BillDao
 import org.beatonma.commons.data.core.room.dao.DivisionDao
 import org.beatonma.commons.data.core.room.dao.MemberDao
@@ -13,9 +10,12 @@ import org.beatonma.commons.data.core.room.entities.division.FeaturedDivision
 import org.beatonma.commons.data.core.room.entities.division.FeaturedDivisionWithDivision
 import org.beatonma.commons.data.core.room.entities.member.FeaturedMemberProfile
 import org.beatonma.commons.repo.CommonsApi
+import org.beatonma.commons.repo.FlowIoResultList
+import org.beatonma.commons.repo.IoResultList
 import org.beatonma.commons.repo.converters.toBill
 import org.beatonma.commons.repo.converters.toDivision
 import org.beatonma.commons.repo.converters.toMemberProfile
+import org.beatonma.commons.repo.result.cachedResultFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 

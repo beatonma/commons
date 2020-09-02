@@ -46,7 +46,7 @@ fun ApiConstituency.toConstituency(): Constituency {
     )
 }
 
-fun ApiConstituencyMinimal.toConstitueny():Constituency = Constituency(
+fun ApiConstituencyMinimal.toConstituency():Constituency = Constituency(
     parliamentdotuk = parliamentdotuk,
     name = name
 )

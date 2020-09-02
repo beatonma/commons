@@ -1,13 +1,13 @@
 package org.beatonma.commons.repo.repository
 
-import org.beatonma.commons.data.FlowIoResult
-import org.beatonma.commons.data.cachedResultFlow
 import org.beatonma.commons.data.core.room.dao.UserDao
 import org.beatonma.commons.data.core.room.entities.user.UserToken
-import org.beatonma.commons.data.resultFlowLocalPreferred
-import org.beatonma.commons.data.resultFlowNoCache
 import org.beatonma.commons.repo.CommonsApi
+import org.beatonma.commons.repo.FlowIoResult
 import org.beatonma.commons.repo.converters.composeToUserToken
+import org.beatonma.commons.repo.result.cachedResultFlow
+import org.beatonma.commons.repo.result.resultFlowLocalPreferred
+import org.beatonma.commons.repo.result.resultFlowNoCache
 import org.beatonma.commons.snommoc.models.social.ApiUserToken
 import javax.inject.Inject
 import javax.inject.Singleton

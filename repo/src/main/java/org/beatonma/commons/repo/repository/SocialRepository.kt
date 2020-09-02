@@ -2,10 +2,10 @@ package org.beatonma.commons.repo.repository
 
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.core.SnommocToken
-import org.beatonma.commons.data.resultFlowNoCache
 import org.beatonma.commons.repo.CommonsApi
 import org.beatonma.commons.repo.models.CreatedComment
 import org.beatonma.commons.repo.models.CreatedVote
+import org.beatonma.commons.repo.result.resultFlowNoCache
 import org.beatonma.commons.snommoc.models.social.SocialTarget
 import org.beatonma.commons.snommoc.models.social.SocialTargetType
 import javax.inject.Inject

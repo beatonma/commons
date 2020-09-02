@@ -1,18 +1,22 @@
 package org.beatonma.commons.repo.repository
 
+import androidx.annotation.VisibleForTesting
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.merge
 import org.beatonma.commons.core.ParliamentID
-import org.beatonma.commons.data.FlowIoResult
-import org.beatonma.commons.data.cachedResultFlow
 import org.beatonma.commons.data.core.room.dao.ConstituencyDao
 import org.beatonma.commons.data.core.room.dao.MemberDao
 import org.beatonma.commons.data.core.room.entities.constituency.*
 import org.beatonma.commons.data.core.room.entities.election.ConstituencyResultWithDetails
 import org.beatonma.commons.data.core.room.entities.election.Election
 import org.beatonma.commons.repo.CommonsApi
+import org.beatonma.commons.repo.FlowIoResult
+import org.beatonma.commons.repo.converters.*
+import org.beatonma.commons.repo.result.cachedResultFlow
+import org.beatonma.commons.snommoc.models.ApiConstituency
+import org.beatonma.commons.snommoc.models.ApiConstituencyElectionDetails
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -25,25 +29,7 @@ class ConstituencyRepository @Inject constructor(
     fun getConstituency(parliamentdotuk: ParliamentID): FlowIoResult<CompleteConstituency> = cachedResultFlow(
         databaseQuery = { getCachedConstituencyDetails(parliamentdotuk) },
         networkCall = { remoteSource.getConstituency(parliamentdotuk) },
-        saveCallResult = { TODO() },
-//        saveCallResult = { apiConstituency: ApiConstituency ->
-//            constituencyDao.insertConstituency(apiConstituency.toConstituency())
-//
-//            memberDao.safeInsertProfile(apiConstituency.memberProfile?.toMemberProfile(), ifNotExists = true)
-//
-//            apiConstituency.boundary?.also { boundary ->
-//                constituencyDao.insertBoundary(
-//                    boundary.toConstituencyBoundary(constituencyId = apiConstituency.parliamentdotuk)
-//                )
-//            }
-//
-//            constituencyDao.insertElections(apiConstituency.results.map { it.election.toElection() })
-//            memberDao.safeInsertProfiles(apiConstituency.results.map { it.member.toMemberProfile() }, ifNotExists = true)
-//
-//            constituencyDao.insertElectionResults(apiConstituency.results.map { result ->
-//                result.toConstituencyResult(parliamentdotuk)
-//            })
-//        },
+        saveCallResult = { apiConstituency -> saveConstituency(constituencyDao, memberDao, parliamentdotuk, apiConstituency) },
         distinctUntilChanged = false,
     )
 
@@ -54,19 +40,7 @@ class ConstituencyRepository @Inject constructor(
     ): FlowIoResult<ConstituencyElectionDetailsWithExtras> = cachedResultFlow(
         databaseQuery = { getCachedConstituencyElectionDetails(constituencyId, electionId) },
         networkCall = { remoteSource.getConstituencyDetailsForElection(constituencyId, electionId) },
-        saveCallResult = { result ->
-            TODO()
-//            with (constituencyDao) {
-//                safeInsertConstituency(result.constituency.toConstituency(), ifNotExists = true)
-//                insertElection(result.election.toElection())
-//                insertConstituencyElectionDetails(result.toConstituencyElectionDetails())
-//                insertCandidates(
-//                    result.candidates.map { apiCandidate ->
-//                        apiCandidate.toConstituencyCandidate(result.parliamentdotuk)
-//                    }
-//                )
-//            }
-        }
+        saveCallResult = { result -> saveRseults(constituencyDao, result) }
     )
 
     private fun getCachedConstituencyDetails(parliamentdotuk: ParliamentID): Flow<CompleteConstituency> = channelFlow {
@@ -126,6 +100,35 @@ class ConstituencyRepository @Inject constructor(
                 else -> error("All valid types must be handled: ${data.javaClass.canonicalName}")
             }
             send(builder)
+        }
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    suspend fun saveConstituency(constituencyDao: ConstituencyDao, memberDao: MemberDao, parliamentdotuk: ParliamentID, apiConstituency: ApiConstituency) {
+        constituencyDao.insertConstituency(apiConstituency.toConstituency())
+        memberDao.safeInsertProfile(apiConstituency.memberProfile?.toMemberProfile(), ifNotExists = true)
+        apiConstituency.boundary?.also { boundary ->
+            constituencyDao.insertBoundary(
+                boundary.toConstituencyBoundary(constituencyId = apiConstituency.parliamentdotuk)
+            )
+        }
+        constituencyDao.insertElections(apiConstituency.results.map { it.election.toElection() })
+        memberDao.safeInsertProfiles(apiConstituency.results.map { it.member.toMemberProfile() }, ifNotExists = true)
+        constituencyDao.insertElectionResults(apiConstituency.results.map { result ->
+            result.toConstituencyResult(parliamentdotuk)
+        })
+    }
+
+    suspend fun saveRseults(dao: ConstituencyDao, result: ApiConstituencyElectionDetails) {
+        with (dao) {
+            safeInsertConstituency(result.constituency.toConstituency(), ifNotExists = true)
+            insertElection(result.election.toElection())
+            insertConstituencyElectionDetails(result.toConstituencyElectionDetails())
+            insertCandidates(
+                result.candidates.map { apiCandidate ->
+                    apiCandidate.toConstituencyCandidate(result.parliamentdotuk)
+                }
+            )
         }
     }
 }

@@ -6,18 +6,22 @@ import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.merge
 import org.beatonma.commons.core.ParliamentID
-import org.beatonma.commons.data.FlowIoResult
-import org.beatonma.commons.data.cachedResultFlow
+import org.beatonma.commons.core.extensions.withNotNull
 import org.beatonma.commons.data.core.CompleteMember
 import org.beatonma.commons.data.core.room.dao.MemberDao
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import org.beatonma.commons.data.core.room.entities.member.*
 import org.beatonma.commons.repo.CommonsApi
+import org.beatonma.commons.repo.FlowIoResult
+import org.beatonma.commons.repo.converters.*
+import org.beatonma.commons.repo.result.cachedResultFlow
+import org.beatonma.commons.snommoc.models.ApiCompleteMember
 import javax.inject.Inject
 import javax.inject.Singleton
 
 interface MemberRepository {
     fun getMember(parliamentdotuk: ParliamentID): FlowIoResult<CompleteMember>
+    suspend fun saveMember(dao: MemberDao, parliamentdotuk: ParliamentID, member: ApiCompleteMember)
 }
 
 @Singleton
@@ -28,8 +32,7 @@ class MemberRepositoryImpl @Inject constructor(
     override fun getMember(parliamentdotuk: ParliamentID): FlowIoResult<CompleteMember> = cachedResultFlow(
         databaseQuery = { getCompleteMember(parliamentdotuk) },
         networkCall = { remoteSource.getMember(parliamentdotuk) },
-        saveCallResult = { TODO() },
-//        saveCallResult = { member -> memberDao.insertCompleteMember(parliamentdotuk, member) },
+        saveCallResult = { member -> saveMember(memberDao, parliamentdotuk, member) },
         distinctUntilChanged = false
     )
 
@@ -90,6 +93,68 @@ class MemberRepositoryImpl @Inject constructor(
                 }
             }
             send(builder)
+        }
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    override suspend fun saveMember(dao: MemberDao, parliamentdotuk: ParliamentID, member: ApiCompleteMember) {
+        with(dao) {
+            insertPartiesIfNotExists(member.parties.map { it.party.toParty() })
+            insertPartyIfNotExists(member.profile.party.toParty())
+            insertConstituenciesIfNotExists(
+                member.constituencies.map { it.constituency.toConstituency() }
+            )
+            withNotNull(member.profile.constituency) {
+                // Not necessarily included in member.constituencies list.
+                insertConstituencyIfNotExists(it.toConstituency())
+            }
+
+            safeInsertProfile(member.profile.toMemberProfile())
+
+            insertPhysicalAddresses(
+                member.addresses.physical.map { it.toPhysicalAddress(memberId = parliamentdotuk) }
+            )
+            insertWebAddresses(
+                member.addresses.web.map { it.toWebAddress(memberId = parliamentdotuk) }
+            )
+
+            insertPosts(member.posts.governmental.map { post ->
+                post.toPost(memberId = parliamentdotuk, postType = Post.PostType.GOVERNMENTAL)
+            })
+            insertPosts(member.posts.parliamentary.map { post ->
+                post.toPost(memberId = parliamentdotuk, postType = Post.PostType.PARLIAMENTARY)
+            })
+            insertPosts(member.posts.opposition.map { post ->
+                post.toPost(memberId = parliamentdotuk, postType = Post.PostType.OPPOSITION)
+            })
+
+            insertCommitteeMemberships(member.committees.map { membership ->
+                membership.toCommitteeMembership(parliamentdotuk)
+            })
+
+            member.committees.forEach { committee ->
+                insertCommitteeChairships(committee.chairs.map { chair ->
+                    chair.toCommitteeChairship(
+                        committeeId = committee.parliamentdotuk,
+                        memberId = parliamentdotuk
+                    )
+                })
+            }
+
+            insertHouseMemberships(member.houses.map { house ->
+                house.toHouseMembership(memberId = parliamentdotuk)
+            })
+
+            insertFinancialInterests(member.financialInterests.map { it.toFinancialInterest(memberId = parliamentdotuk) })
+            insertExperiences(member.experiences.map { it.toExperience(memberId = parliamentdotuk) })
+            insertTopicsOfInterest(member.topicsOfInterest.map { it.toTopicOfInterest(memberId = parliamentdotuk) })
+
+            insertElections(member.constituencies.map { it.election.toElection() })
+            insertMemberForConstituencies(member.constituencies.map {
+                it.toHistoricalConstituency(parliamentdotuk)
+            })
+
+            insertPartyAssociations(member.parties.map { it.toPartyAssociation(parliamentdotuk) })
         }
     }
 }

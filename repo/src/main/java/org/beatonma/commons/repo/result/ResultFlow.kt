@@ -1,10 +1,11 @@
-package org.beatonma.commons.data
+package org.beatonma.commons.repo.result
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import org.beatonma.commons.repo.FlowIoResult
 import java.util.concurrent.TimeUnit
 
 /**
@@ -137,7 +138,7 @@ private suspend inline fun <E, N> ProducerScope<IoResult<E>>.submitAndSaveNetwor
             }
         }
 
-        is IoError<*,*> -> {
+        is IoError<*, *> -> {
             sendAndClose(NetworkError(response.message, response.error), response.error)
         }
     }
