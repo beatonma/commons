@@ -1,3 +1,5 @@
+package org.beatonma.commons.test
+
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
@@ -5,9 +7,25 @@ import kotlin.reflect.KClass
 
 /**
  * https://medium.com/@fanisveizis/boilerplate-free-proxy-fakes-ec0f09ce6957
+ *
+ * Creates a fake implementation of the given class using any method implementations
+ * passed in [overrides].
+ *
+ * e.g. fakeOf(MyClass::class, object {
+ *          fun myFunction(a: Int) = a + 1
+ *      }
  */
+@Suppress("UNCHECKED_CAST")
+fun <T : Any> Any.fakeOf(type: KClass<T>, overrides: Any): T {
+    return Proxy.newProxyInstance(
+        javaClass.classLoader,
+        arrayOf(type.java),
+        FakeHandler(overrides)
+    ) as T
+}
 
-class FakeHandler(private val mimic: Any) : InvocationHandler {
+
+private class FakeHandler(private val mimic: Any) : InvocationHandler {
     private fun getOverride(
         name: String,
         params: Array<Class<*>>?): Method? {
@@ -48,13 +66,4 @@ class FakeHandler(private val mimic: Any) : InvocationHandler {
             null
         }
     }
-}
-
-@Suppress("UNCHECKED_CAST")
-fun <T : Any> Any.fakeIt(type: KClass<T>, overrides: Any): T {
-    return Proxy.newProxyInstance(
-        javaClass.classLoader,
-        arrayOf(type.java),
-        FakeHandler(overrides)
-    ) as T
 }
