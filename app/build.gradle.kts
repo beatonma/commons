@@ -63,14 +63,6 @@ android {
         testInstrumentationRunner = "org.beatonma.commons.androidTest.HiltTestRunner"
 
         vectorDrawables.useSupportLibrary = true
-
-        kapt {
-            arguments {
-                arg("room.schemaLocation", "$projectDir/schemas")
-                arg("room.incremental", "true")
-                arg("room.expandProjection", "true")
-            }
-        }
     }
 
     buildFeatures {
@@ -148,9 +140,9 @@ dependencies {
     )
 
     // Unit tests
-    testAnnotationProcessors.forEach { kaptTest(it) }
     arrayOf(
-        bmalib("testing"),
+        project(":test"),
+
         Dependencies.Dagger.DAGGER,
         Dependencies.Kotlin.REFLECT,
         Dependencies.Kotlin.Coroutines.TEST,
@@ -164,7 +156,7 @@ dependencies {
     // Instrumentation tests
     testAnnotationProcessors.forEach { kaptAndroidTest(it) }
     arrayOf(
-        bmalib("testing"),
+        project(":test"),
         Dependencies.Hilt.TESTING,
         Dependencies.Kotlin.Coroutines.TEST,
         Dependencies.Test.AndroidX.CORE,
@@ -311,5 +303,3 @@ fun DefaultConfig.injectInts(mapping: Map<String, Int>, asBuildConfig: Boolean, 
         }
     }
 }
-
-fun bmalib(artifact: String) = project(":bmalib:$artifact")
