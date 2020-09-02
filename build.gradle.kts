@@ -14,7 +14,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:4.1.0-rc01")
+        classpath("com.android.tools.build:gradle:4.1.0-rc02")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.KOTLIN}")
         classpath("com.github.ben-manes:gradle-versions-plugin:${Versions.GRADLE_DEPENDENCY_UPDATES}")
         classpath("com.google.dagger:hilt-android-gradle-plugin:${Versions.HILT}")
