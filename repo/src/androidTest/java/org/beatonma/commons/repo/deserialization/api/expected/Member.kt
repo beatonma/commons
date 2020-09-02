@@ -1,10 +1,8 @@
-package org.beatonma.commons.data.deserialization.api.expected
+package org.beatonma.commons.repo.deserialization.api.expected
 
-import org.beatonma.commons.androidTest.asDate
-import org.beatonma.commons.data.core.ApiCompleteMember
-import org.beatonma.commons.data.core.room.entities.constituency.Constituency
-import org.beatonma.commons.data.core.room.entities.election.ApiElection
-import org.beatonma.commons.data.core.room.entities.member.*
+import org.beatonma.commons.core.House
+import org.beatonma.commons.repo.androidTest.asDate
+import org.beatonma.commons.snommoc.models.*
 
 /** https://snommoc.org/api/member/profile/965/ */
 internal fun expectedApiMember(): ApiCompleteMember = ApiCompleteMember(
@@ -12,7 +10,7 @@ internal fun expectedApiMember(): ApiCompleteMember = ApiCompleteMember(
         parliamentdotuk = 965,
         name = "Lord Wrigglesworth",
         active = true,
-        party = Party(
+        party = ApiParty(
             parliamentdotuk = 17,
             name = "Liberal Democrat"
         ),
@@ -79,7 +77,7 @@ internal fun expectedApiMember(): ApiCompleteMember = ApiCompleteMember(
     ),
     constituencies = listOf(
         ApiHistoricalConstituency(
-            constituency = Constituency(
+            constituency = ApiConstituencyMinimal(
                 parliamentdotuk = 146260,
                 name = "Stockton South"
             ),
@@ -93,7 +91,7 @@ internal fun expectedApiMember(): ApiCompleteMember = ApiCompleteMember(
             )
         ),
         ApiHistoricalConstituency(
-            constituency = Constituency(
+            constituency = ApiConstituencyMinimal(
                 parliamentdotuk = 146380,
                 name = "Thornaby"
             ),
@@ -107,7 +105,7 @@ internal fun expectedApiMember(): ApiCompleteMember = ApiCompleteMember(
             )
         ),
         ApiHistoricalConstituency(
-            constituency = Constituency(
+            constituency = ApiConstituencyMinimal(
                 parliamentdotuk = 146380,
                 name = "Thornaby"
             ),
@@ -121,7 +119,7 @@ internal fun expectedApiMember(): ApiCompleteMember = ApiCompleteMember(
             )
         ),
         ApiHistoricalConstituency(
-            constituency = Constituency(
+            constituency = ApiConstituencyMinimal(
                 parliamentdotuk = 146380,
                 name = "Thornaby"
             ),
@@ -309,16 +307,25 @@ internal fun expectedApiMember(): ApiCompleteMember = ApiCompleteMember(
         ApiFinancialInterest(
             parliamentdotuk = 24419,
             category = "Category 4: Shareholdings (b)",
-            description = "Machine Delta (a division of Caspian Learning Ltd providing intelligent quality assurance using artificial intelligence)",
+            description = "Caspian Learning Ltd (company providing financial analysis using artificial intelligence) (entry formerly read Machine Delta (a division of Caspian Learning Ltd providing intelligent quality assurance using artificial intelligence))",
             dateCreated = "2015-12-31".asDate(),
-            dateAmended = "2018-06-21".asDate(),
+            dateAmended = "2020-08-19".asDate(),
+            dateDeleted = null,
+            registeredLate = false
+        ),
+        ApiFinancialInterest(
+            parliamentdotuk = 36291,
+            category = "Category 1: Directorships",
+            description = "Director, TRNKLD (Holdings) Ltd (property)",
+            dateCreated = "2020-08-19".asDate(),
+            dateAmended = null,
             dateDeleted = null,
             registeredLate = false
         ),
     ),
     parties = listOf(
         ApiPartyAssociation(
-            party = Party(
+            party = ApiParty(
                 parliamentdotuk = 15,
                 name = "Labour"
             ),
@@ -326,7 +333,7 @@ internal fun expectedApiMember(): ApiCompleteMember = ApiCompleteMember(
             end = "1981-03-02".asDate(),
         ),
         ApiPartyAssociation(
-            party = Party(
+            party = ApiParty(
                 parliamentdotuk = 32,
                 name = "Social Democratic Party"
             ),
@@ -334,7 +341,7 @@ internal fun expectedApiMember(): ApiCompleteMember = ApiCompleteMember(
             end = "2013-09-05".asDate(),
         ),
         ApiPartyAssociation(
-            party = Party(
+            party = ApiParty(
                 parliamentdotuk = 17,
                 name = "Liberal Democrat"
             ),

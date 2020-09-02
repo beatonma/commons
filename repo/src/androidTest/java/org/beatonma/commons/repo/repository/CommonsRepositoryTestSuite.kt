@@ -1,4 +1,4 @@
-package org.beatonma.commons.data.core.repository
+package org.beatonma.commons.repo.repository
 
 import org.junit.runner.RunWith
 import org.junit.runners.Suite

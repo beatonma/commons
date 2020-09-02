@@ -20,7 +20,7 @@ android {
         minSdkVersion(Commons.Sdk.MIN)
         targetSdkVersion(Commons.Sdk.TARGET)
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "org.beatonma.commons.repo.androidTest.HiltTestRunner"
 //        consumerProguardFiles = "consumer-rules.pro"
 
         injectStrings(mapOf(
@@ -32,14 +32,6 @@ android {
         injectInts(mapOf(
             "VERSION_CODE" to git.commitCount
         ), asBuildConfig = true, asResValue = false)
-
-        kapt {
-            arguments {
-                arg("room.schemaLocation", "$projectDir/schemas")
-                arg("room.incremental", "true")
-                arg("room.expandProjection", "true")
-            }
-        }
     }
 
     compileOptions {
@@ -57,12 +49,25 @@ android {
 }
 
 dependencies {
+    val testAnnotationProcessors = arrayOf(
+        Dependencies.Dagger.COMPILER,
+        Dependencies.Dagger.ANNOTATION_PROCESSOR
+    )
+    val androidTestImplementations = arrayOf(
+        project(":test"),
+        Dependencies.Test.JUNIT,
+        Dependencies.Hilt.TESTING,
+        Dependencies.Room.RUNTIME,
+        Dependencies.Test.AndroidX.CORE,
+        Dependencies.Test.AndroidX.LIVEDATA,
+        Dependencies.Test.AndroidX.RUNNER
+    )
+
     val annotationProcessors = arrayOf(
         Dependencies.Dagger.ANNOTATION_PROCESSOR,
         Dependencies.Dagger.COMPILER,
         Dependencies.Hilt.AX_KAPT,
-        Dependencies.Hilt.KAPT,
-        Dependencies.Room.AP
+        Dependencies.Hilt.KAPT
     )
 
     val implementations = arrayOf(
@@ -89,8 +94,11 @@ dependencies {
         project(":snommoc")
     )
 
-    annotationProcessors.forEach { kapt(it) }
-    implementations.forEach { implementation(it) }
+    testAnnotationProcessors.forEach(::kaptAndroidTest)
+    androidTestImplementations.forEach(::androidTestImplementation)
+
+    annotationProcessors.forEach(::kapt)
+    implementations.forEach(::implementation)
 }
 
 repositories {

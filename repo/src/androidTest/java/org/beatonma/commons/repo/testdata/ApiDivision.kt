@@ -1,10 +1,10 @@
-package org.beatonma.commons.data.testdata
+package org.beatonma.commons.repo.testdata
 
-import org.beatonma.commons.androidTest.asDate
-import org.beatonma.commons.data.core.room.entities.division.ApiDivision
-import org.beatonma.commons.data.core.room.entities.division.ApiVote
-import org.beatonma.commons.data.core.room.entities.division.VoteType
-import org.beatonma.commons.data.core.room.entities.member.House
+import org.beatonma.commons.core.House
+import org.beatonma.commons.core.VoteType
+import org.beatonma.commons.repo.androidTest.asDate
+import org.beatonma.commons.snommoc.models.ApiDivision
+import org.beatonma.commons.snommoc.models.ApiVote
 
 const val DIVISION_PUK = 229684
 

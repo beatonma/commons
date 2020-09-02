@@ -1,8 +1,7 @@
-package org.beatonma.commons.data.deserialization.api.expected
+package org.beatonma.commons.repo.deserialization.api.expected
 
-import org.beatonma.commons.androidTest.asDate
-import org.beatonma.commons.data.core.room.entities.bill.*
-import org.beatonma.commons.data.core.room.entities.member.Party
+import org.beatonma.commons.repo.androidTest.asDate
+import org.beatonma.commons.snommoc.models.*
 
 /** https://snommoc.org/api/bill/393258/ */
 internal fun expectedApiBill(): ApiBill = ApiBill(
@@ -96,7 +95,7 @@ internal fun expectedApiBill(): ApiBill = ApiBill(
             title = "Bill 14 2013-14, as introduced"
         ),
     ),
-    session = ParliamentarySession(
+    session = ApiParliamentarySession(
         parliamentdotuk = 377316,
         name = "2013-2014"
     ),
@@ -109,7 +108,7 @@ internal fun expectedApiBill(): ApiBill = ApiBill(
         ApiBillSponsor(
             parliamentdotuk = 1727,
             name = "Baroness Wilcox",
-            party = Party(
+            party = ApiParty(
                 parliamentdotuk = 4,
                 name = "Conservative"
             )
@@ -249,7 +248,7 @@ internal fun expectedApiBill(): ApiBill = ApiBill(
             type = "1st reading"
         )
     ),
-    type = BillType(
+    type = ApiBillType(
         name = "Ballot",
         description = "Private Members' Bill (Ballot Bill)"
     )

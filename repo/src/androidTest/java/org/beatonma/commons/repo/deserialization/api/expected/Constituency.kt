@@ -1,13 +1,7 @@
-package org.beatonma.commons.data.deserialization.api.expected
+package org.beatonma.commons.repo.deserialization.api.expected
 
-import org.beatonma.commons.androidTest.asDate
-import org.beatonma.commons.data.core.room.entities.constituency.ApiConstituency
-import org.beatonma.commons.data.core.room.entities.constituency.ApiConstituencyBoundary
-import org.beatonma.commons.data.core.room.entities.constituency.Constituency
-import org.beatonma.commons.data.core.room.entities.election.ApiConstituencyResult
-import org.beatonma.commons.data.core.room.entities.election.ApiElection
-import org.beatonma.commons.data.core.room.entities.member.ApiMemberProfile
-import org.beatonma.commons.data.core.room.entities.member.Party
+import org.beatonma.commons.repo.androidTest.asDate
+import org.beatonma.commons.snommoc.models.*
 
 /** https://snommoc.org/api/constituency/147277/ */
 internal fun expectedApiConstituency(): ApiConstituency = ApiConstituency(
@@ -17,11 +11,11 @@ internal fun expectedApiConstituency(): ApiConstituency = ApiConstituency(
         parliamentdotuk = 1423,
         name = "Boris Johnson",
         portraitUrl = null,
-        party = Party(
+        party = ApiParty(
             parliamentdotuk = 4,
             name = "Conservative"
         ),
-        constituency = Constituency(
+        constituency = ApiConstituencyMinimal(
             parliamentdotuk = 147277,
             name = "Uxbridge and South Ruislip"
         ),
@@ -48,11 +42,11 @@ internal fun expectedApiConstituency(): ApiConstituency = ApiConstituency(
                 parliamentdotuk = 1423,
                 name = "Boris Johnson",
                 portraitUrl = null,
-                party = Party(
+                party = ApiParty(
                     parliamentdotuk = 4,
                     name = "Conservative"
                 ),
-                constituency = Constituency(
+                constituency = ApiConstituencyMinimal(
                     parliamentdotuk = 147277,
                     name = "Uxbridge and South Ruislip"
                 ),
@@ -70,11 +64,11 @@ internal fun expectedApiConstituency(): ApiConstituency = ApiConstituency(
                 parliamentdotuk = 1423,
                 name = "Boris Johnson",
                 portraitUrl = null,
-                party = Party(
+                party = ApiParty(
                     parliamentdotuk = 4,
                     name = "Conservative"
                 ),
-                constituency = Constituency(
+                constituency = ApiConstituencyMinimal(
                     parliamentdotuk = 147277,
                     name = "Uxbridge and South Ruislip"
                 ),
@@ -92,11 +86,11 @@ internal fun expectedApiConstituency(): ApiConstituency = ApiConstituency(
                 parliamentdotuk = 1423,
                 name = "Boris Johnson",
                 portraitUrl = null,
-                party = Party(
+                party = ApiParty(
                     parliamentdotuk = 4,
                     name = "Conservative"
                 ),
-                constituency = Constituency(
+                constituency = ApiConstituencyMinimal(
                     parliamentdotuk = 147277,
                     name = "Uxbridge and South Ruislip"
                 ),
@@ -114,7 +108,7 @@ internal fun expectedApiConstituency(): ApiConstituency = ApiConstituency(
                 parliamentdotuk = 209,
                 name = "Lord Randall of Uxbridge",
                 portraitUrl = null,
-                party = Party(
+                party = ApiParty(
                     parliamentdotuk = 4,
                     name = "Conservative"
                 ),

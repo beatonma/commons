@@ -1,7 +1,7 @@
-package org.beatonma.commons.data.testdata
+package org.beatonma.commons.repo.testdata
 
-import org.beatonma.commons.androidTest.asDate
-import org.beatonma.commons.data.core.room.entities.bill.*
+import org.beatonma.commons.repo.androidTest.asDate
+import org.beatonma.commons.snommoc.models.*
 
 // Mix of https://snommoc.org/api/bill/392545/ and https://snommoc.org/api/bill/393258/
 // picking and choosing useful values.
@@ -25,7 +25,7 @@ val API_BILL = ApiBill(
             title = "Bill as introduced"
         ),
     ),
-    session = ParliamentarySession(
+    session = ApiParliamentarySession(
         parliamentdotuk = 377312,
         name = "2008-2009"
     ),
@@ -50,7 +50,7 @@ val API_BILL = ApiBill(
             type = "Order of Commitment discharged"
         )
     ),
-    type = BillType(
+    type = ApiBillType(
         name = "Ballot",
         description = "Private Members' Bill (Ballot Bill)"
     )

@@ -1,20 +1,19 @@
-package org.beatonma.commons.data.core.repository
+package org.beatonma.commons.repo.repository
 
-import fakeIt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.runBlocking
-import org.beatonma.commons.androidTest.asDate
-import org.beatonma.commons.androidTest.awaitValue
-import org.beatonma.commons.data.BaseRoomTest
-import org.beatonma.commons.data.CommonsRemoteDataSource
+import org.beatonma.commons.core.House
 import org.beatonma.commons.data.core.room.dao.MemberDao
-import org.beatonma.commons.data.core.room.entities.member.House
 import org.beatonma.commons.data.core.room.entities.member.Post
-import org.beatonma.commons.data.testdata.API_MEMBER_BORIS_JOHNSON
-import org.beatonma.commons.data.testdata.MEMBER_PUK_BORIS_JOHNSON
-import org.beatonma.commons.kotlin.extensions.dump
-import org.beatonma.lib.testing.kotlin.extensions.assertions.shouldbe
+import org.beatonma.commons.repo.BaseRoomTest
+import org.beatonma.commons.repo.CommonsApi
+import org.beatonma.commons.repo.androidTest.asDate
+import org.beatonma.commons.repo.androidTest.awaitValue
+import org.beatonma.commons.repo.testdata.API_MEMBER_BORIS_JOHNSON
+import org.beatonma.commons.repo.testdata.MEMBER_PUK_BORIS_JOHNSON
+import org.beatonma.commons.test.extensions.assertions.shouldbe
+import org.beatonma.commons.test.fakeOf
 import org.junit.Before
 import org.junit.Test
 
@@ -28,14 +27,12 @@ class MemberRepositoryTest: BaseRoomTest() {
         super.setUp()
 
         repository = MemberRepositoryImpl(
-            fakeIt(CommonsRemoteDataSource::class, object {
-
-            }),
+            fakeOf(CommonsApi::class, object {  }),
             dao,
         )
 
         runBlocking(Dispatchers.Main) {
-            dao.insertCompleteMember(MEMBER_PUK_BORIS_JOHNSON, API_MEMBER_BORIS_JOHNSON)
+            repository.saveMember(dao, MEMBER_PUK_BORIS_JOHNSON, API_MEMBER_BORIS_JOHNSON)
         }
     }
 
@@ -55,7 +52,6 @@ class MemberRepositoryTest: BaseRoomTest() {
                 .awaitValue(latchCount = 13)
                 .single()
                 .run {
-                    dump()
                     profile!!.run {
                         parliamentdotuk shouldbe MEMBER_PUK_BORIS_JOHNSON
                         name shouldbe "Boris Johnson"

@@ -1,11 +1,14 @@
-package org.beatonma.commons.data.testdata
+package org.beatonma.commons.repo.testdata
 
-import org.beatonma.commons.androidTest.asDate
-import org.beatonma.commons.data.core.ApiCompleteMember
+import org.beatonma.commons.core.House
 import org.beatonma.commons.data.core.CompleteMember
-import org.beatonma.commons.data.core.room.entities.constituency.Constituency
-import org.beatonma.commons.data.core.room.entities.election.ApiElection
-import org.beatonma.commons.data.core.room.entities.member.*
+import org.beatonma.commons.data.core.room.entities.member.CommitteeMemberWithChairs
+import org.beatonma.commons.data.core.room.entities.member.HistoricalConstituencyWithElection
+import org.beatonma.commons.data.core.room.entities.member.PartyAssociationWithParty
+import org.beatonma.commons.data.core.room.entities.member.Post
+import org.beatonma.commons.repo.androidTest.asDate
+import org.beatonma.commons.repo.converters.*
+import org.beatonma.commons.snommoc.models.*
 
 const val MEMBER_PUK_BORIS_JOHNSON = 1423
 const val MEMBER_PUK_KEIR_STARMER = 4514
@@ -13,11 +16,11 @@ const val MEMBER_PUK_KEIR_STARMER = 4514
 val EXAMPLE_MEMBER_PROFILE_BORIS_JOHNSON = ApiMemberProfile(
     parliamentdotuk = MEMBER_PUK_BORIS_JOHNSON,
     name = "Boris Johnson",
-    party = Party(
+    party = ApiParty(
         name = "Conservative",
         parliamentdotuk = 4,
     ),
-    constituency = Constituency(
+    constituency = ApiConstituencyMinimal(
         name = "Uxbridge and South Ruislip",
         parliamentdotuk = 147277,
     ),
@@ -27,7 +30,7 @@ val EXAMPLE_MEMBER_PROFILE_BORIS_JOHNSON = ApiMemberProfile(
     dateOfDeath = null,
     age = 55,
     gender = "M",
-    placeOfBirth = Town(
+    placeOfBirth = ApiTown(
         town = "New York",
         country = "USA"
     ),
@@ -38,11 +41,11 @@ val EXAMPLE_MEMBER_PROFILE_BORIS_JOHNSON = ApiMemberProfile(
 val EXAMPLE_MEMBER_PROFILE_KEIR_STARMER = ApiMemberProfile(
     parliamentdotuk = MEMBER_PUK_KEIR_STARMER,
     name = "Keir Starmer",
-    party = Party(
+    party = ApiParty(
         name = "Labour",
         parliamentdotuk = 15,
     ),
-    constituency = Constituency(
+    constituency = ApiConstituencyMinimal(
         name = "Holburn and St Pancras",
         parliamentdotuk = 146996,
     ),
@@ -52,7 +55,7 @@ val EXAMPLE_MEMBER_PROFILE_KEIR_STARMER = ApiMemberProfile(
     dateOfDeath = null,
     age = 57,
     gender = "M",
-    placeOfBirth = Town(
+    placeOfBirth = ApiTown(
         town = "Southwark",
         country = "England"
     ),
@@ -100,7 +103,7 @@ val API_MEMBER_BORIS_JOHNSON = ApiCompleteMember(
     ),
     constituencies = listOf(
         ApiHistoricalConstituency(
-            constituency = Constituency(
+            constituency = ApiConstituencyMinimal(
                 name = "Uxbridge and South Ruislip",
                 parliamentdotuk = 147277),
             start = "2019-12-12".asDate(),
@@ -113,7 +116,7 @@ val API_MEMBER_BORIS_JOHNSON = ApiCompleteMember(
             ),
         ),
         ApiHistoricalConstituency(
-            constituency = Constituency(
+            constituency = ApiConstituencyMinimal(
                 name = "Uxbridge and South Ruislip",
                 parliamentdotuk = 147277),
             start = "2017-06-08".asDate(),
@@ -160,14 +163,14 @@ val API_MEMBER_BORIS_JOHNSON = ApiCompleteMember(
     ),
     parties = listOf(
         ApiPartyAssociation(
-            party = Party(
+            party = ApiParty(
                 name = "Conservative",
                 parliamentdotuk = 4),
             start = "2019-12-12".asDate(),
             end = null,
         ),
         ApiPartyAssociation(
-            party = Party(
+            party = ApiParty(
                 name = "Conservative",
                 parliamentdotuk = 4),
             start = "2017-06-08".asDate(),
@@ -211,8 +214,8 @@ val API_MEMBER_BORIS_JOHNSON = ApiCompleteMember(
 
 fun ApiCompleteMember.toCompleteMember() = CompleteMember(
     profile = profile.toMemberProfile(),
-    party = profile.party,
-    constituency = profile.constituency,
+    party = profile.party.toParty(),
+    constituency = profile.constituency?.toConstituency(),
     addresses = addresses.physical.map { it.toPhysicalAddress(MEMBER_PUK_BORIS_JOHNSON) },
     weblinks = addresses.web.map { it.toWebAddress(MEMBER_PUK_BORIS_JOHNSON) },
     posts = listOf(
@@ -237,7 +240,7 @@ fun ApiCompleteMember.toCompleteMember() = CompleteMember(
     houses = houses.map { it.toHouseMembership(profile.parliamentdotuk) },
     historicConstituencies = constituencies.map {
         HistoricalConstituencyWithElection(
-            constituency = it.constituency,
+            constituency = it.constituency.toConstituency(),
             historicalConstituency = it.toHistoricalConstituency(profile.parliamentdotuk),
             election = it.election.toElection(),
         )
@@ -245,7 +248,7 @@ fun ApiCompleteMember.toCompleteMember() = CompleteMember(
     parties = parties.map {
         PartyAssociationWithParty(
             partyAssocation = it.toPartyAssociation(profile.parliamentdotuk),
-            party = profile.party,
+            party = profile.party.toParty(),
         )
     },
 )

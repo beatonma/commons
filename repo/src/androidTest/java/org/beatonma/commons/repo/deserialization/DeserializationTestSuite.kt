@@ -1,6 +1,6 @@
-package org.beatonma.commons.data.deserialization
+package org.beatonma.commons.repo.deserialization
 
-import org.beatonma.commons.data.deserialization.api.LiveDeserializationTest
+import org.beatonma.commons.repo.deserialization.api.LiveDeserializationTest
 import org.junit.runner.RunWith
 import org.junit.runners.Suite
 

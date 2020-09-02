@@ -1,12 +1,12 @@
-package org.beatonma.commons.data.deserialization
+package org.beatonma.commons.repo.deserialization
 
 import com.squareup.moshi.Moshi
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import org.beatonma.commons.data.core.room.entities.division.ApiDivision
-import org.beatonma.commons.data.testdata.API_DIVISION
-import org.beatonma.commons.data.testdata.API_DIVISION_JSON
-import org.beatonma.lib.testing.kotlin.extensions.assertions.shouldbe
+import org.beatonma.commons.repo.testdata.API_DIVISION
+import org.beatonma.commons.repo.testdata.API_DIVISION_JSON
+import org.beatonma.commons.snommoc.models.ApiDivision
+import org.beatonma.commons.test.extensions.assertions.shouldbe
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

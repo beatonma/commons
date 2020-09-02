@@ -1,4 +1,4 @@
-package org.beatonma.commons.data
+package org.beatonma.commons.repo
 
 import android.content.Context
 import androidx.annotation.CallSuper

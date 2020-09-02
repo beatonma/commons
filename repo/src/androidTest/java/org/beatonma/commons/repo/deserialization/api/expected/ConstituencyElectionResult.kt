@@ -1,10 +1,10 @@
-package org.beatonma.commons.data.deserialization.api.expected
+package org.beatonma.commons.repo.deserialization.api.expected
 
-import org.beatonma.commons.androidTest.asDate
-import org.beatonma.commons.data.core.room.entities.constituency.ApiConstituencyCandidate
-import org.beatonma.commons.data.core.room.entities.constituency.ApiConstituencyElectionDetails
-import org.beatonma.commons.data.core.room.entities.constituency.ApiConstituencyMinimal
-import org.beatonma.commons.data.core.room.entities.election.ApiElection
+import org.beatonma.commons.repo.androidTest.asDate
+import org.beatonma.commons.snommoc.models.ApiConstituencyCandidate
+import org.beatonma.commons.snommoc.models.ApiConstituencyElectionDetails
+import org.beatonma.commons.snommoc.models.ApiConstituencyMinimal
+import org.beatonma.commons.snommoc.models.ApiElection
 
 /** https://snommoc.org/api/constituency/147277/election/19/ */
 fun expectedApiConstituencyElectionResult(): ApiConstituencyElectionDetails = ApiConstituencyElectionDetails(
