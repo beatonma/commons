@@ -18,6 +18,7 @@ import org.beatonma.commons.app.ui.recyclerview.setup
 import org.beatonma.commons.app.ui.recyclerview.viewholder.StaticViewHolder
 import org.beatonma.commons.app.ui.views.BarChartCategory
 import org.beatonma.commons.core.ParliamentID
+import org.beatonma.commons.core.extensions.withNotNull
 import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyElectionDetailsWithExtras
 import org.beatonma.commons.data.resolution.PartyResolution
 import org.beatonma.commons.databinding.FragmentConstituencyElectionResultsBinding
@@ -70,7 +71,7 @@ class ConstituencyElectionResultsFragment : CommonsFragment<FragmentConstituency
         viewmodel.liveData.observe(viewLifecycleOwner) { result ->
             result.report()
 
-            org.beatonma.commons.core.extensions.withNotNull(result.data) {
+            withNotNull(result.data) {
                 updateUi(it)
             }
         }

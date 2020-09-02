@@ -12,11 +12,11 @@ import androidx.core.view.NestedScrollingChildHelper
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.*
+import org.beatonma.commons.ClickAction
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.data.WeblinkData
 import org.beatonma.commons.app.ui.views.ScrollableView
 import org.beatonma.commons.core.extensions.safeGet
-import org.beatonma.commons.data.ClickAction
 import org.beatonma.commons.kotlin.extensions.dimenCompat
 import org.beatonma.commons.kotlin.extensions.drawableCompat
 import org.beatonma.commons.kotlin.extensions.openUrl

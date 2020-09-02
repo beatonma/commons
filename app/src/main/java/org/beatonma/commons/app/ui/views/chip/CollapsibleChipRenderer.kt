@@ -10,10 +10,10 @@ import android.text.TextPaint
 import android.view.Gravity
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.withTranslation
+import org.beatonma.commons.ClickAction
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.Interpolation
 import org.beatonma.commons.core.extensions.withNotNull
-import org.beatonma.commons.data.ClickAction
 import org.beatonma.commons.kotlin.extensions.*
 
 /**

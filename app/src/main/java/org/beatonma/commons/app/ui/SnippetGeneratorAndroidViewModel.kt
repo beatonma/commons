@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import org.beatonma.commons.data.IoResultObserver
+import org.beatonma.commons.repo.IoResultObserver
 
 abstract class SnippetGeneratorAndroidViewModel<D>(
     context: Context

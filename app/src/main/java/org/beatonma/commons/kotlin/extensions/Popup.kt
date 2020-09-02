@@ -8,10 +8,10 @@ import androidx.annotation.StringRes
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
+import org.beatonma.commons.ClickAction
 import org.beatonma.commons.R
-import org.beatonma.commons.data.ClickAction
-import org.beatonma.commons.data.NetworkError
 import org.beatonma.commons.device.Sdk
+import org.beatonma.commons.repo.result.NetworkError
 
 fun View.snackbar(
     @StringRes textResId: Int,

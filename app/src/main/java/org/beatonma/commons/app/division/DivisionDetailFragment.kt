@@ -25,7 +25,7 @@ import org.beatonma.commons.app.ui.recyclerview.defaultPrimaryContentSpacing
 import org.beatonma.commons.app.ui.recyclerview.setup
 import org.beatonma.commons.core.House
 import org.beatonma.commons.core.VoteType
-import org.beatonma.commons.data.IoResultObserver
+import org.beatonma.commons.core.extensions.withNotNull
 import org.beatonma.commons.data.core.room.entities.division.Division
 import org.beatonma.commons.data.core.room.entities.division.VoteWithParty
 import org.beatonma.commons.data.resolution.describe
@@ -34,6 +34,7 @@ import org.beatonma.commons.databinding.ItemDivisionVoteBinding
 import org.beatonma.commons.databinding.MergeDivisionResultsChartKeyBinding
 import org.beatonma.commons.kotlin.data.asStateList
 import org.beatonma.commons.kotlin.extensions.*
+import org.beatonma.commons.repo.IoResultObserver
 import org.beatonma.commons.snommoc.models.social.SocialContent
 
 private const val TAG = "DivisionProfileFragment"
@@ -89,7 +90,7 @@ class DivisionDetailFragment : CommonsFragment<FragmentDivisionDetailBinding>(),
         viewmodel.liveData.observe(viewLifecycleOwner) { result ->
             result.report()
 
-            org.beatonma.commons.core.extensions.withNotNull(result.data) { data ->
+            withNotNull(result.data) { data ->
                 lifecycleScope.launch {
                     val votes = viewmodel.sortedVotes(data.votes)
                     withContext(Dispatchers.Main) {

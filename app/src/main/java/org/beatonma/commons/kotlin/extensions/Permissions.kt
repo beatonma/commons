@@ -7,7 +7,7 @@ import android.util.Log
 import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import org.beatonma.commons.data.ActionBlock
+import org.beatonma.commons.ActionBlock
 
 /**
  * If the requested permissions are already granted then run the block

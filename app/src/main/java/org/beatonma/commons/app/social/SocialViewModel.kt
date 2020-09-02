@@ -8,14 +8,14 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import org.beatonma.commons.BuildConfig
 import org.beatonma.commons.app
 import org.beatonma.commons.app.signin.BaseUserAccountViewModel
-import org.beatonma.commons.data.IoResult
-import org.beatonma.commons.data.LiveDataIoResult
-import org.beatonma.commons.data.NotSignedInError
 import org.beatonma.commons.data.core.room.entities.user.UserToken
+import org.beatonma.commons.repo.LiveDataIoResult
 import org.beatonma.commons.repo.models.CreatedComment
 import org.beatonma.commons.repo.models.CreatedVote
 import org.beatonma.commons.repo.repository.SocialRepository
 import org.beatonma.commons.repo.repository.UserRepository
+import org.beatonma.commons.repo.result.IoResult
+import org.beatonma.commons.repo.result.NotSignedInError
 import org.beatonma.commons.snommoc.annotations.SignInRequired
 import org.beatonma.commons.snommoc.models.social.SocialContent
 import org.beatonma.commons.snommoc.models.social.SocialTarget

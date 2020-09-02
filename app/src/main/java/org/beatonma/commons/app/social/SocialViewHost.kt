@@ -13,10 +13,10 @@ import kotlinx.coroutines.launch
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.navigation.BackPressConsumer
 import org.beatonma.commons.app.ui.recyclerview.adapter.AsyncDiffHost
-import org.beatonma.commons.data.IoResultObserver
-import org.beatonma.commons.data.SuccessCodeResult
 import org.beatonma.commons.data.core.interfaces.Sociable
+import org.beatonma.commons.repo.IoResultObserver
 import org.beatonma.commons.repo.asSocialTarget
+import org.beatonma.commons.repo.result.SuccessCodeResult
 import org.beatonma.commons.snommoc.annotations.SignInRequired
 import org.beatonma.commons.snommoc.models.social.SocialContent
 import org.beatonma.commons.snommoc.models.social.SocialVoteType

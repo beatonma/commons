@@ -2,9 +2,9 @@ package org.beatonma.commons.app.ui.views.chip
 
 import android.content.Context
 import androidx.annotation.DrawableRes
+import org.beatonma.commons.ClickAction
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.data.WeblinkData
-import org.beatonma.commons.data.ClickAction
 import org.beatonma.commons.kotlin.extensions.dial
 import org.beatonma.commons.kotlin.extensions.openUrl
 import org.beatonma.commons.kotlin.extensions.sendMail

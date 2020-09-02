@@ -22,12 +22,12 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.navigation.BackPressConsumer
-import org.beatonma.commons.data.IoResult
 import org.beatonma.commons.data.core.room.entities.user.UserToken
-import org.beatonma.commons.data.isError
-import org.beatonma.commons.data.isSuccess
 import org.beatonma.commons.databinding.FragmentSigninBinding
 import org.beatonma.commons.kotlin.extensions.*
+import org.beatonma.commons.repo.result.IoResult
+import org.beatonma.commons.repo.result.isError
+import org.beatonma.commons.repo.result.isSuccess
 
 private const val RC_GOOGLE_SIGNIN = 9913
 

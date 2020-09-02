@@ -4,9 +4,9 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
-import org.beatonma.commons.data.IoResult
 import org.beatonma.commons.repo.repository.FeaturedRepository
 import org.beatonma.commons.repo.repository.SnommocRepository
+import org.beatonma.commons.repo.result.IoResult
 import org.beatonma.commons.snommoc.models.MessageOfTheDay
 
 class FeaturedContentViewModel @ViewModelInject constructor(

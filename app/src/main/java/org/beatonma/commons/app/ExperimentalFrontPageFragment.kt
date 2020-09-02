@@ -19,7 +19,6 @@ import org.beatonma.commons.app.ui.colors.getTheme
 import org.beatonma.commons.app.ui.recyclerview.adapter.LoadingAdapter
 import org.beatonma.commons.app.ui.recyclerview.primaryContentWithToolbarSpacing
 import org.beatonma.commons.app.ui.recyclerview.setup
-import org.beatonma.commons.data.LiveDataIoResultList
 import org.beatonma.commons.data.core.room.entities.bill.FeaturedBillWithBill
 import org.beatonma.commons.data.core.room.entities.division.FeaturedDivisionWithDivision
 import org.beatonma.commons.data.core.room.entities.member.FeaturedMemberProfile
@@ -27,6 +26,7 @@ import org.beatonma.commons.databinding.ItemWideImageTitleSubtitleDescriptionBin
 import org.beatonma.commons.databinding.RecyclerviewBinding
 import org.beatonma.commons.databinding.ViewpagerBinding
 import org.beatonma.commons.kotlin.extensions.*
+import org.beatonma.commons.repo.LiveDataIoResultList
 
 @AndroidEntryPoint
 class ExperimentalFrontPageFragment : CommonsFragment<ViewpagerBinding>(), SearchEnabled, SignInEnabled {
@@ -48,7 +48,7 @@ class ExperimentalFrontPageFragment : CommonsFragment<ViewpagerBinding>(), Searc
 
             val motd = result.data?.firstOrNull() ?: return@observe
             val action = motd.url?.let { url ->
-                SnackbarAction(R.string.more) { view ->
+                SnackbarAction(R.string.more) { view: View ->
                     view.context.openUrl(url)
                 }
             }

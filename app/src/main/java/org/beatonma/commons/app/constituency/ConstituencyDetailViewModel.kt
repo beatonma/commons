@@ -15,8 +15,6 @@ import org.beatonma.commons.app.ui.colors.PartyColors
 import org.beatonma.commons.app.ui.colors.getTheme
 import org.beatonma.commons.context
 import org.beatonma.commons.core.ParliamentID
-import org.beatonma.commons.data.IoResultObserver
-import org.beatonma.commons.data.LiveDataIoResult
 import org.beatonma.commons.data.core.room.entities.constituency.CompleteConstituency
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyBoundary
@@ -29,6 +27,8 @@ import org.beatonma.commons.data.parse.KmlParser
 import org.beatonma.commons.kotlin.data.Color
 import org.beatonma.commons.kotlin.extensions.dp
 import org.beatonma.commons.kotlin.extensions.stringCompat
+import org.beatonma.commons.repo.IoResultObserver
+import org.beatonma.commons.repo.LiveDataIoResult
 import org.beatonma.commons.repo.repository.ConstituencyRepository
 
 private const val MAP_OUTLINE_WIDTH_DP = 2F

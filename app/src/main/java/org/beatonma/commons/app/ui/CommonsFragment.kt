@@ -7,12 +7,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 import kotlinx.coroutines.Job
+import org.beatonma.commons.ActionBlock
 import org.beatonma.commons.app.ui.recyclerview.adapter.AsyncDiffHost
-import org.beatonma.commons.data.ActionBlock
-import org.beatonma.commons.data.IoResult
-import org.beatonma.commons.data.NetworkError
-import org.beatonma.commons.data.SuccessResult
 import org.beatonma.commons.kotlin.extensions.networkErrorSnackbar
+import org.beatonma.commons.repo.result.IoResult
+import org.beatonma.commons.repo.result.NetworkError
+import org.beatonma.commons.repo.result.SuccessResult
 
 abstract class CommonsFragment<B: ViewBinding>: Fragment(), AsyncDiffHost {
     override var diffJob: Job? = null

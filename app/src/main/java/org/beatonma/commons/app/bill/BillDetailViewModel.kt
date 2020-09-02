@@ -11,12 +11,12 @@ import kotlinx.coroutines.launch
 import org.beatonma.commons.app.ui.BaseIoAndroidViewModel
 import org.beatonma.commons.core.House
 import org.beatonma.commons.core.ParliamentID
-import org.beatonma.commons.data.IoResult
 import org.beatonma.commons.data.core.room.entities.bill.BillStageWithSittings
 import org.beatonma.commons.data.core.room.entities.bill.CompleteBill
 import org.beatonma.commons.data.extensions.BillStageCanonicalNames
 import org.beatonma.commons.data.extensions.startedIn
 import org.beatonma.commons.repo.repository.BillRepository
+import org.beatonma.commons.repo.result.IoResult
 import java.util.*
 
 class BillDetailViewModel @ViewModelInject constructor(

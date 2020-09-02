@@ -19,7 +19,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.AndroidViewModel
 import androidx.recyclerview.widget.RecyclerView
-import org.beatonma.commons.data.ActionBlock
+import org.beatonma.commons.ActionBlock
 import org.beatonma.commons.device.Sdk
 import org.beatonma.commons.kotlin.data.Dimensions
 

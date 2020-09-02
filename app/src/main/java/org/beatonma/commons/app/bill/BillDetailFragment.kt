@@ -22,6 +22,7 @@ import org.beatonma.commons.app.ui.recyclerview.itemdecorator.sticky.StickyHeade
 import org.beatonma.commons.app.ui.recyclerview.setup
 import org.beatonma.commons.core.House
 import org.beatonma.commons.core.ParliamentID
+import org.beatonma.commons.core.extensions.withNotNull
 import org.beatonma.commons.data.core.room.entities.bill.BillSponsorWithParty
 import org.beatonma.commons.data.core.room.entities.bill.CompleteBill
 import org.beatonma.commons.data.resolution.describe
@@ -69,7 +70,7 @@ class BillDetailFragment : CommonsFragment<FragmentBillDetailBinding>(), SocialV
             result.handle(
                 withData = { data ->
                     updateUi(data)
-                    org.beatonma.commons.core.extensions.withNotNull(data.bill) { bill ->
+                    withNotNull(data.bill) { bill ->
                         observeSocialContent(bill)
                     }
                 },

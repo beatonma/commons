@@ -15,8 +15,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import org.beatonma.commons.data.SuccessResult
 import org.beatonma.commons.repo.CommonsApi
+import org.beatonma.commons.repo.result.SuccessResult
 import org.beatonma.commons.snommoc.models.search.MemberSearchResult
 import org.beatonma.commons.snommoc.models.search.SearchResult
 

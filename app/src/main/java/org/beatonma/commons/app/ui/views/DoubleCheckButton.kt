@@ -7,8 +7,8 @@ import androidx.core.content.withStyledAttributes
 import androidx.transition.TransitionManager
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.*
+import org.beatonma.commons.ClickAction
 import org.beatonma.commons.R
-import org.beatonma.commons.data.ClickAction
 import org.beatonma.commons.kotlin.extensions.string
 
 private const val REVERT_STATE_TIMEOUT = 1800L

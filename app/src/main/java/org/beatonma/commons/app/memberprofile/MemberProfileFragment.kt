@@ -20,10 +20,11 @@ import org.beatonma.commons.app.ui.navigation.BackPressConsumer
 import org.beatonma.commons.app.ui.recyclerview.defaultPrimaryContentSpacing
 import org.beatonma.commons.app.ui.recyclerview.setup
 import org.beatonma.commons.core.ParliamentID
-import org.beatonma.commons.data.IoResultObserver
+import org.beatonma.commons.core.extensions.withNotNull
 import org.beatonma.commons.data.core.CompleteMember
 import org.beatonma.commons.databinding.FragmentMemberProfileBinding
 import org.beatonma.commons.kotlin.extensions.*
+import org.beatonma.commons.repo.IoResultObserver
 import org.beatonma.commons.snommoc.models.social.SocialContent
 
 private const val TAG = "MemberProfileFrag"
@@ -69,7 +70,7 @@ class MemberProfileFragment : CommonsFragment<FragmentMemberProfileBinding>(),
             result.handle { member ->
                 updateUI(member)
 
-                org.beatonma.commons.core.extensions.withNotNull(member.profile) { profile ->
+                withNotNull(member.profile) { profile ->
                     observeSocialContent(profile)
                 }
             }
