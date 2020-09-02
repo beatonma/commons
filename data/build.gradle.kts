@@ -26,12 +26,7 @@ android {
         injectStrings(mapOf(
             "VERSION_NAME" to git.tag,
             "APPLICATION_ID" to Commons.APPLICATION_ID,
-            "COMMONS_API_KEY" to local.LocalConfig.Api.Commons.API_KEY,
-            "GIT_SHA" to git.sha,
-            "TWFY_API_KEY" to local.LocalConfig.Api.Twfy.API_KEY,
-            "USER_AGENT_APP" to local.LocalConfig.UserAgent.NAME,
-            "USER_AGENT_WEBSITE" to local.LocalConfig.UserAgent.WEBSITE,
-            "USER_AGENT_EMAIL" to local.LocalConfig.UserAgent.EMAIL
+            "GIT_SHA" to git.sha
         ), asBuildConfig = true, asResValue = false)
 
         injectInts(mapOf(
@@ -62,6 +57,17 @@ android {
 }
 
 dependencies {
+    val testAnnotationProcessors = arrayOf(
+        Dependencies.Dagger.COMPILER,
+        Dependencies.Dagger.ANNOTATION_PROCESSOR
+    )
+    val testImplementations = arrayOf(
+        project(":test"),
+        Dependencies.Test.JUNIT,
+        Dependencies.Hilt.TESTING,
+        Dependencies.Test.AndroidX.LIVEDATA
+    )
+
     val annotationProcessors = arrayOf(
         Dependencies.Dagger.ANNOTATION_PROCESSOR,
         Dependencies.Dagger.COMPILER,
@@ -72,31 +78,28 @@ dependencies {
 
     val implementations = arrayOf(
         Dependencies.AndroidX.CORE_KTX,
-        Dependencies.Google.Play.AUTH,
 
         Dependencies.Dagger.ANDROID,
         Dependencies.Dagger.DAGGER,
         Dependencies.Dagger.SUPPORT,
 
         Dependencies.Hilt.CORE,
-//        Dependencies.Hilt.LIFECYCLE_VIEWMODEL,
 
         Dependencies.Kotlin.STDLIB,
         Dependencies.Kotlin.Coroutines.ANDROID,
         Dependencies.Kotlin.Coroutines.CORE,
 
-//        Dependencies.Retrofit.RETROFIT,
-//        Dependencies.Retrofit.Converter.MOSHI,
-//        Dependencies.Retrofit.Converter.TEXT,
-
         Dependencies.Room.KTX,
-        Dependencies.Room.RUNTIME
+        Dependencies.Room.RUNTIME,
+
+        project(":core")
     )
 
-    annotationProcessors.forEach { kapt(it) }
-    implementations.forEach { implementation(it) }
+    testAnnotationProcessors.forEach(::kaptAndroidTest)
+    testImplementations.forEach(::androidTestImplementation)
 
-    implementation(project(":core"))
+    annotationProcessors.forEach(::kapt)
+    implementations.forEach(::implementation)
 }
 
 repositories {

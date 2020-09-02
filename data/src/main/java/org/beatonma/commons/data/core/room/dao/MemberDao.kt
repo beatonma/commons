@@ -139,66 +139,6 @@ interface MemberDao: SharedPartyDao, SharedConstituencyDao, SharedElectionDao {
         )
     }
 
-//    @Transaction
-//    suspend fun insertCompleteMember(parliamentdotuk: ParliamentID, member: ApiCompleteMember) {
-//        insertPartiesIfNotExists(member.parties.map { it.party })
-//        insertPartyIfNotExists(member.profile.party)
-//        insertConstituenciesIfNotExists(
-//            member.constituencies.map { it.constituency }
-//        )
-//        if (member.profile.constituency != null) {
-//            // Not necessarily included in member.constituencies list.
-//            insertConstituencyIfNotExists(member.profile.constituency)
-//        }
-//
-//        safeInsertProfile(member.profile.toMemberProfile())
-//
-//        insertPhysicalAddresses(
-//            member.addresses.physical.map { it.toPhysicalAddress(memberId = parliamentdotuk) }
-//        )
-//        insertWebAddresses(
-//            member.addresses.web.map { it.toWebAddress(memberId = parliamentdotuk) }
-//        )
-//
-//        insertPosts(member.posts.governmental.map { post ->
-//            post.toPost(memberId = parliamentdotuk, postType = Post.PostType.GOVERNMENTAL)
-//        })
-//        insertPosts(member.posts.parliamentary.map { post ->
-//            post.toPost(memberId = parliamentdotuk, postType = Post.PostType.PARLIAMENTARY)
-//        })
-//        insertPosts(member.posts.opposition.map { post ->
-//            post.toPost(memberId = parliamentdotuk, postType = Post.PostType.OPPOSITION)
-//        })
-//
-//        insertCommitteeMemberships(member.committees.map { membership ->
-//            membership.toCommitteeMembership(parliamentdotuk)
-//        })
-//
-//        member.committees.forEach { committee ->
-//            insertCommitteeChairships(committee.chairs.map { chair ->
-//                chair.toCommitteeChairship(
-//                    committeeId = committee.parliamentdotuk,
-//                    memberId = parliamentdotuk
-//                )
-//            })
-//        }
-//
-//        insertHouseMemberships(member.houses.map { house ->
-//            house.toHouseMembership(memberId = parliamentdotuk)
-//        })
-//
-//        insertFinancialInterests(member.financialInterests.map { it.toFinancialInterest(memberId = parliamentdotuk) })
-//        insertExperiences(member.experiences.map { it.toExperience(memberId = parliamentdotuk) })
-//        insertTopicsOfInterest(member.topicsOfInterest.map { it.toTopicOfInterest(memberId = parliamentdotuk) })
-//
-//        insertElections(member.constituencies.map { it.election.toElection() })
-//        insertMemberForConstituencies(member.constituencies.map {
-//            it.toHistoricalConstituency(parliamentdotuk)
-//        } )
-//
-//        insertPartyAssociations(member.parties.map {it.toPartyAssociation(parliamentdotuk) })
-//    }
-
     @Transaction
     suspend fun safeInsertProfile(profile: MemberProfile?, ifNotExists: Boolean = false) {
         profile ?: return
