@@ -1,4 +1,8 @@
-package org.beatonma.commons.test.extensions
+package org.beatonma.commons.test.extensions.util
+
+import java.time.LocalDate
+
+fun String.asDate(): LocalDate = LocalDate.parse(this)
 
 
 /**
@@ -12,6 +16,7 @@ private fun String.clipToLength(targetMaxLength: Int, lenience: Int = 3, continu
         else -> "${subSequence(0, targetMaxLength + 1)}$continuanceSymbol"
     }
 }
+
 
 /**
  * Dump value to log (with optional message) and return `this` value

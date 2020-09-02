@@ -36,5 +36,7 @@ dependencies {
     implementation(Dependencies.AndroidX.APPCOMPAT)
     implementation(Dependencies.AndroidX.CORE_KTX)
 
+    implementation(Dependencies.Kotlin.Coroutines.CORE)
+
     implementation(Dependencies.Kotlin.REFLECT)
 }
