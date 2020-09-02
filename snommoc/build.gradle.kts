@@ -42,6 +42,14 @@ android {
 }
 
 dependencies {
+
+    // Unit tests
+    arrayOf(
+        Dependencies.Test.JUNIT,
+        Dependencies.Test.AndroidX.CORE,
+        project(":test")
+    ).forEach(::testImplementation)
+
     val annotationProcessors = arrayOf(
         Dependencies.Dagger.ANNOTATION_PROCESSOR,
         Dependencies.Dagger.COMPILER,
