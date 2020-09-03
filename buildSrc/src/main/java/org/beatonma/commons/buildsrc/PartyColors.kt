@@ -1,3 +1,5 @@
+package org.beatonma.commons.buildsrc
+
 private fun String.toColorInt(): Int {
     // Use a long to avoid rollovers on #ffXXXXXX
     var color = this.substring(1).toLong(16)
@@ -8,8 +10,8 @@ private fun String.toColorInt(): Int {
     return color.toInt()
 }
 
-const val TEXT_DARK = 1
-const val TEXT_LIGHT = 2
+//const val TEXT_DARK = 1
+//const val TEXT_LIGHT = 2
 
 private val RED: String = "#F44336"
 private val AMBER: String = "#FFC107"
@@ -45,8 +47,11 @@ abstract class PartyColors(
 ) {
     val _primaryInt: Int get() = primary.toColorInt()
     val _accentInt: Int get() = accent.toColorInt()
-//    val _primaryTextInt: Int get() = primaryText.toColorInt()
-//    val _accentTextInt: Int get() = accentText.toColorInt()
+
+    companion object {
+        const val TEXT_DARK = 1
+        const val TEXT_LIGHT = 2
+    }
 }
 
 object DefaultColors : PartyColors(

@@ -1,50 +1,21 @@
-import com.android.build.gradle.internal.dsl.DefaultConfig
+import org.beatonma.commons.buildsrc.Commons
+import org.beatonma.commons.buildsrc.kts.extensions.coroutines
+import org.beatonma.commons.buildsrc.kts.extensions.injectStrings
 
 plugins {
-    id("com.android.library")
-    kotlin("android")
-    id("kotlin-android-extensions")
-    id("dagger.hilt.android.plugin")
-    kotlin("kapt")
-    id("com.github.ben-manes.versions")
+    id(Plugins.COMMONS_LIBRARY_CONFIG)
+    id(Plugins.COMMONS_HILT_MODULE)
 }
 
 android {
-    val git = Git.resolveData(project)
-
-    compileSdkVersion(Commons.Sdk.COMPILE)
     defaultConfig {
-        versionCode = git.commitCount
-        versionName = git.tag
-
-        minSdkVersion(Commons.Sdk.MIN)
-        targetSdkVersion(Commons.Sdk.TARGET)
-
         testInstrumentationRunner = "org.beatonma.commons.repo.androidTest.HiltTestRunner"
-//        consumerProguardFiles = "consumer-rules.pro"
 
-        injectStrings(mapOf(
-            "VERSION_NAME" to git.tag,
+        injectStrings(
             "APPLICATION_ID" to Commons.APPLICATION_ID,
-            "GIT_SHA" to git.sha
-        ), asBuildConfig = true, asResValue = false)
-
-        injectInts(mapOf(
-            "VERSION_CODE" to git.commitCount
-        ), asBuildConfig = true, asResValue = false)
-    }
-
-    compileOptions {
-        sourceCompatibility = Versions.JAVA
-        targetCompatibility = Versions.JAVA
-    }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
-        languageVersion = "1.4"
-//        useIR = true
-
-        freeCompilerArgs = listOf("-XXLanguage:+InlineClasses")
+            asBuildConfig = true,
+            asResValue = false
+        )
     }
 }
 
@@ -55,38 +26,20 @@ dependencies {
     )
     val androidTestImplementations = arrayOf(
         project(":test"),
-        Dependencies.Test.JUNIT,
         Dependencies.Hilt.TESTING,
         Dependencies.Room.RUNTIME,
-        Dependencies.Test.AndroidX.CORE,
         Dependencies.Test.AndroidX.LIVEDATA,
         Dependencies.Test.AndroidX.RUNNER
-    )
-
-    val annotationProcessors = arrayOf(
-        Dependencies.Dagger.ANNOTATION_PROCESSOR,
-        Dependencies.Dagger.COMPILER,
-        Dependencies.Hilt.AX_KAPT,
-        Dependencies.Hilt.KAPT
     )
 
     val implementations = arrayOf(
         Dependencies.AndroidX.CORE_KTX,
 
-        Dependencies.Dagger.ANDROID,
-        Dependencies.Dagger.DAGGER,
-        Dependencies.Dagger.SUPPORT,
-
-        Dependencies.Hilt.CORE,
         Dependencies.Hilt.LIFECYCLE_VIEWMODEL,
 
-        Dependencies.Kotlin.STDLIB,
-        Dependencies.Kotlin.Coroutines.ANDROID,
-        Dependencies.Kotlin.Coroutines.CORE,
+        *coroutines,
 
-        Dependencies.Retrofit.RETROFIT,
         Dependencies.Retrofit.Converter.MOSHI,
-        Dependencies.Retrofit.Converter.TEXT,
 
         project(":core"),
         project(":network-core"),
@@ -97,34 +50,5 @@ dependencies {
     testAnnotationProcessors.forEach(::kaptAndroidTest)
     androidTestImplementations.forEach(::androidTestImplementation)
 
-    annotationProcessors.forEach(::kapt)
     implementations.forEach(::implementation)
-}
-
-repositories {
-    mavenCentral()
-    maven("https://dl.bintray.com/kotlin/kotlin-eap")
-}
-
-
-fun DefaultConfig.injectStrings(mapping: Map<String, String>, asBuildConfig: Boolean, asResValue: Boolean) {
-    mapping.forEach { (key, value) ->
-        if (asBuildConfig) {
-            buildConfigField("String", key.toUpperCase(), "\"$value\"")
-        }
-        if (asResValue) {
-            resValue("string", key.toLowerCase(), value)
-        }
-    }
-}
-
-fun DefaultConfig.injectInts(mapping: Map<String, Int>, asBuildConfig: Boolean, asResValue: Boolean) {
-    mapping.forEach { (key, value) ->
-        if (asBuildConfig) {
-            buildConfigField("int", key.toUpperCase(), "$value")
-        }
-        if (asResValue) {
-            resValue("integer", key.toLowerCase(), "$value")
-        }
-    }
 }

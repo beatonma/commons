@@ -1,4 +1,4 @@
-package data
+package org.beatonma.commons.buildsrc.data
 
 const val PARTY_ALLIANCE = "party_alliance"
 const val PARTY_ANTI_H_BLOCK = "party_anti_h_block"

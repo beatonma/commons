@@ -63,24 +63,54 @@ object Dependencies {
     object AndroidX {
         val APPCOMPAT = androidx("appcompat", version = Versions.AX_APPCOMPAT)
         val CONSTRAINTLAYOUT = androidx("constraintlayout", version = Versions.AX_CONSTRAINTLAYOUT)
-        val CORE_KTX = androidx(group = "core", artifact = "core-ktx", version = Versions.AX_CORE_KTX)
-        val LIFECYCLE_RUNTIME = androidx(group = "lifecycle", artifact = "lifecycle-runtime-ktx", version = Versions.AX_LIFECYCLE)
-        val LIVEDATA_KTX = androidx(group = "lifecycle", artifact = "lifecycle-livedata-ktx", version = Versions.AX_LIFECYCLE)
-        val VIEWMODEL_KTX = androidx(group = "lifecycle", artifact = "lifecycle-viewmodel-ktx", version = Versions.AX_LIFECYCLE)
+        val CORE_KTX =
+            androidx(group = "core", artifact = "core-ktx", version = Versions.AX_CORE_KTX)
+        val LIFECYCLE_RUNTIME = androidx(
+            group = "lifecycle",
+            artifact = "lifecycle-runtime-ktx",
+            version = Versions.AX_LIFECYCLE
+        )
+        val LIVEDATA_KTX = androidx(
+            group = "lifecycle",
+            artifact = "lifecycle-livedata-ktx",
+            version = Versions.AX_LIFECYCLE
+        )
+        val VIEWMODEL_KTX = androidx(
+            group = "lifecycle",
+            artifact = "lifecycle-viewmodel-ktx",
+            version = Versions.AX_LIFECYCLE
+        )
         val ANNOTATIONS = androidx("annotation", version = Versions.AX_ANNOTATIONS)
         val RECYCLERVIEW = androidx(artifact = "recyclerview", version = Versions.AX_RECYCLERVIEW)
-        val SWIPE_REFRESH_LAYOUT = androidx(artifact = "swiperefreshlayout", version = Versions.AX_SWIPEREFRESH)
+        val SWIPE_REFRESH_LAYOUT =
+            androidx(artifact = "swiperefreshlayout", version = Versions.AX_SWIPEREFRESH)
 
-        val NAVIGATION_FRAGMENT = androidx(group = "navigation", artifact = "navigation-fragment-ktx", version = Versions.AX_NAVIGATION)
-        val NAVIGATION_UI = androidx(group = "navigation", artifact = "navigation-ui-ktx", version = Versions.AX_NAVIGATION)
+        val NAVIGATION_FRAGMENT = androidx(
+            group = "navigation",
+            artifact = "navigation-fragment-ktx",
+            version = Versions.AX_NAVIGATION
+        )
+        val NAVIGATION_UI = androidx(
+            group = "navigation",
+            artifact = "navigation-ui-ktx",
+            version = Versions.AX_NAVIGATION
+        )
 
-        val COMPOSE_TOOLING = androidx(group = "ui", artifact = "ui-tooling", version = Versions.AX_COMPOSE)
-        val COMPOSE_LAYOUT = androidx(group = "ui", artifact = "ui-layout", version = Versions.AX_COMPOSE)
-        val COMPOSE_MATERIAL = androidx(group = "ui", artifact = "ui-material", version = Versions.AX_COMPOSE)
+        val COMPOSE_TOOLING =
+            androidx(group = "ui", artifact = "ui-tooling", version = Versions.AX_COMPOSE)
+        val COMPOSE_LAYOUT =
+            androidx(group = "ui", artifact = "ui-layout", version = Versions.AX_COMPOSE)
+        val COMPOSE_MATERIAL =
+            androidx(group = "ui", artifact = "ui-material", version = Versions.AX_COMPOSE)
 
-        val VIEWBINDING = androidx(group="databinding", artifact = "viewbinding", version = Versions.AX_VIEWBINDING)
+        val VIEWBINDING = androidx(
+            group = "databinding",
+            artifact = "viewbinding",
+            version = Versions.AX_VIEWBINDING
+        )
 
-        val WORK = androidx(group = "work", artifact = "work-runtime-ktx", version = Versions.AX_WORK)
+        val WORK =
+            androidx(group = "work", artifact = "work-runtime-ktx", version = Versions.AX_WORK)
     }
 
     object Bma {
@@ -95,7 +125,11 @@ object Dependencies {
     }
 
     object Build {
-        val VERSIONS = dependency("com.github.ben-manes", "gradle-versions-plugin", Versions.GRADLE_DEPENDENCY_UPDATES)
+        val VERSIONS = dependency(
+            "com.github.ben-manes",
+            "gradle-versions-plugin",
+            Versions.GRADLE_DEPENDENCY_UPDATES
+        )
     }
 
     object Dagger {
@@ -134,14 +168,23 @@ object Dependencies {
             val AUTH = gms("play-services-auth", Versions.GP_AUTH)
             val LOCATION = gms("play-services-location", Versions.GP_LOCATION)
             val MAPS = gms("play-services-maps", Versions.GP_MAPS)
-            val MAPS_UTIL = dependency("com.google.maps.android", artifact = "android-maps-utils-sdk-v3-compat", version = Versions.GP_MAPS_UTIL)
+            val MAPS_UTIL = dependency(
+                "com.google.maps.android",
+                artifact = "android-maps-utils-sdk-v3-compat",
+                version = Versions.GP_MAPS_UTIL
+            )
         }
     }
 
     object Groupie {
         val CORE = dependency("com.xwray", artifact = "groupie", version = Versions.GROUPIE)
-        val KTX = dependency("com.xwray", artifact = "groupie-kotlin-android-extensions", version = Versions.GROUPIE)
-        val VIEWBINDING = dependency("com.xwray", artifact = "groupie-viewbinding", version = Versions.GROUPIE)
+        val KTX = dependency(
+            "com.xwray",
+            artifact = "groupie-kotlin-android-extensions",
+            version = Versions.GROUPIE
+        )
+        val VIEWBINDING =
+            dependency("com.xwray", artifact = "groupie-viewbinding", version = Versions.GROUPIE)
     }
 
     object Kotlin {
@@ -149,10 +192,22 @@ object Dependencies {
         val REFLECT = kotlin("kotlin-reflect")
 
         object Coroutines {
-            val CORE = kotlinx("kotlinx-coroutines-core", Versions.COROUTINES)
-            val ANDROID = kotlinx("kotlinx-coroutines-android", Versions.COROUTINES)
-            val PLAY = kotlinx("kotlinx-coroutines-play-services", Versions.COROUTINES)
-            val TEST = kotlinx("kotlinx-coroutines-test", Versions.COROUTINES)
+            val CORE = kotlinx(
+                "kotlinx-coroutines-core",
+                Versions.COROUTINES
+            )
+            val ANDROID = kotlinx(
+                "kotlinx-coroutines-android",
+                Versions.COROUTINES
+            )
+            val PLAY = kotlinx(
+                "kotlinx-coroutines-play-services",
+                Versions.COROUTINES
+            )
+            val TEST = kotlinx(
+                "kotlinx-coroutines-test",
+                Versions.COROUTINES
+            )
         }
     }
 
@@ -180,9 +235,15 @@ object Dependencies {
     object Test {
         object AndroidX {
             val CORE = androidx(group = "test", artifact = "core", version = Versions.AX_TEST_CORE)
-            val RULES = androidx(group = "test", artifact = "rules", version = Versions.AX_TEST_CORE)
-            val RUNNER = androidx(group = "test", artifact = "runner", version = Versions.AX_TEST_CORE)
-            val LIVEDATA = androidx(group = "arch.core", artifact = "core-testing", version = Versions.AX_TEST_LIVEDATA)
+            val RULES =
+                androidx(group = "test", artifact = "rules", version = Versions.AX_TEST_CORE)
+            val RUNNER =
+                androidx(group = "test", artifact = "runner", version = Versions.AX_TEST_CORE)
+            val LIVEDATA = androidx(
+                group = "arch.core",
+                artifact = "core-testing",
+                version = Versions.AX_TEST_LIVEDATA
+            )
             object Espresso {
                 val CORE = espresso("espresso-core")
                 val CONTRIB = espresso("espresso-contrib")
@@ -197,11 +258,16 @@ object Dependencies {
         val JUNIT = dependency("junit", "junit", Versions.JUNIT)
         val RETROFIT_MOCK = retrofit("retrofit-mock")
         val ROOM = room("room-testing")
-        val OKHTTP_MOCK_SERVER = dependency("com.squareup.okhttp3", "mockwebserver", Versions.OKHTTP_MOCK)
+        val OKHTTP_MOCK_SERVER =
+            dependency("com.squareup.okhttp3", "mockwebserver", Versions.OKHTTP_MOCK)
     }
 
     object Debug {
-        val LEAK_CANARY = dependency(group = "com.squareup.leakcanary", artifact = "leakcanary-android", version = Versions.LEAK_CANARY)
+        val LEAK_CANARY = dependency(
+            group = "com.squareup.leakcanary",
+            artifact = "leakcanary-android",
+            version = Versions.LEAK_CANARY
+        )
     }
 }
 
@@ -211,27 +277,42 @@ private fun dependency(group: String, artifact: String, version: String) = "$gro
 private fun androidx(artifact: String, version: String, group: String = artifact) =
     dependency("androidx.$group", artifact, version)
 
-private fun bma(artifact: String, version: String = Versions.BMA) = dependency("org.beatonma.lib", artifact, version)
+private fun bma(artifact: String, version: String = Versions.BMA) =
+    dependency("org.beatonma.lib", artifact, version)
 private fun dagger(artifact: String, version: String = Versions.DAGGER) =
     dependency("com.google.dagger", artifact, version)
 
-private fun hilt(artifact: String, version: String = Versions.HILT) = dagger(artifact = artifact, version = version)
-private fun hiltAX(artifact: String, version: String = Versions.AX_HILT) = androidx(group = "hilt", artifact = artifact, version = version)
+private fun hilt(artifact: String, version: String = Versions.HILT) =
+    dagger(artifact = artifact, version = version)
+private fun hiltAX(artifact: String, version: String = Versions.AX_HILT) =
+    androidx(group = "hilt", artifact = artifact, version = version)
 
 private fun espresso(artifact: String, version: String = Versions.ESPRESSO) =
-    androidx(group = "test.espresso", artifact = artifact, version = version)
+    androidx(
+        group = "test.espresso",
+        artifact = artifact,
+        version = version
+    )
 
 private fun glide(artifact: String, version: String = Versions.GLIDE) =
     dependency("com.github.bumptech.glide", artifact, version)
 
 private fun gms(artifact: String, version: String) =
-    dependency(group = "com.google.android.gms", artifact = artifact, version = version)
+    dependency(
+        group = "com.google.android.gms",
+        artifact = artifact,
+        version = version
+    )
 
 private fun kotlin(artifact: String, version: String = Versions.KOTLIN) =
     dependency(group = "org.jetbrains.kotlin", artifact = artifact, version = version)
 
 private fun kotlinx(artifact: String, version: String = Versions.KOTLIN) =
-    dependency(group = "org.jetbrains.kotlinx", artifact = artifact, version = version)
+    dependency(
+        group = "org.jetbrains.kotlinx",
+        artifact = artifact,
+        version = version
+    )
 
 private fun retrofit(artifact: String, version: String = Versions.RETROFIT) =
     dependency("com.squareup.retrofit2", artifact, version)
