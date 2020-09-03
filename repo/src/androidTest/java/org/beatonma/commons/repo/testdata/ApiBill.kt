@@ -1,7 +1,7 @@
 package org.beatonma.commons.repo.testdata
 
-import org.beatonma.commons.repo.androidTest.asDate
 import org.beatonma.commons.snommoc.models.*
+import org.beatonma.commons.test.extensions.util.asDate
 
 // Mix of https://snommoc.org/api/bill/392545/ and https://snommoc.org/api/bill/393258/
 // picking and choosing useful values.

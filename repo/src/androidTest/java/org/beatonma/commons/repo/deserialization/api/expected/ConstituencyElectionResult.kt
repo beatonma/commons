@@ -1,10 +1,10 @@
 package org.beatonma.commons.repo.deserialization.api.expected
 
-import org.beatonma.commons.repo.androidTest.asDate
 import org.beatonma.commons.snommoc.models.ApiConstituencyCandidate
 import org.beatonma.commons.snommoc.models.ApiConstituencyElectionDetails
 import org.beatonma.commons.snommoc.models.ApiConstituencyMinimal
 import org.beatonma.commons.snommoc.models.ApiElection
+import org.beatonma.commons.test.extensions.util.asDate
 
 /** https://snommoc.org/api/constituency/147277/election/19/ */
 fun expectedApiConstituencyElectionResult(): ApiConstituencyElectionDetails = ApiConstituencyElectionDetails(

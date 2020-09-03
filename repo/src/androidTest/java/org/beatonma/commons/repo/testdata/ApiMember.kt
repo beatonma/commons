@@ -6,9 +6,9 @@ import org.beatonma.commons.data.core.room.entities.member.CommitteeMemberWithCh
 import org.beatonma.commons.data.core.room.entities.member.HistoricalConstituencyWithElection
 import org.beatonma.commons.data.core.room.entities.member.PartyAssociationWithParty
 import org.beatonma.commons.data.core.room.entities.member.Post
-import org.beatonma.commons.repo.androidTest.asDate
 import org.beatonma.commons.repo.converters.*
 import org.beatonma.commons.snommoc.models.*
+import org.beatonma.commons.test.extensions.util.asDate
 
 const val MEMBER_PUK_BORIS_JOHNSON = 1423
 const val MEMBER_PUK_KEIR_STARMER = 4514

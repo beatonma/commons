@@ -8,11 +8,11 @@ import org.beatonma.commons.data.core.room.dao.MemberDao
 import org.beatonma.commons.data.core.room.entities.member.Post
 import org.beatonma.commons.repo.BaseRoomTest
 import org.beatonma.commons.repo.CommonsApi
-import org.beatonma.commons.repo.androidTest.asDate
-import org.beatonma.commons.repo.androidTest.awaitValue
 import org.beatonma.commons.repo.testdata.API_MEMBER_BORIS_JOHNSON
 import org.beatonma.commons.repo.testdata.MEMBER_PUK_BORIS_JOHNSON
 import org.beatonma.commons.test.extensions.assertions.shouldbe
+import org.beatonma.commons.test.extensions.util.asDate
+import org.beatonma.commons.test.extensions.util.awaitValue
 import org.beatonma.commons.test.fakeOf
 import org.junit.Before
 import org.junit.Test

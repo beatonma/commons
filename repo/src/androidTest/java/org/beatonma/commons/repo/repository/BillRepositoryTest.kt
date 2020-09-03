@@ -6,11 +6,11 @@ import kotlinx.coroutines.runBlocking
 import org.beatonma.commons.data.core.room.dao.BillDao
 import org.beatonma.commons.repo.BaseRoomTest
 import org.beatonma.commons.repo.CommonsApi
-import org.beatonma.commons.repo.androidTest.asDate
-import org.beatonma.commons.repo.androidTest.awaitValue
 import org.beatonma.commons.repo.testdata.API_BILL
 import org.beatonma.commons.repo.testdata.BILL_PUK
 import org.beatonma.commons.test.extensions.assertions.shouldbe
+import org.beatonma.commons.test.extensions.util.asDate
+import org.beatonma.commons.test.extensions.util.awaitValue
 import org.beatonma.commons.test.fakeOf
 import org.junit.Before
 import org.junit.Test

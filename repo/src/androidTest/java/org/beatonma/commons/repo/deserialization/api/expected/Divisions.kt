@@ -2,10 +2,10 @@ package org.beatonma.commons.repo.deserialization.api.expected
 
 import org.beatonma.commons.core.House
 import org.beatonma.commons.core.VoteType
-import org.beatonma.commons.repo.androidTest.asDate
 import org.beatonma.commons.snommoc.models.ApiDivision
 import org.beatonma.commons.snommoc.models.ApiParty
 import org.beatonma.commons.snommoc.models.ApiVote
+import org.beatonma.commons.test.extensions.util.asDate
 
 /** https://snommoc.org/api/division/commons/161145/ */
 internal fun expectedApiDivisionCommons(): ApiDivision = ApiDivision(

@@ -2,9 +2,9 @@ package org.beatonma.commons.repo.testdata
 
 import org.beatonma.commons.core.House
 import org.beatonma.commons.core.VoteType
-import org.beatonma.commons.repo.androidTest.asDate
 import org.beatonma.commons.snommoc.models.ApiDivision
 import org.beatonma.commons.snommoc.models.ApiVote
+import org.beatonma.commons.test.extensions.util.asDate
 
 const val DIVISION_PUK = 229684
 

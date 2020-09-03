@@ -5,7 +5,6 @@ import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.runBlocking
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.repo.BaseRoomTest
-import org.beatonma.commons.repo.androidTest.awaitValues
 import org.beatonma.commons.repo.converters.toMemberProfile
 import org.beatonma.commons.repo.testdata.EXAMPLE_MEMBER_PROFILE_BORIS_JOHNSON
 import org.beatonma.commons.repo.testdata.EXAMPLE_MEMBER_PROFILE_KEIR_STARMER
@@ -15,6 +14,7 @@ import org.beatonma.commons.snommoc.models.ApiMemberProfile
 import org.beatonma.commons.test.extensions.assertions.assertEach
 import org.beatonma.commons.test.extensions.assertions.shouldBeInstanceOf
 import org.beatonma.commons.test.extensions.assertions.shouldbe
+import org.beatonma.commons.test.extensions.util.awaitValues
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Suite

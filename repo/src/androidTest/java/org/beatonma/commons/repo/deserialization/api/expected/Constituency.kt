@@ -1,7 +1,7 @@
 package org.beatonma.commons.repo.deserialization.api.expected
 
-import org.beatonma.commons.repo.androidTest.asDate
 import org.beatonma.commons.snommoc.models.*
+import org.beatonma.commons.test.extensions.util.asDate
 
 /** https://snommoc.org/api/constituency/147277/ */
 internal fun expectedApiConstituency(): ApiConstituency = ApiConstituency(
