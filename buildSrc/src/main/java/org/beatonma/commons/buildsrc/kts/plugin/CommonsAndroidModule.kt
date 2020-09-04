@@ -52,11 +52,11 @@ abstract class CommonsAndroidModule<T: BaseExtension>: Plugin<Project> {
                 minSdkVersion(Commons.Sdk.MIN)
                 targetSdkVersion(Commons.Sdk.TARGET)
 
-                injectStrings(
+                buildConfigStrings(
                     "VERSION_NAME" to git.tag,
                     "GIT_SHA" to git.sha
                 )
-                injectInts(
+                buildConfigInts(
                     "VERSION_CODE" to git.commitCount
                 )
 
@@ -105,13 +105,13 @@ abstract class CommonsAndroidModule<T: BaseExtension>: Plugin<Project> {
         }
     }
 
-    protected fun DefaultConfig.injectStrings(vararg mapping: Pair<String, String>) {
+    protected fun DefaultConfig.buildConfigStrings(vararg mapping: Pair<String, String>) {
         mapping.forEach { (key, value) ->
             buildConfigField("String", key.toUpperCase(Locale.getDefault()), "\"$value\"")
         }
     }
 
-    protected fun DefaultConfig.injectInts(vararg mapping: Pair<String, Int>) {
+    protected fun DefaultConfig.buildConfigInts(vararg mapping: Pair<String, Int>) {
         mapping.forEach { (key, value) ->
             buildConfigField("int", key.toUpperCase(Locale.getDefault()), "$value")
         }
