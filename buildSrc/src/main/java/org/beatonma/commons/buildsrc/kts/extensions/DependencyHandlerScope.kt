@@ -81,7 +81,7 @@ class UnitTestDependencies: DependencyBlock {
 }
 
 class InstrumentationTestDependencies: DependencyBlock {
-    override fun DependencyHandlerScope.annotationProcessors(vararg modules: Any) = modules.forEach { "kaptTest"(it) }
+    override fun DependencyHandlerScope.annotationProcessors(vararg modules: Any) = modules.forEach { "kaptAndroidTest"(it) }
     override fun DependencyHandlerScope.implementations(vararg modules: Any) = modules.forEach { "androidTestImplementation"(it) }
     override fun DependencyHandlerScope.apis(vararg modules: Any) = modules.forEach { "androidTestApi"(it) }
 }
