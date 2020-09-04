@@ -299,7 +299,7 @@ private fun kotlinx(artifact: String, version: String = Versions.KOTLIN) =
     )
 
 private fun room(artifact: String, version: String = Versions.ROOM) =
-    androidx("room", artifact, version)
+    androidx(group = "room", artifact = artifact, version = version)
 
 private fun square(group: String, artifact: String, version: String) =
     dependency("com.squareup.$group", artifact, version)
