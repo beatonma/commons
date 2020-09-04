@@ -1,6 +1,7 @@
 import org.beatonma.commons.buildsrc.kts.extensions.buildConfigStrings
 import org.beatonma.commons.buildsrc.kts.extensions.coroutines
 import org.beatonma.commons.buildsrc.kts.extensions.main
+import org.beatonma.commons.buildsrc.kts.extensions.unitTest
 import org.beatonma.commons.buildsrc.local.LocalConfig
 
 plugins {
@@ -16,7 +17,14 @@ android {
     }
 }
 
+
 dependencies {
+    unitTest {
+        implementations(
+            Dependencies.Test.OKHTTP_MOCK_SERVER
+        )
+    }
+
     main {
         implementations(
             Dependencies.AndroidX.CORE_KTX,
