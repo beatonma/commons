@@ -6,6 +6,7 @@ import org.junit.runners.Suite
 
 @RunWith(Suite::class)
 @Suite.SuiteClasses(
-    RecursiveKtTest::class
+    RecursiveKtTest::class,
+    HttpClientTest::class,
 )
 class SnommocTestSuite

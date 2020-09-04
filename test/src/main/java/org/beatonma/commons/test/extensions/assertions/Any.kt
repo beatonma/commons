@@ -8,6 +8,8 @@ internal class NullReceiverException(
         methodName: String, message: String?
 ) : AssertionError("[$message] Receiver is null on method '$methodName'")
 
+fun Boolean.assertTrue(message: String? = null) = JUnit.assertTrue(message, this)
+
 /**
  * Convenience for [JUnit.assertNull]([this])
  */
