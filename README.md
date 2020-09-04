@@ -24,10 +24,11 @@ Aside from being something useful, I am also writing this app as a demo reel bec
 Here are some of the app's technical selling points:
 
 - Dependency injection using Dagger and Hilt.
-- Kotlin with coroutines.
-- MotionLayout/ConstraintLayout for interactive layouts and overall UI design.
+- Kotlin with coroutines and flow.
+- Modular code structure.
 - Retrofit for network calls and extensive use of Room for local data persistence, using the repository pattern.
-- Single activity arcitecture with the Jetpack Navigation Component.
+- MotionLayout/ConstraintLayout for interactive layouts and overall UI design.
+- Single activity architecture with the Jetpack Navigation Component.
 - Social features use Google Sign-In for account creation.
 - Unit tests ensure integrity of data structures and transformations.
 - Custom views where they are useful: e.g. TimelineView renders the professional history of a Member as a scrollable chart.
