@@ -1,67 +1,45 @@
-import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 import com.android.build.gradle.internal.dsl.DefaultConfig
 import org.beatonma.commons.buildsrc.AllPartyThemes
 import org.beatonma.commons.buildsrc.Commons
-import org.beatonma.commons.buildsrc.Git
 import org.beatonma.commons.buildsrc.PartyColors
 import org.beatonma.commons.buildsrc.data.ParliamentDotUkPartyIDs
 import org.beatonma.commons.buildsrc.kts.extensions.*
 import org.beatonma.commons.buildsrc.local.LocalConfig
-import java.text.SimpleDateFormat
-import java.util.*
 
 plugins {
-    id("com.android.application")
-    kotlin("android")
-    kotlin("kapt")
-    id("kotlin-android")
-    id("kotlin-android-extensions")
-    id("dagger.hilt.android.plugin")
-    id("com.github.ben-manes.versions")
+    id(Plugins.COMMONS_APPLICATION_CONFIG)
+    id(Plugins.COMMONS_HILT_MODULE)
 }
 
 android {
-    compileSdkVersion(Commons.Sdk.COMPILE)
     defaultConfig {
-        applicationId = Commons.APPLICATION_ID
-        versionCode = Git.commitCount(project)
-        versionName = Git.tag(project)
-
-        minSdkVersion(Commons.Sdk.MIN)
-        targetSdkVersion(Commons.Sdk.TARGET)
-
         injectStrings(
-            "GIT_SHA" to Git.sha(project),
-            "GOOGLE_SIGNIN_CLIENT_ID" to LocalConfig.OAuth.Google.WEB_CLIENT_ID,
-            "GOOGLE_MAPS_API_KEY" to LocalConfig.Api.Google.MAPS,
             "ACCOUNT_USERNAME_CHARACTERS" to Commons.Account.Username.ALLOWED_CHARACTERS,
+            "GOOGLE_MAPS_API_KEY" to LocalConfig.Api.Google.MAPS,
+            "GOOGLE_SIGNIN_CLIENT_ID" to LocalConfig.OAuth.Google.WEB_CLIENT_ID,
             asBuildConfig = true,
             asResValue = true
         )
 
         injectInts(
+            "ACCOUNT_USERNAME_MAX_LENGTH" to Commons.Account.Username.MAX_LENGTH,
+            "ACCOUNT_USERNAME_MIN_LENGTH" to Commons.Account.Username.MIN_LENGTH,
             "SOCIAL_COMMENT_MAX_LENGTH" to Commons.Social.MAX_COMMENT_LENGTH,
             "THEME_TEXT_DARK" to PartyColors.TEXT_DARK,
             "THEME_TEXT_LIGHT" to PartyColors.TEXT_LIGHT,
-            "ACCOUNT_USERNAME_MAX_LENGTH" to Commons.Account.Username.MAX_LENGTH,
-            "ACCOUNT_USERNAME_MIN_LENGTH" to Commons.Account.Username.MIN_LENGTH,
             asBuildConfig = true,
             asResValue = true
         )
 
-        manifestPlaceholders.putAll(mapOf(
-            "googleMapsApiKey" to org.beatonma.commons.buildsrc.local.LocalConfig.Api.Google.MAPS
-        ))
+        manifestPlaceholders.put(
+            "googleMapsApiKey" to LocalConfig.Api.Google.MAPS
+        )
 
         // Party colors as @color resources and build config constants
-        AllPartyThemes.forEach { (key, theme) ->
-            injectPartyTheme(key, theme)
-        }
+        injectPartyThemes(AllPartyThemes)
 
         // Party IDs as build config constants
-        ParliamentDotUkPartyIDs.forEach { (party, parliamentdotuk) ->
-            buildConfigField("int", "${party}_PARLIAMENTDOTUK".toUpperCase(), "$parliamentdotuk")
-        }
+        injectPartyIDs(ParliamentDotUkPartyIDs)
 
         testApplicationId = "org.beatonma.commons.test"
         testInstrumentationRunner = "org.beatonma.commons.androidTest.HiltTestRunner"
@@ -73,68 +51,11 @@ android {
         compose = false
         viewBinding = true
     }
-    buildTypes {
-        getByName("debug") {
-            isDebuggable = true
-            applicationIdSuffix = ".debug"
-            versionNameSuffix = "-dev"
-        }
-
-        getByName("release") {
-            val date = SimpleDateFormat("yyyyMMddHHmmss").format(Date())
-            applicationVariants.all {
-                val variant = this
-                variant.outputs
-                    .map { it as BaseVariantOutputImpl }
-                    .forEach { output ->
-                        output.outputFileName = output.outputFileName
-                            .replace("app-", "commons-")
-                            .replace(
-                                "-release",
-                                "-release-$date-${Git.commitCount(project)}-${Git.tag(project)}-${Git.sha(project)}")
-                    }
-            }
-//            postprocessing.apply {
-//                isOptimizeCode = true
-//                isObfuscate = true
-//                isRemoveUnusedCode = true
-//                isRemoveUnusedResources = true
-//            }
-//            proguardFile(getDefaultProguardFile("proguard-android-optimize.txt"))
-            rootProject.file("proguard").listFiles()
-                ?.filter { it.name.startsWith("proguard") }
-                ?.toTypedArray()
-                ?.let { proguardFiles(*it) }
-        }
-    }
-    compileOptions {
-        sourceCompatibility = Versions.JAVA
-        targetCompatibility = Versions.JAVA
-    }
     composeOptions {
         kotlinCompilerExtensionVersion = Versions.AX_COMPOSE
     }
     kotlinOptions {
-        jvmTarget = "1.8"
-        languageVersion = "1.4"
         useIR = true
-
-        freeCompilerArgs = listOf("-XXLanguage:+InlineClasses")
-    }
-    packagingOptions {
-        exclude("META-INF/DEPENDENCIES")
-        exclude("META-INF/LICENSE")
-        exclude("META-INF/LICENSE.txt")
-        exclude("META-INF/license.txt")
-        exclude("META-INF/NOTICE")
-        exclude("META-INF/NOTICE.txt")
-        exclude("META-INF/notice.txt")
-        exclude("META-INF/ASL2.0")
-        exclude("META-INF/AL2.0")
-        exclude("META-INF/LGPL2.1")
-        exclude("META-INF/*.kotlin_module")
-        exclude("META-INF/licenses/*")
-        exclude("**/attach_hotspot_windows.dll")
     }
 }
 
@@ -244,21 +165,28 @@ dependencies {
 //    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
 }
 
-repositories {
-    mavenCentral()
-    maven("https://dl.bintray.com/kotlin/kotlin-eap")
-}
 
+fun DefaultConfig.injectPartyIDs(ids: Map<String, Int>) =
+    ids.forEach { (party, parliamentdotuk) ->
+        buildConfigInt("${party}_PARLIAMENTDOTUK", parliamentdotuk)
+    }
+
+fun DefaultConfig.injectPartyThemes(partyThemes: Map<String, PartyColors>) =
+    partyThemes.forEach { injectPartyTheme(it.key, it.value) }
 
 fun DefaultConfig.injectPartyTheme(name: String, theme: PartyColors) {
-    buildConfigField("int", "COLOR_PARTY_${name}_PRIMARY".toUpperCase(), "${theme._primaryInt}")
-    buildConfigField("int", "COLOR_PARTY_${name}_ACCENT".toUpperCase(), "${theme._accentInt}")
-    buildConfigField("int",
-        "COLOR_PARTY_${name}_PRIMARY_TEXT".toUpperCase(),
-        "${theme.primaryText}")
-    buildConfigField("int",
-        "COLOR_PARTY_${name}_ACCENT_TEXT".toUpperCase(),
-        "${theme.accentText}")
-    resValue("color", "party_${name}_primary", theme.primary)
-    resValue("color", "party_${name}_accent", theme.accent)
+    buildConfigInt("COLOR_PARTY_${name}_PRIMARY", theme._primaryInt)
+    buildConfigInt("COLOR_PARTY_${name}_ACCENT", theme._accentInt)
+
+    buildConfigInt("COLOR_PARTY_${name}_PRIMARY_TEXT", theme.primaryText)
+    buildConfigInt("COLOR_PARTY_${name}_ACCENT_TEXT", theme.accentText)
+
+    resColor("party_${name}_primary", theme.primary)
+    resColor("party_${name}_accent", theme.accent)
+}
+
+fun <K, V> MutableMap<K, V>.put(
+    vararg from: Pair<K, V>
+) {
+    from.forEach { (key, value) -> this[key] = value }
 }

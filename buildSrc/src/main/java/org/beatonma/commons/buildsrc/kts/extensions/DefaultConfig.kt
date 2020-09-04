@@ -6,10 +6,10 @@ import java.util.*
 fun DefaultConfig.injectStrings(vararg mapping: Pair<String, String>, asBuildConfig: Boolean, asResValue: Boolean) {
     mapping.forEach { (key, value) ->
         if (asBuildConfig) {
-            buildConfigField("String", key.toUpperCase(Locale.getDefault()), "\"$value\"")
+            buildConfigString(key, value)
         }
         if (asResValue) {
-            resValue("string", key.toLowerCase(Locale.getDefault()), value)
+            resString(key, value)
         }
     }
 }
@@ -17,10 +17,31 @@ fun DefaultConfig.injectStrings(vararg mapping: Pair<String, String>, asBuildCon
 fun DefaultConfig.injectInts(vararg mapping: Pair<String, Int>, asBuildConfig: Boolean, asResValue: Boolean) {
     mapping.forEach { (key, value) ->
         if (asBuildConfig) {
-            buildConfigField("int", key.toUpperCase(Locale.getDefault()), "$value")
+            buildConfigInt(key, value)
         }
         if (asResValue) {
-            resValue("integer", key.toLowerCase(Locale.getDefault()), "$value")
+            resInt(key, value)
         }
     }
 }
+
+// BuildConfig values
+fun DefaultConfig.buildConfigString(key: String, value: String) =
+    buildConfigField("String", key.toUpperCase(Locale.getDefault()), "\"$value\"")
+
+fun DefaultConfig.buildConfigInt(key: String, value: Int) =
+    buildConfigField("int", key.toUpperCase(Locale.getDefault()), "$value")
+
+// Resource values
+fun DefaultConfig.resString(key: String, value: String) =
+    resValue("string", key.toLowerCase(Locale.getDefault()), value)
+
+fun DefaultConfig.resColor(key: String, value: String) =
+    resValue("color", key.toLowerCase(Locale.getDefault()), value)
+
+fun DefaultConfig.resColor(key: String, value: Int) = resColor(key, "$value")
+
+fun DefaultConfig.resInt(key: String, value: String) =
+    resValue("integer", key.toLowerCase(Locale.getDefault()), value)
+
+fun DefaultConfig.resInt(key: String, value: Int) = resInt(key, "$value")
