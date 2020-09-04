@@ -9,9 +9,6 @@ buildscript {
         google()
         jcenter()
         maven("https://dl.bintray.com/kotlin/kotlin-eap")
-        flatDir {
-            dirs("libs")
-        }
     }
     dependencies {
         classpath("com.android.tools.build:gradle:4.1.0-rc02")

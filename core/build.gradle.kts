@@ -1,14 +1,15 @@
 import org.beatonma.commons.buildsrc.kts.extensions.coroutines
+import org.beatonma.commons.buildsrc.kts.extensions.main
 
 plugins {
     id(Plugins.COMMONS_LIBRARY_CONFIG)
 }
 
 dependencies {
-    val implementations = arrayOf(
-        Dependencies.AndroidX.CORE_KTX,
-        *coroutines
-    )
-
-    implementations.forEach(::implementation)
+    main {
+        implementations(
+            *coroutines,
+            Dependencies.AndroidX.CORE_KTX
+        )
+    }
 }

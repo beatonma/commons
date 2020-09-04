@@ -1,6 +1,7 @@
 import org.beatonma.commons.buildsrc.Commons
+import org.beatonma.commons.buildsrc.kts.extensions.buildConfigStrings
 import org.beatonma.commons.buildsrc.kts.extensions.coroutines
-import org.beatonma.commons.buildsrc.kts.extensions.injectStrings
+import org.beatonma.commons.buildsrc.kts.extensions.main
 import org.beatonma.commons.buildsrc.local.LocalConfig
 
 plugins {
@@ -10,24 +11,21 @@ plugins {
 
 android {
     defaultConfig {
-        injectStrings(
+        buildConfigStrings(
             "APPLICATION_ID" to Commons.APPLICATION_ID,
             "USER_AGENT_APP" to LocalConfig.UserAgent.NAME,
             "USER_AGENT_WEBSITE" to LocalConfig.UserAgent.WEBSITE,
-            "USER_AGENT_EMAIL" to LocalConfig.UserAgent.EMAIL,
-            asBuildConfig = true,
-            asResValue = false
+            "USER_AGENT_EMAIL" to LocalConfig.UserAgent.EMAIL
         )
     }
 }
 
 dependencies {
-    val implementations = arrayOf(
-        Dependencies.AndroidX.CORE_KTX,
-
-        *coroutines,
-
-        Dependencies.Retrofit.RETROFIT
-    )
-    implementations.forEach(::implementation)
+    main {
+        implementations(
+            *coroutines,
+            Dependencies.AndroidX.CORE_KTX,
+            Dependencies.Retrofit.RETROFIT
+        )
+    }
 }

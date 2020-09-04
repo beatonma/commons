@@ -106,29 +106,17 @@ dependencies {
 
     main {
         annotationProcessors(
-            Dependencies.Dagger.ANNOTATION_PROCESSOR,
-            Dependencies.Dagger.COMPILER,
-            Dependencies.Glide.COMPILER,
-            Dependencies.Hilt.AX_KAPT,
-            Dependencies.Hilt.KAPT,
-            Dependencies.Room.AP
+            Dependencies.Glide.COMPILER
         )
 
         implementations(
-            Dependencies.Kotlin.STDLIB,
             Dependencies.Kotlin.Coroutines.ANDROID,
             Dependencies.Kotlin.Coroutines.CORE,
             Dependencies.Kotlin.Coroutines.PLAY,
 
-            Dependencies.Dagger.ANDROID,
-            Dependencies.Dagger.DAGGER,
-            Dependencies.Dagger.SUPPORT,
-
-            Dependencies.Hilt.CORE,
             Dependencies.Hilt.LIFECYCLE_VIEWMODEL,
             Dependencies.Hilt.WORK,
 
-            Dependencies.Room.KTX,
             Dependencies.Room.RUNTIME,
 
             Dependencies.AndroidX.APPCOMPAT,
@@ -142,9 +130,7 @@ dependencies {
             Dependencies.AndroidX.VIEWMODEL_KTX,
             Dependencies.AndroidX.WORK,
 
-            Dependencies.Retrofit.RETROFIT,
             Dependencies.Retrofit.Converter.MOSHI,
-            Dependencies.Retrofit.Converter.TEXT,
 
             Dependencies.Glide.CORE,
 
@@ -161,8 +147,6 @@ dependencies {
             project(":repo")
         )
     }
-
-//    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
 }
 
 

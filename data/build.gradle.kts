@@ -1,8 +1,8 @@
 import org.beatonma.commons.buildsrc.Commons
-import org.beatonma.commons.buildsrc.Git
+import org.beatonma.commons.buildsrc.kts.extensions.buildConfigStrings
 import org.beatonma.commons.buildsrc.kts.extensions.coroutines
-import org.beatonma.commons.buildsrc.kts.extensions.injectInts
-import org.beatonma.commons.buildsrc.kts.extensions.injectStrings
+import org.beatonma.commons.buildsrc.kts.extensions.instrumentationTest
+import org.beatonma.commons.buildsrc.kts.extensions.main
 
 plugins {
     id(Plugins.COMMONS_LIBRARY_CONFIG)
@@ -11,21 +11,9 @@ plugins {
 }
 
 android {
-    val git = Git.resolveData(project)
-
     defaultConfig {
-        injectStrings(
-            "VERSION_NAME" to git.tag,
-            "APPLICATION_ID" to Commons.APPLICATION_ID,
-            "GIT_SHA" to git.sha,
-            asBuildConfig = true,
-            asResValue = false
-        )
-
-        injectInts(
-            "VERSION_CODE" to git.commitCount,
-            asBuildConfig = true,
-            asResValue = false
+        buildConfigStrings(
+            "APPLICATION_ID" to Commons.APPLICATION_ID
         )
 
         kapt {
@@ -39,24 +27,23 @@ android {
 }
 
 dependencies {
-    val testAnnotationProcessors = arrayOf(
-        Dependencies.Dagger.COMPILER,
-        Dependencies.Dagger.ANNOTATION_PROCESSOR
-    )
-    val testImplementations = arrayOf(
-        Dependencies.Test.AndroidX.LIVEDATA
-    )
+    instrumentationTest {
+        annotationProcessors(
+            Dependencies.Dagger.COMPILER,
+            Dependencies.Dagger.ANNOTATION_PROCESSOR
+        )
 
-    val implementations = arrayOf(
-        Dependencies.AndroidX.CORE_KTX,
+        implementations(
+            Dependencies.Test.AndroidX.LIVEDATA
+        )
+    }
 
-        *coroutines,
+    main {
+        implementations(
+            *coroutines,
+            Dependencies.AndroidX.CORE_KTX,
 
-        project(":core")
-    )
-
-    testAnnotationProcessors.forEach(::kaptAndroidTest)
-    testImplementations.forEach(::androidTestImplementation)
-
-    implementations.forEach(::implementation)
+            project(":core")
+        )
+    }
 }
