@@ -143,7 +143,7 @@ dependencies {
             project(":core"),
             project(":network-core"),
             project(":snommoc"),
-            project(":data"),
+            project(":persistence"),
             project(":repo")
         )
     }

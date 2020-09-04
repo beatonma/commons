@@ -44,7 +44,7 @@ dependencies {
 
             project(":core"),
             project(":network-core"),
-            project(":data"),
+            project(":persistence"),
             project(":snommoc")
         )
     }
