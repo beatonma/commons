@@ -8,7 +8,7 @@ pluginManagement {
 include(":core")
 include(":network-core")
 include(":snommoc")
-include(":data")
+include(":persistence")
 include(":repo")
 include(":app")
 include(":test")
