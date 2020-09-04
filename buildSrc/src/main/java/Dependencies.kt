@@ -2,17 +2,13 @@ import org.gradle.api.JavaVersion
 
 
 object Versions {
-    const val BMA = "0.9.29"
-
     // Core
-    const val COROUTINES = "1.3.8-1.4.0-rc-218"
-    val JAVA = JavaVersion.VERSION_1_8
+    const val COROUTINES = "1.3.9"
     const val KOTLIN = "1.4.0"
+    val JAVA = JavaVersion.VERSION_1_8
 
     // Data
     const val ROOM = "2.3.0-alpha02"
-    const val MOSHI = "1.9.2"
-    const val RETROFIT = "2.9.0"
 
     // Dependency injection
     const val DAGGER = "2.28.3"
@@ -27,10 +23,10 @@ object Versions {
     const val MATERIAL = "1.3.0-alpha02"
 
     // Android X
-    const val AX_ANNOTATIONS = "1.1.0"
-    const val AX_APPCOMPAT = "1.3.0-alpha01"
+    const val AX_ANNOTATIONS = "1.2.0-alpha01"
+    const val AX_APPCOMPAT = "1.3.0-alpha02"
     const val AX_COMPOSE = "1.0.0-alpha01"
-    const val AX_CONSTRAINTLAYOUT = "2.0.0-rc1"
+    const val AX_CONSTRAINTLAYOUT = "2.0.1"
     const val AX_CORE_KTX = "1.5.0-alpha02"
     const val AX_LIFECYCLE = "2.3.0-alpha06"
     const val AX_NAVIGATION = "2.3.0"
@@ -39,21 +35,23 @@ object Versions {
     const val AX_WORK = "2.4.0"
     const val AX_VIEWBINDING = "4.1.0-alpha09"
 
-    // 3rd party UI
+    // Square
+    const val OKHTTP = "3.14.9"  // Version as used in Retrofit
+    const val MOSHI = "1.9.2"
+    const val RETROFIT = "2.9.0"
+    const val LEAK_CANARY = "2.4"
+
+    // Other 3rd party
     const val GLIDE = "4.11.0"
     const val GROUPIE = "2.8.0"
 
     // Testing
-    const val AX_TEST_CORE = "1.3.0-rc03"
+    const val AX_TEST_CORE = "1.3.0"
     const val AX_TEST_LIVEDATA = "2.1.0"
-    const val ESPRESSO = "3.3.0-rc03"
-    const val MOCKITO = "3.4.6"
+    const val ESPRESSO = "3.3.0"
+    const val MOCKITO = "3.5.10"
     const val MOCKK = "1.10.0"
     const val JUNIT = "4.13"
-    const val OKHTTP_MOCK = "4.8.1"
-
-    // Debug
-    const val LEAK_CANARY = "2.4"
 
     // Build
     const val GRADLE_DEPENDENCY_UPDATES = "0.29.0"
@@ -111,17 +109,6 @@ object Dependencies {
 
         val WORK =
             androidx(group = "work", artifact = "work-runtime-ktx", version = Versions.AX_WORK)
-    }
-
-    object Bma {
-        val ACTIVITY = bma("activity")
-        val CORE = bma("core")
-        val GRAPHIC_CORE = bma("graphic-core")
-        val PAINTED_VIEW = bma("paintedview")
-        val PREF = bma("pref")
-        val RECYCLERVIEW = bma("recyclerview")
-        val STYLE = bma("style")
-        val UTIL = bma("util")
     }
 
     object Build {
@@ -252,19 +239,18 @@ object Dependencies {
             }
         }
 
-        val BMA_TESTING = bma("testing")
         val MOCKITO = dependency("org.mockito", "mockito-core", Versions.MOCKITO)
         val MOCKK = dependency("io.mockk", "mockk", Versions.MOCKK)
         val JUNIT = dependency("junit", "junit", Versions.JUNIT)
         val RETROFIT_MOCK = retrofit("retrofit-mock")
         val ROOM = room("room-testing")
         val OKHTTP_MOCK_SERVER =
-            dependency("com.squareup.okhttp3", "mockwebserver", Versions.OKHTTP_MOCK)
+            square("okhttp3", "mockwebserver", Versions.OKHTTP)
     }
 
     object Debug {
-        val LEAK_CANARY = dependency(
-            group = "com.squareup.leakcanary",
+        val LEAK_CANARY = square(
+            group = "leakcanary",
             artifact = "leakcanary-android",
             version = Versions.LEAK_CANARY
         )
@@ -277,8 +263,6 @@ private fun dependency(group: String, artifact: String, version: String) = "$gro
 private fun androidx(artifact: String, version: String, group: String = artifact) =
     dependency("androidx.$group", artifact, version)
 
-private fun bma(artifact: String, version: String = Versions.BMA) =
-    dependency("org.beatonma.lib", artifact, version)
 private fun dagger(artifact: String, version: String = Versions.DAGGER) =
     dependency("com.google.dagger", artifact, version)
 
@@ -314,11 +298,14 @@ private fun kotlinx(artifact: String, version: String = Versions.KOTLIN) =
         version = version
     )
 
-private fun retrofit(artifact: String, version: String = Versions.RETROFIT) =
-    dependency("com.squareup.retrofit2", artifact, version)
-
 private fun room(artifact: String, version: String = Versions.ROOM) =
-    androidx(group = "room", artifact = artifact, version = version)
+    androidx("room", artifact, version)
+
+private fun square(group: String, artifact: String, version: String) =
+    dependency("com.squareup.$group", artifact, version)
+
+private fun retrofit(artifact: String, version: String = Versions.RETROFIT) =
+    square("retrofit2", artifact, version)
 
 private fun moshi(artifact: String, version: String = Versions.MOSHI) =
-    dependency("com.squareup.moshi", artifact, version)
+    square("moshi", artifact, version)
