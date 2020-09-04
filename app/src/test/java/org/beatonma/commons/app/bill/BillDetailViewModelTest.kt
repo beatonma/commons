@@ -5,8 +5,8 @@ import org.beatonma.commons.anyBillStage
 import org.beatonma.commons.anyBillStageSitting
 import org.beatonma.commons.core.House
 import org.beatonma.commons.data.core.room.entities.bill.BillStageWithSittings
-import org.beatonma.commons.test.asDate
 import org.beatonma.commons.test.extensions.assertions.shouldbe
+import org.beatonma.commons.test.extensions.util.asDate
 import org.junit.Test
 
 private val stages = listOf(

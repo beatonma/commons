@@ -4,8 +4,8 @@ import kotlinx.coroutines.runBlocking
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import org.beatonma.commons.data.core.room.entities.election.Election
 import org.beatonma.commons.data.core.room.entities.member.*
-import org.beatonma.commons.test.asDate
 import org.beatonma.commons.test.extensions.assertions.shouldbe
+import org.beatonma.commons.test.extensions.util.asDate
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Suite
@@ -16,7 +16,6 @@ import org.junit.runners.Suite
     HistoryConstituencyCompressionTest::class,
 )
 class ProfileHistoryCompressionTestSuite
-
 
 
 class HistoryPartyCompressionTest {
