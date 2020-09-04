@@ -1,7 +1,12 @@
 import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 import com.android.build.gradle.internal.dsl.DefaultConfig
-import data.ParliamentDotUkPartyIDs
-import local.LocalConfig
+import org.beatonma.commons.buildsrc.AllPartyThemes
+import org.beatonma.commons.buildsrc.Commons
+import org.beatonma.commons.buildsrc.Git
+import org.beatonma.commons.buildsrc.PartyColors
+import org.beatonma.commons.buildsrc.data.ParliamentDotUkPartyIDs
+import org.beatonma.commons.buildsrc.kts.extensions.*
+import org.beatonma.commons.buildsrc.local.LocalConfig
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -25,28 +30,27 @@ android {
         minSdkVersion(Commons.Sdk.MIN)
         targetSdkVersion(Commons.Sdk.TARGET)
 
-        injectStrings(mapOf(
-            "COMMONS_API_KEY" to LocalConfig.Api.Commons.API_KEY,
+        injectStrings(
             "GIT_SHA" to Git.sha(project),
-            "TWFY_API_KEY" to LocalConfig.Api.Twfy.API_KEY,
-            "USER_AGENT_APP" to LocalConfig.UserAgent.NAME,
-            "USER_AGENT_WEBSITE" to LocalConfig.UserAgent.WEBSITE,
-            "USER_AGENT_EMAIL" to LocalConfig.UserAgent.EMAIL,
             "GOOGLE_SIGNIN_CLIENT_ID" to LocalConfig.OAuth.Google.WEB_CLIENT_ID,
             "GOOGLE_MAPS_API_KEY" to LocalConfig.Api.Google.MAPS,
-            "ACCOUNT_USERNAME_CHARACTERS" to Commons.Account.Username.ALLOWED_CHARACTERS
-        ), asBuildConfig = true, asResValue = true)
+            "ACCOUNT_USERNAME_CHARACTERS" to Commons.Account.Username.ALLOWED_CHARACTERS,
+            asBuildConfig = true,
+            asResValue = true
+        )
 
-        injectInts(mapOf(
+        injectInts(
             "SOCIAL_COMMENT_MAX_LENGTH" to Commons.Social.MAX_COMMENT_LENGTH,
-            "THEME_TEXT_DARK" to TEXT_DARK,
-            "THEME_TEXT_LIGHT" to TEXT_LIGHT,
+            "THEME_TEXT_DARK" to PartyColors.TEXT_DARK,
+            "THEME_TEXT_LIGHT" to PartyColors.TEXT_LIGHT,
             "ACCOUNT_USERNAME_MAX_LENGTH" to Commons.Account.Username.MAX_LENGTH,
-            "ACCOUNT_USERNAME_MIN_LENGTH" to Commons.Account.Username.MIN_LENGTH
-        ), asBuildConfig = true, asResValue = true)
+            "ACCOUNT_USERNAME_MIN_LENGTH" to Commons.Account.Username.MIN_LENGTH,
+            asBuildConfig = true,
+            asResValue = true
+        )
 
         manifestPlaceholders.putAll(mapOf(
-            "googleMapsApiKey" to LocalConfig.Api.Google.MAPS
+            "googleMapsApiKey" to org.beatonma.commons.buildsrc.local.LocalConfig.Api.Google.MAPS
         ))
 
         // Party colors as @color resources and build config constants
@@ -75,6 +79,7 @@ android {
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-dev"
         }
+
         getByName("release") {
             val date = SimpleDateFormat("yyyyMMddHHmmss").format(Date())
             applicationVariants.all {
@@ -134,133 +139,109 @@ android {
 }
 
 dependencies {
-    val testAnnotationProcessors = arrayOf(
-        Dependencies.Dagger.COMPILER,
-        Dependencies.Dagger.ANNOTATION_PROCESSOR
-    )
+    unitTest {
+        annotationProcessors(
+            Dependencies.Dagger.COMPILER,
+            Dependencies.Dagger.ANNOTATION_PROCESSOR
+        )
 
-    // Unit tests
-    arrayOf(
-        project(":test"),
+        implementations(
+            project(":test"),
+            Dependencies.Dagger.DAGGER,
+            Dependencies.Kotlin.REFLECT,
+            Dependencies.Kotlin.Coroutines.TEST,
+            Dependencies.Test.JUNIT,
+            Dependencies.Test.MOCKITO,
+            Dependencies.Test.RETROFIT_MOCK,
+            Dependencies.Test.OKHTTP_MOCK_SERVER,
+            Dependencies.Test.AndroidX.CORE
+        )
+    }
 
-        Dependencies.Dagger.DAGGER,
-        Dependencies.Kotlin.REFLECT,
-        Dependencies.Kotlin.Coroutines.TEST,
-        Dependencies.Test.JUNIT,
-        Dependencies.Test.MOCKITO,
-        Dependencies.Test.RETROFIT_MOCK,
-        Dependencies.Test.OKHTTP_MOCK_SERVER,
-        Dependencies.Test.AndroidX.CORE
-    ).forEach { testImplementation(it) }
+    instrumentationTest {
+        annotationProcessors(
+            Dependencies.Dagger.COMPILER,
+            Dependencies.Dagger.ANNOTATION_PROCESSOR
+        )
 
-    // Instrumentation tests
-    testAnnotationProcessors.forEach { kaptAndroidTest(it) }
-    arrayOf(
-        project(":test"),
-        Dependencies.Hilt.TESTING,
-        Dependencies.Kotlin.Coroutines.TEST,
-        Dependencies.Test.AndroidX.CORE,
-        Dependencies.Test.AndroidX.LIVEDATA,
-        Dependencies.Test.AndroidX.RULES,
-        Dependencies.Test.AndroidX.RUNNER,
-        Dependencies.Test.AndroidX.Espresso.CONTRIB,
-        Dependencies.Test.AndroidX.Espresso.CORE
-    ).forEach { androidTestImplementation(it) }
+        implementations(
+            project(":test"),
+            Dependencies.Hilt.TESTING,
+            Dependencies.Kotlin.Coroutines.TEST,
+            Dependencies.Test.AndroidX.CORE,
+            Dependencies.Test.AndroidX.LIVEDATA,
+            Dependencies.Test.AndroidX.RULES,
+            Dependencies.Test.AndroidX.RUNNER,
+            Dependencies.Test.AndroidX.Espresso.CONTRIB,
+            Dependencies.Test.AndroidX.Espresso.CORE
+        )
+    }
 
-    // Debug build
-    arrayOf(
-        Dependencies.Debug.LEAK_CANARY
-    ).forEach { debugImplementation(it) }
+    debug {
+        implementations(
+            Dependencies.Debug.LEAK_CANARY
+        )
+    }
 
-    // Main build
-    val kotlin = arrayOf(
-        Dependencies.Kotlin.STDLIB,
-        Dependencies.Kotlin.Coroutines.ANDROID,
-        Dependencies.Kotlin.Coroutines.CORE,
-        Dependencies.Kotlin.Coroutines.PLAY
-    )
+    main {
+        annotationProcessors(
+            Dependencies.Dagger.ANNOTATION_PROCESSOR,
+            Dependencies.Dagger.COMPILER,
+            Dependencies.Glide.COMPILER,
+            Dependencies.Hilt.AX_KAPT,
+            Dependencies.Hilt.KAPT,
+            Dependencies.Room.AP
+        )
 
-    val annotationProcessors = arrayOf(
-        Dependencies.Dagger.ANNOTATION_PROCESSOR,
-        Dependencies.Dagger.COMPILER,
-        Dependencies.Glide.COMPILER,
-        Dependencies.Hilt.AX_KAPT,
-        Dependencies.Hilt.KAPT,
-        Dependencies.Room.AP
-    )
+        implementations(
+            Dependencies.Kotlin.STDLIB,
+            Dependencies.Kotlin.Coroutines.ANDROID,
+            Dependencies.Kotlin.Coroutines.CORE,
+            Dependencies.Kotlin.Coroutines.PLAY,
 
-    val dagger = arrayOf(
-        Dependencies.Dagger.ANDROID,
-        Dependencies.Dagger.DAGGER,
-        Dependencies.Dagger.SUPPORT
-    )
-    val hilt = arrayOf(
-        Dependencies.Hilt.CORE,
-        Dependencies.Hilt.LIFECYCLE_VIEWMODEL,
-        Dependencies.Hilt.WORK
-    )
+            Dependencies.Dagger.ANDROID,
+            Dependencies.Dagger.DAGGER,
+            Dependencies.Dagger.SUPPORT,
 
-    val room = arrayOf(
-        Dependencies.Room.KTX,
-        Dependencies.Room.RUNTIME
-    )
+            Dependencies.Hilt.CORE,
+            Dependencies.Hilt.LIFECYCLE_VIEWMODEL,
+            Dependencies.Hilt.WORK,
 
-    val androidx = arrayOf(
-        Dependencies.AndroidX.APPCOMPAT,
-        Dependencies.AndroidX.CONSTRAINTLAYOUT,
-        Dependencies.AndroidX.CORE_KTX,
-        Dependencies.AndroidX.LIFECYCLE_RUNTIME,
-        Dependencies.AndroidX.LIVEDATA_KTX,
-        Dependencies.AndroidX.NAVIGATION_FRAGMENT,
-        Dependencies.AndroidX.NAVIGATION_UI,
-        Dependencies.AndroidX.RECYCLERVIEW,
-        Dependencies.AndroidX.VIEWMODEL_KTX,
-        Dependencies.AndroidX.WORK
-    )
+            Dependencies.Room.KTX,
+            Dependencies.Room.RUNTIME,
 
-    val retrofit = arrayOf(
-        Dependencies.Retrofit.RETROFIT,
-        Dependencies.Retrofit.Converter.MOSHI,
-        Dependencies.Retrofit.Converter.TEXT
-    )
+            Dependencies.AndroidX.APPCOMPAT,
+            Dependencies.AndroidX.CONSTRAINTLAYOUT,
+            Dependencies.AndroidX.CORE_KTX,
+            Dependencies.AndroidX.LIFECYCLE_RUNTIME,
+            Dependencies.AndroidX.LIVEDATA_KTX,
+            Dependencies.AndroidX.NAVIGATION_FRAGMENT,
+            Dependencies.AndroidX.NAVIGATION_UI,
+            Dependencies.AndroidX.RECYCLERVIEW,
+            Dependencies.AndroidX.VIEWMODEL_KTX,
+            Dependencies.AndroidX.WORK,
 
-    val glide = arrayOf(
-        Dependencies.Glide.CORE
-    )
+            Dependencies.Retrofit.RETROFIT,
+            Dependencies.Retrofit.Converter.MOSHI,
+            Dependencies.Retrofit.Converter.TEXT,
 
-    val google = arrayOf(
-        Dependencies.Google.MATERIAL,
-        Dependencies.Google.Play.AUTH,
-        Dependencies.Google.Play.LOCATION,
-        Dependencies.Google.Play.MAPS,
-        Dependencies.Google.Play.MAPS_UTIL
-    )
+            Dependencies.Glide.CORE,
 
-    val implementations = arrayOf(
-        androidx,
-        dagger,
-        hilt,
-        glide,
-        google,
-        kotlin,
-        retrofit,
-        room
-    ).flatten()
+            Dependencies.Google.MATERIAL,
+            Dependencies.Google.Play.AUTH,
+            Dependencies.Google.Play.LOCATION,
+            Dependencies.Google.Play.MAPS,
+            Dependencies.Google.Play.MAPS_UTIL,
 
-    val localImplementations = arrayOf(
-        ":core",
-        ":network-core",
-        ":snommoc",
-        ":data",
-        ":repo"
-    )
+            project(":core"),
+            project(":network-core"),
+            project(":snommoc"),
+            project(":data"),
+            project(":repo")
+        )
+    }
 
-    annotationProcessors.forEach { kapt(it) }
-    implementations.forEach { implementation(it) }
-    localImplementations.forEach { implementation(project(it)) }
-
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
-
+//    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
 }
 
 repositories {
@@ -280,26 +261,4 @@ fun DefaultConfig.injectPartyTheme(name: String, theme: PartyColors) {
         "${theme.accentText}")
     resValue("color", "party_${name}_primary", theme.primary)
     resValue("color", "party_${name}_accent", theme.accent)
-}
-
-fun DefaultConfig.injectStrings(mapping: Map<String, String>, asBuildConfig: Boolean, asResValue: Boolean) {
-    mapping.forEach { (key, value) ->
-        if (asBuildConfig) {
-            buildConfigField("String", key.toUpperCase(), "\"$value\"")
-        }
-        if (asResValue) {
-            resValue("string", key.toLowerCase(), value)
-        }
-    }
-}
-
-fun DefaultConfig.injectInts(mapping: Map<String, Int>, asBuildConfig: Boolean, asResValue: Boolean) {
-    mapping.forEach { (key, value) ->
-        if (asBuildConfig) {
-            buildConfigField("int", key.toUpperCase(), "$value")
-        }
-        if (asResValue) {
-            resValue("integer", key.toLowerCase(), "$value")
-        }
-    }
 }
