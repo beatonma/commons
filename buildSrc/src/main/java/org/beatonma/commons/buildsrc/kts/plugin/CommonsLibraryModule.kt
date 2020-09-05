@@ -2,26 +2,24 @@ package org.beatonma.commons.buildsrc.kts.plugin
 
 import com.android.build.gradle.LibraryExtension
 import org.gradle.api.Project
+import org.gradle.api.plugins.PluginContainer
 import java.io.File
 
 /**
  * Project-wide basic configuration for library modules.
  */
-class CommonsLibraryModule: CommonsAndroidModule<LibraryExtension>() {
-    override fun applyPlugins(target: Project) {
-        target.plugins.run {
+class CommonsLibraryModule : CommonsAndroidModule<LibraryExtension>() {
+
+    override fun applyPlugins(plugins: PluginContainer) {
+        with(plugins) {
             apply("com.android.library")
-            apply("kotlin-android")
-            apply("kotlin-android-extensions")
-            apply("kotlin-kapt")
-            apply("com.github.ben-manes.versions")
         }
-//        super.applyPlugins(target)
+        super.applyPlugins(plugins)
     }
 
-    override fun applyAndroidConfig(target: Project) {
-        super.applyAndroidConfig(target)
-        target.android.run {
+    override fun applyAndroidConfig(android: LibraryExtension, target: Project) {
+        super.applyAndroidConfig(android, target)
+        with(android) {
             defaultConfig {
                 consumerProguardFiles.add(File("consumer-rules.pro"))
             }

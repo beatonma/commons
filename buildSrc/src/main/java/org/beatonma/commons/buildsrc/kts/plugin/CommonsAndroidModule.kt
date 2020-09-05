@@ -3,20 +3,21 @@ package org.beatonma.commons.buildsrc.kts.plugin
 import Dependencies
 import Versions
 import com.android.build.gradle.BaseExtension
-import com.android.build.gradle.internal.dsl.DefaultConfig
 import org.beatonma.commons.buildsrc.Commons
 import org.beatonma.commons.buildsrc.Git
-import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.dependencies
+import org.gradle.api.artifacts.dsl.RepositoryHandler
+import org.gradle.api.plugins.PluginContainer
+import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.gradle.kotlin.dsl.maven
 import org.gradle.kotlin.dsl.project
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.text.SimpleDateFormat
 import java.util.*
 
-abstract class CommonsAndroidModule<T: BaseExtension>: Plugin<Project> {
-    open val Project.android: T
+abstract class CommonsAndroidModule<T : BaseExtension> : AndroidProjectPlugin<T>() {
+
+    override val Project.android: T
         get() = extensions.findByName("android") as? T
             ?: error("Not an Android module: $name")
 
@@ -24,15 +25,8 @@ abstract class CommonsAndroidModule<T: BaseExtension>: Plugin<Project> {
         SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault()).format(Date())
     }
 
-    override fun apply(target: Project) {
-        applyRepositories(target)
-        applyPlugins(target)
-        applyAndroidConfig(target)
-        applyDependencies(target)
-    }
-
-    open fun applyPlugins(target: Project) {
-        target.plugins.run {
+    override fun applyPlugins(plugins: PluginContainer) {
+        with(plugins) {
             apply("kotlin-android")
             apply("kotlin-android-extensions")
             apply("kotlin-kapt")
@@ -40,10 +34,10 @@ abstract class CommonsAndroidModule<T: BaseExtension>: Plugin<Project> {
         }
     }
 
-    open fun applyAndroidConfig(target: Project) {
+    override fun applyAndroidConfig(android: T, target: Project) {
         val git = Git.resolveData(target)
 
-        target.android.run {
+        with(android) {
             compileSdkVersion(Commons.Sdk.COMPILE)
             defaultConfig {
                 versionCode = git.commitCount
@@ -80,40 +74,36 @@ abstract class CommonsAndroidModule<T: BaseExtension>: Plugin<Project> {
         }
     }
 
-
-    open fun applyRepositories(target: Project) {
-        target.repositories.run {
+    override fun applyRepositories(repositories: RepositoryHandler) {
+        with(repositories) {
             maven("https://dl.bintray.com/kotlin/kotlin-eap")
             mavenCentral()
         }
     }
 
-    open fun applyDependencies(target: Project) {
-        target.dependencies {
-            arrayOf(
-                project(":test"),
-                Dependencies.Test.AndroidX.CORE,
-                Dependencies.Test.JUNIT
-            ).forEach {
-                "testImplementation"(it)
-                "androidTestImplementation"(it)
+    override fun applyDependencies(dependencies: DependencyHandlerScope) {
+        with(dependencies) {
+            unitTest {
+                implementations(
+                    project(":test"),
+                    Dependencies.Test.AndroidX.CORE,
+                    Dependencies.Test.JUNIT
+                )
             }
 
-            arrayOf(
-                Dependencies.Kotlin.STDLIB
-            ).forEach { "implementation"(it) }
-        }
-    }
+            instrumentationTest {
+                implementations(
+                    project(":test"),
+                    Dependencies.Test.AndroidX.CORE,
+                    Dependencies.Test.JUNIT
+                )
+            }
 
-    protected fun DefaultConfig.buildConfigStrings(vararg mapping: Pair<String, String>) {
-        mapping.forEach { (key, value) ->
-            buildConfigField("String", key.toUpperCase(Locale.getDefault()), "\"$value\"")
-        }
-    }
-
-    protected fun DefaultConfig.buildConfigInts(vararg mapping: Pair<String, Int>) {
-        mapping.forEach { (key, value) ->
-            buildConfigField("int", key.toUpperCase(Locale.getDefault()), "$value")
+            main {
+                implementations(
+                    Dependencies.Kotlin.STDLIB
+                )
+            }
         }
     }
 }

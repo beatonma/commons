@@ -5,22 +5,23 @@ import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import org.beatonma.commons.buildsrc.Commons
 import org.beatonma.commons.buildsrc.Git
 import org.gradle.api.Project
+import org.gradle.api.plugins.PluginContainer
 
 class CommonsApplicationModule: CommonsAndroidModule<BaseAppModuleExtension>() {
 
-    override fun applyPlugins(target: Project) {
-        target.plugins.run {
+    override fun applyPlugins(plugins: PluginContainer) {
+        with(plugins) {
             apply("com.android.application")
         }
-        super.applyPlugins(target)
+        super.applyPlugins(plugins)
     }
 
-    override fun applyAndroidConfig(target: Project) {
-        super.applyAndroidConfig(target)
+    override fun applyAndroidConfig(android: BaseAppModuleExtension, target: Project) {
+        super.applyAndroidConfig(android, target)
 
         val git = Git.resolveData(target)
 
-        target.android.run {
+        with(android) {
             defaultConfig {
                 applicationId = Commons.APPLICATION_ID
             }

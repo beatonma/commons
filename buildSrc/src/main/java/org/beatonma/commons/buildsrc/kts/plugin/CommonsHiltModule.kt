@@ -1,49 +1,43 @@
 package org.beatonma.commons.buildsrc.kts.plugin
 
 import Dependencies
-import org.gradle.api.Plugin
-import org.gradle.api.Project
-import org.gradle.kotlin.dsl.dependencies
+import org.gradle.api.plugins.PluginContainer
+import org.gradle.kotlin.dsl.DependencyHandlerScope
 
-class CommonsHiltModule : Plugin<Project> {
+class CommonsHiltModule : ProjectPlugin() {
 
-    override fun apply(target: Project) {
-        with (target) {
-            applyPlugins()
-            applyDependencies()
-        }
-    }
-
-    private fun Project.applyPlugins() {
-        plugins.run {
+    override fun applyPlugins(plugins: PluginContainer) {
+        with(plugins) {
             apply("dagger.hilt.android.plugin")
         }
     }
 
-    private fun Project.applyDependencies() {
-        val testImplementations = arrayOf(
-            Dependencies.Hilt.TESTING
-        )
+    override fun applyDependencies(dependencies: DependencyHandlerScope) {
+        super.applyDependencies(dependencies)
 
-        val annotationProcessors = arrayOf(
-            Dependencies.Dagger.ANNOTATION_PROCESSOR,
-            Dependencies.Dagger.COMPILER,
-            Dependencies.Hilt.AX_KAPT,
-            Dependencies.Hilt.KAPT
-        )
+        with(dependencies) {
+            unitTest {
+                implementations(
+                    Dependencies.Hilt.TESTING
+                )
+            }
 
-        val implementations = arrayOf(
-            Dependencies.Dagger.ANDROID,
-            Dependencies.Dagger.DAGGER,
-            Dependencies.Dagger.SUPPORT,
+            main {
+                annotationProcessors(
+                    Dependencies.Dagger.ANNOTATION_PROCESSOR,
+                    Dependencies.Dagger.COMPILER,
+                    Dependencies.Hilt.AX_KAPT,
+                    Dependencies.Hilt.KAPT
+                )
 
-            Dependencies.Hilt.CORE
-        )
+                implementations(
+                    Dependencies.Dagger.ANDROID,
+                    Dependencies.Dagger.DAGGER,
+                    Dependencies.Dagger.SUPPORT,
 
-        dependencies {
-            testImplementations.forEach { "testImplementation"(it) }
-            annotationProcessors.forEach { "kapt"(it) }
-            implementations.forEach { "implementation"(it) }
+                    Dependencies.Hilt.CORE
+                )
+            }
         }
     }
 }
