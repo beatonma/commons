@@ -22,4 +22,10 @@ object Plugins {
      * Apply required Room dependencies.
      */
     const val COMMONS_ROOM_MODULE = "commons-room-module"
+
+    /**
+     * [org.beatonma.commons.buildsrc.kts.plugin.CommonsComposeModule]
+     * Apply required Jetpack Compose dependencies and android configuration block.
+     */
+    const val COMMONS_COMPOSE_MODULE = "commons-compose-module"
 }

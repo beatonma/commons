@@ -49,5 +49,10 @@ gradlePlugin {
             id = "commons-room-module"
             implementationClass = "org.beatonma.commons.buildsrc.kts.plugin.CommonsRoomModule"
         }
+
+        register("commons-compose-module") {
+            id = "commons-compose-module"
+            implementationClass = "org.beatonma.commons.buildsrc.kts.plugin.CommonsComposeModule"
+        }
     }
 }

@@ -11,6 +11,8 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.plugins.PluginContainer
 import org.gradle.kotlin.dsl.DependencyHandlerScope
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.*
 
 abstract class ProjectPlugin : Plugin<Project> {
@@ -48,6 +50,14 @@ abstract class AndroidProjectPlugin<T : BaseExtension> : ProjectPlugin() {
     protected fun DefaultConfig.buildConfigInts(vararg mapping: Pair<String, Int>) {
         mapping.forEach { (key, value) ->
             buildConfigField("int", key.toUpperCase(Locale.getDefault()), "$value")
+        }
+    }
+
+    protected fun T.kotlinOptions(project: Project, block: KotlinJvmOptions.() -> Unit) {
+        project.tasks.withType(KotlinCompile::class.java).configureEach {
+            kotlinOptions {
+                block()
+            }
         }
     }
 }

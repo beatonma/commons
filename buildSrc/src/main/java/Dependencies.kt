@@ -94,12 +94,37 @@ object Dependencies {
             version = Versions.AX_NAVIGATION
         )
 
-        val COMPOSE_TOOLING =
-            androidx(group = "ui", artifact = "ui-tooling", version = Versions.AX_COMPOSE)
-        val COMPOSE_LAYOUT =
-            androidx(group = "ui", artifact = "ui-layout", version = Versions.AX_COMPOSE)
-        val COMPOSE_MATERIAL =
-            androidx(group = "ui", artifact = "ui-material", version = Versions.AX_COMPOSE)
+        object Compose {
+
+            private fun compose(
+                group: String,
+                artifact: String = group,
+                version: String = Versions.AX_COMPOSE
+            ) = androidx(group = "compose.$group", artifact = artifact, version = version)
+
+            val core
+                get() = arrayOf(
+                    COMPOSE,
+                    FOUNDATION
+                )
+
+            val COMPOSE = compose("ui", "ui")
+            val FOUNDATION = compose("foundation")
+            val MATERIAL = compose("material")
+
+            object MaterialIcons {
+
+                val CORE = compose("material", "material-icons-core")
+                val EXTENDED = compose("material", "material-icons-extended")
+            }
+
+            val LIVEDATA = compose("runtime", "runtime-livedata")
+
+            val TEST = androidx(group = "ui", artifact = "ui-test", version = Versions.AX_COMPOSE)
+
+            val TOOLING =
+                androidx(group = "ui", artifact = "ui-tooling", version = Versions.AX_COMPOSE)
+        }
 
         val VIEWBINDING = androidx(
             group = "databinding",
