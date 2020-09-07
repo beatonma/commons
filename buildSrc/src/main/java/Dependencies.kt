@@ -5,6 +5,7 @@ object Versions {
     // Core
     const val COROUTINES = "1.3.9"
     const val KOTLIN = "1.4.0"
+    const val KOTLIN_LANGUAGE_VERSION = "1.4"
     val JAVA = JavaVersion.VERSION_1_8
 
     // Data
@@ -25,7 +26,7 @@ object Versions {
     // Android X
     const val AX_ANNOTATIONS = "1.2.0-alpha01"
     const val AX_APPCOMPAT = "1.3.0-alpha02"
-    const val AX_COMPOSE = "1.0.0-alpha01"
+    const val AX_COMPOSE = "1.0.0-alpha02"
     const val AX_CONSTRAINTLAYOUT = "2.0.1"
     const val AX_CORE_KTX = "1.5.0-alpha02"
     const val AX_LIFECYCLE = "2.3.0-alpha06"

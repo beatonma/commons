@@ -38,9 +38,15 @@ class CommonsComposeModule : SimpleAndroidProjectPlugin() {
 
             kotlinOptions(target) {
                 useIR = true
+                jvmTarget = Versions.JAVA.toString()
+                freeCompilerArgs = freeCompilerArgs + listOf(
+                    "-Xallow-jvm-ir-dependencies",
+                    "-Xskip-prerelease-check"
+                )
             }
 
             composeOptions {
+                kotlinCompilerVersion = Versions.KOTLIN
                 kotlinCompilerExtensionVersion = Versions.AX_COMPOSE
             }
         }
