@@ -9,6 +9,7 @@ import org.beatonma.commons.buildsrc.local.LocalConfig
 plugins {
     id(Plugins.COMMONS_APPLICATION_CONFIG)
     id(Plugins.COMMONS_HILT_MODULE)
+    id(Plugins.COMMONS_COMPOSE_MODULE)
 }
 
 android {
@@ -48,11 +49,7 @@ android {
     }
 
     buildFeatures {
-        compose = false
         viewBinding = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = Versions.AX_COMPOSE
     }
     kotlinOptions {
         useIR = true
@@ -144,7 +141,8 @@ dependencies {
             project(":network-core"),
             project(":snommoc"),
             project(":persistence"),
-            project(":repo")
+            project(":repo"),
+            project(":theme")
         )
     }
 }
