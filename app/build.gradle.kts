@@ -70,7 +70,7 @@ dependencies {
             Dependencies.Kotlin.Coroutines.TEST,
             Dependencies.Test.JUNIT,
             Dependencies.Test.MOCKITO,
-            Dependencies.Test.RETROFIT_MOCK,
+            Dependencies.Retrofit.MOCK,
             Dependencies.Test.OKHTTP_MOCK_SERVER,
             Dependencies.Test.AndroidX.CORE
         )
@@ -84,7 +84,7 @@ dependencies {
 
         implementations(
             project(":test"),
-            Dependencies.Hilt.TESTING,
+            Dependencies.Dagger.Hilt.TESTING,
             Dependencies.Kotlin.Coroutines.TEST,
             Dependencies.Test.AndroidX.CORE,
             Dependencies.Test.AndroidX.LIVEDATA,
@@ -111,10 +111,13 @@ dependencies {
             Dependencies.Kotlin.Coroutines.CORE,
             Dependencies.Kotlin.Coroutines.PLAY,
 
-            Dependencies.Hilt.LIFECYCLE_VIEWMODEL,
-            Dependencies.Hilt.WORK,
+            Dependencies.Dagger.Hilt.LIFECYCLE_VIEWMODEL,
+            Dependencies.Dagger.Hilt.WORK,
 
             Dependencies.Room.RUNTIME,
+
+            Dependencies.AndroidX.Compose.RUNTIME,
+            Dependencies.AndroidX.Compose.LIVEDATA,
 
             Dependencies.AndroidX.APPCOMPAT,
             Dependencies.AndroidX.CONSTRAINTLAYOUT,
@@ -130,6 +133,8 @@ dependencies {
             Dependencies.Retrofit.Converter.MOSHI,
 
             Dependencies.Glide.CORE,
+            Dependencies.Coil.COIL,
+            Dependencies.Coil.ACCOMPANIST,
 
             Dependencies.Google.MATERIAL,
             Dependencies.Google.Play.AUTH,

@@ -18,7 +18,7 @@ class CommonsHiltModule : ProjectPlugin() {
         with(dependencies) {
             unitTest {
                 implementations(
-                    Dependencies.Hilt.TESTING
+                    Dependencies.Dagger.Hilt.TESTING
                 )
             }
 
@@ -26,8 +26,8 @@ class CommonsHiltModule : ProjectPlugin() {
                 annotationProcessors(
                     Dependencies.Dagger.ANNOTATION_PROCESSOR,
                     Dependencies.Dagger.COMPILER,
-                    Dependencies.Hilt.AX_KAPT,
-                    Dependencies.Hilt.KAPT
+                    Dependencies.Dagger.Hilt.AX_KAPT,
+                    Dependencies.Dagger.Hilt.KAPT
                 )
 
                 implementations(
@@ -35,7 +35,7 @@ class CommonsHiltModule : ProjectPlugin() {
                     Dependencies.Dagger.DAGGER,
                     Dependencies.Dagger.SUPPORT,
 
-                    Dependencies.Hilt.CORE
+                    Dependencies.Dagger.Hilt.CORE
                 )
             }
         }

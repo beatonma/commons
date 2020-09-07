@@ -45,6 +45,8 @@ object Versions {
     // Other 3rd party
     const val GLIDE = "4.11.0"
     const val GROUPIE = "2.8.0"
+    const val COIL = "1.0.0-rc1"
+    const val CHRISBANES_ACCOMPANIST_COIL = "0.2.1"
 
     // Testing
     const val AX_TEST_CORE = "1.3.0"
@@ -102,29 +104,35 @@ object Dependencies {
                 artifact: String = group,
                 version: String = Versions.AX_COMPOSE
             ) = androidx(group = "compose.$group", artifact = artifact, version = version)
+//
+//            val core
+//                get() = arrayOf(
+//                    COMPOSE,
+//                    FOUNDATION
+//                )
 
-            val core
-                get() = arrayOf(
-                    COMPOSE,
-                    FOUNDATION
-                )
-
+            val COMPILER = compose("compiler")
             val COMPOSE = compose("ui", "ui")
+
+            val ANIMATION = compose("animation")
+
             val FOUNDATION = compose("foundation")
+            val FOUNDATION_LAYOUT = compose("foundation-layout")
+            val FOUNDATION_TEXT = compose("foundation-text")
+
             val MATERIAL = compose("material")
+            val MATERIAL_ICONS_CORE = compose("material", "material-icons-core")
+            val MATERIAL_ICONS_EXTENDED = compose("material", "material-icons-extended")
 
-            object MaterialIcons {
-
-                val CORE = compose("material", "material-icons-core")
-                val EXTENDED = compose("material", "material-icons-extended")
-            }
-
+            val RUNTIME = compose("runtime")
             val LIVEDATA = compose("runtime", "runtime-livedata")
 
             val TEST = androidx(group = "ui", artifact = "ui-test", version = Versions.AX_COMPOSE)
 
             val TOOLING =
                 androidx(group = "ui", artifact = "ui-tooling", version = Versions.AX_COMPOSE)
+
+            val UI = compose("ui")
         }
 
         val VIEWBINDING = androidx(
@@ -138,6 +146,7 @@ object Dependencies {
     }
 
     object Build {
+
         val VERSIONS = dependency(
             "com.github.ben-manes",
             "gradle-versions-plugin",
@@ -145,27 +154,52 @@ object Dependencies {
         )
     }
 
+    object Coil {
+
+        val COIL = dependency("io.coil-kt", "coil", Versions.COIL)
+        val ACCOMPANIST = dependency(
+            "dev.chrisbanes.accompanist",
+            "accompanist-coil",
+            Versions.CHRISBANES_ACCOMPANIST_COIL
+        )
+    }
+
     object Dagger {
+
+        private fun dagger(artifact: String, version: String = Versions.DAGGER) =
+            dependency("com.google.dagger", artifact, version)
+
         val DAGGER = dagger("dagger")
         val ANDROID = dagger("dagger-android")
         val SUPPORT = dagger("dagger-android-support")
         val COMPILER = dagger("dagger-compiler")
         val ANNOTATION_PROCESSOR = dagger("dagger-android-processor")
         val SPI = dagger("dagger-spi")
-    }
 
-    object Hilt {
-        val LIFECYCLE_VIEWMODEL = hiltAX("hilt-lifecycle-viewmodel")
-        val CORE = hilt("hilt-android")
-        val WORK = hiltAX("hilt-work")
+        object Hilt {
 
-        val TESTING = hilt("hilt-android-testing")
+            private fun hilt(artifact: String, version: String = Versions.HILT) =
+                dagger(artifact = artifact, version = version)
 
-        val KAPT = hilt("hilt-android-compiler")
-        val AX_KAPT = hiltAX("hilt-compiler")
+            private fun hiltAX(artifact: String, version: String = Versions.AX_HILT) =
+                androidx(group = "hilt", artifact = artifact, version = version)
+
+            val LIFECYCLE_VIEWMODEL = hiltAX("hilt-lifecycle-viewmodel")
+            val CORE = hilt("hilt-android")
+            val WORK = hiltAX("hilt-work")
+
+            val TESTING = hilt("hilt-android-testing")
+
+            val KAPT = hilt("hilt-android-compiler")
+            val AX_KAPT = hiltAX("hilt-compiler")
+        }
     }
 
     object Glide {
+
+        private fun glide(artifact: String, version: String = Versions.GLIDE) =
+            dependency("com.github.bumptech.glide", artifact, version)
+
         val COMPILER = glide("compiler")
 
         val ANNOTATIONS = glide("annotations")
@@ -178,6 +212,14 @@ object Dependencies {
         val MATERIAL = dependency("com.google.android.material", "material", Versions.MATERIAL)
 
         object Play {
+
+            private fun gms(artifact: String, version: String) =
+                dependency(
+                    group = "com.google.android.gms",
+                    artifact = artifact,
+                    version = version
+                )
+
             val AUTH = gms("play-services-auth", Versions.GP_AUTH)
             val LOCATION = gms("play-services-location", Versions.GP_LOCATION)
             val MAPS = gms("play-services-maps", Versions.GP_MAPS)
@@ -189,60 +231,60 @@ object Dependencies {
         }
     }
 
-    object Groupie {
-        val CORE = dependency("com.xwray", artifact = "groupie", version = Versions.GROUPIE)
-        val KTX = dependency(
-            "com.xwray",
-            artifact = "groupie-kotlin-android-extensions",
-            version = Versions.GROUPIE
-        )
-        val VIEWBINDING =
-            dependency("com.xwray", artifact = "groupie-viewbinding", version = Versions.GROUPIE)
-    }
-
     object Kotlin {
         val STDLIB = kotlin("kotlin-stdlib-jdk8")
         val REFLECT = kotlin("kotlin-reflect")
 
         object Coroutines {
-            val CORE = kotlinx(
-                "kotlinx-coroutines-core",
-                Versions.COROUTINES
-            )
-            val ANDROID = kotlinx(
-                "kotlinx-coroutines-android",
-                Versions.COROUTINES
-            )
-            val PLAY = kotlinx(
-                "kotlinx-coroutines-play-services",
-                Versions.COROUTINES
-            )
-            val TEST = kotlinx(
-                "kotlinx-coroutines-test",
-                Versions.COROUTINES
-            )
+
+            private fun coroutines(artifact: String, version: String = Versions.COROUTINES) =
+                kotlinx(
+                    "kotlinx-coroutines-$artifact",
+                    version
+                )
+
+            val CORE = coroutines("core")
+            val ANDROID = coroutines("android")
+            val PLAY = coroutines("play-services")
+            val TEST = coroutines("test")
         }
     }
 
     object Moshi {
+
+        private fun moshi(artifact: String, version: String = Versions.MOSHI) =
+            square("moshi", artifact, version)
+
         val MOSHI = moshi("moshi")
         val KAPT_CODEGEN = moshi("moshi-kotlin-codegen")
     }
 
     object Retrofit {
+
+        private fun retrofit(artifact: String, version: String = Versions.RETROFIT) =
+            square("retrofit2", artifact, version)
+
         val RETROFIT = retrofit("retrofit")
 
         object Converter {
+
             val MOSHI = retrofit("converter-moshi")
             val GSON = retrofit("converter-gson")
             val TEXT = retrofit("converter-scalars")
         }
+
+        val MOCK = retrofit("retrofit-mock")
     }
 
     object Room {
+
+        private fun room(artifact: String, version: String = Versions.ROOM) =
+            androidx(group = "room", artifact = artifact, version = version)
+
         val AP = room("room-compiler")
         val RUNTIME = room("room-runtime")
         val KTX = room("room-ktx")
+        val TEST = room("room-testing")
     }
 
     object Test {
@@ -268,8 +310,6 @@ object Dependencies {
         val MOCKITO = dependency("org.mockito", "mockito-core", Versions.MOCKITO)
         val MOCKK = dependency("io.mockk", "mockk", Versions.MOCKK)
         val JUNIT = dependency("junit", "junit", Versions.JUNIT)
-        val RETROFIT_MOCK = retrofit("retrofit-mock")
-        val ROOM = room("room-testing")
         val OKHTTP_MOCK_SERVER =
             square("okhttp3", "mockwebserver", Versions.OKHTTP)
     }
@@ -289,27 +329,9 @@ private fun dependency(group: String, artifact: String, version: String) = "$gro
 private fun androidx(artifact: String, version: String, group: String = artifact) =
     dependency("androidx.$group", artifact, version)
 
-private fun dagger(artifact: String, version: String = Versions.DAGGER) =
-    dependency("com.google.dagger", artifact, version)
-
-private fun hilt(artifact: String, version: String = Versions.HILT) =
-    dagger(artifact = artifact, version = version)
-private fun hiltAX(artifact: String, version: String = Versions.AX_HILT) =
-    androidx(group = "hilt", artifact = artifact, version = version)
-
 private fun espresso(artifact: String, version: String = Versions.ESPRESSO) =
     androidx(
         group = "test.espresso",
-        artifact = artifact,
-        version = version
-    )
-
-private fun glide(artifact: String, version: String = Versions.GLIDE) =
-    dependency("com.github.bumptech.glide", artifact, version)
-
-private fun gms(artifact: String, version: String) =
-    dependency(
-        group = "com.google.android.gms",
         artifact = artifact,
         version = version
     )
@@ -324,14 +346,5 @@ private fun kotlinx(artifact: String, version: String = Versions.KOTLIN) =
         version = version
     )
 
-private fun room(artifact: String, version: String = Versions.ROOM) =
-    androidx(group = "room", artifact = artifact, version = version)
-
 private fun square(group: String, artifact: String, version: String) =
     dependency("com.squareup.$group", artifact, version)
-
-private fun retrofit(artifact: String, version: String = Versions.RETROFIT) =
-    square("retrofit2", artifact, version)
-
-private fun moshi(artifact: String, version: String = Versions.MOSHI) =
-    square("moshi", artifact, version)
