@@ -5,13 +5,14 @@ import Versions
 import com.android.build.gradle.BaseExtension
 import org.beatonma.commons.buildsrc.Commons
 import org.beatonma.commons.buildsrc.Git
+import org.beatonma.commons.buildsrc.kts.extensions.debug
+import org.beatonma.commons.buildsrc.kts.extensions.release
 import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.plugins.PluginContainer
 import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.gradle.kotlin.dsl.maven
 import org.gradle.kotlin.dsl.project
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -57,19 +58,27 @@ abstract class CommonsAndroidModule<T : BaseExtension> : AndroidProjectPlugin<T>
                 testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
             }
 
+            buildTypes {
+                debug {
+                    isDebuggable = true
+                }
+
+                release {
+                    isDebuggable = false
+                }
+            }
+
             compileOptions {
                 sourceCompatibility = Versions.JAVA
                 targetCompatibility = Versions.JAVA
             }
 
-            target.tasks.withType(KotlinCompile::class.java).configureEach {
-                kotlinOptions {
-                    jvmTarget = "1.8"
-                    languageVersion = "1.4"
-                    freeCompilerArgs = listOf(
-                        "-XXLanguage:+InlineClasses"
-                    )
-                }
+            kotlinOptions(target) {
+                jvmTarget = Versions.JAVA.toString()
+                languageVersion = Versions.KOTLIN_LANGUAGE_VERSION
+                freeCompilerArgs = freeCompilerArgs + listOf(
+                    "-XXLanguage:+InlineClasses"
+                )
             }
         }
     }
