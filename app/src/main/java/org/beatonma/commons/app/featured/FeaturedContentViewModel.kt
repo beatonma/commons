@@ -14,17 +14,13 @@ class FeaturedContentViewModel @ViewModelInject constructor(
     featuredRepository: FeaturedRepository,
 ) : ViewModel() {
 
-    val featuredPeople =
-        featuredRepository.getFeaturedPeople()
-            .asLiveData()
+    val featuredPeople = featuredRepository.getFeaturedPeople()
+    val featuredBills = featuredRepository.getFeaturedBills()
+    val featuredDivisions = featuredRepository.getFeaturedDivisions()
 
-    val featuredBills =
-        featuredRepository.getFeaturedBills()
-            .asLiveData()
-
-    val featuredDivisions =
-        featuredRepository.getFeaturedDivisions()
-            .asLiveData()
+    val featuredPeopleLD = featuredPeople.asLiveData()
+    val featuredBillsLD = featuredBills.asLiveData()
+    val featuredDivisionsLD = featuredDivisions.asLiveData()
 
     val motd: LiveData<IoResult<List<MessageOfTheDay>>> = snommocRepository.getMotd().asLiveData()
 }
