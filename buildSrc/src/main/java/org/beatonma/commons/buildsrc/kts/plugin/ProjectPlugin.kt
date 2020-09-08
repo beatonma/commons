@@ -2,10 +2,10 @@ package org.beatonma.commons.buildsrc.kts.plugin
 
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.internal.dsl.DefaultConfig
-import org.beatonma.commons.buildsrc.kts.extensions.DebugDependencies
-import org.beatonma.commons.buildsrc.kts.extensions.InstrumentationTestDependencies
-import org.beatonma.commons.buildsrc.kts.extensions.MainDependencies
-import org.beatonma.commons.buildsrc.kts.extensions.UnitTestDependencies
+import org.beatonma.commons.buildsrc.kts.extensions.DebugDependencyScope
+import org.beatonma.commons.buildsrc.kts.extensions.InstrumentationTestDependencyScope
+import org.beatonma.commons.buildsrc.kts.extensions.MainDependencyScope
+import org.beatonma.commons.buildsrc.kts.extensions.UnitTestDependencyScope
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.RepositoryHandler
@@ -65,18 +65,18 @@ abstract class AndroidProjectPlugin<T : BaseExtension> : ProjectPlugin() {
 abstract class SimpleAndroidProjectPlugin : AndroidProjectPlugin<BaseExtension>()
 
 internal fun DependencyHandlerScope.main(
-    block: MainDependencies.() -> Unit
-) = MainDependencies().block()
+    block: MainDependencyScope.() -> Unit
+) = MainDependencyScope().block()
 
 internal fun DependencyHandlerScope.debug(
-    block: DebugDependencies.() -> Unit
-) = DebugDependencies().block()
+    block: DebugDependencyScope.() -> Unit
+) = DebugDependencyScope().block()
 
 internal fun DependencyHandlerScope.unitTest(
-    block: UnitTestDependencies.() -> Unit
-) = UnitTestDependencies().block()
+    block: UnitTestDependencyScope.() -> Unit
+) = UnitTestDependencyScope().block()
 
 internal fun DependencyHandlerScope.instrumentationTest(
-    block: InstrumentationTestDependencies.() -> Unit
-) = InstrumentationTestDependencies().block()
+    block: InstrumentationTestDependencyScope.() -> Unit
+) = InstrumentationTestDependencyScope().block()
 
