@@ -23,7 +23,7 @@ class CommonsComposeModule : SimpleAndroidProjectPlugin() {
         with(dependencies) {
             main {
                 implementations(
-                    Dependencies.AndroidX.Compose.COMPOSE,
+                    Dependencies.AndroidX.Compose.UI,
                     Dependencies.AndroidX.Compose.FOUNDATION,
                     Dependencies.AndroidX.Compose.MATERIAL,
                     Dependencies.AndroidX.Compose.TOOLING

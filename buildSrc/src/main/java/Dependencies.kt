@@ -112,7 +112,6 @@ object Dependencies {
 //                )
 
             val COMPILER = compose("compiler")
-            val COMPOSE = compose("ui", "ui")
 
             val ANIMATION = compose("animation")
 
