@@ -22,12 +22,13 @@ private fun String?.execute(workingDir: File, fallback: String): String {
     }
 }
 
-data class GitData(val sha: String, val tag: String, val commitCount: Int)
+data class GitData(val sha: String, val tag: String, val commitCount: Int, val branch: String)
 object Git {
     fun resolveData(project: Project) = GitData(
         sha = sha(project),
         tag = tag(project),
-        commitCount = commitCount(project)
+        commitCount = commitCount(project),
+        branch = branch(project)
     )
 
     fun sha(project: Project): String {
@@ -41,5 +42,9 @@ object Git {
 
     fun commitCount(project: Project): Int {
         return "git rev-list --count HEAD".execute(project.rootDir, "0").toInt()
+    }
+
+    fun branch(project: Project): String {
+        return "git rev-parse --abbrev-ref HEAD".execute(project.rootDir, "unknown-branch")
     }
 }
