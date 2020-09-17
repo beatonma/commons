@@ -1,4 +1,4 @@
-package org.beatonma.commons.theme
+package org.beatonma.compose.themepreview
 
 import androidx.compose.foundation.Text
 import androidx.compose.foundation.layout.Row

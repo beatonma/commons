@@ -1,4 +1,4 @@
-package org.beatonma.commons.theme
+package org.beatonma.compose.themepreview
 
 import androidx.compose.foundation.Text
 import androidx.compose.foundation.layout.Column
@@ -12,17 +12,17 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 internal fun TypographyPreview() {
-    SampleText("h1") { Text("Header", style = MaterialTheme.typography.h1) }
-    SampleText("h2") { Text("Header", style = MaterialTheme.typography.h2) }
-    SampleText("h3") { Text("Header", style = MaterialTheme.typography.h3) }
-    SampleText("h4") { Text("Header", style = MaterialTheme.typography.h4) }
-    SampleText("h5") { Text("Header", style = MaterialTheme.typography.h5) }
-    SampleText("h6") { Text("Header", style = MaterialTheme.typography.h6) }
+    Sample("h1") { Text("Header", style = MaterialTheme.typography.h1) }
+    Sample("h2") { Text("Header", style = MaterialTheme.typography.h2) }
+    Sample("h3") { Text("Header", style = MaterialTheme.typography.h3) }
+    Sample("h4") { Text("Header", style = MaterialTheme.typography.h4) }
+    Sample("h5") { Text("Header", style = MaterialTheme.typography.h5) }
+    Sample("h6") { Text("Header", style = MaterialTheme.typography.h6) }
 
-    SampleText("subtitle1") { Text("Subtitle", style = MaterialTheme.typography.subtitle1) }
-    SampleText("subtitle2") { Text("Subtitle", style = MaterialTheme.typography.subtitle2) }
+    Sample("subtitle1") { Text("Subtitle", style = MaterialTheme.typography.subtitle1) }
+    Sample("subtitle2") { Text("Subtitle", style = MaterialTheme.typography.subtitle2) }
 
-    SampleText("body1") { modifier ->
+    Sample("body1") { modifier ->
         Text(
             lorem,
             modifier,
@@ -30,7 +30,7 @@ internal fun TypographyPreview() {
             maxLines = 3
         )
     }
-    SampleText("body2") { modifier ->
+    Sample("body2") { modifier ->
         Text(
             lorem,
             modifier,
@@ -38,7 +38,7 @@ internal fun TypographyPreview() {
             maxLines = 3
         )
     }
-    SampleText("overline") { modifier ->
+    Sample("overline") { modifier ->
         Text(
             lorem,
             modifier,
@@ -46,7 +46,7 @@ internal fun TypographyPreview() {
             maxLines = 3
         )
     }
-    SampleText("button") { modifier ->
+    Sample("button") { modifier ->
         Text(
             lorem,
             modifier,
@@ -54,7 +54,7 @@ internal fun TypographyPreview() {
             maxLines = 1
         )
     }
-    SampleText("caption") { modifier ->
+    Sample("caption") { modifier ->
         Text(
             lorem,
             modifier,
@@ -65,7 +65,7 @@ internal fun TypographyPreview() {
 }
 
 @Composable
-private fun SampleText(
+private fun Sample(
     name: String,
     modifier: Modifier = Modifier,
     content: @Composable (Modifier) -> Unit,

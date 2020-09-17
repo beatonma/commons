@@ -1,4 +1,4 @@
-package org.beatonma.commons.theme
+package org.beatonma.compose.themepreview
 
 import androidx.compose.animation.AnimatedFloatModel
 import androidx.compose.animation.core.AnimationSpec
@@ -14,7 +14,7 @@ import androidx.compose.ui.Layout
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawOpacity
-import androidx.compose.ui.draw.drawShadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.AnimationClockAmbient
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
@@ -29,6 +29,7 @@ internal fun BottomBar(
 ) {
     val clock = AnimationClockAmbient.current
     val selectionFractions = remember(itemCount) {
+        // 'selectedness' of each item.
         List(itemCount) { i ->
             AnimatedFloatModel(if (i == selectedIndex) 1F else 0F, clock)
         }
@@ -45,9 +46,9 @@ internal fun BottomBar(
 
     BottomAppBar(
         Modifier.fillMaxWidth()
-            .preferredHeight(BottomBarHeight)
-            .drawShadow(elevation = 8.dp),
+            .preferredHeight(BottomBarHeight),
         cutoutShape = MaterialTheme.shapes.small,
+        backgroundColor = MaterialTheme.colors.surface,
     ) {
         Layout(
             modifier = modifier.fillMaxSize(),
@@ -100,13 +101,28 @@ internal fun SectionIcon(screen: Screen, progress: Float, onSelected: (Screen) -
         Box(
             modifier = Modifier.size(BottomBarHeight),
             gravity = ContentGravity.Center,
-            children = { Icon(screen.icon) }
-        )
+        ) {
+            Icon(screen.icon,
+                tint = MaterialTheme.colors.onSurface.interpolateHue(MaterialTheme.colors.secondary,
+                    progress))
+        }
 
-        Text(screen.name,
+        Text(
+            screen.name,
             style = MaterialTheme.typography.caption,
-            modifier = Modifier.fillMaxWidth(progress)
-                .drawOpacity(progress)
+            modifier = Modifier.drawOpacity(progress),
+            color = MaterialTheme.colors.secondary,
+            maxLines = 1,
         )
     }
 }
+
+private fun Color.interpolateHue(other: Color, progress: Float) = Color(
+    alpha = alpha,
+    red = interpolate(this.red, other.red, progress).coerceIn(0F, 1F),
+    green = interpolate(this.green, other.green, progress).coerceIn(0F, 1F),
+    blue = interpolate(this.blue, other.blue, progress).coerceIn(0F, 1F),
+)
+
+private fun interpolate(start: Float, end: Float, progress: Float) =
+    start + ((end - start) * progress)
