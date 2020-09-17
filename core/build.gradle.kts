@@ -1,4 +1,3 @@
-import org.beatonma.commons.buildsrc.kts.extensions.coroutines
 import org.beatonma.commons.buildsrc.kts.extensions.main
 
 plugins {
@@ -8,7 +7,8 @@ plugins {
 dependencies {
     main {
         implementations(
-            *coroutines,
+            Dependencies.Kotlin.Coroutines.ANDROID,
+            Dependencies.Kotlin.Coroutines.CORE,
             Dependencies.AndroidX.CORE_KTX
         )
     }

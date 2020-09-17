@@ -1,6 +1,5 @@
 import org.beatonma.commons.buildsrc.Commons
 import org.beatonma.commons.buildsrc.kts.extensions.buildConfigStrings
-import org.beatonma.commons.buildsrc.kts.extensions.coroutines
 import org.beatonma.commons.buildsrc.kts.extensions.main
 import org.beatonma.commons.buildsrc.local.LocalConfig
 
@@ -23,7 +22,8 @@ android {
 dependencies {
     main {
         implementations(
-            *coroutines,
+            Dependencies.Kotlin.Coroutines.ANDROID,
+            Dependencies.Kotlin.Coroutines.CORE,
             Dependencies.AndroidX.CORE_KTX,
             Dependencies.Retrofit.RETROFIT
         )

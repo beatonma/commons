@@ -1,6 +1,5 @@
 import org.beatonma.commons.buildsrc.Commons
 import org.beatonma.commons.buildsrc.kts.extensions.buildConfigStrings
-import org.beatonma.commons.buildsrc.kts.extensions.coroutines
 import org.beatonma.commons.buildsrc.kts.extensions.instrumentationTest
 import org.beatonma.commons.buildsrc.kts.extensions.main
 
@@ -28,7 +27,7 @@ dependencies {
 
         implementations(
             project(":test"),
-            Dependencies.Hilt.TESTING,
+            Dependencies.Dagger.Hilt.TESTING,
             Dependencies.Room.RUNTIME,
             Dependencies.Test.AndroidX.LIVEDATA,
             Dependencies.Test.AndroidX.RUNNER
@@ -37,9 +36,10 @@ dependencies {
 
     main {
         implementations(
-            *coroutines,
+            Dependencies.Kotlin.Coroutines.ANDROID,
+            Dependencies.Kotlin.Coroutines.CORE,
             Dependencies.AndroidX.CORE_KTX,
-            Dependencies.Hilt.LIFECYCLE_VIEWMODEL,
+            Dependencies.Dagger.Hilt.LIFECYCLE_VIEWMODEL,
             Dependencies.Retrofit.Converter.MOSHI,
 
             project(":core"),
