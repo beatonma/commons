@@ -15,9 +15,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawOpacity
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.VectorAsset
 import androidx.compose.ui.platform.AnimationClockAmbient
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+
+private val BottomBarHeight = 56.dp
 
 @Composable
 internal fun BottomBar(
@@ -89,30 +93,42 @@ internal fun BottomBar(
 
 @Composable
 internal fun SectionIcon(screen: Screen, progress: Float, onSelected: (Screen) -> Unit) {
+    SectionIcon(screen, screen.title, screen.icon, progress, onSelected)
+}
+
+@Composable
+internal fun SectionIcon(
+    screen: Screen,
+    title: String,
+    icon: VectorAsset,
+    progress: Float,
+    onSelected: (Screen) -> Unit,
+) {
     Row(
         Modifier
             .fillMaxWidth()
             .clickable { onSelected(screen) }
             .padding(16.dp)
             .clip(MaterialTheme.shapes.small),
-        verticalGravity = Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
     ) {
         Box(
             modifier = Modifier.size(BottomBarHeight),
             gravity = ContentGravity.Center,
         ) {
-            Icon(screen.icon,
+            Icon(icon,
                 tint = MaterialTheme.colors.onSurface.interpolateHue(MaterialTheme.colors.secondary,
                     progress))
         }
 
         Text(
-            screen.name,
+            title,
             style = MaterialTheme.typography.caption,
             modifier = Modifier.drawOpacity(progress),
             color = MaterialTheme.colors.secondary,
             maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }

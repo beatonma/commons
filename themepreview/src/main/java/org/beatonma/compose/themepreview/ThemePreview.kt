@@ -7,10 +7,7 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ColorLens
-import androidx.compose.material.icons.filled.InvertColors
-import androidx.compose.material.icons.filled.TextFields
-import androidx.compose.material.icons.filled.Widgets
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -21,19 +18,38 @@ import androidx.compose.ui.graphics.vector.VectorAsset
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 
-const val lorem =
+internal const val lorem =
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut " +
             "labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation " +
             "ullamco laboris nisi ut aliquip ex ea commodo consequat."
 
-enum class Screen(val title: String, val icon: VectorAsset, val content: @Composable () -> Unit) {
+internal val ContentPadding = 16.dp
+
+interface BaseScreen {
+
+    val title: String
+    val icon: VectorAsset
+    val content: @Composable () -> Unit
+}
+
+internal enum class Screen(
+    override val title: String,
+    override val icon: VectorAsset,
+    override val content: @Composable () -> Unit,
+) : BaseScreen {
+
     Typography("Typography", Icons.Default.TextFields, { TypographyPreview() }),
     Colors("Colors", Icons.Default.ColorLens, { ColorsPreview() }),
     Widgets("Widgets", Icons.Default.Widgets, { WidgetsPreview() }),
+    Custom("Custom", Icons.Default.Android, { DefaultCustomPreview() }),
     ;
 }
 
-internal val BottomBarHeight = 56.dp
+data class CustomPreviewScreen(
+    override val title: String = "Custom app content",
+    override val icon: VectorAsset = Icons.Default.Android,
+    override val content: @Composable () -> Unit,
+) : BaseScreen
 
 /**
  * To preview your own theme:
@@ -41,7 +57,12 @@ internal val BottomBarHeight = 56.dp
  *  @Composable
  *  @Preview
  *  fun MyThemePreview() {
- *      ThemePreview(theme = { isDark, content -> MyTheme(isDark, content) })
+ *      ThemePreview(
+ *          theme = { isDark, content -> MyTheme(isDark, content) },
+ *          customScreen = CustomPreviewScreen {
+ *              // Custom @Composable content here, if you want!
+ *          },
+ *      )
  *  }
  */
 @Composable
@@ -50,15 +71,26 @@ fun ThemePreview(
         isDark: Boolean,
         content: @Composable () -> Unit,
     ) -> Unit,
+
+    customScreen: CustomPreviewScreen? = null,
 ) {
     val initIsDark = isSystemInDarkTheme()
     var isDark by savedInstanceState { initIsDark }
     val crossfadeAnimSpec = remember { TweenSpec<Float>(durationMillis = 1000) }
-    val (currentScreen, onScreenChanged) = savedInstanceState { Screen.Typography }
+    val (currentScreen, onScreenChanged) = savedInstanceState { Screen.Custom }
+
+    val screenOverride =
+        if (currentScreen == Screen.Custom && customScreen != null) {
+            customScreen
+        }
+        else null
 
     Crossfade(current = isDark, animation = crossfadeAnimSpec) {
         theme(isDark) {
-            ThemePreview(currentScreen, onScreenChanged, onToggleTheme = { isDark = !isDark })
+            ThemePreview(currentScreen,
+                screenOverride,
+                onScreenChanged,
+                onToggleTheme = { isDark = !isDark })
         }
     }
 }
@@ -66,6 +98,7 @@ fun ThemePreview(
 @Composable
 private fun ThemePreview(
     currentScreen: Screen,
+    screenOverride: BaseScreen?,
     onScreenChanged: (Screen) -> Unit,
     onToggleTheme: () -> Unit,
 ) {
@@ -79,13 +112,13 @@ private fun ThemePreview(
     Scaffold(
         bodyContent = {
             BodyContent {
-                Section(currentScreen)
+                Section(screenOverride ?: currentScreen)
             }
         },
         bottomBar = {
             BottomBar(
                 selectedIndex = currentScreen.ordinal,
-                itemCount = 4,
+                itemCount = Screen.values().size + 1, // Allow space for FAB
                 animSpec = animSpec,
             ) { animProgress ->
                 Screen.values().forEach { screen ->
@@ -95,7 +128,7 @@ private fun ThemePreview(
                         onScreenChanged
                     )
                 }
-                Spacer(Modifier)
+                Spacer(Modifier)  // Create space for the FAB
             }
         },
         floatingActionButton = {
@@ -116,7 +149,7 @@ private fun BodyContent(content: @Composable () -> Unit) {
 }
 
 @Composable
-private fun Section(screen: Screen) {
+private fun Section(screen: BaseScreen) {
     val scrollState = rememberScrollState(0F)
     val scrollProgress = scrollState.value / scrollState.maxValue
 
@@ -137,7 +170,7 @@ private fun SectionHeader(text: String, progress: Float, modifier: Modifier = Mo
     Surface(Modifier.fillMaxWidth(), color = MaterialTheme.colors.secondary) {
         Text(
             text,
-            Modifier.padding(horizontal = 16.dp, vertical = 32.dp),
+            Modifier.padding(horizontal = ContentPadding, vertical = 32.dp),
             fontFamily = FontFamily.Monospace,
             style = MaterialTheme.typography.h3,
         )

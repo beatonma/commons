@@ -29,12 +29,12 @@ private fun ColorPreview(name: String, colorBackground: Color) {
         Row(Modifier.fillMaxWidth()) {
             Text(
                 name,
-                Modifier.padding(16.dp).weight(2f),
+                Modifier.padding(ContentPadding).weight(2f),
                 style = MaterialTheme.typography.h6,
             )
             Text(
                 "#${colorBackground.value.toString(16).substring(0, 8)}",
-                Modifier.padding(16.dp),
+                Modifier.padding(ContentPadding),
                 style = MaterialTheme.typography.h6,
                 fontFamily = FontFamily.Monospace,
             )

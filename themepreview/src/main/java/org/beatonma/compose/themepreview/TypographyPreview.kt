@@ -72,7 +72,7 @@ private fun Sample(
 ) {
     Column(
         Modifier.fillMaxWidth()
-            .padding(16.dp),
+            .padding(ContentPadding),
     ) {
         Text(
             name,

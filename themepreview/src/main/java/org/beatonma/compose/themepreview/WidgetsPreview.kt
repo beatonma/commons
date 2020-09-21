@@ -16,7 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.input.TextFieldValue
 
 private val FillMaxWidth = Modifier.fillMaxWidth()
 
@@ -59,11 +59,11 @@ private fun Sample(
     content: @Composable (Modifier) -> Unit,
 ) {
     Column(
-        columnModifier.padding(16.dp),
+        columnModifier.padding(ContentPadding),
     ) {
         Text(
             name,
-            Modifier.padding(vertical = 16.dp),
+            Modifier.padding(vertical = ContentPadding),
             style = MaterialTheme.typography.caption
         )
         content(modifier)
@@ -107,19 +107,18 @@ private fun TextFields() {
         val textFieldValue = remember { mutableStateOf("") }
         Sample("TextField") {
             TextField(
-                textFieldValue.value,
-                onValueChange = { value -> textFieldValue.value = value },
-                { Text("TextField") },
-
-                backgroundColor = MaterialTheme.colors.onSurface.copy(alpha = 0.4F),
+                TextFieldValue(textFieldValue.value),
+                onValueChange = { value -> textFieldValue.value = value.text },
+                label = { Text("TextField") },
+                backgroundColor = MaterialTheme.colors.onSurface.copy(alpha = 0.2F),
             )
         }
 
         Sample("OutlinedTextField") {
             OutlinedTextField(
-                textFieldValue.value,
-                onValueChange = { value -> textFieldValue.value = value },
-                { Text("OutlineTextField") })
+                TextFieldValue(textFieldValue.value),
+                onValueChange = { value -> textFieldValue.value = value.text },
+                label = { Text("OutlineTextField") })
         }
     }
 }
