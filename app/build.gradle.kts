@@ -1,9 +1,12 @@
 import com.android.build.gradle.internal.dsl.DefaultConfig
 import org.beatonma.commons.buildsrc.AllPartyThemes
 import org.beatonma.commons.buildsrc.Commons
+import org.beatonma.commons.buildsrc.Git
 import org.beatonma.commons.buildsrc.PartyColors
 import org.beatonma.commons.buildsrc.data.ParliamentDotUkPartyIDs
-import org.beatonma.commons.buildsrc.kts.extensions.*
+import org.beatonma.commons.buildsrc.kts.extensions.instrumentationTest
+import org.beatonma.commons.buildsrc.kts.extensions.main
+import org.beatonma.commons.buildsrc.kts.extensions.unitTest
 import org.beatonma.commons.buildsrc.local.LocalConfig
 
 plugins {
@@ -13,6 +16,8 @@ plugins {
 }
 
 android {
+    val git = Git.resolveData(project)
+
     defaultConfig {
         injectStrings(
             "ACCOUNT_USERNAME_CHARACTERS" to Commons.Account.Username.ALLOWED_CHARACTERS,
@@ -46,6 +51,15 @@ android {
         testInstrumentationRunner = "org.beatonma.commons.androidTest.HiltTestRunner"
 
         vectorDrawables.useSupportLibrary = true
+    }
+
+    buildTypes {
+        debug {
+            applicationIdSuffix = git.branch
+            manifestPlaceholders.put(
+                "appname" to "DEV:${git.branch}/Commons"
+            )
+        }
     }
 
     buildFeatures {
@@ -97,7 +111,8 @@ dependencies {
 
     debug {
         implementations(
-            Dependencies.Debug.LEAK_CANARY
+            Dependencies.Debug.LEAK_CANARY,
+            project(":themepreview")
         )
     }
 
@@ -116,8 +131,11 @@ dependencies {
 
             Dependencies.Room.RUNTIME,
 
+            Dependencies.AndroidX.Compose.ANIMATION,
+            Dependencies.AndroidX.Compose.MATERIAL_ICONS_CORE,
+            Dependencies.AndroidX.Compose.MATERIAL_ICONS_EXTENDED,
             Dependencies.AndroidX.Compose.RUNTIME,
-            Dependencies.AndroidX.Compose.LIVEDATA,
+            Dependencies.AndroidX.Compose.UI,
 
             Dependencies.AndroidX.APPCOMPAT,
             Dependencies.AndroidX.CONSTRAINTLAYOUT,
@@ -133,8 +151,6 @@ dependencies {
             Dependencies.Retrofit.Converter.MOSHI,
 
             Dependencies.Glide.CORE,
-            Dependencies.Coil.COIL,
-            Dependencies.Coil.ACCOMPANIST,
 
             Dependencies.Google.MATERIAL,
             Dependencies.Google.Play.AUTH,
@@ -147,7 +163,9 @@ dependencies {
             project(":snommoc"),
             project(":persistence"),
             project(":repo"),
-            project(":theme")
+            project(":theme"),
+            project(":compose"),
+            project(":svg")
         )
     }
 }
