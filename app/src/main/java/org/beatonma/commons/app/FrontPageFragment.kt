@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import androidx.annotation.IdRes
 import androidx.compose.foundation.Text
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -17,12 +18,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
 import org.beatonma.commons.R
-import org.beatonma.commons.app.featured.FeaturedContent
 import org.beatonma.commons.app.featured.FeaturedContentViewModel
-import org.beatonma.commons.data.core.room.entities.member.FeaturedMemberProfile
+import org.beatonma.commons.app.featured.ZeitgeistContent
+import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
 import org.beatonma.commons.kotlin.extensions.bundle
 import org.beatonma.commons.kotlin.extensions.navigateTo
-import org.beatonma.commons.repo.IoResultList
+import org.beatonma.commons.repo.models.Zeitgeist
+import org.beatonma.commons.repo.result.IoResult
 import org.beatonma.commons.repo.result.LoadingResult
 import org.beatonma.commons.repo.result.isLoading
 import org.beatonma.commons.repo.result.isSuccess
@@ -43,32 +45,41 @@ class FrontPageFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? = composeView {
         withSystemUi(window = requireActivity().window) {
-            val result by viewmodel.featuredPeople.collectAsState(LoadingResult())
+            val result by viewmodel.zeitgeist.collectAsState(LoadingResult())
             Column {
                 Spacer(modifier = Modifier.statusBarsHeight())
-                FeaturedPeopleResult(result)
+                ZeitgeistResult(result)
             }
         }
     }
 
     @Composable
-    fun FeaturedPeopleResult(result: IoResultList<FeaturedMemberProfile>) =
+    fun ZeitgeistResult(result: IoResult<Zeitgeist>) {
         when {
             result.isSuccess && result.data != null -> {
-                FeaturedContent(
-                    people = result.data!!,
-                    personOnClick = { profile ->
-                        requireView().navigateTo(
-                            R.id.action_frontPageFragment_to_memberProfileFragment,
-                            profile.bundle()
-                        )
-                    }
+                ZeitgeistContent(
+                    zeitgeist = result.data!!,
+                    memberOnClick = { profile ->
+                        navigateTo(R.id.action_frontPageFragment_to_memberProfileFragment, profile)
+                    },
+                    billOnClick = { bill ->
+                        navigateTo(R.id.action_frontPageFragment_to_billFragment, bill)
+                    },
+                    divisionOnClick = { division ->
+                        navigateTo(R.id.action_frontPageFragment_to_divisionProfileFragment,
+                            division)
+                    },
                 )
             }
 
             result.isLoading -> Loading()
             else -> Error()
         }
+    }
+
+    private fun <T : Parliamentdotuk> navigateTo(@IdRes navigationId: Int, target: T) {
+        requireView().navigateTo(navigationId, target.bundle())
+    }
 }
 
 fun Fragment.composeView(content: @Composable () -> Unit) = ComposeView(requireContext()).apply {
@@ -81,35 +92,20 @@ fun Fragment.composeView(content: @Composable () -> Unit) = ComposeView(requireC
 fun Loading(
     modifier: Modifier = Modifier,
 ) {
-    Text("Loading", style = MaterialTheme.typography.h1)
+    Text("Loading", style = MaterialTheme.typography.h1, modifier = modifier)
 }
 
 @Composable
 fun Error(
     modifier: Modifier = Modifier,
 ) {
-    Text("Error", style = MaterialTheme.typography.h1)
-}
-
-@Composable
-fun ComposeView.setContentWithSystemUi(
-    window: Window,
-    systemBarColor: Color = MaterialTheme.colors.SystemBars(),
-    content: @Composable () -> Unit,
-) {
-    setContent {
-        val systemUiController = remember { SystemUiController(window) }
-        Providers(SystemUiControllerAmbient provides systemUiController) {
-            SystemUiControllerAmbient.current.setSystemBarsColor(systemBarColor)
-            content()
-        }
-    }
+    Text("Error", style = MaterialTheme.typography.h1, modifier = modifier)
 }
 
 @Composable
 fun withSystemUi(
     window: Window,
-    systemBarColor: Color = MaterialTheme.colors.SystemBars(),
+    systemBarColor: Color = MaterialTheme.colors.SystemBars,
     content: @Composable () -> Unit,
 ) {
     val systemUiController = remember { SystemUiController(window) }
