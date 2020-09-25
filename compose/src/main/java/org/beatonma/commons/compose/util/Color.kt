@@ -173,6 +173,8 @@ fun Color.withBrightness(brightness: Float = 0.1F, hsl: HslColor = HslColor()): 
     }.toColor()
 }
 
+fun Color.withHsl(block: HslColor.() -> Unit): Color = toHslColor().apply { block() }.toColor()
+
 fun Color.withLuminance(brightness: Float = 0.05F): Color {
     val xyz = colorSpace.toXyz(red, green, blue)
     xyz[1] = brightness.coerceIn(0F, 1F) // Alter luminance
