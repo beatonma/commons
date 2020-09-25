@@ -1,6 +1,7 @@
 package org.beatonma.commons.svg
 
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.unit.IntSize
@@ -21,25 +22,37 @@ fun VectorGraphic.fitTo(
     availableSize: Size,
     scaleType: ScaleType,
     alignment: Alignment,
+    relativeOffset: Offset, // Values between 0F..1F, as proportion of final size
     matrix: Matrix,
     scaleMultiplier: Float,
 ) {
-    val widthScale = availableSize.width / width.toFloat()
-    val heightScale = availableSize.height / height.toFloat()
+    val widthF = width.toFloat()
+    val heightF = height.toFloat()
+    val widthScale = availableSize.width / widthF
+    val heightScale = availableSize.height / heightF
     val scale = when (scaleType) {
         ScaleType.Min -> min(widthScale, heightScale)
         ScaleType.Max -> max(widthScale, heightScale)
     } * scaleMultiplier
 
-    val offset = alignment.align(
+    val alignmentOffset = alignment.align(
         IntSize(
-            (availableSize.width - (width * scale)).toInt(),
-            (availableSize.height - (height * scale)).toInt()
+            (availableSize.width - (widthF * scale)).toInt(),
+            (availableSize.height - (heightF * scale)).toInt()
         )
     )
 
+    val scaledWidth = scale * widthF
+    val scaledHeight = scale * heightF
+
+    // alignmentOffset combined with relativeOffset
+    val composedOffset = Offset(
+        alignmentOffset.x + (scaledWidth * relativeOffset.x),
+        alignmentOffset.y + (scaledHeight * relativeOffset.y)
+    )
+
     matrix.apply {
-        translate(offset.x.toFloat(), offset.y.toFloat())
+        translate(composedOffset.x, composedOffset.y)
         scale(x = scale, y = scale)
     }
 }

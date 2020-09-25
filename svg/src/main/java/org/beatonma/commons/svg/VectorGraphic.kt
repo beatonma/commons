@@ -1,12 +1,22 @@
 package org.beatonma.commons.svg
 
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.withTransform
+
+data class ImageConfig(
+    val scaleType: ScaleType,
+    val alignment: Alignment,
+    val scaleMultiplier: Float,
+    val offset: Offset = Offset.Zero,
+    val matrix: Matrix = Matrix(),
+    val pathConfig: PathConfig? = null,
+)
 
 abstract class VectorGraphic(
     pathCount: Int,
@@ -20,9 +30,9 @@ abstract class VectorGraphic(
 
     abstract fun buildPaths()
 
-    fun render(drawScope: DrawScope) {
+    fun render(drawScope: DrawScope, pathConfig: PathConfig? = null) {
         paths.forEach { path ->
-            path.render(drawScope)
+            path.render(drawScope, pathConfig)
         }
     }
 }
@@ -41,21 +51,38 @@ val VectorGraphic.maxDimension get() = width.coerceAtLeast(height)
 val VectorGraphic.minDimension get() = width.coerceAtMost(height)
 
 fun VectorGraphic.render(
-    drawScope: DrawScope,
+    scope: DrawScope,
     scaleType: ScaleType,
     alignment: Alignment,
+    offset: Offset,
     scaleMultiplier: Float,
     matrix: Matrix,
+    pathConfig: PathConfig? = null,
 ) {
-    fitTo(drawScope.size, scaleType, alignment, matrix, scaleMultiplier)
+    fitTo(scope.size, scaleType, alignment, offset, matrix, scaleMultiplier)
 
-    drawScope.withTransform(
+    scope.withTransform(
         transformBlock = {
             transform(matrix)
         }
     ) {
-        render(this)
+        render(this, pathConfig)
     }
 
     matrix.reset()
+}
+
+fun VectorGraphic.render(
+    scope: DrawScope,
+    imageConfig: ImageConfig,
+) {
+    render(
+        scope,
+        imageConfig.scaleType,
+        imageConfig.alignment,
+        imageConfig.offset,
+        imageConfig.scaleMultiplier,
+        imageConfig.matrix,
+        imageConfig.pathConfig
+    )
 }

@@ -9,6 +9,18 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.DrawStyle
 import androidx.compose.ui.graphics.drawscope.Fill
 
+/**
+ * Container for rendering options.
+ */
+data class PathConfig(
+    val color: Color? = null,
+    @FloatRange(from = 0.0, to = 1.0) val alpha: Float = 1.0f,
+    val style: DrawStyle = Fill,
+    val colorFilter: ColorFilter? = null,
+    val blendMode: BlendMode = DrawScope.DefaultBlendMode,
+    val colorBlock: ((Color) -> Color)? = null,
+)
+
 abstract class VectorPath(
     val path: Path,
     val color: Color,
@@ -25,6 +37,17 @@ abstract class VectorPath(
     ) {
         scope.drawPath(path, color, alpha, style, colorFilter, blendMode)
     }
+}
+
+fun VectorPath.render(scope: DrawScope, config: PathConfig? = null) {
+    val c = config?.colorBlock?.invoke(config.color ?: this.color) ?: this.color
+    render(
+        scope,
+        color = c,
+        style = config?.style ?: this.style,
+        colorFilter = config?.colorFilter,
+        blendMode = config?.blendMode ?: DrawScope.DefaultBlendMode,
+    )
 }
 
 fun vectorPath(path: Path, color: Color, style: DrawStyle = Fill) =
