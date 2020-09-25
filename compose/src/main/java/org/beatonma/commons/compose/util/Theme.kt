@@ -2,6 +2,7 @@ package org.beatonma.commons.compose.util
 
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
+import org.beatonma.commons.theme.compose.theme.invertedColors
 
 @Composable
 inline val colors
@@ -14,3 +15,7 @@ inline val shapes
 @Composable
 inline val typography
     get() = MaterialTheme.typography
+
+@Composable
+inline val invertedColors
+    get() = MaterialTheme.invertedColors
