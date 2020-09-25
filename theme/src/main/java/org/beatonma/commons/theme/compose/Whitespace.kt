@@ -21,4 +21,9 @@ object Whitespace {
 
         val around = 8.dp
     }
+
+    object TextList {
+
+        val between = 8.dp
+    }
 }
