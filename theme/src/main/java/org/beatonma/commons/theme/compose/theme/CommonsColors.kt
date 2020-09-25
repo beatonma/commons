@@ -1,18 +1,20 @@
 package org.beatonma.commons.theme.compose.theme
 
 import androidx.compose.material.Colors
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import org.beatonma.commons.theme.compose.color.CommonsColor
 
-internal val CommonsLightThemeColors = lightColors(
+val CommonsLightThemeColors = lightColors(
     primary = CommonsColor.Primary,
     primaryVariant = CommonsColor.PrimaryVariant,
     onPrimary = CommonsColor.Text.PrimaryLight,
 
-    secondary = CommonsColor.Dark.Secondary,
-    secondaryVariant = CommonsColor.Dark.SecondaryVariant,
+    secondary = CommonsColor.Light.Secondary,
+    secondaryVariant = CommonsColor.Light.SecondaryVariant,
     onSecondary = CommonsColor.Text.PrimaryLight,
 
     background = CommonsColor.Light.Background,
@@ -25,7 +27,7 @@ internal val CommonsLightThemeColors = lightColors(
     onSurface = CommonsColor.Text.PrimaryDark
 )
 
-internal val CommonsDarkThemeColors: Colors = darkColors(
+val CommonsDarkThemeColors: Colors = darkColors(
     primary = CommonsColor.Primary,
     primaryVariant = CommonsColor.PrimaryVariant,
     onPrimary = CommonsColor.Text.PrimaryLight,
@@ -43,4 +45,11 @@ internal val CommonsDarkThemeColors: Colors = darkColors(
     onSurface = CommonsColor.Text.PrimaryLight
 )
 
-fun Colors.SystemBars() = background.copy(alpha = 0.4f)
+val Colors.SystemBars get() = background.copy(alpha = 0.4f)
+
+@Composable
+val MaterialTheme.invertedColors
+    get() = when (colors.isLight) {
+        true -> CommonsDarkThemeColors
+        false -> CommonsLightThemeColors
+    }
