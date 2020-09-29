@@ -1,6 +1,25 @@
 # Commons
+
 Rewrite of Commons for Android. Under active development but not yet released.
 
+# Buzzwords
+Aside from being a useful tool, I am writing this app as a demo reel because I want to write software for a living.
+
+Here are some of the app's technical selling points:
+
+- Dependency injection using Dagger and Hilt.
+- Written in Kotlin with coroutines and flow.
+- Modular code structure.
+- MotionLayout/ConstraintLayout for interactive layouts and overall UI design.
+  - Where possible, new screens are now written with Jetpack Compose.
+- Retrofit for network calls and extensive use of Room for local data persistence, using the repository pattern.
+- Single activity architecture with the Jetpack Navigation Component.
+- Social features use Google Sign-In for account creation.
+- Unit tests ensure integrity of data structures and transformations.
+- Custom views where they are useful: e.g. TimelineView renders the professional history of a Member as a scrollable chart.
+
+
+# About the project
 Several years ago I released an Android app called Commons which aimed to make it easier to keep up-to-date with UK politics. It looked nice and made a lot of data readable and easy to access... but outside of the time I spent developing it, I never actually used it. It was ultimately an encyclopaedia which failed to make its content engaging.
 
 It also suffered from a very basic backend which required a lot of manual intervention to update.
@@ -17,21 +36,6 @@ I still believe the app should exist so this is the all-new remake with the foll
 - Maintainability - data updates are now fully automated.
 
 - Transparency - source code is public for server and client(s).
-
-# Buzzwords
-Aside from being something useful, I am also writing this app as a demo reel because I want to do this sort of thing for a living.
-
-Here are some of the app's technical selling points:
-
-- Dependency injection using Dagger and Hilt.
-- Kotlin with coroutines and flow.
-- Modular code structure.
-- Retrofit for network calls and extensive use of Room for local data persistence, using the repository pattern.
-- MotionLayout/ConstraintLayout for interactive layouts and overall UI design.
-- Single activity architecture with the Jetpack Navigation Component.
-- Social features use Google Sign-In for account creation.
-- Unit tests ensure integrity of data structures and transformations.
-- Custom views where they are useful: e.g. TimelineView renders the professional history of a Member as a scrollable chart.
 
 # Server
 The backend of the app is written in Django: https://github.com/beatonma/snommoc
