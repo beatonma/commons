@@ -10,8 +10,8 @@ import org.beatonma.commons.theme.compose.color.CommonsColor
 inline class HslColor(private val hsl: FloatArray = FloatArray(4)) {
     constructor(
         hue: Float,
-        saturation: Float,
-        lightness: Float,
+        saturation: Float = 1F,
+        lightness: Float = 0.5F,
         alpha: Float = 1F,
     ) : this(
         floatArrayOf(hue, saturation, lightness, alpha)
@@ -58,7 +58,12 @@ inline class HslColor(private val hsl: FloatArray = FloatArray(4)) {
     operator fun component3() = lightness
     operator fun component4() = alpha
 
-    fun set(hue: Float, saturation: Float, lightness: Float, alpha: Float = 1F) {
+    fun set(
+        hue: Float = this.hue,
+        saturation: Float = this.saturation,
+        lightness: Float = this.lightness,
+        alpha: Float = this.alpha,
+    ) {
         this.hue = hue
         this.saturation = saturation
         this.lightness = lightness
