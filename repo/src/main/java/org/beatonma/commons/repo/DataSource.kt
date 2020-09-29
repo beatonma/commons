@@ -38,14 +38,17 @@ interface BaseDataSource {
 
 interface CommonsApi {
     // READ
+    @Deprecated("Use Zeitgeist")
     suspend fun getFeaturedPeople(): IoResultList<ApiMemberProfile>
     suspend fun getMember(parliamentdotuk: ParliamentID): IoResult<ApiCompleteMember>
 
+    @Deprecated("Use Zeitgeist")
     suspend fun getFeaturedBills(): IoResultList<ApiBill>
     suspend fun getBill(parliamentdotuk: ParliamentID): IoResult<ApiBill>
 
     suspend fun getVotesForMember(house: House, parliamentdotuk: ParliamentID): IoResultList<ApiMemberVote>
 
+    @Deprecated("Use Zeitgeist")
     suspend fun getFeaturedDivisions(): IoResultList<ApiDivision>
     suspend fun getDivision(house: House, parliamentdotuk: ParliamentID): IoResult<ApiDivision>
 
@@ -61,6 +64,8 @@ interface CommonsApi {
     ): IoResult<SocialContent>
 
     suspend fun getMessageOfTheDay(): IoResultList<MessageOfTheDay>
+
+    suspend fun getZeitgeist(): IoResult<ApiZeitgeist>
 
     // WRITE
     suspend fun registerUser(googleToken: String): IoResult<ApiUserToken>
@@ -82,25 +87,21 @@ class CommonsRemoteDataSource @Inject constructor(
     private val service: CommonsService
 ) : BaseDataSource, CommonsApi {
 
-    override suspend fun getFeaturedPeople() = getResult {
-        service.getFeaturedPeople()
-    }
+    override suspend fun getZeitgeist() = getResult(service::getZeitgeist)
+
+    override suspend fun getFeaturedPeople() = getResult(service::getFeaturedPeople)
 
     override suspend fun getMember(parliamentdotuk: ParliamentID) = getResult {
         service.getMember(parliamentdotuk)
     }
 
-    override suspend fun getFeaturedBills() = getResult {
-        service.getFeaturedBills()
-    }
+    override suspend fun getFeaturedBills() = getResult(service::getFeaturedBills)
 
     override suspend fun getBill(parliamentdotuk: ParliamentID) = getResult {
         service.getBill(parliamentdotuk)
     }
 
-    override suspend fun getFeaturedDivisions() = getResult {
-        service.getFeaturedDivisions()
-    }
+    override suspend fun getFeaturedDivisions() = getResult(service::getFeaturedDivisions)
 
     override suspend fun getVotesForMember(house: House, parliamentdotuk: ParliamentID) = getResult {
         service.getVotesForMember(house, parliamentdotuk)
@@ -122,9 +123,7 @@ class CommonsRemoteDataSource @Inject constructor(
         service.getSearchResults(query)
     }
 
-    override suspend fun getMessageOfTheDay() = getResult {
-        service.getMessageOfTheDay()
-    }
+    override suspend fun getMessageOfTheDay() = getResult(service::getMessageOfTheDay)
 
     override suspend fun getSocialForTarget(
         targetType: SocialTargetType,

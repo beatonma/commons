@@ -148,5 +148,13 @@ object Contract {
     const val ACCOUNT_NEW_USERNAME = "new_username"
     const val ACCOUNT_ACTION_CHANGE_USERNAME = "rename"
     const val ACCOUNT_ACTION = "action"
+
+    // Zeitgeist
+    const val MOTD = "motd"
+    const val ZEITGEIST_PEOPLE = "people"
+    const val ZEITGEIST_DIVISIONS = "divisions"
+    const val ZEITGEIST_BILLS = "bills"
+    const val ZEITGEIST_TARGET = "target"
+    const val ZEITGEIST_REASON = "reason"
 }
 

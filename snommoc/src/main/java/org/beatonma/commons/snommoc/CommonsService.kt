@@ -37,13 +37,17 @@ private object Endpoints {
     const val DIVISION = "$DIVISION_API_PATH/{${Contract.HOUSE}}/{$PARLIAMENTDOTUK}/"
 
     const val CONSTITUENCY = "$CONSTITUENCY_API_PATH/{$PARLIAMENTDOTUK}/"
-    const val CONSTITUENCY_ELECTION_RESULTS = "$CONSTITUENCY_API_PATH/{${Contract.CONSTITUENCY_ID}}/election/{${Contract.ELECTION_ID}}/"
+    const val CONSTITUENCY_ELECTION_RESULTS =
+        "$CONSTITUENCY_API_PATH/{${Contract.CONSTITUENCY_ID}}/election/{${Contract.ELECTION_ID}}/"
 
     const val FEATURED_MEMBERS = "$FEATURED_API_PATH/members/"
     const val FEATURED_BILLS = "$FEATURED_API_PATH/bills/"
     const val FEATURED_DIVISIONS = "$FEATURED_API_PATH/divisions/"
 
+    const val ZEITGEIST = "$API_PATH/zeitgeist/"
+
     object Social {
+
         const val ACCOUNT = "$SOCIAL_API_PATH/account/"
         const val GAUTH = "$SOCIAL_API_PATH/auth/g/"
         const val ALL = "$SOCIAL_TARGET_PATH/all/"
@@ -75,16 +79,19 @@ interface SnommocService {
     @GET(Endpoints.PING)
     suspend fun ping(): Response<String>
 
+    @Deprecated("Use Zeitgeist")
     @EnvelopePayload
     @GET(Endpoints.FEATURED_MEMBERS)
     suspend fun getFeaturedPeople(): ListResponse<ApiMemberProfile>
 
     // Bills
+    @Deprecated("Use Zeitgeist")
     @EnvelopePayload
     @GET(Endpoints.FEATURED_BILLS)
     suspend fun getFeaturedBills(): ListResponse<ApiBill>
 
     // Divisions
+    @Deprecated("Use Zeitgeist")
     @EnvelopePayload
     @GET(Endpoints.FEATURED_DIVISIONS)
     suspend fun getFeaturedDivisions(): ListResponse<ApiDivision>
@@ -95,12 +102,16 @@ interface SnommocService {
     @EnvelopePayload
     @GET(Endpoints.SEARCH)
     suspend fun getSearchResults(
-        @Query("search") query: String
+        @Query("search") query: String,
     ): ListResponse<MemberSearchResult>
 
+    @Deprecated("Use Zeitgeist")
     @EnvelopePayload
     @GET(Endpoints.MOTD)
     suspend fun getMessageOfTheDay(): ListResponse<MessageOfTheDay>
+
+    @GET(Endpoints.ZEITGEIST)
+    suspend fun getZeitgeist(): Response<ApiZeitgeist>
 }
 
 
