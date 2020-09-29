@@ -7,49 +7,6 @@ import org.beatonma.commons.snommoc.Contract
 import java.time.LocalDate
 
 
-
-data class ApiHouseMembership(
-    @field:Json(name = Contract.HOUSE) val house: House,
-    @field:Json(name = Contract.START) val start: LocalDate,
-    @field:Json(name = Contract.END) val end: LocalDate?
-)
-
-data class ApiMemberProfile(
-    @field:Json(name = Contract.PARLIAMENTDOTUK)val parliamentdotuk: ParliamentID,
-    @field:Json(name = Contract.NAME) val name: String,
-    @field:Json(name = Contract.PARTY) val party: ApiParty,  // Use Party object for api response, serialized to id for storage
-    @field:Json(name = Contract.CONSTITUENCY) val constituency: ApiConstituencyMinimal?,  // Use Constituency object for api response, serialized to id for storage
-    @field:Json(name = Contract.ACTIVE) val active: Boolean? = null,
-    @field:Json(name = Contract.IS_MP) val isMp: Boolean? = null,
-    @field:Json(name = Contract.IS_LORD) val isLord: Boolean? = null,
-    @field:Json(name = Contract.AGE) val age: Int? = null,
-    @field:Json(name = Contract.DATE_OF_BIRTH) val dateOfBirth: LocalDate? = null,
-    @field:Json(name = Contract.DATE_OF_DEATH) val dateOfDeath: LocalDate? = null,
-    @field:Json(name = Contract.GENDER) val gender: String? = null,
-    @field:Json(name = Contract.PLACE_OF_BIRTH) val placeOfBirth: ApiTown? = null,
-    @field:Json(name = Contract.PORTRAIT) val portraitUrl: String? = null,
-    @field:Json(name = Contract.CURRENT_POST) val currentPost: String? = null,
-)
-
-data class ApiTown(
-    @field:Json(name = Contract.TOWN) val town: String,
-    @field:Json(name = Contract.COUNTRY) val country: String = "UK"
-)
-
-data class ApiParty(
-    @field:Json(name = Contract.PARLIAMENTDOTUK) val parliamentdotuk: ParliamentID,
-    @field:Json(name = Contract.NAME) val name: String
-)
-
-
-
-data class ApiElection(
-    @field:Json(name = Contract.PARLIAMENTDOTUK) val parliamentdotuk: ParliamentID,
-    @field:Json(name = Contract.NAME) val name: String,
-    @field:Json(name = Contract.DATE) val date: LocalDate,
-    @field:Json(name = Contract.ELECTION_TYPE) val electionType: String
-)
-
 data class ApiCompleteMember(
     val profile: ApiMemberProfile,
     @field:Json(name = Contract.ADDRESS) val addresses: ApiAddresses,
@@ -68,20 +25,39 @@ data class ApiCompleteMember(
      */
 )
 
-
-
-
-data class ApiParliamentarySession(
+data class ApiMemberProfile(
     @field:Json(name = Contract.PARLIAMENTDOTUK) val parliamentdotuk: ParliamentID,
     @field:Json(name = Contract.NAME) val name: String,
+    @field:Json(name = Contract.PARTY)
+    val party: ApiParty,  // Use Party object for api response, serialized to id for storage
+    @field:Json(name = Contract.CONSTITUENCY)
+    val constituency: ApiConstituencyMinimal?,  // Use Constituency object for api response, serialized to id for storage
+    @field:Json(name = Contract.ACTIVE) val active: Boolean? = null,
+    @field:Json(name = Contract.IS_MP) val isMp: Boolean? = null,
+    @field:Json(name = Contract.IS_LORD) val isLord: Boolean? = null,
+    @field:Json(name = Contract.AGE) val age: Int? = null,
+    @field:Json(name = Contract.DATE_OF_BIRTH) val dateOfBirth: LocalDate? = null,
+    @field:Json(name = Contract.DATE_OF_DEATH) val dateOfDeath: LocalDate? = null,
+    @field:Json(name = Contract.GENDER) val gender: String? = null,
+    @field:Json(name = Contract.PLACE_OF_BIRTH) val placeOfBirth: ApiTown? = null,
+    @field:Json(name = Contract.PORTRAIT) val portraitUrl: String? = null,
+    @field:Json(name = Contract.CURRENT_POST) val currentPost: String? = null,
 )
 
+data class ApiHouseMembership(
+    @field:Json(name = Contract.HOUSE) val house: House,
+    @field:Json(name = Contract.START) val start: LocalDate,
+    @field:Json(name = Contract.END) val end: LocalDate?,
+)
 
-
+data class ApiTown(
+    @field:Json(name = Contract.TOWN) val town: String,
+    @field:Json(name = Contract.COUNTRY) val country: String = "UK",
+)
 
 data class ApiAddresses(
     @field:Json(name = Contract.PHYSICAL) val physical: List<ApiPhysicalAddress>,
-    @field:Json(name = Contract.WEB) val web: List<ApiWebAddress>
+    @field:Json(name = Contract.WEB) val web: List<ApiWebAddress>,
 )
 
 data class ApiPhysicalAddress(

@@ -17,6 +17,12 @@ import org.beatonma.commons.data.core.room.entities.member.*
 interface MemberDao: SharedPartyDao, SharedConstituencyDao, SharedElectionDao {
 
     // Get operations
+
+    @Transaction
+    @Query("""SELECT * FROM zeitgeist_members""")
+    fun getZeitgeistMembers(): FlowList<ResolvedZeitgeistMember>
+
+    @Deprecated("Use zeitgeist")
     @Transaction
     @Query("""SELECT * FROM featured_members""")
     fun getFeaturedProfiles(): FlowList<FeaturedMemberProfile>
@@ -67,8 +73,6 @@ interface MemberDao: SharedPartyDao, SharedConstituencyDao, SharedElectionDao {
     @Query("""SELECT * FROM party_associations WHERE partyacc_member_id = :memberId""")
     fun getPartyAssociations(memberId: ParliamentID): FlowList<PartyAssociationWithParty>
 
-
-
     // Insert operations
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPhysicalAddresses(webaddresses: List<PhysicalAddress>)
@@ -76,6 +80,10 @@ interface MemberDao: SharedPartyDao, SharedConstituencyDao, SharedElectionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWebAddresses(webaddresses: List<WebAddress>)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertZeitgeistMembers(zeitgeistMembers: List<ZeitgeistMember>)
+
+    @Deprecated("Use zeitgeist")
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFeaturedPeople(people: List<FeaturedMember>)
 
@@ -130,6 +138,7 @@ interface MemberDao: SharedPartyDao, SharedConstituencyDao, SharedElectionDao {
         return result
     }
 
+    @Deprecated("Use zeitgeist")
     @Transaction
     suspend fun saveFeaturedPeople(featuredPeople: List<MemberProfile>) {
         safeInsertProfiles(featuredPeople, ifNotExists = true)

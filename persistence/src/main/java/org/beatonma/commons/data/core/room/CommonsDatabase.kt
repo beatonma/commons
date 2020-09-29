@@ -13,6 +13,7 @@ import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyEle
 import org.beatonma.commons.data.core.room.entities.division.Division
 import org.beatonma.commons.data.core.room.entities.division.FeaturedDivision
 import org.beatonma.commons.data.core.room.entities.division.Vote
+import org.beatonma.commons.data.core.room.entities.division.ZeitgeistDivision
 import org.beatonma.commons.data.core.room.entities.election.ConstituencyResult
 import org.beatonma.commons.data.core.room.entities.election.Election
 import org.beatonma.commons.data.core.room.entities.member.*
@@ -36,6 +37,7 @@ import org.beatonma.commons.data.core.room.entities.user.UserToken
         TopicOfInterest::class,
         Town::class,
         WebAddress::class,
+        ZeitgeistMember::class,
 
         // Bills
         Bill::class,
@@ -45,6 +47,7 @@ import org.beatonma.commons.data.core.room.entities.user.UserToken
         BillStageSitting::class,
         BillType::class,
         FeaturedBill::class,
+        ZeitgeistBill::class,
 
         // Constituency
         Constituency::class,
@@ -59,6 +62,7 @@ import org.beatonma.commons.data.core.room.entities.user.UserToken
         // Divisions
         Division::class,
         FeaturedDivision::class,
+        ZeitgeistDivision::class,
         Vote::class,
 
         // Common/Generic

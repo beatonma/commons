@@ -9,9 +9,14 @@ import org.beatonma.commons.data.core.room.entities.bill.*
 @Dao
 interface BillDao {
 
+    @Deprecated("Use Zeitgeist")
     @Transaction
     @Query("""SELECT * FROM featured_bills""")
     fun getFeaturedBills(): FlowList<FeaturedBillWithBill>
+
+    @Transaction
+    @Query("""SELECT * FROM zeitgeist_bills""")
+    fun getZeitgeistBills(): FlowList<ResolvedZeitgeistBill>
 
     @Query("""SELECT * FROM bills WHERE bill_parliamentdotuk = :parliamentdotuk""")
     fun getBill(parliamentdotuk: ParliamentID): Flow<Bill>
@@ -62,4 +67,7 @@ interface BillDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertParliamentarySession(parliamentarySession: ParliamentarySession)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertZeitgeistBills(zeitgeistBills: List<ZeitgeistBill>)
 }

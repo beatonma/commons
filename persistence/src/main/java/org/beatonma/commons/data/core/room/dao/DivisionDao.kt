@@ -11,6 +11,11 @@ import org.beatonma.commons.data.core.room.entities.division.*
 interface DivisionDao: SharedPartyDao {
 
     @Transaction
+    @Query("""SELECT * FROM zeitgeist_divisions""")
+    fun getZeitgeistDivisions(): FlowList<ResolvedZeitgeistDivision>
+
+    @Deprecated("Use zeitgeist")
+    @Transaction
     @Query("""SELECT * FROM featured_divisions""")
     fun getFeaturedDivisionsFlow(): FlowList<FeaturedDivisionWithDivision>
 
@@ -18,8 +23,12 @@ interface DivisionDao: SharedPartyDao {
     @Query("""SELECT * FROM divisions WHERE division_parliamentdotuk = :parliamentdotuk""")
     fun getDivisionWithVotes(parliamentdotuk: ParliamentID): Flow<DivisionWithVotes>
 
+    @Deprecated("Use zeitgeist")
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFeaturedDivisions(featuredDivisions: List<FeaturedDivision>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertZeitgeistDivisions(zeitgeistDivisions: List<ZeitgeistDivision>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertDivisions(divisions: List<Division>)
@@ -29,16 +38,4 @@ interface DivisionDao: SharedPartyDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertVotes(votes: List<Vote>)
-
-//    @Transaction
-//    suspend fun insertApiDivision(parliamentdotuk: ParliamentID, apiDivision: Division) {
-//        insertPartiesIfNotExists(apiDivision.votes.mapNotNull { it.party })
-//        insertDivision(apiDivision.toDivision())
-//
-//        apiDivision.votes.map { apiVote -> apiVote.toVote(parliamentdotuk) }
-//
-//        insertVotes(
-//            apiDivision.votes.map { apiVote -> apiVote.toVote(parliamentdotuk) }
-//        )
-//    }
 }
