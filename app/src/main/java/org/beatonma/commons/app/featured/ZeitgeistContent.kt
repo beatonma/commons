@@ -6,7 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumnFor
-import androidx.compose.foundation.lazy.LazyRowFor
 import androidx.compose.material.ListItem
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -19,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastForEach
 import org.beatonma.commons.R
 import org.beatonma.commons.compose.components.OptionalText
 import org.beatonma.commons.compose.util.dotted
@@ -38,6 +38,7 @@ import org.beatonma.commons.svg.ImageConfig
 import org.beatonma.commons.svg.PathConfig
 import org.beatonma.commons.svg.ScaleType
 import org.beatonma.commons.svg.VectorGraphic
+import org.beatonma.commons.theme.compose.Whitespace
 import org.beatonma.commons.theme.compose.theme.CommonsTheme
 import org.beatonma.commons.theme.compose.theme.systemui.navigationBarsHeightPlus
 
@@ -47,7 +48,6 @@ private fun ResolvedZeitgeistDivision.reason() = this.zeitgeistDivision.reason.r
 private fun ResolvedZeitgeistBill.reason() = this.zeitgeistBill.reason.reason()
 
 internal val BackgroundPortraitConfig = ambientOf<ImageConfig> { error("No ImageConfig") }
-internal val BadgePortraitConfig = ambientOf<ImageConfig> { error("No ImageConfig") }
 internal val PartyImageCache =
     ambientOf<MutableMap<ParliamentID, VectorGraphic>> { error("No image cache") }
 
@@ -68,10 +68,14 @@ fun ZeitgeistContent(
                     Modifier.padding(16.dp),
                     style = MaterialTheme.typography.h1)
 
+
                 provideImageConfigs {
-                    LazyRowFor(zeitgeist.members.shuffled()) {
-                        Member(it.member, memberOnClick, it.reason())
+                    ScrollableMembersLayout {
+                        zeitgeist.members.fastForEach {
+                            Member(it.member, memberOnClick, it.reason())
+                        }
                     }
+
                     LazyColumnFor(zeitgeist.divisions.shuffled()) {
                         Division(it, divisionOnClick, it.reason())
                     }
@@ -80,7 +84,7 @@ fun ZeitgeistContent(
                     }
                 }
 
-                Spacer(modifier = Modifier.navigationBarsHeightPlus(160.dp))
+                Spacer(modifier = Modifier.navigationBarsHeightPlus(Whitespace.WindowContent.bottom))
             }
         }
     }
@@ -134,24 +138,11 @@ fun provideImageConfigs(content: @Composable () -> Unit) {
             }
         )
     }
-    val badgePortraitConfig = remember {
-        ImageConfig(
-            ScaleType.Min, Alignment.Center,
-            scaleMultiplier = 1.0F,
-            offset = Offset(0.5F, 0F),
-        )
-    }
     val partyImageCache: MutableMap<ParliamentID, VectorGraphic> = remember { mutableMapOf() }
 
     Providers(
         BackgroundPortraitConfig provides backgroundPortraitConfig,
-        BadgePortraitConfig provides badgePortraitConfig,
         PartyImageCache provides partyImageCache,
         children = content
     )
-}
-
-@Composable
-fun FlexyGrid() {
-    TODO("Display member cards with/without portraits together. Group smaller views together.")
 }
