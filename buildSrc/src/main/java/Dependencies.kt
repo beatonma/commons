@@ -105,13 +105,8 @@ object Dependencies {
                 version: String = Versions.AX_COMPOSE
             ) = androidx(group = "compose.$group", artifact = artifact, version = version)
 //
-//            val core
-//                get() = arrayOf(
-//                    COMPOSE,
-//                    FOUNDATION
-//                )
-
-            val COMPILER = compose("compiler")
+val COMPILER =
+    androidx(group = "compose", artifact = "compose-compiler", version = Versions.AX_COMPOSE)
 
             val ANIMATION = compose("animation")
 
