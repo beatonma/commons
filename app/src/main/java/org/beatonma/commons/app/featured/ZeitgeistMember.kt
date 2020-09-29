@@ -8,7 +8,6 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Providers
 import androidx.compose.runtime.ambientOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawShadow
@@ -16,7 +15,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.ui.tooling.preview.Preview
 import org.beatonma.commons.app.ui.colors.ComposePartyColors
 import org.beatonma.commons.app.ui.colors.theme
 import org.beatonma.commons.compose.components.Avatar
@@ -39,7 +37,9 @@ import org.beatonma.commons.theme.compose.theme.withSquareTop
 
 private val PortraitWidth = 260.dp
 private val TextPadding = 16.dp
-private val PartyAmbient =
+private val MemberPadding = 4.dp // Space between members
+
+internal val PartyAmbient =
     ambientOf<Pair<Party, ComposePartyColors>> { error("No party available") }
 private val MemberTextHeightAmbient = ambientOf<Dp> { error("No size set for member text height") }
 
@@ -53,20 +53,21 @@ fun Member(
     reason: ZeitgeistReason?,
     modifier: Modifier = Modifier,
 ) {
-    val memberTextHeight = (
-            typography.overline.fontSize.value
-                    + typography.h6.fontSize.value
-                    + (typography.caption.fontSize.value * 3)
-                    + (TextPadding.value * 2)
-            ).dp
-    val profile = member.profile
+    /**
+     * TODO Replace with value calculated from current typography
+     *
+     * Currently determined by experiment as typography fontSize does not include ascents/descents/
+     * overall line height, only the base font size. Unsure how to calculate this at runtime...
+     */
+    val memberTextHeight = 103.dp
 
+    val profile = member.profile
     val party = member.party
 
     provideParty(party) {
         Surface(
             modifier.width(PortraitWidth)
-                .padding(4.dp)
+                .padding(MemberPadding)
                 .drawShadow(4.dp, shapes.small),
             color = invertedColors.surface,
         ) {
@@ -75,7 +76,7 @@ fun Member(
                     MemberWithoutPortrait(profile, onClick)
                 }
                 else {
-                    MemberWithPortrait(member, onClick, reason)
+                    MemberWithPortrait(profile, onClick, reason)
                 }
             }
         }
@@ -86,12 +87,42 @@ fun Member(
 private fun MemberWithoutPortrait(
     profile: MemberProfile,
     onClick: (MemberProfile) -> Unit,
+    height: Dp = MemberTextHeightAmbient.current,
     modifier: Modifier = Modifier,
 ) {
     PartyBackground(
         modifier.clickable(onClick = { onClick(profile) })
+            .height(height)
     ) {
         MemberText(profile)
+    }
+}
+
+@Composable
+private fun MemberWithPortrait(
+    profile: MemberProfile,
+    onClick: (MemberProfile) -> Unit,
+    reason: ZeitgeistReason?,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier.clickable { onClick(profile) }
+    ) {
+        Avatar(
+            /* profile.portraitUrl,*/
+            DEV_AVATAR,
+            modifier = Modifier
+                .height((MemberTextHeightAmbient.current * 2) + (MemberPadding * 4))
+                .fillMaxWidth(),
+        )
+
+        PartyBackground(
+            Modifier
+                .height(MemberTextHeightAmbient.current)
+                .clip(shapes.small.withSquareTop())
+        ) {
+            MemberText(profile)
+        }
     }
 }
 
@@ -101,11 +132,7 @@ private fun PartyBackground(
     content: @Composable () -> Unit,
 ) {
     val (party, theme) = PartyAmbient.current
-    Stack(
-        modifier
-            .height(MemberTextHeightAmbient.current)
-            .clip(shapes.small.withSquareTop())
-    ) {
+    Stack(modifier) {
         val logo = getLogo(PartyImageCache.current, party)
 
         PartyPortrait(
@@ -134,37 +161,11 @@ internal fun PartyPortrait(
 }
 
 @Composable
-private fun MemberWithPortrait(
-    member: MinimalMember,
-    onClick: (MemberProfile) -> Unit,
-    reason: ZeitgeistReason?,
-    modifier: Modifier = Modifier,
-) {
-    val profile = member.profile
-
-    Column(
-        modifier.clickable { onClick(profile) }
-    ) {
-        Avatar(
-            /* profile.portraitUrl,*/
-            DEV_AVATAR,
-            modifier = Modifier
-                .height(MemberTextHeightAmbient.current * 2)
-                .fillMaxWidth(),
-        )
-
-        PartyBackground {
-            MemberText(profile)
-        }
-    }
-}
-
-@Composable
 private fun MemberText(
     profile: MemberProfile,
     modifier: Modifier = Modifier,
 ) = MemberText(profile.name,
-    dotted(profile.party.name, profile.parliamentdotuk.toString()),
+    dotted(PartyAmbient.current.first.name, profile.parliamentdotuk.toString()),
     profile.coerceCurrentPost(),
     ambientPartyTheme().colorOnPrimary,
     modifier
@@ -225,57 +226,8 @@ private fun getLogo(
 }
 
 @Composable
-@Preview("MemberWithPortrait")
-private fun MemberPreview() {
-    provideParty(party = Party(15, "Labour")) {
-        provideImageConfigs {
-            Member(
-                member = MinimalMember(
-                    MemberProfile(
-                        0,
-                        name = "Mr Example",
-                        portraitUrl = DEV_AVATAR,
-                        party = PartyAmbient.current.first,
-                        constituency = null,
-                        currentPost = "Shadow Minister of Silly Walks",
-                    ),
-                    PartyAmbient.current.first,
-                    constituency = null
-                ),
-                onClick = {},
-                reason = null,
-            )
-        }
-    }
-}
-
-@Composable
-@Preview("MemberWithoutPortrait")
-private fun MemberNoPreviewPreview() {
-    provideParty(party = Party(15, "Labour")) {
-        provideImageConfigs {
-            Member(
-                member = MinimalMember(
-                    MemberProfile(
-                        0,
-                        name = "Mr Example",
-                        party = PartyAmbient.current.first,
-                        constituency = null,
-                        currentPost = "Shadow Minister of Silly Walks",
-                    ),
-                    PartyAmbient.current.first,
-                    constituency = null
-                ),
-                onClick = {},
-                reason = null,
-            )
-        }
-    }
-}
-
-@Composable
-private fun provideParty(party: Party, content: @Composable () -> Unit) {
+internal fun provideParty(party: Party, content: @Composable () -> Unit) {
     val theme = party.theme()
-    val partyWithTheme = remember { Pair(party, theme) }
+    val partyWithTheme = Pair(party, theme)
     Providers(PartyAmbient provides partyWithTheme, children = content)
 }
