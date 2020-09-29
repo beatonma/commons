@@ -21,6 +21,12 @@ class CommonsComposeModule : SimpleAndroidProjectPlugin() {
 
     override fun applyDependencies(dependencies: DependencyHandlerScope) {
         with(dependencies) {
+            instrumentationTest {
+                implementations(
+                    Dependencies.AndroidX.Compose.TEST
+                )
+            }
+
             main {
                 implementations(
                     Dependencies.AndroidX.Compose.UI,
