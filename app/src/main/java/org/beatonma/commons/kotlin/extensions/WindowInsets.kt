@@ -10,6 +10,7 @@ import android.view.WindowInsetsAnimation
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.Insets
 import androidx.core.view.*
+import org.beatonma.commons.core.extensions.autotag
 import org.beatonma.commons.device.Sdk
 
 /**
@@ -113,14 +114,14 @@ fun View.addImeWindowInsetsAnimation() {
     (context as? Activity)?.window?.setDecorFitsSystemWindows(false)
     setWindowInsetsAnimationCallback(
         @RequiresApi(Build.VERSION_CODES.R)
-        object: WindowInsetsAnimation.Callback(DISPATCH_MODE_STOP) {
+        object : WindowInsetsAnimation.Callback(DISPATCH_MODE_STOP) {
             override fun onProgress(
                 insets: WindowInsets,
                 animations: MutableList<WindowInsetsAnimation>,
             ): WindowInsets {
                 updateLayoutParams<ViewGroup.MarginLayoutParams> {
                     val margin = bottomMargin + insets.getInsets(WindowInsets.Type.ime()).bottom
-                    updateMargins(bottom = margin.dump("Margin"))
+                    updateMargins(bottom = margin)
                 }
                 return insets
             }
