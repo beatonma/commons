@@ -39,29 +39,50 @@ class CommonsApplicationModule: CommonsAndroidModule<BaseAppModuleExtension>() {
                 }
 
                 release {
+                    val buildLabel =
+                        "$timestamp-${git.commitCount}-${git.sha}-${git.tag}-${git.branch}"
+                    val outputName = "commons-release-$buildLabel"
+
                     applicationVariants.all {
                         outputs
                             .map { it as BaseVariantOutputImpl }
                             .forEach { output ->
-                                output.outputFileName = output.outputFileName
-                                    .replace("app-", "commons-")
-                                    .replace(
-                                        "-release",
-                                        "-release-$timestamp-${git.commitCount}-${git.tag}-${git.sha}"
-                                    )
+                                output.outputFileName = "$outputName.${output.outputFile.extension}"
                             }
                     }
 
                     target.rootProject.file("proguard").listFiles()
                         ?.filter { it.name.startsWith("proguard") }
                         ?.toTypedArray()
-                        ?.let { proguardFiles(*it) }
+                        ?.let(::proguardFiles)
+
+                    // Make a copy of obfuscation mapping files after release build
+                    target.copyMappingFiles("apk/release/$outputName")
 
                     minify()
                 }
             }
 
             applyPackagingOptions()
+        }
+    }
+
+    private fun Project.copyMappingFiles(targetDirectory: String) {
+        val taskName = "copyMappingFiles"
+
+        afterEvaluate {
+            tasks.register(taskName) {
+                doLast {
+                    val outputDir = rootProject.file(targetDirectory)
+
+                    val success = file("build/outputs/mapping/release/").copyRecursively(outputDir)
+
+                    if (success) println("Mapping files copied to ${outputDir.absolutePath}")
+                    else error("$taskName failed! Mapping files could not be copied from build/outputs/mapping/release/ to ${outputDir.absolutePath}!")
+                }
+            }
+
+            tasks.named("assembleRelease").get().finalizedBy(taskName)
         }
     }
 
