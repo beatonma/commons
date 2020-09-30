@@ -1,13 +1,15 @@
 package org.beatonma.commons.core
 
+import androidx.annotation.Keep
+
 typealias ParliamentID = Int
 typealias SnommocToken = String
-
 
 /**
  * Names are lowercase so they can be used with Navigation Components deepLink
  * as part of the URL path.
  */
+@Keep
 enum class House {
     commons,
     lords,
@@ -19,6 +21,7 @@ enum class House {
     }
 }
 
+@Keep
 enum class VoteType {
     AyeVote,
     NoVote,
