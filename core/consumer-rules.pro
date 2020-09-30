@@ -1,0 +1,2 @@
+-keepnames class org.beatonma.commons.core.House
+-keepnames class org.beatonma.commons.core.VoteType

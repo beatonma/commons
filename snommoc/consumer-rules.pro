@@ -1,0 +1,1 @@
+-keep class org.beatonma.commons.snommoc.models.** { *; }
