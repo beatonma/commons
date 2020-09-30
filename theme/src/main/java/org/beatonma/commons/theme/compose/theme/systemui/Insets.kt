@@ -19,7 +19,7 @@
 package org.beatonma.commons.theme.compose.theme.systemui
 
 import android.view.View
-import androidx.compose.foundation.layout.InnerPadding
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
@@ -415,7 +415,7 @@ fun Modifier.navigationBarsWidthPlus(
 }
 
 /**
- * Returns the current insets converted into a [InnerPadding].
+ * Returns the current insets converted into a [PaddingValues].
  *
  * @param start Whether to apply the inset on the start dimension.
  * @param top Whether to apply the inset on the top dimension.
@@ -427,10 +427,10 @@ fun Insets.toInnerPadding(
     start: Boolean = true,
     top: Boolean = true,
     end: Boolean = true,
-    bottom: Boolean = true
-): InnerPadding = with(DensityAmbient.current) {
+    bottom: Boolean = true,
+): PaddingValues = with(DensityAmbient.current) {
     val layoutDirection = LayoutDirectionAmbient.current
-    InnerPadding(
+    PaddingValues(
         start = when {
             start && layoutDirection == LayoutDirection.Ltr -> this@toInnerPadding.left.toDp()
             start && layoutDirection == LayoutDirection.Rtl -> this@toInnerPadding.right.toDp()
