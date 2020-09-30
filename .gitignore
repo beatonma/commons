@@ -9,3 +9,4 @@
 **/mipmap*/*.png
 **/drawable*/*.png
 buildSrc/**/local/
+/apk/
