@@ -4,9 +4,7 @@ import org.beatonma.commons.buildsrc.Commons
 import org.beatonma.commons.buildsrc.Git
 import org.beatonma.commons.buildsrc.PartyColors
 import org.beatonma.commons.buildsrc.data.ParliamentDotUkPartyIDs
-import org.beatonma.commons.buildsrc.kts.extensions.instrumentationTest
-import org.beatonma.commons.buildsrc.kts.extensions.main
-import org.beatonma.commons.buildsrc.kts.extensions.unitTest
+import org.beatonma.commons.buildsrc.kts.extensions.*
 import org.beatonma.commons.buildsrc.local.LocalConfig
 
 plugins {
@@ -48,9 +46,18 @@ android {
         injectPartyIDs(ParliamentDotUkPartyIDs)
 
         testApplicationId = "org.beatonma.commons.test"
-        testInstrumentationRunner = "org.beatonma.commons.androidTest.HiltTestRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         vectorDrawables.useSupportLibrary = true
+    }
+
+    signingConfigs {
+        create("release") {
+            storeFile = file(LocalConfig.Signing.Keystore.PATH)
+            storePassword = LocalConfig.Signing.Keystore.PASSWORD
+            keyAlias = LocalConfig.Signing.Key.ALIAS
+            keyPassword = LocalConfig.Signing.Key.PASSWORD
+        }
     }
 
     buildTypes {
@@ -59,6 +66,9 @@ android {
             manifestPlaceholders.put(
                 "appname" to "DEV:${git.branch}/Commons"
             )
+        }
+        release {
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 
@@ -101,11 +111,13 @@ dependencies {
             Dependencies.Dagger.Hilt.TESTING,
             Dependencies.Kotlin.Coroutines.TEST,
             Dependencies.Test.AndroidX.CORE,
+            Dependencies.Test.JUNIT,
             Dependencies.Test.AndroidX.LIVEDATA,
             Dependencies.Test.AndroidX.RULES,
             Dependencies.Test.AndroidX.RUNNER,
             Dependencies.Test.AndroidX.Espresso.CONTRIB,
-            Dependencies.Test.AndroidX.Espresso.CORE
+            Dependencies.Test.AndroidX.Espresso.CORE,
+            Dependencies.AndroidX.Compose.TEST
         )
     }
 
