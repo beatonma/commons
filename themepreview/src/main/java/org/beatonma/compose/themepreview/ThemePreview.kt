@@ -4,7 +4,10 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.SpringSpec
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -153,15 +156,13 @@ private fun Section(screen: BaseScreen) {
     val scrollState = rememberScrollState(0F)
     val scrollProgress = scrollState.value / scrollState.maxValue
 
-    Stack {
-        ScrollableColumn(
-            Modifier.fillMaxWidth(),
-            scrollState = scrollState,
-        ) {
-            SectionHeader(screen.title, scrollProgress)
-            screen.content()
-            Spacer(Modifier.height(160.dp))
-        }
+    ScrollableColumn(
+        Modifier.fillMaxWidth(),
+        scrollState = scrollState,
+    ) {
+        SectionHeader(screen.title, scrollProgress)
+        screen.content()
+        Spacer(Modifier.height(160.dp))
     }
 }
 
