@@ -1,11 +1,10 @@
 package org.beatonma.commons.app.social.compose
 
 import androidx.compose.animation.AnimatedFloatModel
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.TransitionState
-import androidx.compose.foundation.Icon
-import androidx.compose.foundation.Text
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.contentColor
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumnFor
 import androidx.compose.material.MaterialTheme
@@ -16,12 +15,12 @@ import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.WithConstraints
+import androidx.compose.ui.draw.drawOpacity
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.VectorAsset
 import androidx.compose.ui.platform.AnimationClockAmbient
-import androidx.compose.ui.platform.DensityAmbient
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.ActionBlock
 import org.beatonma.commons.app.social.State
@@ -29,153 +28,145 @@ import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.ambient.withEmphasisHigh
 import org.beatonma.commons.compose.ambient.withEmphasisMedium
+import org.beatonma.commons.compose.modifiers.onlyWhen
 import org.beatonma.commons.compose.util.lerp
 import org.beatonma.commons.compose.util.update
+import org.beatonma.commons.core.extensions.lerp
 import org.beatonma.commons.kotlin.extensions.formatted
 import org.beatonma.commons.snommoc.models.social.SocialComment
 import org.beatonma.commons.snommoc.models.social.SocialContent
 import org.beatonma.commons.snommoc.models.social.SocialVoteType
 import org.beatonma.commons.theme.compose.IconDimen
 import org.beatonma.commons.theme.compose.Whitespace
+import org.beatonma.commons.theme.compose.color.MaterialRed600
 import org.beatonma.commons.theme.compose.horizontalTextListPadding
+import org.beatonma.commons.theme.compose.theme.CommonsTween
 
+private fun Dp.lerp(other: Dp, progress: Float) = Dp(value.lerp(other.value, progress))
 private interface IconStyle {
     val size: Dp
-    val modifier: Modifier
+    val padding: Dp
 }
 
 private object SmallIconStyle : IconStyle {
     override val size: Dp = IconDimen.Small
-    override val modifier: Modifier = Modifier.padding(Whitespace.Icon.Small.around)
+    override val padding: Dp = Whitespace.Icon.Small.around
 }
 
 private object LargeIconStyle : IconStyle {
     override val size: Dp = IconDimen.Large
-    override val modifier: Modifier = Modifier.padding(Whitespace.Icon.Large.around)
+    override val padding: Dp = Whitespace.Icon.Large.around
 }
+
+private fun iconStyle(size: Dp, padding: Dp) = object : IconStyle {
+    override val size: Dp = size
+    override val padding: Dp = padding
+}
+
+private fun IconStyle.lerp(other: IconStyle, progress: Float) =
+    iconStyle(
+        size = size.lerp(other.size, progress),
+        padding = padding.lerp(other.padding, progress)
+    )
 
 internal var SocialAmbient = ambientOf<SocialContent> { error("No social content registered") }
 
-@Composable
-fun SocialContentView(
-    socialContent: SocialContent,
-    modifier: Modifier = Modifier,
-    onVoteUpClick: ActionBlock,
-    onVoteDownClick: ActionBlock,
-    onExpandedCommentIconClick: ActionBlock,
-    onCommentClick: (SocialComment) -> Unit,
-) {
-    Providers(SocialAmbient provides socialContent) {
-        SocialContentView(modifier,
-            onVoteUpClick,
-            onVoteDownClick,
-            onExpandedCommentIconClick,
-            onCommentClick)
-    }
-}
+//@Composable
+//fun SocialContentView(
+//    socialContent: SocialContent,
+//    modifier: Modifier = Modifier,
+//    onVoteUpClick: ActionBlock,
+//    onVoteDownClick: ActionBlock,
+//    onExpandedCommentIconClick: ActionBlock,
+//    onCommentClick: (SocialComment) -> Unit,
+//) {
+//    Providers(SocialAmbient provides socialContent) {
+//        SocialContentView(modifier,
+//            onVoteUpClick,
+//            onVoteDownClick,
+//            onExpandedCommentIconClick,
+//            onCommentClick)
+//    }
+//}
 
 /**
- * Choose state depending on given constraints
+ * Fully animated transition from collapsed to expanded states
  */
-@Composable
-fun AdaptiveSocialContent(
-    modifier: Modifier = Modifier,
-    onVoteUpClick: ActionBlock,
-    onVoteDownClick: ActionBlock,
-    onExpandedCommentIconClick: ActionBlock,
-    onCommentClick: (SocialComment) -> Unit,
-    state: MutableState<State>,
-//    state: MutableState<State> = remember { mutableStateOf(State.COLLAPSED) },
-) {
-//    val transitionDef = remember {
-//        transitionDefinition<State> {
-//            state(State.COLLAPSED) {
-//                this[progressKey] = 0F
-//            }
-//            state(State.EXPANDED) {
-//                this[progressKey] = 1F
-//            }
-//            transition(State.COLLAPSED to State.EXPANDED) {
-//                progressKey using tween(800)
-//            }
-//        }
-//    }
-//    val transitionState = transition(definition = transitionDef, toState = state.value)
-
-    WithConstraints {
-        val h = with(DensityAmbient.current) { constraints.maxHeight.toDp() }
-
-        if (h < 60.dp) {
-            CompactSocial(modifier) { state.component2()(State.EXPANDED) }
-        }
-        else {
-            ExpandedSocial(
-                modifier,
-                onVoteUpClick = onVoteUpClick,
-                onVoteDownClick = onVoteDownClick,
-                onCommentIconClick = onExpandedCommentIconClick,
-                onCommentClick = onCommentClick,
-            )
-        }
-    }
-//    }
-}
-
 @Composable
 fun SocialContentView(
     modifier: Modifier = Modifier,
     onVoteUpClick: ActionBlock,
     onVoteDownClick: ActionBlock,
-    onExpandedCommentIconClick: ActionBlock,
+    onCommentIconClick: ActionBlock,
     onCommentClick: (SocialComment) -> Unit,
     tint: Color = colors.onSurface,
     state: MutableState<State> = remember { mutableStateOf(State.COLLAPSED) },
+    animationSpec: AnimationSpec<IntSize> = CommonsTween(3000),
     transitionState: TransitionState,
 ) {
     val progress = transitionState[progressKey]
     val expandAction = { state.update(State.EXPANDED) }
-    when (progress) {
-        0F -> {
-            SocialIcons(
-                modifier = modifier.clickable(onClick = expandAction),
-                iconStyle = SmallIconStyle,
-                tint = tint,
-                arrangement = Arrangement.Start,
-                onCommentIconClick = expandAction,
-                onVoteUpIconClick = expandAction,
-                onVoteDownIconClick = expandAction
-            )
-        }
+
+    val socialContent = SocialAmbient.current
+
+    Column(modifier) {
+        Text(
+            socialContent.title,
+            style = typography.h4,
+            modifier = Modifier
+                .animateContentSize(animationSpec)
+                .onlyWhen(progress == 0F) {
+                    height(0.dp)
+                }
+                .align(Alignment.CenterHorizontally)
+                .drawOpacity(progress),
+        )
+
+        SocialIcons(
+            modifier = Modifier
+                .onlyWhen(progress == 0F) {
+                    clickable(onClick = expandAction)
+                }
+                .padding(
+                    horizontal = 0.dp.lerp(32.dp, progress),
+                    vertical = 0.dp.lerp(16.dp, progress)
+                ),
+            iconStyle = SmallIconStyle.lerp(LargeIconStyle, progress),
+            arrangement = Arrangement.SpaceEvenly,
+            onCommentIconClick = if (progress == 0F) expandAction else onCommentIconClick,
+            onVoteUpIconClick = if (progress == 0F) expandAction else onVoteUpClick,
+            onVoteDownIconClick = if (progress == 0F) expandAction else onVoteDownClick,
+        )
+
+        CommentList(
+            socialContent.comments,
+            Modifier
+                .animateContentSize()
+                .onlyWhen(progress == 0F) {
+                    height(0.dp)
+                },
+            onClick = onCommentClick,
+        )
     }
-//    when (state.value) {
-//        State.COLLAPSED -> CompactSocial(modifier) { state.component2()(State.EXPANDED) }
-//        State.EXPANDED -> ExpandedSocial(
-//            modifier,
-//            onVoteUpClick = onVoteUpClick,
-//            onVoteDownClick = onVoteDownClick,
-//            onCommentIconClick = onExpandedCommentIconClick,
-//            onCommentClick = onCommentClick,
-//        )
-//        else -> Unit
-//    }
 }
+
 
 @Composable
 fun SocialContentView(
     modifier: Modifier = Modifier,
     onVoteUpClick: ActionBlock,
     onVoteDownClick: ActionBlock,
-    onExpandedCommentIconClick: ActionBlock,
+    onCommentIconClick: ActionBlock,
     onCommentClick: (SocialComment) -> Unit,
     state: MutableState<State> = remember { mutableStateOf(State.COLLAPSED) },
 ) {
     when (state.value) {
-        State.COLLAPSED -> CompactSocial(modifier) { state.component2()(State.EXPANDED) }
+        State.COLLAPSED -> CompactSocial(modifier) { state.update(State.EXPANDED) }
         State.EXPANDED -> ExpandedSocial(
             modifier,
             onVoteUpClick = onVoteUpClick,
             onVoteDownClick = onVoteDownClick,
-            onCommentIconClick = onExpandedCommentIconClick,
+            onCommentIconClick = onCommentIconClick,
             onCommentClick = onCommentClick,
         )
         else -> Unit
@@ -278,6 +269,71 @@ private fun SocialIcons(
     }
 
     Row(
+        modifier.background(MaterialRed600),
+        horizontalArrangement = arrangement,
+    ) {
+        val upvoteTint =
+            colors.onSurface.lerp(MaterialTheme.colors.secondary, voteSelection[0].value)
+        val downvoteTint =
+            colors.onSurface.lerp(MaterialTheme.colors.secondary, voteSelection[1].value)
+
+        CounterIcon(
+            Modifier,
+            socialContent.commentCount,
+            Icons.Default.Comment,
+            tint,
+            iconStyle,
+            onCommentIconClick)
+
+        CounterIcon(
+            Modifier,
+            socialContent.ayeVotes,
+            Icons.Default.ThumbUp,
+            upvoteTint,
+            iconStyle,
+            onVoteUpIconClick)
+
+        CounterIcon(
+            Modifier,
+            socialContent.noVotes,
+            Icons.Default.ThumbDown,
+            downvoteTint,
+            iconStyle,
+            onVoteDownIconClick)
+    }
+}
+
+@OptIn(InternalLayoutApi::class)
+@Composable
+private fun SocialIcons(
+    socialContent: SocialContent = SocialAmbient.current,
+    modifier: Modifier = Modifier,
+    tint: Color = contentColor(),
+    arrangement: Arrangement.Horizontal,
+    iconModifier: Modifier = Modifier,
+    iconSize: Dp,
+    iconPadding: Dp,
+    onCommentIconClick: ActionBlock,
+    onVoteUpIconClick: ActionBlock,
+    onVoteDownIconClick: ActionBlock,
+) {
+    val clock = AnimationClockAmbient.current
+    val voteSelection = remember {
+        SocialVoteType.values().map {
+            AnimatedFloatModel(if (socialContent.userVote == it) 1F else 0F, clock)
+        }
+    }
+
+    onCommit(socialContent.userVote) {
+        voteSelection.forEachIndexed { index, fraction ->
+            val target = if (index == socialContent.userVote?.ordinal) 1F else 0F
+            if (fraction.targetValue != target) {
+                fraction.animateTo(target)
+            }
+        }
+    }
+
+    Row(
         modifier,
         horizontalArrangement = arrangement,
     ) {
@@ -286,39 +342,81 @@ private fun SocialIcons(
         val downvoteTint =
             colors.onSurface.lerp(MaterialTheme.colors.secondary, voteSelection[1].value)
 
-        CounterIcon(socialContent.commentCount,
+        CounterIcon(
+            iconModifier,
+            iconSize,
+            iconPadding,
+            socialContent.commentCount,
             Icons.Default.Comment,
             tint,
-            iconStyle,
             onCommentIconClick)
-        CounterIcon(socialContent.ayeVotes,
+
+        CounterIcon(
+            iconModifier,
+            iconSize,
+            iconPadding,
+            socialContent.ayeVotes,
             Icons.Default.ThumbUp,
             upvoteTint,
-            iconStyle,
             onVoteUpIconClick)
-        CounterIcon(socialContent.noVotes,
+
+        CounterIcon(
+            iconModifier,
+            iconSize,
+            iconPadding,
+            socialContent.noVotes,
             Icons.Default.ThumbDown,
             downvoteTint,
-            iconStyle,
             onVoteDownIconClick)
     }
 }
 
 @Composable
 private fun CounterIcon(
+    modifier: Modifier = Modifier,
     count: Int,
     icon: VectorAsset,
     tint: Color,
     style: IconStyle,
     onClick: ActionBlock,
 ) {
+    CounterIcon(
+        modifier,
+        style.size,
+        style.padding,
+        count, icon, tint, onClick
+    )
+//    Row(
+//        Modifier.clickable(onClick = onClick).then(style.modifier),
+//        verticalAlignment = Alignment.CenterVertically,
+//    ) {
+//        Icon(icon,
+//            tint = tint,
+//            modifier = Modifier.size(style.size).padding(end = Whitespace.Icon.Small.around))
+//        Text("$count")
+//    }
+}
+
+@Composable
+private fun CounterIcon(
+    modifier: Modifier = Modifier,
+    size: Dp,
+    padding: Dp,
+    count: Int,
+    icon: VectorAsset,
+    tint: Color,
+    onClick: ActionBlock,
+) {
     Row(
-        Modifier.clickable(onClick = onClick).then(style.modifier),
+        Modifier
+            .clickable(onClick = onClick)
+            .then(modifier)
+            .padding(padding),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(icon,
             tint = tint,
-            modifier = Modifier.size(style.size).padding(end = Whitespace.Icon.Small.around))
+            modifier = Modifier.size(size).padding(end = Whitespace.Icon.Small.around))
         Text("$count")
     }
 }
