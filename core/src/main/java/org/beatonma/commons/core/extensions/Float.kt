@@ -4,10 +4,16 @@ import java.lang.Float.max
 import java.lang.Float.min
 import kotlin.math.roundToInt
 
+/**
+ * Calculate position relative to toMin..toMax based on relative position in range fromMin..fromMax.
+ */
 fun Float.map(fromMin: Float, fromMax: Float, toMin: Float, toMax: Float): Float =
     normalizeIn(fromMin, fromMax)
         .mapTo(toMin, toMax)
 
+/**
+ * Same as [map], ensuring fromMin and fromMax are in the correct order.
+ */
 fun Float.safeMap(fromLimit1: Float, fromLimit2: Float, toMin: Float, toMax: Float): Float = map(
     min(fromLimit1, fromLimit2),
     max(fromLimit1, fromLimit2),
@@ -58,8 +64,16 @@ fun Float.normalizeIn(min: Float, max: Float): Float {
 fun Float.normalize(max: Float): Float = normalizeIn(0F, max)
 
 /**
+ * Map to a value between 0F..1F relative to the given limits.
+ */
+fun Int.normalizeIn(min: Int, max: Int): Float = toFloat().normalizeIn(min.toFloat(), max.toFloat())
+
+/**
  * Receiver value is assumed to be between 0F..1F!
  */
 fun Float.mapToByte(): Int = mapTo(0, 255)
 
-fun Int.normalizeIn(min: Int, max: Int): Float = toFloat().normalizeIn(min.toFloat(), max.toFloat())
+fun Float.lerp(end: Float, progress: Float) =
+    this + ((end - this) * progress)
+
+fun Float.progressIn(min: Float = 0F, max: Float): Float = coerceIn(min, max).normalizeIn(min, max)

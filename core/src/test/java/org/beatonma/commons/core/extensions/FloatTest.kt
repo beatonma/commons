@@ -1,8 +1,5 @@
-package org.beatonma.commons.kotlin
+package org.beatonma.commons.core.extensions
 
-import org.beatonma.commons.kotlin.extensions.map
-import org.beatonma.commons.kotlin.extensions.mapTo
-import org.beatonma.commons.kotlin.extensions.normalizeIn
 import org.beatonma.commons.test.extensions.assertions.assertFuzzyEquals
 import org.beatonma.commons.test.extensions.assertions.shouldbe
 import org.junit.Test
@@ -17,7 +14,7 @@ class FloatTest {
 
         .5F.mapTo(0, 10) shouldbe 5
         .64F.mapTo(0, 100) shouldbe 64
-        .5F.mapTo(0, 255) shouldbe 127
+        .5F.mapTo(0, 255) shouldbe 128
     }
 
     @Test
@@ -39,5 +36,15 @@ class FloatTest {
 
         1F.normalizeIn(2F, 4F).assertFuzzyEquals(0F)
         10F.normalizeIn(2F, 4F).assertFuzzyEquals(1F)
+    }
+
+    @Test
+    fun float_progressIn_isCorrect() {
+        10F.progressIn(0F, 10F).assertFuzzyEquals(1F)
+        0F.progressIn(0F, 10F).assertFuzzyEquals(0F)
+
+        4F.progressIn(8F, 10F).assertFuzzyEquals(0F)
+        9F.progressIn(8F, 10F).assertFuzzyEquals(0.5F)
+        11F.progressIn(8F, 10F).assertFuzzyEquals(1F)
     }
 }
