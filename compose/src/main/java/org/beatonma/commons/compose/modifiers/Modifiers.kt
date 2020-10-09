@@ -9,8 +9,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import org.beatonma.commons.compose.util.shapes
+import org.beatonma.commons.compose.ambient.shapes
 import org.beatonma.commons.theme.compose.Whitespace
+
 
 @Composable
 fun Modifier.withBorder(
@@ -29,11 +30,8 @@ fun Modifier.withBorder(
     shape: Shape = shapes.small,
     paddingAround: Dp = Whitespace.Image.around,
 ): Modifier = padding(paddingAround)
-    .apply {
-        colors.forEach {
-            border(width, it, shape)
-            padding(width)
-        }
+    .forEachOf(colors) { color ->
+        border(width, color, shape)
+        padding(width)
     }
     .clip(shape)
-
