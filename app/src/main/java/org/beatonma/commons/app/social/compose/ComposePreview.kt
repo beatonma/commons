@@ -1,13 +1,18 @@
 package org.beatonma.commons.app.social.compose
 
+import androidx.compose.animation.asDisposableClock
 import androidx.compose.foundation.Text
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.AnimationClockAmbient
 import androidx.ui.tooling.preview.Preview
 import org.beatonma.commons.compose.components.WithDesignGridlines
+import org.beatonma.commons.compose.modifiers.colorize
 import org.beatonma.commons.snommoc.models.social.SocialComment
 import org.beatonma.commons.snommoc.models.social.SocialContent
 import org.beatonma.commons.snommoc.models.social.SocialVoteType
@@ -19,25 +24,29 @@ import java.time.LocalDateTime
 @Preview
 private fun SocialScaffold2Preview() {
     val socialContent by remember { mutableStateOf(sampleSocialContent) }
+    val clock = AnimationClockAmbient.current.asDisposableClock()
 
     PreviewContext(gridlines = false) {
         Providers(SocialAmbient provides socialContent) {
-            SocialScaffoldColumn(
-                contentAbove = {
-                    Column {
-                        for (i in 0..10) {
-                            Text("Before social content")
+            Box(Modifier.fillMaxSize()) {
+                SocialScaffoldColumn(
+                    clock = clock,
+                    contentAbove = {
+                        Column(Modifier.colorize()) {
+                            for (i in 0..10) {
+                                Text("Before social content")
+                            }
+                        }
+                    },
+                    contentBelow = {
+                        Column(Modifier.colorize()) {
+                            for (i in 0..10) {
+                                Text("After social content")
+                            }
                         }
                     }
-                },
-                contentBelow = {
-                    Column {
-                        for (i in 0..10) {
-                            Text("After social content")
-                        }
-                    }
-                }
-            )
+                )
+            }
         }
     }
 }

@@ -1,10 +1,14 @@
 package org.beatonma.commons.app.social.compose
 
 import androidx.compose.animation.AnimatedFloatModel
-import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.asDisposableClock
+import androidx.compose.animation.core.AnimationClockObservable
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.TransitionState
-import androidx.compose.foundation.*
+import androidx.compose.foundation.Icon
+import androidx.compose.foundation.Text
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.contentColor
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumnFor
 import androidx.compose.material.MaterialTheme
@@ -15,7 +19,6 @@ import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawOpacity
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.VectorAsset
 import androidx.compose.ui.platform.AnimationClockAmbient
@@ -28,6 +31,7 @@ import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.ambient.withEmphasisHigh
 import org.beatonma.commons.compose.ambient.withEmphasisMedium
+import org.beatonma.commons.compose.modifiers.colorize
 import org.beatonma.commons.compose.modifiers.onlyWhen
 import org.beatonma.commons.compose.util.lerp
 import org.beatonma.commons.compose.util.update
@@ -38,7 +42,6 @@ import org.beatonma.commons.snommoc.models.social.SocialContent
 import org.beatonma.commons.snommoc.models.social.SocialVoteType
 import org.beatonma.commons.theme.compose.IconDimen
 import org.beatonma.commons.theme.compose.Whitespace
-import org.beatonma.commons.theme.compose.color.MaterialRed600
 import org.beatonma.commons.theme.compose.horizontalTextListPadding
 import org.beatonma.commons.theme.compose.theme.CommonsTween
 
@@ -89,6 +92,7 @@ internal var SocialAmbient = ambientOf<SocialContent> { error("No social content
 //    }
 //}
 
+
 /**
  * Fully animated transition from collapsed to expanded states
  */
@@ -101,10 +105,35 @@ fun SocialContentView(
     onCommentClick: (SocialComment) -> Unit,
     tint: Color = colors.onSurface,
     state: MutableState<State> = remember { mutableStateOf(State.COLLAPSED) },
-    animationSpec: AnimationSpec<IntSize> = CommonsTween(3000),
+    animationSpec: AnimationSpec<IntSize> = CommonsTween(),
     transitionState: TransitionState,
+    clock: AnimationClockObservable = AnimationClockAmbient.current.asDisposableClock(),
 ) {
     val progress = transitionState[progressKey]
+
+    SocialContentView(
+        modifier,
+        onVoteUpClick, onVoteDownClick, onCommentIconClick, onCommentClick, tint,
+        state, animationSpec, progress, clock
+    )
+}
+
+/**
+ * Fully animated transition from collapsed to expanded states
+ */
+@Composable
+fun SocialContentView(
+    modifier: Modifier = Modifier,
+    onVoteUpClick: ActionBlock,
+    onVoteDownClick: ActionBlock,
+    onCommentIconClick: ActionBlock,
+    onCommentClick: (SocialComment) -> Unit,
+    tint: Color = colors.onSurface,
+    state: MutableState<State> = remember { mutableStateOf(State.COLLAPSED) },
+    animationSpec: AnimationSpec<IntSize> = remember { CommonsTween() },
+    transitionProgress: Float,
+    clock: AnimationClockObservable = AnimationClockAmbient.current.asDisposableClock(),
+) {
     val expandAction = { state.update(State.EXPANDED) }
 
     val socialContent = SocialAmbient.current
@@ -114,37 +143,42 @@ fun SocialContentView(
             socialContent.title,
             style = typography.h4,
             modifier = Modifier
-                .animateContentSize(animationSpec)
-                .onlyWhen(progress == 0F) {
-                    height(0.dp)
-                }
+//                .animateContentSize(animationSpec, clock = clock)
+//                .onlyWhen(transitionProgress == 0F) {
+//                    height(0.dp)
+//                }
                 .align(Alignment.CenterHorizontally)
-                .drawOpacity(progress),
+                .colorize()
+//                .drawOpacity(transitionProgress.progressIn(0.8F, 1F)),
         )
 
         SocialIcons(
             modifier = Modifier
-                .onlyWhen(progress == 0F) {
+                .onlyWhen(transitionProgress == 0F) {
                     clickable(onClick = expandAction)
                 }
+                .colorize()
                 .padding(
-                    horizontal = 0.dp.lerp(32.dp, progress),
-                    vertical = 0.dp.lerp(16.dp, progress)
+                    horizontal = 0.dp.lerp(32.dp, transitionProgress),
+                    vertical = 0.dp.lerp(16.dp, transitionProgress)
                 ),
-            iconStyle = SmallIconStyle.lerp(LargeIconStyle, progress),
+            iconStyle = SmallIconStyle.lerp(LargeIconStyle, transitionProgress),
             arrangement = Arrangement.SpaceEvenly,
-            onCommentIconClick = if (progress == 0F) expandAction else onCommentIconClick,
-            onVoteUpIconClick = if (progress == 0F) expandAction else onVoteUpClick,
-            onVoteDownIconClick = if (progress == 0F) expandAction else onVoteDownClick,
+            tint = tint,
+            onCommentIconClick = if (transitionProgress == 0F) expandAction else onCommentIconClick,
+            onVoteUpIconClick = if (transitionProgress == 0F) expandAction else onVoteUpClick,
+            onVoteDownIconClick = if (transitionProgress == 0F) expandAction else onVoteDownClick,
         )
 
         CommentList(
             socialContent.comments,
             Modifier
-                .animateContentSize()
-                .onlyWhen(progress == 0F) {
-                    height(0.dp)
-                },
+                .colorize(),
+//                .animateContentSize(animationSpec, clock = clock)
+//                .onlyWhen(transitionProgress == 0F) {
+//                    height(0.dp)
+//                }
+//                .drawOpacity(transitionProgress.progressIn(0.8F, 1F))
             onClick = onCommentClick,
         )
     }
@@ -252,7 +286,7 @@ private fun SocialIcons(
     onVoteUpIconClick: ActionBlock,
     onVoteDownIconClick: ActionBlock,
 ) {
-    val clock = AnimationClockAmbient.current
+    val clock = AnimationClockAmbient.current.asDisposableClock()
     val voteSelection = remember {
         SocialVoteType.values().map {
             AnimatedFloatModel(if (socialContent.userVote == it) 1F else 0F, clock)
@@ -269,7 +303,7 @@ private fun SocialIcons(
     }
 
     Row(
-        modifier.background(MaterialRed600),
+        modifier,
         horizontalArrangement = arrangement,
     ) {
         val upvoteTint =
