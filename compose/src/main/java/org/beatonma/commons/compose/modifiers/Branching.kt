@@ -47,3 +47,28 @@ inline fun Modifier.either(
 ): Modifier {
     return if (condition) this.whenTrue() else this.whenFalse()
 }
+
+/**
+ * Inline Modifier version of when(value) {...}
+ */
+@Composable
+inline fun <T> Modifier.switch(
+    value: T,
+    vararg blocks: Pair<((T) -> Boolean), ModifierBlock>,
+): Modifier {
+    for ((func, block) in blocks) {
+        if (func(value)) return this@switch.block()
+    }
+    return this
+}
+
+/**
+ * Inline Modifier version of when {...}
+ */
+@Composable
+inline fun Modifier.switch(vararg blocks: Pair<(() -> Boolean), ModifierBlock>): Modifier {
+    for ((func, block) in blocks) {
+        if (func()) return this.block()
+    }
+    return this
+}
