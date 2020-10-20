@@ -2,7 +2,6 @@ package org.beatonma.commons.svg
 
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Matrix
@@ -35,15 +34,6 @@ abstract class VectorGraphic(
             path.render(drawScope, pathConfig)
         }
     }
-}
-
-fun VectorGraphic.getBounds(): Rect {
-    paths[0].path.getBounds()
-    var rect = Rect.Zero
-    paths.forEach {
-        rect = rect.expandToInclude(it.path.getBounds())
-    }
-    return rect
 }
 
 val VectorGraphic.size get() = Size(width.toFloat(), height.toFloat())
