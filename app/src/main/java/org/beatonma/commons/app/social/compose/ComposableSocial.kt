@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawOpacity
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.VectorAsset
 import androidx.compose.ui.platform.AnimationClockAmbient
@@ -31,12 +32,13 @@ import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.ambient.withEmphasisHigh
 import org.beatonma.commons.compose.ambient.withEmphasisMedium
-import org.beatonma.commons.compose.modifiers.colorize
-import org.beatonma.commons.compose.modifiers.onlyWhen
+import org.beatonma.commons.compose.modifiers.*
 import org.beatonma.commons.compose.util.lerp
 import org.beatonma.commons.compose.util.update
 import org.beatonma.commons.core.extensions.lerp
+import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.kotlin.extensions.formatted
+import org.beatonma.commons.snommoc.models.social.EmptySocialContent
 import org.beatonma.commons.snommoc.models.social.SocialComment
 import org.beatonma.commons.snommoc.models.social.SocialContent
 import org.beatonma.commons.snommoc.models.social.SocialVoteType
@@ -72,7 +74,7 @@ private fun IconStyle.lerp(other: IconStyle, progress: Float) =
         padding = padding.lerp(other.padding, progress)
     )
 
-internal var SocialAmbient = ambientOf<SocialContent> { error("No social content registered") }
+internal var SocialAmbient = ambientOf { EmptySocialContent }
 
 //@Composable
 //fun SocialContentView(
@@ -91,6 +93,15 @@ internal var SocialAmbient = ambientOf<SocialContent> { error("No social content
 //            onCommentClick)
 //    }
 //}
+
+@Composable
+private fun Modifier.showWhenExpanded(state: State, progress: Float, animationSpec: AnimationSpec<IntSize>): Modifier =
+    switchEqual(state,
+        State.EXPANDED to { wrapContentHeight() },
+        State.COLLAPSED to { height(0.dp) }
+    )
+        .drawOpacity(progress)
+        .colorize()
 
 
 /**
@@ -137,19 +148,15 @@ fun SocialContentView(
     val expandAction = { state.update(State.EXPANDED) }
 
     val socialContent = SocialAmbient.current
+    val opacity = transitionProgress.progressIn(0.8F, 1F)
 
     Column(modifier) {
         Text(
             socialContent.title,
             style = typography.h4,
             modifier = Modifier
-//                .animateContentSize(animationSpec, clock = clock)
-//                .onlyWhen(transitionProgress == 0F) {
-//                    height(0.dp)
-//                }
+                .showWhenExpanded(state.value, opacity, animationSpec)
                 .align(Alignment.CenterHorizontally)
-                .colorize()
-//                .drawOpacity(transitionProgress.progressIn(0.8F, 1F)),
         )
 
         SocialIcons(
@@ -157,11 +164,11 @@ fun SocialContentView(
                 .onlyWhen(transitionProgress == 0F) {
                     clickable(onClick = expandAction)
                 }
-                .colorize()
                 .padding(
                     horizontal = 0.dp.lerp(32.dp, transitionProgress),
                     vertical = 0.dp.lerp(16.dp, transitionProgress)
-                ),
+                )
+                .colorize(),
             iconStyle = SmallIconStyle.lerp(LargeIconStyle, transitionProgress),
             arrangement = Arrangement.SpaceEvenly,
             tint = tint,
@@ -173,12 +180,8 @@ fun SocialContentView(
         CommentList(
             socialContent.comments,
             Modifier
-                .colorize(),
-//                .animateContentSize(animationSpec, clock = clock)
-//                .onlyWhen(transitionProgress == 0F) {
-//                    height(0.dp)
-//                }
-//                .drawOpacity(transitionProgress.progressIn(0.8F, 1F))
+                .showWhenExpanded(state.value, opacity, animationSpec)
+                ,
             onClick = onCommentClick,
         )
     }
