@@ -2,7 +2,10 @@ package org.beatonma.compose.themepreview
 
 import androidx.compose.animation.AnimatedFloatModel
 import androidx.compose.animation.core.AnimationSpec
-import androidx.compose.foundation.*
+import androidx.compose.foundation.Box
+import androidx.compose.foundation.Icon
+import androidx.compose.foundation.Text
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.BottomAppBar
 import androidx.compose.material.MaterialTheme
@@ -115,10 +118,10 @@ internal fun SectionIcon(
     ) {
         Box(
             modifier = Modifier.size(BottomBarHeight),
-            gravity = ContentGravity.Center,
+            gravity = Alignment.Center,
         ) {
             Icon(icon,
-                tint = MaterialTheme.colors.onSurface.interpolateHue(MaterialTheme.colors.secondary,
+                tint = MaterialTheme.colors.onSurface.lerp(MaterialTheme.colors.secondary,
                     progress))
         }
 
@@ -133,7 +136,7 @@ internal fun SectionIcon(
     }
 }
 
-private fun Color.interpolateHue(other: Color, progress: Float) = Color(
+private fun Color.lerp(other: Color, progress: Float) = Color(
     alpha = alpha,
     red = interpolate(this.red, other.red, progress).coerceIn(0F, 1F),
     green = interpolate(this.green, other.green, progress).coerceIn(0F, 1F),
