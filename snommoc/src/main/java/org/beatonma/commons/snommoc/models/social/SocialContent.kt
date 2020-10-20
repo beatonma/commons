@@ -16,14 +16,16 @@ enum class SocialTargetType {
 }
 
 data class SocialContent(
-    @field:Json(name = Contract.TITLE) val title: String?,
+    @field:Json(name = Contract.TITLE) val title: String,
     @field:Json(name = Contract.COMMENTS) val comments: List<SocialComment>,
     @field:Json(name = Contract.VOTES) val votes: SocialVotes,
     @field:Json(name = Contract.VOTE) val userVote: SocialVoteType?,
 ) {
-    fun commentCount(): Int = comments.size
-    fun voteCount(): Int = votes.voteCount()
+    val commentCount: Int get() = comments.size
+    val voteCount: Int get() = votes.voteCount()
 
-    fun ayeVotes(): Int = votes.aye
-    fun noVotes(): Int = votes.no
+    val ayeVotes: Int get() = votes.aye
+    val noVotes: Int get() = votes.no
 }
+
+val EmptySocialContent = SocialContent("empty", listOf(), SocialVotes(), null)
