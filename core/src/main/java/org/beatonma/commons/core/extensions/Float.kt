@@ -1,5 +1,6 @@
 package org.beatonma.commons.core.extensions
 
+import androidx.annotation.FloatRange
 import java.lang.Float.max
 import java.lang.Float.min
 import kotlin.math.roundToInt
@@ -73,7 +74,15 @@ fun Int.normalizeIn(min: Int, max: Int): Float = toFloat().normalizeIn(min.toFlo
  */
 fun Float.mapToByte(): Int = mapTo(0, 255)
 
-fun Float.lerp(end: Float, progress: Float) =
+fun Float.lerp(end: Float, progress: Float): Float =
     this + ((end - this) * progress)
 
 fun Float.progressIn(min: Float = 0F, max: Float): Float = coerceIn(min, max).normalizeIn(min, max)
+
+fun Int.lerp(end: Int, progress: Float): Int = this + ((end - this) * progress).roundToInt()
+
+/**
+ * Reverse direction of a value between 0..1, useful for animations.
+ */
+@FloatRange(from = 0.0, to = 1.0)
+fun Float.reverse() = 1F - this
