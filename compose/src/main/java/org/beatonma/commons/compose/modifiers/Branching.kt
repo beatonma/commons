@@ -49,7 +49,8 @@ inline fun Modifier.either(
 }
 
 /**
- * Inline Modifier version of when(value) {...}
+ * Inline Modifier version of when(value) {...} using lambdas for complex cases. If you only require
+ * equality checks, use [Modifier.switchEqual] instead.
  */
 @Composable
 inline fun <T> Modifier.switch(
@@ -63,12 +64,27 @@ inline fun <T> Modifier.switch(
 }
 
 /**
+ * Inline Modifier version of when(value) {...} for simple equality-based cases. For more complex
+ * case conditions use [Modifier.switch] instead.
+ */
+@Composable
+inline fun <T> Modifier.switchEqual(
+    value: T,
+    vararg blocks: Pair<T, ModifierBlock>,
+): Modifier {
+    for ((obj, block) in blocks) {
+        if (obj == value) return this@switchEqual.block()
+    }
+    return this
+}
+
+/**
  * Inline Modifier version of when {...}
  */
 @Composable
-inline fun Modifier.switch(vararg blocks: Pair<(() -> Boolean), ModifierBlock>): Modifier {
-    for ((func, block) in blocks) {
-        if (func()) return this.block()
+inline fun Modifier.switch(vararg blocks: Pair<Boolean, ModifierBlock>): Modifier {
+    for ((condition, block) in blocks) {
+        if (condition) return this.block()
     }
     return this
 }
