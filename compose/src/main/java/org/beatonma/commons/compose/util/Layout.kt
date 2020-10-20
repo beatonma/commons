@@ -1,8 +1,12 @@
 package org.beatonma.commons.compose.util
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.AlignmentLine
 import androidx.compose.ui.MeasureScope
 import androidx.compose.ui.Placeable
+import androidx.compose.ui.platform.ContextAmbient
+import androidx.compose.ui.unit.Dp
+import kotlin.math.roundToInt
 
 /**
  * Wrappers for horizontal/vertical values for type safety when calculating layouts.
@@ -57,3 +61,18 @@ fun MeasureScope.layout(
     alignmentLines: Map<AlignmentLine, Int> = emptyMap(),
     placementBlock: Placeable.PlacementScope.() -> Unit,
 ): MeasureScope.MeasureResult = layout(width.value, height.value, alignmentLines, placementBlock)
+
+@Composable
+val Dp.pxF: Float
+    get() = when (this) {
+        Dp.Hairline -> 1F
+        else -> (value * ContextAmbient.current.resources.displayMetrics.density)
+    }
+
+@Composable
+val Dp.px: Int
+    get() = when (this) {
+        Dp.Hairline -> 1
+        else -> (value * ContextAmbient.current.resources.displayMetrics.density)
+            .roundToInt()
+    }
