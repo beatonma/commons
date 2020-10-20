@@ -3,6 +3,7 @@ package org.beatonma.commons.compose.util
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.util.annotation.VisibleForTesting
+import org.beatonma.commons.core.extensions.lerp
 import org.beatonma.commons.core.extensions.mapToByte
 import org.beatonma.commons.core.extensions.normalize
 import org.beatonma.commons.theme.compose.color.CommonsColor
@@ -207,3 +208,10 @@ fun Float.positiveMod(mod: Float): Float {
         else -> x
     }.coerceAtMost(mod)
 }
+
+fun Color.lerp(other: Color, progress: Float) = Color(
+    alpha = alpha.lerp(other.alpha, progress),
+    red = red.lerp(other.red, progress),
+    green = green.lerp(other.green, progress),
+    blue = blue.lerp(other.blue, progress),
+)
