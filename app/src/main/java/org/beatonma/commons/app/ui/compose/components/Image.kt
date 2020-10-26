@@ -1,4 +1,4 @@
-package org.beatonma.commons.compose.components
+package org.beatonma.commons.app.ui.compose.components
 
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
@@ -10,9 +10,9 @@ const val DEV_AVATAR = "https://beatonma.org/static/images/profile2.jpg"
 @Composable
 fun Avatar(
     source: String?,
+    modifier: Modifier = Modifier,
     @DrawableRes fallback: Int = 0,
     @DrawableRes placeholder: Int = 0,
-    modifier: Modifier = Modifier,
 ) {
     GlideImage(
         source,
