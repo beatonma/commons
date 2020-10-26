@@ -46,6 +46,7 @@ val CommonsDarkThemeColors: Colors = darkColors(
 )
 
 val Colors.SystemBars get() = background.copy(alpha = 0.4f)
+val Colors.themed get() = if (isLight) CommonsColor.Light else CommonsColor.Dark
 
 @Composable
 val MaterialTheme.invertedColors
