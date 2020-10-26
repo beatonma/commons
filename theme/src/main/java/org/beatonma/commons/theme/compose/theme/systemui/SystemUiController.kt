@@ -19,11 +19,16 @@ package org.beatonma.commons.theme.compose.theme.systemui
 import android.os.Build
 import android.view.View
 import android.view.Window
+import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Providers
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticAmbientOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
+import org.beatonma.commons.theme.compose.theme.SystemBars
 
 /**
  * A helper class for setting the navigation and status bar colors for a [Window], gracefully
@@ -127,4 +132,20 @@ val SystemUiControllerAmbient = staticAmbientOf<SystemUiController> {
 private val BlackScrim = Color(0f, 0f, 0f, 0.2f) // 20% opaque black
 private val BlackScrimmed: (Color) -> Color = { original ->
     BlackScrim.compositeOver(original)
+}
+
+@Composable
+fun withSystemUi(
+    window: Window,
+    systemBarColor: Color = MaterialTheme.colors.SystemBars,
+    content: @Composable () -> Unit,
+) {
+    val systemUiController = remember { SystemUiController(window) }
+
+    ProvideDisplayInsets {
+        Providers(SystemUiControllerAmbient provides systemUiController) {
+            SystemUiControllerAmbient.current.setSystemBarsColor(systemBarColor)
+            content()
+        }
+    }
 }
