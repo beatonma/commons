@@ -1,8 +1,7 @@
 package org.beatonma.commons.compose.components
 
+import androidx.compose.foundation.AmbientTextStyle
 import androidx.compose.foundation.Text
-import androidx.compose.foundation.currentTextStyle
-import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,7 +22,7 @@ import androidx.compose.ui.unit.TextUnit
 fun OptionalText(
     text: String?,
     modifier: Modifier = Modifier,
-    color: Color = Color.Unset,
+    color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Inherit,
     fontStyle: FontStyle? = null,
     fontWeight: FontWeight? = null,
@@ -35,9 +34,8 @@ fun OptionalText(
     overflow: TextOverflow = TextOverflow.Ellipsis,
     softWrap: Boolean = true,
     maxLines: Int = 1,
-    inlineContent: Map<String, InlineTextContent> = mapOf(),
     onTextLayout: (TextLayoutResult) -> Unit = {},
-    style: TextStyle = currentTextStyle(),
+    style: TextStyle = AmbientTextStyle.current,
 ) {
     if (!text.isNullOrBlank()) {
         Text(
@@ -55,7 +53,6 @@ fun OptionalText(
             overflow,
             softWrap,
             maxLines,
-            inlineContent,
             onTextLayout,
             style
         )
