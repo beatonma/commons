@@ -45,9 +45,7 @@ fun String.withAnnotatedStyle() = AnnotatedString.Builder().apply {
         }
     }
     if (pendingStyle > 0) {
-        println("Added trailing style $pendingStyle")
         styleMap[length] = pendingStyle
-        println(pendingStyle)
     }
 
     if (styleMap.isEmpty()) {
@@ -58,11 +56,9 @@ fun String.withAnnotatedStyle() = AnnotatedString.Builder().apply {
     val boldPositions = mutableListOf<Int>()
 
     styleMap.forEach { (position, style) ->
-        println("[$position] $style")
         when (style) {
             1 -> italicPositions.add(position)
             2 -> boldPositions.add(position)
-
             3 -> {
                 italicPositions.add(position)
                 boldPositions.add(position)
