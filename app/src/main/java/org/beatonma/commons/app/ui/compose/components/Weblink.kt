@@ -2,6 +2,7 @@ package org.beatonma.commons.app.ui.compose.components
 
 import android.net.Uri
 import androidx.compose.foundation.ScrollableRow
+import androidx.compose.foundation.Text
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
@@ -15,6 +16,7 @@ import androidx.ui.tooling.preview.Preview
 import org.beatonma.commons.R
 import org.beatonma.commons.compose.components.CollapsibleChip
 import org.beatonma.commons.compose.modifiers.colorize
+import org.beatonma.commons.compose.util.withAnnotatedStyle
 import org.beatonma.commons.data.core.room.entities.member.WebAddress
 import org.beatonma.commons.kotlin.extensions.openUrl
 import org.beatonma.commons.theme.compose.theme.CommonsTheme
@@ -40,7 +42,7 @@ fun Weblink(
                 AnnotatedString(getGenericDisplayUrl(uri)),
                 weblink.url,
                 R.drawable.ic_link,
-                modifier,
+                modifier = modifier,
             )
         }
     }
@@ -55,7 +57,7 @@ private fun FacebookWeblink(
         AnnotatedString(username),
         "https://facebook.com/$username/",
         R.drawable.ic_facebook,
-        modifier
+        modifier = modifier
     )
 }
 
@@ -75,7 +77,7 @@ private fun TwitterWeblink(
         handle,
         "https://twitter.com/$username/",
         R.drawable.ic_twitter,
-        modifier
+        modifier = modifier
     )
 }
 
@@ -84,10 +86,11 @@ private fun Weblink(
     displayText: AnnotatedString,
     url: String,
     drawableId: Int,
+    autoCollapse: Long = 2500,
     modifier: Modifier = Modifier,
 ) {
     val context = ContextAmbient.current
-    CollapsibleChip(displayText, drawableId, R.drawable.ic_close, modifier) {
+    CollapsibleChip(displayText, drawableId, R.drawable.ic_close, modifier, autoCollapse) {
         context.openUrl(url)
     }
 }
@@ -126,6 +129,10 @@ fun WeblinkPreview() {
                 ScrollableRow {
                     links.forEach { Weblink(it, modifier = Modifier.colorize()) }
                 }
+
+                Text("**Hello** *fallofmath*".withAnnotatedStyle())
+                Text("*Hello* **fallofmath**".withAnnotatedStyle())
+                Text("**Hello** **fallofmath**".withAnnotatedStyle())
             }
         }
     }
