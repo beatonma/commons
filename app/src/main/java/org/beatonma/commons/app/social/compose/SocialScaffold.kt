@@ -1,21 +1,28 @@
 package org.beatonma.commons.app.social.compose
 
-import androidx.compose.animation.asDisposableClock
-import androidx.compose.animation.core.*
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.TransitionState
+import androidx.compose.animation.core.transitionDefinition
 import androidx.compose.animation.transition
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.Surface
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ConstrainedLayoutReference
+import androidx.compose.foundation.layout.ConstraintLayout
+import androidx.compose.foundation.layout.ConstraintLayoutScope
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawOpacity
-import androidx.compose.ui.platform.AnimationClockAmbient
 import androidx.compose.ui.unit.IntSize
 import org.beatonma.commons.ActionBlock
 import org.beatonma.commons.app.social.State
-import org.beatonma.commons.compose.modifiers.*
+import org.beatonma.commons.compose.animation.progressKey
+import org.beatonma.commons.compose.modifiers.switchEqual
+import org.beatonma.commons.compose.modifiers.wrapContentHeight
 import org.beatonma.commons.compose.util.update
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.core.extensions.reverse
@@ -26,7 +33,7 @@ import org.beatonma.commons.theme.compose.theme.cubicBezier
 private const val ANIMATION_DEFAULT_DURATION = 1800
 private const val ANIMATION_EXPAND_DURATION = ANIMATION_DEFAULT_DURATION
 private const val ANIMATION_COLLAPSE_DURATION = ANIMATION_DEFAULT_DURATION
-internal val progressKey = FloatPropKey()
+
 
 private fun socialScaffoldTransition() = transitionDefinition<State> {
     state(State.COLLAPSED) {
@@ -51,11 +58,10 @@ fun SocialScaffold(
     modifier: Modifier = Modifier,
     socialContentModifier: Modifier = Modifier,
     state: MutableState<State> = remember { mutableStateOf(State.COLLAPSED) },
-    onVoteUpClick: ActionBlock = {},
-    onVoteDownClick: ActionBlock = {},
+    onVoteUpClick: ActionBlock = SocialActionsAmbient.current.onVoteUpClick,
+    onVoteDownClick: ActionBlock = SocialActionsAmbient.current.onVoteDownClick,
     onCommentIconClick: ActionBlock = { state.update(State.COLLAPSED) },
-    onCommentClick: (SocialComment) -> Unit = {},
-    clock: AnimationClockObservable = AnimationClockAmbient.current.asDisposableClock(),
+    onCommentClick: (SocialComment) -> Unit = SocialActionsAmbient.current.onCommentClick,
     animationSpec: AnimationSpec<IntSize> = remember { CommonsTween(ANIMATION_DEFAULT_DURATION) },
     constraintBlock: @Composable ConstraintLayoutScope.(
         transitionState: TransitionState,
@@ -65,7 +71,7 @@ fun SocialScaffold(
 ) {
     val transitionDef = remember(::socialScaffoldTransition)
     val transitionState =
-        transition(definition = transitionDef, toState = state.value, clock = clock)
+        transition(definition = transitionDef, toState = state.value)
 
     ConstraintLayout(modifier) {
         val social = createRef()
@@ -78,10 +84,8 @@ fun SocialScaffold(
             onVoteDownClick = onVoteDownClick,
             onCommentIconClick = onCommentIconClick,
             onCommentClick = onCommentClick,
-            animationSpec = animationSpec,
             state = state,
             transitionState = transitionState,
-            clock = clock,
         )
     }
 }
@@ -92,14 +96,12 @@ fun SocialScaffoldColumn(
     state: MutableState<State> = remember { mutableStateOf(State.COLLAPSED) },
     animDuration: Int = ANIMATION_DEFAULT_DURATION,
     anim: AnimationSpec<IntSize> = remember { CommonsTween(animDuration) },
-    clock: AnimationClockObservable = AnimationClockAmbient.current.asDisposableClock(),
     contentBefore: @Composable (Modifier) -> Unit,
     contentAfter: @Composable (Modifier) -> Unit,
 ) {
     SocialScaffold(
         modifier.fillMaxSize(),
         state = state,
-        clock = clock,
         animationSpec = anim,
     ) { transitionState: TransitionState, animationSpec: AnimationSpec<IntSize>, social: ConstrainedLayoutReference ->
 
@@ -134,32 +136,15 @@ fun SocialScaffoldColumn(
             }
             .switchEqual(state.value,
                 State.EXPANDED to {
-                    animateContentSize(CommonsTween(easing = cubicBezier(.66,.01,.47,.74)), clock = clock, clip = false)
+                    animateContentSize(CommonsTween(easing = cubicBezier(.66, .01, .47, .74)),
+                        clip = false)
                         .fillMaxSize()
                 },
                 State.COLLAPSED to {
-                    animateContentSize(CommonsTween(easing = cubicBezier(.09,.97,1,.76)), clock = clock, clip = false)
+                    animateContentSize(CommonsTween(easing = cubicBezier(.09, .97, 1, .76)),
+                        clip = false)
                         .wrapContentHeight()
                 }
             )
     }
 }
-
-
-
-
-//@Composable
-//internal fun ScrollableSocialScaffoldColumn(
-//    modifier: Modifier = Modifier.wrapContentSize(),
-//    state: MutableState<State> = remember { mutableStateOf(State.COLLAPSED) },
-//    animDuration: Int = ANIMATION_DEFAULT_DURATION,
-//    anim: AnimationSpec<IntSize> = remember { CommonsTween(animDuration) },
-//    clock: AnimationClockObservable = AnimationClockAmbient.current.asDisposableClock(),
-//    scrollState: ScrollState = rememberScrollState(0f),
-//    contentAbove: @Composable () -> Unit,
-//    contentBelow: @Composable () -> Unit,
-//) {
-//    SocialScaffoldColumn(
-//        modifier.verticalScroll(scrollState, enabled = true, reverseScrolling = false),
-//        state, animDuration, anim, clock, contentAbove, contentBelow)
-//}
