@@ -4,41 +4,65 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.runtime.Providers
+import androidx.compose.runtime.ambientOf
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
-import org.beatonma.commons.app.composeView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.beatonma.commons.app.social.SocialViewModel
+import org.beatonma.commons.app.social.State
+import org.beatonma.commons.app.social.compose.SocialActions
+import org.beatonma.commons.app.social.compose.SocialActionsAmbient
+import org.beatonma.commons.app.social.compose.SocialAmbient
 import org.beatonma.commons.app.ui.colors.PartyColors
 import org.beatonma.commons.app.ui.colors.Themed
-import org.beatonma.commons.app.withSystemUi
+import org.beatonma.commons.app.ui.compose.composeView
+import org.beatonma.commons.app.ui.navigation.BackPressConsumer
+import org.beatonma.commons.compose.util.update
 import org.beatonma.commons.core.ParliamentID
-import org.beatonma.commons.kotlin.extensions.*
+import org.beatonma.commons.core.extensions.withNotNull
+import org.beatonma.commons.kotlin.extensions.getParliamentID
+import org.beatonma.commons.repo.asSocialTarget
 import org.beatonma.commons.repo.result.LoadingResult
+import org.beatonma.commons.snommoc.models.social.EmptySocialContent
+import org.beatonma.commons.snommoc.models.social.SocialTarget
+import org.beatonma.commons.snommoc.models.social.SocialTargetType
+import org.beatonma.commons.snommoc.models.social.SocialVoteType
+import org.beatonma.commons.theme.compose.theme.systemui.withSystemUi
 
-private const val TAG = "MemberProfileFrag"
+internal val ViewmodelAmbient =
+    ambientOf<ComposeMemberProfileViewModel> { error("Viewmodel not set") }
 
 @AndroidEntryPoint
 class MemberProfileComposeFragment : Fragment(),
-    Themed
-//    BackPressConsumer,
-{
+    Themed,
+    BackPressConsumer {
     private val viewmodel: ComposeMemberProfileViewModel by viewModels()
     private val socialViewModel: SocialViewModel by viewModels()
-
-//    override lateinit var socialViewController: SocialViewController
-//    override val socialObserver: IoResultObserver<SocialContent> = createSocialObserver()
-
+    private val socialUiState = mutableStateOf(State.COLLAPSED)
 
     override var theme: PartyColors? = null
 
     private fun getMemberIdFromBundle(): ParliamentID = arguments.getParliamentID()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewmodel.forMember(getMemberIdFromBundle())
+    private fun onVoteClicked(voteType: SocialVoteType) {
+        println("onVoteClicked $voteType") // TODO handle result and refresh ui state
+        lifecycleScope.launch(Dispatchers.IO) {
+            socialViewModel.postVote(
+                if (socialViewModel.shouldRemoveVote(voteType)) {
+                    SocialVoteType.NULL
+                }
+                else {
+                    voteType
+                }
+            )
+        }
     }
 
     override fun onCreateView(
@@ -46,35 +70,55 @@ class MemberProfileComposeFragment : Fragment(),
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        val flow = viewmodel.forMember(getMemberIdFromBundle())
-        return composeView {
-            withSystemUi(window = requireActivity().window) {
-                println("composeView")
+        val memberId = getMemberIdFromBundle()
+        val flow = viewmodel.forMember(memberId)
+        socialViewModel.forTarget(SocialTarget(SocialTargetType.member, parliamentdotuk = memberId))
+        val socialFlow = socialViewModel.flow
 
-                val resultState by flow.collectAsState(initial = LoadingResult())
-
-                val data = resultState.data ?: return@withSystemUi
-
-                MemberProfileLayout(data)
-//                MemberProfileLayout(viewmodel, getMemberIdFromBundle())
-//            val result by viewmodel.zeitgeist.collectAsState(LoadingResult())
-//            Column {
-//                Spacer(modifier = Modifier.statusBarsHeight())
-//                ZeitgeistResult(result)
-//            }
+        val socialCallbacks = SocialActions(
+            onVoteUpClick = { onVoteClicked(SocialVoteType.aye) },
+            onVoteDownClick = { onVoteClicked(SocialVoteType.no) },
+            onExpandedCommentIconClick = {},
+            onCommentClick = { comment ->
+                println("Clicked comment $comment")
             }
-//        return composeView {
-//            println("composeView")
-//            MemberProfileLayout(viewmodel, getMemberIdFromBundle())
-//        }
+        )
 
-//        return super.onCreateView(inflater, container, savedInstanceState)
+        return composeView {
+            Providers(
+                ViewmodelAmbient provides viewmodel,
+                SocialActionsAmbient provides socialCallbacks
+            ) {
+                withSystemUi(window = requireActivity().window) {
+                    val resultState by flow.collectAsState(initial = LoadingResult())
+                    val socialState by socialFlow.collectAsState(initial = LoadingResult())
+
+                    val data = resultState.data ?: return@withSystemUi
+                    withNotNull(data.profile) {
+                        socialViewModel.forTarget(it.asSocialTarget())
+                    }
+
+                    Providers(SocialAmbient provides (socialState.data ?: EmptySocialContent)) {
+                        MemberProfileLayout(data, state = socialUiState)
+                    }
+                }
+            }
         }
     }
 
-    //    override fun inflateBinding(inflater: LayoutInflater) = FragmentMemberProfileBinding.inflate(inflater)
+    override fun onBackPressed(): Boolean = when (socialUiState.value) {
+        State.EXPANDED -> {
+            socialUiState.update(State.COLLAPSED)
+            true
+        }
 
-//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        else -> {
+            // TODO
+            false
+        }
+    }
+
+    //    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 //        super.onViewCreated(view, savedInstanceState)
 //        socialViewController = setupViewController(
 //            binding.root,
