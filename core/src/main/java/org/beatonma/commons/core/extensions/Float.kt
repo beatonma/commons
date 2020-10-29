@@ -65,11 +65,6 @@ fun Float.normalizeIn(min: Float, max: Float): Float {
 fun Float.normalize(max: Float): Float = normalizeIn(0F, max)
 
 /**
- * Map to a value between 0F..1F relative to the given limits.
- */
-fun Int.normalizeIn(min: Int, max: Int): Float = toFloat().normalizeIn(min.toFloat(), max.toFloat())
-
-/**
  * Receiver value is assumed to be between 0F..1F!
  */
 fun Float.mapToByte(): Int = mapTo(0, 255)
@@ -78,8 +73,6 @@ fun Float.lerp(end: Float, progress: Float): Float =
     this + ((end - this) * progress)
 
 fun Float.progressIn(min: Float = 0F, max: Float): Float = coerceIn(min, max).normalizeIn(min, max)
-
-fun Int.lerp(end: Int, progress: Float): Int = this + ((end - this) * progress).roundToInt()
 
 /**
  * Reverse direction of a value between 0..1, useful for animations.
