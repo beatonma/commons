@@ -3,14 +3,28 @@ package org.beatonma.compose.themepreview
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.SpringSpec
 import androidx.compose.animation.core.TweenSpec
-import androidx.compose.foundation.*
+import androidx.compose.foundation.ScrollableColumn
+import androidx.compose.foundation.Text
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.FabPosition
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme.colors
+import androidx.compose.material.MaterialTheme.shapes
+import androidx.compose.material.MaterialTheme.typography
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Android
+import androidx.compose.material.icons.filled.ColorLens
+import androidx.compose.material.icons.filled.InvertColors
+import androidx.compose.material.icons.filled.TextFields
+import androidx.compose.material.icons.filled.Widgets
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -135,7 +149,7 @@ private fun ThemePreview(
             }
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onToggleTheme, shape = MaterialTheme.shapes.small) {
+            FloatingActionButton(onClick = onToggleTheme, shape = shapes.small) {
                 Icon(Icons.Default.InvertColors)
             }
         },
@@ -146,14 +160,14 @@ private fun ThemePreview(
 
 @Composable
 private fun BodyContent(content: @Composable () -> Unit) {
-    Surface(Modifier.fillMaxWidth(), color = MaterialTheme.colors.background) {
+    Surface(Modifier.fillMaxWidth(), color = colors.background) {
         content()
     }
 }
 
 @Composable
 private fun Section(screen: BaseScreen) {
-    val scrollState = rememberScrollState(0F)
+    val scrollState = rememberScrollState()
     val scrollProgress = scrollState.value / scrollState.maxValue
 
     ScrollableColumn(
@@ -168,12 +182,12 @@ private fun Section(screen: BaseScreen) {
 
 @Composable
 private fun SectionHeader(text: String, progress: Float, modifier: Modifier = Modifier) {
-    Surface(Modifier.fillMaxWidth(), color = MaterialTheme.colors.secondary) {
+    Surface(Modifier.fillMaxWidth(), color = colors.secondary) {
         Text(
             text,
             Modifier.padding(horizontal = ContentPadding, vertical = 32.dp),
             fontFamily = FontFamily.Monospace,
-            style = MaterialTheme.typography.h3,
+            style = typography.h3,
         )
     }
 }

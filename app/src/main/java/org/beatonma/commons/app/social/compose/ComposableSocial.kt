@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedFloatModel
 import androidx.compose.animation.asDisposableClock
 import androidx.compose.animation.core.TransitionState
 import androidx.compose.foundation.AmbientContentColor
-import androidx.compose.foundation.Icon
 import androidx.compose.foundation.Text
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Comment
@@ -96,9 +96,9 @@ fun SocialContentView(
     onVoteDownClick: ActionBlock = SocialActionsAmbient.current.onVoteDownClick,
     onCommentIconClick: ActionBlock = SocialActionsAmbient.current.onExpandedCommentIconClick,
     onCommentClick: (SocialComment) -> Unit = SocialActionsAmbient.current.onCommentClick,
-    tint: Color = AmbientContentColor.current,
     state: MutableState<State> = remember { mutableStateOf(State.COLLAPSED) },
     transitionState: TransitionState,
+    tint: Color = AmbientContentColor.current,
 ) {
     val progress = transitionState.progress
 
