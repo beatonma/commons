@@ -1,9 +1,10 @@
-package org.beatonma.commons.app.ui.compose.components
+package org.beatonma.commons.app.ui.compose.components.chips
 
 import android.net.Uri
 import androidx.compose.foundation.ScrollableRow
 import androidx.compose.foundation.Text
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -15,11 +16,9 @@ import androidx.compose.ui.unit.sp
 import androidx.ui.tooling.preview.Preview
 import org.beatonma.commons.R
 import org.beatonma.commons.compose.components.CollapsibleChip
-import org.beatonma.commons.compose.modifiers.colorize
 import org.beatonma.commons.compose.util.withAnnotatedStyle
 import org.beatonma.commons.data.core.room.entities.member.WebAddress
 import org.beatonma.commons.kotlin.extensions.openUrl
-import org.beatonma.commons.theme.compose.theme.CommonsTheme
 
 @Composable
 fun Weblink(
@@ -121,13 +120,13 @@ fun WeblinkPreview() {
     val weblink = WebAddress("https://twitter.com/_beatonma", "twitter", 0)
     val links = listOf(weblink, weblink, weblink, weblink)
 
-    CommonsTheme {
+    MaterialTheme {
         Surface {
             Column {
                 Weblink(weblink)
 
                 ScrollableRow {
-                    links.forEach { Weblink(it, modifier = Modifier.colorize()) }
+                    links.forEach { Weblink(it) }
                 }
 
                 Text("**Hello** *fallofmath*".withAnnotatedStyle())
