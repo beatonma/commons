@@ -1,8 +1,9 @@
 package org.beatonma.commons.app.memberprofile.compose
 
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.TransitionState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.AmbientContentColor
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.ScrollableRow
@@ -16,7 +17,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Surface
@@ -32,14 +32,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawOpacity
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.zIndex
 import kotlinx.coroutines.launch
 import org.beatonma.commons.R
 import org.beatonma.commons.app.social.State
+import org.beatonma.commons.app.social.compose.AmbientSocialTheme
 import org.beatonma.commons.app.social.compose.SocialScaffold
+import org.beatonma.commons.app.social.compose.asSocialTheme
 import org.beatonma.commons.app.ui.colors.ComposePartyColors
 import org.beatonma.commons.app.ui.colors.theme
 import org.beatonma.commons.app.ui.compose.components.Avatar
@@ -51,12 +52,15 @@ import org.beatonma.commons.compose.components.Card
 import org.beatonma.commons.compose.components.CardText
 import org.beatonma.commons.compose.components.OptionalText
 import org.beatonma.commons.compose.modifiers.onlyWhen
-import org.beatonma.commons.compose.modifiers.switchEqual
 import org.beatonma.commons.compose.modifiers.wrapContentHeight
+import org.beatonma.commons.compose.modifiers.wrapContentOrFillHeight
 import org.beatonma.commons.compose.util.dotted
+import org.beatonma.commons.compose.util.lerp
+import org.beatonma.commons.compose.util.update
 import org.beatonma.commons.compose.util.withAnnotatedStyle
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.core.extensions.reverse
+import org.beatonma.commons.core.extensions.withEasing
 import org.beatonma.commons.core.extensions.withNotNull
 import org.beatonma.commons.data.core.CompleteMember
 import org.beatonma.commons.data.core.interfaces.Temporal
@@ -66,8 +70,6 @@ import org.beatonma.commons.data.core.room.entities.member.Party
 import org.beatonma.commons.data.core.room.entities.member.WebAddress
 import org.beatonma.commons.theme.compose.Padding
 import org.beatonma.commons.theme.compose.endOfContent
-import org.beatonma.commons.theme.compose.theme.CommonsTween
-import org.beatonma.commons.theme.compose.theme.cubicBezier
 import org.beatonma.commons.theme.compose.theme.systemui.navigationBarsPadding
 
 private const val AVATAR_ASPECT_RATIO = 3F / 2F
@@ -90,14 +92,16 @@ fun MemberProfileLayout(
 ) {
     val profile = completeMember.profile ?: return
     val partyData = (completeMember.party ?: defaultParty).let { PartyData(it, it.theme()) }
+    val socialTheme = partyData.theme.asSocialTheme()
 
     Providers(
         PartyAmbient provides partyData,
-        AmbientContentColor provides partyData.theme.onPrimary,
+        AmbientSocialTheme provides socialTheme,
     ) {
         MemberProfileScaffold(
             profile.name,
             modifier, state,
+
             contentBefore = {
                 Avatar(
                     profile.portraitUrl,
@@ -117,11 +121,11 @@ private fun MemberProfileScaffold(
     name: String,
     modifier: Modifier = Modifier,
     state: MutableState<State> = remember { mutableStateOf(State.COLLAPSED) },
-    anim: AnimationSpec<IntSize> = remember { CommonsTween() },
     scrollState: ScrollState = rememberScrollState(),
     contentBefore: @Composable (Modifier) -> Unit,
     contentAfter: @Composable (Modifier) -> Unit,
 ) {
+    val scrollPosition = remember { mutableStateOf(0F) }
 
     SocialScaffold(
         modifier.fillMaxSize()
@@ -129,9 +133,14 @@ private fun MemberProfileScaffold(
                 verticalScroll(scrollState)
             },
         state = state,
-        animationSpec = anim,
+        expandAction = {
+            scrollPosition.value = scrollState.value
+            scrollState.smoothScrollTo(0F, tween(easing = FastOutLinearInEasing)) { _, _ ->
+                state.update(State.EXPANDED)
+            }
+        }
 
-        ) { transitionState: TransitionState, animationSpec: AnimationSpec<IntSize>, social: ConstrainedLayoutReference ->
+    ) { transitionState: TransitionState, social: ConstrainedLayoutReference ->
 
         val (
             before,
@@ -150,7 +159,11 @@ private fun MemberProfileScaffold(
                 }
                 .drawOpacity(reverseProgress.progressIn(0F, 0.6F))
                 .zIndex(0F)
-        ) { contentBefore(Modifier) }
+        ) {
+            if (progress != 1F) {
+                contentBefore(Modifier)
+            }
+        }
 
         Box(
             Modifier
@@ -160,7 +173,9 @@ private fun MemberProfileScaffold(
                 .drawOpacity(reverseProgress.progressIn(0F, 0.6F))
                 .zIndex(0F)
         ) {
-            contentAfter(Modifier)
+            if (progress != 1F) {
+                contentAfter(Modifier)
+            }
         }
 
         Box(
@@ -171,7 +186,10 @@ private fun MemberProfileScaffold(
                 height = Dimension.fillToConstraints
             }
                 .fillMaxWidth()
-                .background(PartyAmbient.current.theme.primary)
+                .background(PartyAmbient.current.theme.primary.lerp(
+                    colors.background,
+                    progress.progressIn(0.5F, .8F))
+                )
                 .zIndex(Z_LOW)
         )
 
@@ -179,6 +197,7 @@ private fun MemberProfileScaffold(
             Modifier.constrainAs(title) {
                 top.linkTo(before.bottom)
             }.zIndex(Z_MEDIUM)
+                .drawOpacity(reverseProgress)
         ) {
             Providers(AmbientContentColor provides PartyAmbient.current.theme.onPrimary) {
                 Text(name,
@@ -194,18 +213,7 @@ private fun MemberProfileScaffold(
                 top.linkTo(title.bottom)
             }
             .zIndex(Z_HIGH)
-            .switchEqual(state.value,
-                State.EXPANDED to {
-                    animateContentSize(CommonsTween(easing = cubicBezier(.66, .01, .47, .74)),
-                        clip = false)
-                        .fillMaxSize()
-                },
-                State.COLLAPSED to {
-                    animateContentSize(CommonsTween(easing = cubicBezier(.09, .97, 1, .76)),
-                        clip = false)
-                        .wrapContentHeight()
-                }
-            )
+            .wrapContentOrFillHeight(progress.withEasing(FastOutSlowInEasing))
     }
 }
 
