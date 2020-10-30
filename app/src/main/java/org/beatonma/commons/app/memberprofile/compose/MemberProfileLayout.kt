@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Dimension
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -34,6 +35,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
+import androidx.compose.ui.util.fastForEachIndexed
 import androidx.compose.ui.zIndex
 import kotlinx.coroutines.launch
 import org.beatonma.commons.R
@@ -44,12 +46,17 @@ import org.beatonma.commons.app.social.compose.asSocialTheme
 import org.beatonma.commons.app.ui.colors.ComposePartyColors
 import org.beatonma.commons.app.ui.colors.theme
 import org.beatonma.commons.app.ui.compose.components.Avatar
-import org.beatonma.commons.app.ui.compose.components.Weblink
+import org.beatonma.commons.app.ui.compose.components.chips.EmailLink
+import org.beatonma.commons.app.ui.compose.components.chips.PhoneLink
+import org.beatonma.commons.app.ui.compose.components.chips.Weblink
 import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.compose.ambient.typography
+import org.beatonma.commons.compose.animation.ExpandCollapseState
 import org.beatonma.commons.compose.animation.progress
+import org.beatonma.commons.compose.animation.rememberExpandCollapseState
 import org.beatonma.commons.compose.components.Card
 import org.beatonma.commons.compose.components.CardText
+import org.beatonma.commons.compose.components.HorizontalSeparator
 import org.beatonma.commons.compose.components.OptionalText
 import org.beatonma.commons.compose.modifiers.onlyWhen
 import org.beatonma.commons.compose.modifiers.wrapContentHeight
@@ -58,6 +65,7 @@ import org.beatonma.commons.compose.util.dotted
 import org.beatonma.commons.compose.util.lerp
 import org.beatonma.commons.compose.util.update
 import org.beatonma.commons.compose.util.withAnnotatedStyle
+import org.beatonma.commons.core.extensions.lerp
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.core.extensions.reverse
 import org.beatonma.commons.core.extensions.withEasing
@@ -65,9 +73,12 @@ import org.beatonma.commons.core.extensions.withNotNull
 import org.beatonma.commons.data.core.CompleteMember
 import org.beatonma.commons.data.core.interfaces.Temporal
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
+import org.beatonma.commons.data.core.room.entities.member.FinancialInterest
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 import org.beatonma.commons.data.core.room.entities.member.Party
+import org.beatonma.commons.data.core.room.entities.member.PhysicalAddress
 import org.beatonma.commons.data.core.room.entities.member.WebAddress
+import org.beatonma.commons.kotlin.extensions.dateRange
 import org.beatonma.commons.theme.compose.Padding
 import org.beatonma.commons.theme.compose.endOfContent
 import org.beatonma.commons.theme.compose.theme.systemui.navigationBarsPadding
@@ -198,6 +209,7 @@ private fun MemberProfileScaffold(
                 top.linkTo(before.bottom)
             }.zIndex(Z_MEDIUM)
                 .drawOpacity(reverseProgress)
+                .padding(top = 8.dp)
         ) {
             Providers(AmbientContentColor provides PartyAmbient.current.theme.onPrimary) {
                 Text(name,
@@ -214,6 +226,7 @@ private fun MemberProfileScaffold(
             }
             .zIndex(Z_HIGH)
             .wrapContentOrFillHeight(progress.withEasing(FastOutSlowInEasing))
+            .padding(start = 12F.lerp(0F, progress).dp, bottom = 8.dp)
     }
 }
 
@@ -233,9 +246,10 @@ private fun MemberProfile(completeMember: CompleteMember, modifier: Modifier) {
         Column(modifier) {
             withNotNull(completeMember.weblinks) { Weblinks(it) }
 
-            for (i in 1..10) {
-                CurrentPosition(profile, completeMember.party, completeMember.constituency)
-            }
+            CurrentPosition(profile, completeMember.party, completeMember.constituency)
+
+            withNotNull(completeMember.addresses) { ContactInfo(it) }
+            withNotNull(completeMember.financialInterests) { FinancialInterests(it) }
 
             // TODO reimplement TimelineView as composable
 //        AndroidView(viewBlock = { context ->
@@ -250,11 +264,11 @@ private fun MemberProfile(completeMember: CompleteMember, modifier: Modifier) {
 
 @Composable
 private fun Weblinks(weblinks: List<WebAddress>) {
-    ScrollableRow(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+    Links {
         weblinks.fastForEach { weblink ->
             Weblink(
                 weblink,
-                Modifier.padding(horizontal = 4.dp)
+                Modifier.padding(Padding.LinkItem)
             )
         }
     }
@@ -271,19 +285,22 @@ private fun CurrentPosition(
         CardText {
             Column {
                 if (profile.active == true) {
-                    OptionalText(profile.currentPost)
+                    OptionalText(profile.currentPost, style = typography.h6)
+
+                    val status = if (profile.isMp == true && constituency != null) {
+                        stringResource(R.string.member_member_for_constituency,
+                            constituency.name)
+                    }
+                    else if (profile.isLord == true) {
+                        stringResource(R.string.member_house_of_lords)
+                    }
+                    else {
+                        dotted(party?.name, constituency?.name)
+                    }
 
                     OptionalText(
-                        (if (profile.isMp == true && constituency != null) {
-                            stringResource(R.string.member_member_for_constituency,
-                                constituency.name)
-                        }
-                        else if (profile.isLord == true) {
-                            stringResource(R.string.member_house_of_lords)
-                        }
-                        else {
-                            dotted(party?.name, constituency?.name)
-                        }).withAnnotatedStyle()
+                        status.withAnnotatedStyle(),
+                        style = typography.h6
                     )
                 }
                 else {
@@ -295,5 +312,91 @@ private fun CurrentPosition(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun ContactInfo(
+    addresses: List<PhysicalAddress>,
+    modifier: Modifier = Modifier,
+) {
+    val size = addresses.size
+    Card(modifier.fillMaxWidth(), shape = RectangleShape) {
+        CardText {
+            if (addresses.isEmpty()) {
+                EmptyMessage(R.string.member_contact_info_none)
+            }
+            else {
+                Column {
+                    val itemModifier = Modifier.padding(Padding.LinkItem)
+                    addresses.fastForEachIndexed { i, address ->
+                        Text(address.description, style = typography.overline)
+                        OptionalText(
+                            if (address.address == "Constituency Office") {
+                                null
+                            }
+                            else {
+                                address.address.replace(", ", "\n")
+                            },
+                            maxLines = Int.MAX_VALUE
+                        )
+                        OptionalText(address.postcode)
+
+                        val phone = address.phone
+                        val email = address.email
+                        if (email != null || phone != null) {
+                            Links {
+                                if (phone != null) PhoneLink(phone, itemModifier)
+                                if (email != null) EmailLink(email, itemModifier)
+                            }
+                        }
+                        if (i < (size - 1)) {
+                            HorizontalSeparator(modifier = Modifier.height(2.dp))
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun FinancialInterests(interests: List<FinancialInterest>, modifier: Modifier = Modifier) {
+    Card(modifier.fillMaxWidth(), shape = RectangleShape) {
+        CardText {
+            if (interests.isEmpty()) {
+                EmptyMessage(R.string.member_financial_interests_none)
+            }
+            else {
+                Column {
+                    interests.fastForEach { interest ->
+                        Text(interest.description)
+                        Text(interest.category)
+                        OptionalText(dateRange(interest.dateCreated, interest.dateAmended))
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun CollapsibleColumn(state: MutableState<ExpandCollapseState> = rememberExpandCollapseState()) {
+}
+
+@Composable
+private fun EmptyMessage(resource: Int) {
+    EmptyMessage(stringResource(resource))
+}
+
+@Composable
+private fun EmptyMessage(text: String) {
+    Text(text, style = typography.h6)
+}
+
+@Composable
+private inline fun Links(crossinline content: @Composable () -> Unit) {
+    ScrollableRow(Modifier.fillMaxWidth().padding(Padding.Links)) {
+        content()
     }
 }
