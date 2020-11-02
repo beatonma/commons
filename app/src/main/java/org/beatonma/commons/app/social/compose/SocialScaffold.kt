@@ -1,7 +1,7 @@
 package org.beatonma.commons.app.social.compose
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.TransitionDefinition
 import androidx.compose.animation.core.TransitionState
 import androidx.compose.animation.core.transitionDefinition
 import androidx.compose.animation.transition
@@ -17,7 +17,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawOpacity
-import androidx.compose.ui.unit.IntSize
 import org.beatonma.commons.ActionBlock
 import org.beatonma.commons.app.social.State
 import org.beatonma.commons.compose.animation.progressKey
@@ -27,10 +26,11 @@ import org.beatonma.commons.compose.util.update
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.core.extensions.reverse
 import org.beatonma.commons.snommoc.models.social.SocialComment
+import org.beatonma.commons.theme.compose.theme.CommonsSpring
 import org.beatonma.commons.theme.compose.theme.CommonsTween
 import org.beatonma.commons.theme.compose.theme.cubicBezier
 
-private const val ANIMATION_DEFAULT_DURATION = 1800
+private const val ANIMATION_DEFAULT_DURATION = 900
 private const val ANIMATION_EXPAND_DURATION = ANIMATION_DEFAULT_DURATION
 private const val ANIMATION_COLLAPSE_DURATION = ANIMATION_DEFAULT_DURATION
 
@@ -43,10 +43,12 @@ private fun socialScaffoldTransition() = transitionDefinition<State> {
         this[progressKey] = 1F
     }
     transition(State.COLLAPSED to State.EXPANDED) {
-        progressKey using CommonsTween(ANIMATION_EXPAND_DURATION)
+        progressKey using CommonsSpring()
+//        progressKey using CommonsTween(ANIMATION_EXPAND_DURATION)
     }
     transition(State.EXPANDED to State.COLLAPSED) {
-        progressKey using CommonsTween(ANIMATION_COLLAPSE_DURATION)
+        progressKey using CommonsSpring()
+//        progressKey using CommonsTween(ANIMATION_COLLAPSE_DURATION)
     }
 }
 
@@ -58,25 +60,23 @@ fun SocialScaffold(
     modifier: Modifier = Modifier,
     socialContentModifier: Modifier = Modifier,
     state: MutableState<State> = remember { mutableStateOf(State.COLLAPSED) },
-    onVoteUpClick: ActionBlock = SocialActionsAmbient.current.onVoteUpClick,
-    onVoteDownClick: ActionBlock = SocialActionsAmbient.current.onVoteDownClick,
+    onVoteUpClick: ActionBlock = AmbientSocialActions.current.onVoteUpClick,
+    onVoteDownClick: ActionBlock = AmbientSocialActions.current.onVoteDownClick,
     onCommentIconClick: ActionBlock = { state.update(State.COLLAPSED) },
-    onCommentClick: (SocialComment) -> Unit = SocialActionsAmbient.current.onCommentClick,
-    animationSpec: AnimationSpec<IntSize> = remember { CommonsTween(ANIMATION_DEFAULT_DURATION) },
+    onCommentClick: (SocialComment) -> Unit = AmbientSocialActions.current.onCommentClick,
+    transitionDef: TransitionDefinition<State> = remember(::socialScaffoldTransition),
+    transitionState: TransitionState = transition(definition = transitionDef,
+        toState = state.value),
+    expandAction: ActionBlock = { state.update(State.EXPANDED) },
     constraintBlock: @Composable ConstraintLayoutScope.(
         transitionState: TransitionState,
-        animationSpec: AnimationSpec<IntSize>,
         socialContainer: ConstrainedLayoutReference,
     ) -> Modifier,
 ) {
-    val transitionDef = remember(::socialScaffoldTransition)
-    val transitionState =
-        transition(definition = transitionDef, toState = state.value)
-
     ConstraintLayout(modifier) {
         val social = createRef()
 
-        val socialModifier = constraintBlock(transitionState, animationSpec, social)
+        val socialModifier = constraintBlock(transitionState, social)
 
         SocialContentView(
             modifier = socialContentModifier.then(socialModifier),
@@ -86,6 +86,7 @@ fun SocialScaffold(
             onCommentClick = onCommentClick,
             state = state,
             transitionState = transitionState,
+            expandAction = expandAction,
         )
     }
 }
@@ -94,16 +95,13 @@ fun SocialScaffold(
 fun SocialScaffoldColumn(
     modifier: Modifier = Modifier,
     state: MutableState<State> = remember { mutableStateOf(State.COLLAPSED) },
-    animDuration: Int = ANIMATION_DEFAULT_DURATION,
-    anim: AnimationSpec<IntSize> = remember { CommonsTween(animDuration) },
     contentBefore: @Composable (Modifier) -> Unit,
     contentAfter: @Composable (Modifier) -> Unit,
 ) {
     SocialScaffold(
         modifier.fillMaxSize(),
         state = state,
-        animationSpec = anim,
-    ) { transitionState: TransitionState, animationSpec: AnimationSpec<IntSize>, social: ConstrainedLayoutReference ->
+    ) { transitionState: TransitionState, social: ConstrainedLayoutReference ->
 
         val (before, after) = createRefs()
         val progress = transitionState[progressKey]
