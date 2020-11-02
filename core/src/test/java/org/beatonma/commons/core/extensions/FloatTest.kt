@@ -47,4 +47,17 @@ class FloatTest {
         9F.progressIn(8F, 10F).assertFuzzyEquals(0.5F)
         11F.progressIn(8F, 10F).assertFuzzyEquals(1F)
     }
+
+    @Test
+    fun float_triangle_isCorrect() {
+        100F.triangle(0F) shouldbe 0F
+        100F.triangle(.25F) shouldbe 50F
+        100F.triangle(.5F) shouldbe 100F
+        100F.triangle(.75F) shouldbe 50F
+        100F.triangle(1F) shouldbe 0F
+
+        100F.triangle(.5F, inflectAt = .75F).assertFuzzyEquals(200F / 3F)
+        100F.triangle(.75F, inflectAt = .75F) shouldbe 100F
+        100F.triangle(1F, inflectAt = .75F) shouldbe 0F
+    }
 }
