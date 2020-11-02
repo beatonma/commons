@@ -3,6 +3,7 @@ package org.beatonma.commons.app.social.compose
 import androidx.compose.animation.AnimatedFloatModel
 import androidx.compose.animation.asDisposableClock
 import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.TransitionState
 import androidx.compose.foundation.AmbientContentColor
@@ -17,7 +18,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Comment
 import androidx.compose.material.icons.filled.ThumbDown
@@ -44,6 +44,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastForEachIndexed
 import org.beatonma.commons.ActionBlock
 import org.beatonma.commons.R
 import org.beatonma.commons.app.social.State
@@ -67,9 +68,11 @@ import org.beatonma.commons.kotlin.extensions.formatted
 import org.beatonma.commons.snommoc.models.social.SocialComment
 import org.beatonma.commons.snommoc.models.social.SocialContent
 import org.beatonma.commons.snommoc.models.social.SocialVoteType
-import org.beatonma.commons.theme.compose.IconDimen
 import org.beatonma.commons.theme.compose.Padding
-import org.beatonma.commons.theme.compose.horizontalTextListPadding
+import org.beatonma.commons.theme.compose.Size
+import org.beatonma.commons.theme.compose.pdp
+import org.beatonma.commons.theme.compose.plus
+import org.beatonma.commons.theme.compose.theme.positive
 import kotlin.math.roundToInt
 
 private val AmbientProgress = ambientOf { 0F }
@@ -137,7 +140,8 @@ private fun SocialContentView(
                 socialContent.title,
                 style = typography.h4,
                 modifier = Modifier
-                    .showWhenExpanded(expandedContentVisibility)
+                    .wrapContentHeight(expandedContentVisibility)
+                    .drawOpacity(expandedContentVisibility)
                     .align(Alignment.CenterHorizontally)
             )
         }
@@ -148,8 +152,8 @@ private fun SocialContentView(
                     clickable(onClick = expandAction)
                 }
                 .padding(
-                    horizontal = 0.dp.lerp(32.dp, progress),
-                    vertical = 0.dp.lerp(16.dp, progress)
+                    horizontal = 0F.lerp(32F, progress).pdp,
+                    vertical = 0F.lerp(16F, progress).pdp
                 )
                 .wrapContentOrFillWidth(progress),
             arrangement = Arrangement.SpaceEvenly,
@@ -163,7 +167,8 @@ private fun SocialContentView(
             CommentList(
                 socialContent.comments,
                 Modifier
-                    .showWhenExpanded(expandedContentVisibility),
+                    .wrapContentHeight(progress.progressIn(0.6F, 0.8F))
+                    .drawOpacity(expandedContentVisibility),
                 onClick = onCommentClick,
             )
         }
@@ -202,9 +207,9 @@ private fun SocialIcons(
         horizontalArrangement = arrangement,
     ) {
         val upvoteTint =
-            tint.lerp(MaterialTheme.colors.secondary, voteSelection[0].value)
+            tint.lerp(colors.positive, voteSelection[0].value)
         val downvoteTint =
-            tint.lerp(MaterialTheme.colors.secondary, voteSelection[1].value)
+            tint.lerp(colors.positive, voteSelection[1].value)
 
         CounterIcon(
             Modifier,
@@ -265,13 +270,17 @@ private fun CounterIcon(
     val progress = AmbientProgress.current
 
     val content: ComposableBlock = {
-        Icon(icon,
+        Icon(
+            icon,
             tint = tint,
             modifier = Modifier
                 .size(size)
                 .layoutId("icon")
         )
-        Text("$count", Modifier.layoutId("text"))
+        Text(
+            "$count",
+            Modifier.layoutId("text")
+        )
     }
 
     Layout(
@@ -323,11 +332,12 @@ private fun CommentList(
     else {
         // TODO laziness removed due to upstream vertical scrolling but this should definitely be lazy.
 //    LazyColumnFor(comments, modifier) { comment ->
+        val progress = AmbientProgress.current.progressIn(0.75F, 1F).withEasing(FastOutSlowInEasing)
         Column(modifier) {
-            comments.forEach { comment ->
+            comments.fastForEachIndexed { i, comment ->
                 Comment(
                     comment,
-                    itemModifier,
+                    itemModifier.padding(bottom = (4F * i).lerp(0F, progress).pdp),
                     onClick,
                 )
             }
@@ -355,7 +365,7 @@ private fun Comment(
         modifier
             .fillMaxWidth()
             .clickable { onClick(comment) }
-            .padding(Padding.VerticalListItem)
+            .padding(Padding.VerticalListItem + Padding.ScreenHorizontal)
     ) {
         withEmphasisHigh {
             Text(comment.text)
@@ -366,7 +376,7 @@ private fun Comment(
                 Text(comment.username,
                     style = typography.caption,
                     color = colors.secondary,
-                    modifier = Modifier.horizontalTextListPadding()
+                    modifier = Modifier.padding(Padding.HorizontalListItem)
                 )
                 Text(comment.created.formatted(), style = typography.caption)
             }
@@ -374,23 +384,18 @@ private fun Comment(
     }
 }
 
-@Composable
-private fun Modifier.showWhenExpanded(progress: Float): Modifier =
-    wrapContentHeight(progress)
-        .drawOpacity(progress)
-
 private interface IconStyle {
     val size: Dp
     val padding: PaddingValues
 }
 
 private object SmallIconStyle : IconStyle {
-    override val size: Dp = IconDimen.Small
+    override val size: Dp = Size.IconSmall
     override val padding = Padding.IconSmall
 }
 
 private object LargeIconStyle : IconStyle {
-    override val size: Dp = IconDimen.Large
+    override val size: Dp = Size.IconLarge
     override val padding = Padding.IconLarge
 }
 
