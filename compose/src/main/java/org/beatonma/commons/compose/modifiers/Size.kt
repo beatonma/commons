@@ -238,10 +238,16 @@ private fun Constraints.lerp(
     other: Constraints,
     horizontalProgress: Float,
     verticalProgress: Float,
-): Constraints =
-    Constraints(
-        minWidth = minWidth.lerp(other.minWidth, horizontalProgress),
-        maxWidth = maxWidth.lerp(other.maxWidth, horizontalProgress),
-        minHeight = minHeight.lerp(other.minHeight, verticalProgress),
-        maxHeight = maxHeight.lerp(other.maxHeight, verticalProgress),
+): Constraints {
+    val minW = minWidth.lerp(other.minWidth, horizontalProgress)
+    val maxW = maxWidth.lerp(other.maxWidth, horizontalProgress).coerceAtLeast(minW)
+    val minH = minHeight.lerp(other.minHeight, verticalProgress)
+    val maxH = maxHeight.lerp(other.maxHeight, verticalProgress).coerceAtLeast(minH)
+
+    return Constraints(
+        minWidth = minW,
+        maxWidth = maxW,
+        minHeight = minH,
+        maxHeight = maxH,
     )
+}
