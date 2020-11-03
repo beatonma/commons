@@ -9,9 +9,9 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.withTransform
 
 data class ImageConfig(
-    val scaleType: ScaleType,
-    val alignment: Alignment,
-    val scaleMultiplier: Float,
+    val scaleType: ScaleType = ScaleType.Min,
+    val alignment: Alignment = Alignment.Center,
+    val scaleMultiplier: Float = 1.0F,
     val offset: Offset = Offset.Zero,
     val matrix: Matrix = Matrix(),
     val pathConfig: PathConfig? = null,
