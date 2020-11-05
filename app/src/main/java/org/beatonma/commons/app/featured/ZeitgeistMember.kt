@@ -1,9 +1,12 @@
 package org.beatonma.commons.app.featured
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Text
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Providers
@@ -15,36 +18,27 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import org.beatonma.commons.app.ui.colors.ComposePartyColors
 import org.beatonma.commons.app.ui.colors.theme
-import org.beatonma.commons.compose.components.Avatar
-import org.beatonma.commons.compose.components.DEV_AVATAR
+import org.beatonma.commons.app.ui.compose.components.AmbientPartyTheme
+import org.beatonma.commons.app.ui.compose.components.Avatar
+import org.beatonma.commons.app.ui.compose.components.DEV_AVATAR
+import org.beatonma.commons.app.ui.compose.components.PartyBackground
+import org.beatonma.commons.app.ui.compose.components.PartyWithTheme
+import org.beatonma.commons.compose.ambient.invertedColors
+import org.beatonma.commons.compose.ambient.shapes
+import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.util.dotted
-import org.beatonma.commons.compose.util.invertedColors
-import org.beatonma.commons.compose.util.shapes
-import org.beatonma.commons.compose.util.typography
-import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.coerceCurrentPost
 import org.beatonma.commons.data.core.MinimalMember
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
-import org.beatonma.commons.data.core.room.entities.member.Party
-import org.beatonma.commons.logos.PartyLogos
 import org.beatonma.commons.snommoc.models.ZeitgeistReason
-import org.beatonma.commons.svg.ImageConfig
-import org.beatonma.commons.svg.VectorGraphic
-import org.beatonma.commons.svg.render
 import org.beatonma.commons.theme.compose.theme.withSquareTop
 
 private val PortraitWidth = 260.dp
 private val TextPadding = 16.dp
 private val MemberPadding = 4.dp // Space between members
 
-internal val PartyAmbient =
-    ambientOf<Pair<Party, ComposePartyColors>> { error("No party available") }
 private val MemberTextHeightAmbient = ambientOf<Dp> { error("No size set for member text height") }
-
-@Composable
-private inline fun ambientPartyTheme() = PartyAmbient.current.second
 
 @Composable
 fun Member(
@@ -63,8 +57,11 @@ fun Member(
 
     val profile = member.profile
     val party = member.party
+    val partyWithTheme = PartyWithTheme(party, party.theme())
 
-    provideParty(party) {
+    Providers(
+        AmbientPartyTheme provides partyWithTheme
+    ) {
         Surface(
             modifier.width(PortraitWidth)
                 .padding(MemberPadding)
@@ -127,47 +124,13 @@ private fun MemberWithPortrait(
 }
 
 @Composable
-private fun PartyBackground(
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit,
-) {
-    val (party, theme) = PartyAmbient.current
-    Stack(modifier) {
-        val logo = getLogo(PartyImageCache.current, party)
-
-        PartyPortrait(
-            logo,
-            BackgroundPortraitConfig.current,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Surface(
-            color = theme.primary.copy(alpha = 0.9F),
-        ) {
-            content()
-        }
-    }
-}
-
-@Composable
-internal fun PartyPortrait(
-    graphic: VectorGraphic,
-    config: ImageConfig,
-    modifier: Modifier = Modifier.fillMaxSize(),
-) {
-    Canvas(modifier) {
-        graphic.render(this@Canvas, config)
-    }
-}
-
-@Composable
 private fun MemberText(
     profile: MemberProfile,
     modifier: Modifier = Modifier,
 ) = MemberText(profile.name,
-    dotted(PartyAmbient.current.first.name, profile.parliamentdotuk.toString()),
+    dotted(AmbientPartyTheme.current.party.name, profile.parliamentdotuk.toString()),
     profile.coerceCurrentPost(),
-    ambientPartyTheme().colorOnPrimary,
+    AmbientPartyTheme.current.theme.onPrimary,
     modifier
 )
 
@@ -206,28 +169,4 @@ private fun MemberText(
             overflow = TextOverflow.Ellipsis
         )
     }
-}
-
-private fun getLogo(
-    cache: MutableMap<ParliamentID, VectorGraphic>,
-    party: Party,
-): VectorGraphic {
-    val partyId = party.parliamentdotuk
-
-    return when {
-        cache.contains(partyId) -> cache[partyId]!!
-
-        else -> {
-            val graphic = PartyLogos.get(partyId)
-            cache[partyId] = graphic
-            graphic
-        }
-    }
-}
-
-@Composable
-internal fun provideParty(party: Party, content: @Composable () -> Unit) {
-    val theme = party.theme()
-    val partyWithTheme = Pair(party, theme)
-    Providers(PartyAmbient provides partyWithTheme, children = content)
 }
