@@ -1,4 +1,4 @@
-package org.beatonma.commons.compose.util
+package org.beatonma.commons.compose.ambient
 
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
