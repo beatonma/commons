@@ -18,7 +18,13 @@ import org.beatonma.commons.app.ui.recyclerview.adapter.LoadingAdapter
 import org.beatonma.commons.app.ui.recyclerview.setup
 import org.beatonma.commons.databinding.ItemSocialCommentBinding
 import org.beatonma.commons.kotlin.data.asStateList
-import org.beatonma.commons.kotlin.extensions.*
+import org.beatonma.commons.kotlin.extensions.applyColor
+import org.beatonma.commons.kotlin.extensions.bindContentDescription
+import org.beatonma.commons.kotlin.extensions.bindText
+import org.beatonma.commons.kotlin.extensions.dimenCompat
+import org.beatonma.commons.kotlin.extensions.formatted
+import org.beatonma.commons.kotlin.extensions.inflate
+import org.beatonma.commons.kotlin.extensions.stringCompat
 import org.beatonma.commons.snommoc.models.social.SocialComment
 import org.beatonma.commons.snommoc.models.social.SocialContent
 import org.beatonma.commons.snommoc.models.social.SocialVoteType
@@ -101,16 +107,16 @@ class SocialViewController(
 
     private var currentVote: SocialVoteType? = null
 
-    private val currentState: State
-        get() = when(layout.currentState) {
-            expandedConstraintsId -> State.EXPANDED
-            composeCommentConstraintsId -> State.COMPOSE_COMMENT
-            else -> State.COLLAPSED
+    private val currentState: SocialUiState
+        get() = when (layout.currentState) {
+            expandedConstraintsId -> SocialUiState.Expanded
+            composeCommentConstraintsId -> SocialUiState.ComposeComment
+            else -> SocialUiState.Collapsed
         }
 
     private val theme: SocialViewTheme
         get() = when(currentState) {
-            State.COLLAPSED -> collapsedTheme
+            SocialUiState.Collapsed -> collapsedTheme
             else -> expandedTheme
         }
 
@@ -118,17 +124,17 @@ class SocialViewController(
         layout.findViewById<RecyclerView>(R.id.social_comments_recyclerview).setup(adapter)
 
         setupTransitionClickListeners(layout, mapOf(
-            R.id.social_parent_container to State.EXPANDED,
-            R.id.social_create_comment_scrim to State.EXPANDED,
-            R.id.social_create_comment_fab to State.COMPOSE_COMMENT,
+            R.id.social_parent_container to SocialUiState.Expanded,
+            R.id.social_create_comment_scrim to SocialUiState.Expanded,
+            R.id.social_create_comment_fab to SocialUiState.ComposeComment,
         ))
         setupSocialClickListeners()
     }
 
     override fun onBackPressed(): Boolean {
         val targetState = when (layout.currentState) {
-            composeCommentConstraintsId -> State.EXPANDED
-            expandedConstraintsId -> State.COLLAPSED
+            composeCommentConstraintsId -> SocialUiState.Expanded
+            expandedConstraintsId -> SocialUiState.Collapsed
             else -> return false
         }
 
@@ -142,9 +148,9 @@ class SocialViewController(
 
         asyncDiffHost.diffAdapterItems(adapter, content?.comments ?: listOf())
 
-        val numComments = content?.commentCount() ?: 0
-        val numUpvotes = content?.ayeVotes() ?: 0
-        val numDownvotes = content?.noVotes() ?: 0
+        val numComments = content?.commentCount ?: 0
+        val numUpvotes = content?.ayeVotes ?: 0
+        val numDownvotes = content?.noVotes ?: 0
 
         bindText(
             title to (content?.title ?: "<Title>"),
@@ -154,9 +160,12 @@ class SocialViewController(
         )
 
         bindContentDescription(
-            commentTouchTarget to stringCompat(R.string.content_description_social_comment_count, numComments),
-            upvoteTouchTarget to stringCompat(R.string.content_description_social_votes_count_for, numUpvotes),
-            downvoteTouchTarget to stringCompat(R.string.content_description_social_votes_count_against, numDownvotes),
+            commentTouchTarget to stringCompat(R.string.content_description_social_comment_count,
+                numComments),
+            upvoteTouchTarget to stringCompat(R.string.content_description_social_votes_count_for,
+                numUpvotes),
+            downvoteTouchTarget to stringCompat(R.string.content_description_social_votes_count_against,
+                numDownvotes),
         )
     }
 
@@ -165,7 +174,7 @@ class SocialViewController(
     }
 
     internal fun onCommentSubmissionSuccessful() {
-        transitionTo(State.EXPANDED)
+        transitionTo(SocialUiState.Expanded)
     }
 
     internal fun updateVoteUi(voteType: SocialVoteType?) {
@@ -225,12 +234,12 @@ class SocialViewController(
             }
     }
 
-    private fun transitionTo(state: State){
+    private fun transitionTo(state: SocialUiState) {
         layout.transitionToState(
             when (state) {
-                State.COLLAPSED -> collapsedConstraintsId
-                State.EXPANDED -> expandedConstraintsId
-                State.COMPOSE_COMMENT -> composeCommentConstraintsId
+                SocialUiState.Collapsed -> collapsedConstraintsId
+                SocialUiState.Expanded -> expandedConstraintsId
+                SocialUiState.ComposeComment -> composeCommentConstraintsId
             }
         )
 
@@ -239,7 +248,7 @@ class SocialViewController(
 
     private fun setupSocialClickListeners() {
         commentTouchTarget.setOnClickListener {
-            if (currentState == State.COLLAPSED) transitionTo(State.EXPANDED)
+            if (currentState == SocialUiState.Collapsed) transitionTo(SocialUiState.Expanded)
         }
         upvoteTouchTarget.setOnClickListener { onVoteClicked(SocialVoteType.aye) }
         downvoteTouchTarget.setOnClickListener { onVoteClicked(SocialVoteType.no) }
@@ -251,15 +260,15 @@ class SocialViewController(
     }
 
     private fun onVoteClicked(voteType: SocialVoteType) {
-        if (currentState == State.COLLAPSED) {
-            transitionTo(State.EXPANDED)
+        if (currentState == SocialUiState.Collapsed) {
+            transitionTo(SocialUiState.Expanded)
         }
         else {
             host.onVoteClicked(voteType)
         }
     }
 
-    private fun setupTransitionClickListeners(layout: MotionLayout, map: Map<Int, State>) {
+    private fun setupTransitionClickListeners(layout: MotionLayout, map: Map<Int, SocialUiState>) {
         map.forEach { (layoutId, stateId) ->
             layout.findViewById<View>(layoutId).setOnClickListener { transitionTo(stateId) }
         }
@@ -277,8 +286,3 @@ data class SocialViewTheme(
 )
 
 
-internal enum class State {
-    COLLAPSED,
-    EXPANDED,
-    COMPOSE_COMMENT,
-}
