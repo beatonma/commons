@@ -3,9 +3,8 @@ package org.beatonma.commons.compose.modifiers
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.util.fastForEach
-
-private typealias ModifierBlock = @Composable Modifier.() -> Modifier
-private typealias TypedModifierBlock<T> = @Composable Modifier.(T) -> Modifier
+import org.beatonma.commons.compose.util.ModifierBlock
+import org.beatonma.commons.compose.util.TypedModifierBlock
 
 @Composable
 inline fun <T> Modifier.forEachOf(
