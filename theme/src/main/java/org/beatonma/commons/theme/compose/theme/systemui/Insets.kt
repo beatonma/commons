@@ -21,14 +21,31 @@ package org.beatonma.commons.theme.compose.theme.systemui
 import android.view.View
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
-import androidx.compose.runtime.*
-import androidx.compose.ui.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Providers
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.onCommit
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticAmbientOf
+import androidx.compose.ui.LayoutModifier
+import androidx.compose.ui.Measurable
+import androidx.compose.ui.MeasureScope
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.layout.IntrinsicMeasurable
 import androidx.compose.ui.layout.IntrinsicMeasureScope
 import androidx.compose.ui.platform.DensityAmbient
 import androidx.compose.ui.platform.LayoutDirectionAmbient
 import androidx.compose.ui.platform.ViewAmbient
-import androidx.compose.ui.unit.*
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.offset
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsCompat.Type
@@ -175,13 +192,14 @@ private fun Insets.updateFrom(windowInsets: WindowInsetsCompat, type: Int) {
  * @param enabled Whether to apply padding using the system bars dimensions on the respective edges.
  * Defaults to `true`.
  */
-fun Modifier.systemBarsPadding(enabled: Boolean = true) = composed {
+fun Modifier.systemBarsPadding(enabled: Boolean = true, scale: Float = 1.0F) = composed {
     insetsPadding(
         insets = InsetsAmbient.current.systemBars,
         left = enabled,
         top = enabled,
         right = enabled,
-        bottom = enabled
+        bottom = enabled,
+        scale = scale,
     )
 }
 
@@ -189,8 +207,8 @@ fun Modifier.systemBarsPadding(enabled: Boolean = true) = composed {
  * Apply additional space which matches the height of the status bars height along the top edge
  * of the content.
  */
-fun Modifier.statusBarsPadding() = composed {
-    insetsPadding(insets = InsetsAmbient.current.statusBars, top = true)
+fun Modifier.statusBarsPadding(scale: Float = 1.0F) = composed {
+    insetsPadding(insets = InsetsAmbient.current.statusBars, top = true, scale = scale)
 }
 
 /**
@@ -208,14 +226,20 @@ fun Modifier.statusBarsPadding() = composed {
 fun Modifier.navigationBarsPadding(
     bottom: Boolean = true,
     left: Boolean = true,
-    right: Boolean = true
+    right: Boolean = true,
+    scale: Float = 1.0F,
 ) = composed {
     insetsPadding(
         insets = InsetsAmbient.current.navigationBars,
         left = left,
         right = right,
-        bottom = bottom
+        bottom = bottom,
+        scale = scale,
     )
+}
+
+fun Modifier.imePadding(scale: Float = 1.0F) = composed {
+    insetsPadding(insets = InsetsAmbient.current.ime, bottom = true, scale = scale)
 }
 
 /**
@@ -460,25 +484,27 @@ private inline fun Modifier.insetsPadding(
     left: Boolean = false,
     top: Boolean = false,
     right: Boolean = false,
-    bottom: Boolean = false
-) = this then InsetsPaddingModifier(insets, left, top, right, bottom)
+    bottom: Boolean = false,
+    scale: Float = 1.0F,  // For animation
+) = this then InsetsPaddingModifier(insets, left, top, right, bottom, scale)
 
 private data class InsetsPaddingModifier(
     private val insets: Insets,
     private val applyLeft: Boolean = false,
     private val applyTop: Boolean = false,
     private val applyRight: Boolean = false,
-    private val applyBottom: Boolean = false
+    private val applyBottom: Boolean = false,
+    private val scale: Float = 1.0F,
 ) : LayoutModifier {
 
     override fun MeasureScope.measure(
         measurable: Measurable,
         constraints: Constraints
     ): MeasureScope.MeasureResult {
-        val left = if (applyLeft) insets.left else 0
-        val top = if (applyTop) insets.top else 0
-        val right = if (applyRight) insets.right else 0
-        val bottom = if (applyBottom) insets.bottom else 0
+        val left = if (applyLeft) (insets.left * scale).toInt() else 0
+        val top = if (applyTop) (insets.top * scale).toInt() else 0
+        val right = if (applyRight) (insets.right * scale).toInt() else 0
+        val bottom = if (applyBottom) (insets.bottom * scale).toInt() else 0
         val horizontal = left + right
         val vertical = top + bottom
 
