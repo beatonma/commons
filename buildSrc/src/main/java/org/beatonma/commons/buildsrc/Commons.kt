@@ -10,6 +10,7 @@ object Commons {
     }
 
     object Social {
+        const val MIN_COMMENT_LENGTH = 1
         const val MAX_COMMENT_LENGTH = 240
     }
 
