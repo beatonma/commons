@@ -32,9 +32,10 @@ import androidx.compose.ui.unit.dp
 import org.beatonma.commons.ActionBlock
 import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.compose.ambient.shapes
+import org.beatonma.commons.compose.animation.lerpBetween
 import org.beatonma.commons.compose.util.ComposableBlock
 import org.beatonma.commons.compose.util.lerp
-import org.beatonma.commons.core.extensions.lerp
+import org.beatonma.commons.core.extensions.lerpBetween
 import org.beatonma.commons.core.extensions.triangle
 import org.beatonma.commons.snommoc.models.social.SocialContent
 import org.beatonma.commons.snommoc.models.social.SocialVoteType
@@ -74,10 +75,8 @@ internal fun SocialIcons(
         modifier,
         horizontalArrangement = arrangement,
     ) {
-        val upvoteTint =
-            tint.lerp(colors.positive, voteSelection[0].value)
-        val downvoteTint =
-            tint.lerp(colors.positive, voteSelection[1].value)
+        val upvoteTint = voteSelection[0].value.lerpBetween(tint, colors.positive)
+        val downvoteTint = voteSelection[1].value.lerpBetween(tint, colors.positive)
 
         CounterIcon(
             Modifier,
@@ -161,27 +160,28 @@ private fun CounterIcon(
     ) { measurables, constraints ->
         val iconTextSpace = 4.dp.toIntPx() // Space between icon and text
         val avoidOffset =
-            +((iconTextSpace * 5F).triangle(progress)).roundToInt() // Extra offset to avoid icon/text collision during animation
-        val verticalSpace = 0.lerp(iconTextSpace, progress) + avoidOffset
-        val horizontalSpace = iconTextSpace.lerp(0, progress) + avoidOffset
+            ((iconTextSpace * 5F).triangle(progress)).roundToInt() // Extra offset to avoid icon/text collision during animation
+        val verticalSpace = progress.lerpBetween(0, iconTextSpace) + avoidOffset
+        val horizontalSpace = progress.lerpBetween(iconTextSpace, 0) + avoidOffset
 
         val iconPlaceable = measurables.find { it.id == "icon" }!!.measure(constraints)
         val textPlaceable = measurables.find { it.id == "text" }!!.measure(constraints)
 
-        val textStart = (iconPlaceable.width + horizontalSpace).lerp(0, progress)
-        val textTop = 0.lerp(iconPlaceable.height + verticalSpace, progress)
+        val textStart = progress.lerpBetween(iconPlaceable.width + horizontalSpace, 0)
+        val textTop = progress.lerpBetween(0, iconPlaceable.height + verticalSpace)
 
         val width = maxOf(iconPlaceable.width, textStart + textPlaceable.width)
         val height = maxOf(iconPlaceable.height, textTop + textPlaceable.height)
 
         layout(width, height) {
             iconPlaceable.placeRelative(
-                0.lerp((width - iconPlaceable.width) / 2, progress),
-                ((height - iconPlaceable.height) / 2).lerp(0, progress)
+                progress.lerpBetween(0, (width - iconPlaceable.width) / 2),
+                progress.lerpBetween((height - iconPlaceable.height) / 2, 0)
             )
             textPlaceable.placeRelative(
-                (textStart + horizontalSpace).lerp((width - textPlaceable.width) / 2, progress),
-                ((height - textPlaceable.height) / 2).lerp(textTop + verticalSpace, progress)
+                progress.lerpBetween(textStart + horizontalSpace,
+                    (width - textPlaceable.width) / 2),
+                progress.lerpBetween((height - textPlaceable.height) / 2, textTop + verticalSpace)
             )
         }
     }
@@ -204,6 +204,6 @@ internal object LargeIconStyle : IconStyle {
 
 internal fun IconStyle.lerp(other: IconStyle, progress: Float): IconStyle =
     object : IconStyle {
-        override val size: Dp = this@lerp.size.lerp(other.size, progress)
+        override val size: Dp = progress.lerpBetween(this@lerp.size, other.size)
         override val padding = this@lerp.padding.lerp(other.padding, progress)
     }
