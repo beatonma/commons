@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.offset
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsCompat.Type
+import kotlin.math.max
 
 /**
  * Taken from https://goo.gle/compose-insets. Requires androidx.core:core v1.5.0-alpha02+
@@ -84,6 +85,11 @@ class DisplayInsets {
      * Inset values which match [WindowInsetsCompat.Type.ime]
      */
     val ime = Insets()
+
+    /**
+     * Insets for internal calculations.
+     */
+    internal val mutableInsets = Insets()
 }
 
 @Stable
@@ -240,6 +246,43 @@ fun Modifier.navigationBarsPadding(
 
 fun Modifier.imePadding(scale: Float = 1.0F) = composed {
     insetsPadding(insets = InsetsAmbient.current.ime, bottom = true, scale = scale)
+}
+
+fun Modifier.imeOrNavigationBarsPadding(
+    bottom: Boolean = true,
+    left: Boolean = true,
+    right: Boolean = true,
+    scale: Float = 1.0F,
+) = composed {
+    val maxInsets = maxInsetsOf(
+        InsetsAmbient.current.ime,
+        InsetsAmbient.current.navigationBars
+    )
+
+    with(InsetsAmbient.current.ime) {
+        println("${this.bottom}")
+    }
+
+    insetsPadding(
+        maxInsets,
+        left = left, right = right, bottom = bottom,
+        scale = scale
+    )
+}
+
+@Composable
+fun maxInsetsOf(
+    first: Insets,
+    second: Insets,
+): Insets {
+    val insets = InsetsAmbient.current.mutableInsets
+
+    insets.left = max(first.left, second.left)
+    insets.top = max(first.top, second.top)
+    insets.right = max(first.right, second.right)
+    insets.bottom = max(first.bottom, second.bottom)
+
+    return insets
 }
 
 /**
@@ -447,7 +490,7 @@ fun Modifier.navigationBarsWidthPlus(
  * @param bottom Whether to apply the inset on the bottom dimension.
  */
 @Composable
-fun Insets.toInnerPadding(
+fun Insets.toPaddingValues(
     start: Boolean = true,
     top: Boolean = true,
     end: Boolean = true,
@@ -456,21 +499,21 @@ fun Insets.toInnerPadding(
     val layoutDirection = LayoutDirectionAmbient.current
     PaddingValues(
         start = when {
-            start && layoutDirection == LayoutDirection.Ltr -> this@toInnerPadding.left.toDp()
-            start && layoutDirection == LayoutDirection.Rtl -> this@toInnerPadding.right.toDp()
+            start && layoutDirection == LayoutDirection.Ltr -> this@toPaddingValues.left.toDp()
+            start && layoutDirection == LayoutDirection.Rtl -> this@toPaddingValues.right.toDp()
             else -> 0.dp
         },
         top = when {
-            top -> this@toInnerPadding.top.toDp()
+            top -> this@toPaddingValues.top.toDp()
             else -> 0.dp
         },
         end = when {
-            end && layoutDirection == LayoutDirection.Ltr -> this@toInnerPadding.right.toDp()
-            end && layoutDirection == LayoutDirection.Rtl -> this@toInnerPadding.left.toDp()
+            end && layoutDirection == LayoutDirection.Ltr -> this@toPaddingValues.right.toDp()
+            end && layoutDirection == LayoutDirection.Rtl -> this@toPaddingValues.left.toDp()
             else -> 0.dp
         },
         bottom = when {
-            bottom -> this@toInnerPadding.bottom.toDp()
+            bottom -> this@toPaddingValues.bottom.toDp()
             else -> 0.dp
         }
     )
