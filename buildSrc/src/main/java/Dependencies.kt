@@ -4,10 +4,10 @@ import org.gradle.api.JavaVersion
 object Versions {
     // Build
     const val GRADLE_PLUGIN = "4.2.0-alpha14"
-    const val GRADLE_DEPENDENCY_UPDATES = "0.29.0"
+    const val GRADLE_DEPENDENCY_UPDATES = "0.36.0"
 
     // Core
-    const val COROUTINES = "1.3.9"
+    const val COROUTINES = "1.4.1"
     const val KOTLIN = "1.4.10"
     const val KOTLIN_LANGUAGE_VERSION = "1.4"
     val JAVA = JavaVersion.VERSION_1_8
@@ -16,7 +16,7 @@ object Versions {
     const val ROOM = "2.3.0-alpha02"
 
     // Dependency injection
-    const val DAGGER = "2.28.3"
+    const val DAGGER = "2.29.1"
     const val HILT = "2.28.3-alpha"
     const val AX_HILT = "1.0.0-alpha02"
 
@@ -31,10 +31,10 @@ object Versions {
     const val AX_ANNOTATIONS = "1.2.0-alpha01"
     const val AX_APPCOMPAT = "1.3.0-alpha02"
     const val AX_COMPOSE = "1.0.0-alpha06"
-    const val AX_CONSTRAINTLAYOUT = "2.0.1"
+    const val AX_CONSTRAINTLAYOUT = "2.0.4"
     const val AX_CORE_KTX = "1.5.0-alpha02"
     const val AX_LIFECYCLE = "2.3.0-alpha06"
-    const val AX_NAVIGATION = "2.3.0"
+    const val AX_NAVIGATION = "2.3.1"
     const val AX_RECYCLERVIEW = "1.2.0-alpha05"
     const val AX_SWIPEREFRESH = "1.1.0-rc01"
     const val AX_WORK = "2.4.0"
