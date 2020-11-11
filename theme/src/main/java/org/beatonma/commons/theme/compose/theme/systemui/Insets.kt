@@ -18,7 +18,11 @@
 
 package org.beatonma.commons.theme.compose.theme.systemui
 
+import android.annotation.SuppressLint
+import android.os.Build
 import android.view.View
+import android.view.WindowInsets
+import android.view.WindowInsetsAnimation
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
@@ -49,6 +53,7 @@ import androidx.compose.ui.unit.offset
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsCompat.Type
+import androidx.core.view.WindowInsetsCompat.toWindowInsetsCompat
 import kotlin.math.max
 
 /**
@@ -132,25 +137,48 @@ val InsetsAmbient = staticAmbientOf<DisplayInsets>()
  * Applies any [WindowInsetsCompat] values to [InsetsAmbient], which are then available
  * within [content].
  *
+ * @param animateIme Whether to enable IME animation callbacks on Android 11+
+ *
  * @param consumeWindowInsets Whether to consume any [WindowInsetsCompat]s which are dispatched to
  * the host view. Defaults to `true`.
  */
+@SuppressLint("NewApi") // view.setWindowInsetsAnimationCallback on Android 11+
 @Composable
 fun ProvideDisplayInsets(
     consumeWindowInsets: Boolean = true,
-    content: @Composable () -> Unit
+    animateIme: Boolean = true,
+    content: @Composable () -> Unit,
 ) {
     val view = ViewAmbient.current
 
     val displayInsets = remember { DisplayInsets() }
+    val preferAnimatedIme = animateIme && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
 
     onCommit(view) {
+        if (preferAnimatedIme) {
+            view.setWindowInsetsAnimationCallback(
+                object : WindowInsetsAnimation.Callback(
+                    DISPATCH_MODE_STOP
+                ) {
+                    override fun onProgress(
+                        insets: WindowInsets,
+                        runningAnimations: MutableList<WindowInsetsAnimation>,
+                    ): WindowInsets {
+                        displayInsets.ime.updateFrom(toWindowInsetsCompat(insets), Type.ime())
+                        return insets
+                    }
+                }
+            )
+        }
+
         ViewCompat.setOnApplyWindowInsetsListener(view) { _, windowInsets ->
             displayInsets.systemBars.updateFrom(windowInsets, Type.systemBars())
             displayInsets.systemGestures.updateFrom(windowInsets, Type.systemGestures())
             displayInsets.statusBars.updateFrom(windowInsets, Type.statusBars())
             displayInsets.navigationBars.updateFrom(windowInsets, Type.navigationBars())
-            displayInsets.ime.updateFrom(windowInsets, Type.ime())
+            if (!preferAnimatedIme) {
+                displayInsets.ime.updateFrom(windowInsets, Type.ime())
+            }
 
             if (consumeWindowInsets) WindowInsetsCompat.CONSUMED else windowInsets
         }
@@ -258,10 +286,6 @@ fun Modifier.imeOrNavigationBarsPadding(
         InsetsAmbient.current.ime,
         InsetsAmbient.current.navigationBars
     )
-
-    with(InsetsAmbient.current.ime) {
-        println("${this.bottom}")
-    }
 
     insetsPadding(
         maxInsets,
