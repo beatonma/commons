@@ -16,6 +16,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
+import org.beatonma.commons.compose.ambient.colors
 
 /**
  * Display nothing if text is null
@@ -105,4 +106,13 @@ fun OptionalText(
             style
         )
     }
+}
+
+@Composable
+fun Hint(
+    text: String,
+    modifier: Modifier = Modifier,
+    color: Color = colors.onSurface.copy(alpha = 0.4F),
+) {
+    Text(text, modifier, color = color)
 }
