@@ -15,14 +15,18 @@ import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.beatonma.commons.app.signin.AmbientUserToken
+import org.beatonma.commons.app.signin.NullUserToken
+import org.beatonma.commons.app.social.SocialUiState
 import org.beatonma.commons.app.social.SocialViewModel
-import org.beatonma.commons.app.social.State
+import org.beatonma.commons.app.social.compose.AmbientSocialActions
+import org.beatonma.commons.app.social.compose.AmbientSocialContent
+import org.beatonma.commons.app.social.compose.AmbientSocialUiState
 import org.beatonma.commons.app.social.compose.SocialActions
-import org.beatonma.commons.app.social.compose.SocialActionsAmbient
-import org.beatonma.commons.app.social.compose.SocialAmbient
 import org.beatonma.commons.app.ui.colors.PartyColors
 import org.beatonma.commons.app.ui.colors.Themed
 import org.beatonma.commons.app.ui.compose.composeView
+import org.beatonma.commons.app.ui.compose.withSystemUi
 import org.beatonma.commons.app.ui.navigation.BackPressConsumer
 import org.beatonma.commons.compose.util.update
 import org.beatonma.commons.core.ParliamentID
@@ -34,7 +38,6 @@ import org.beatonma.commons.snommoc.models.social.EmptySocialContent
 import org.beatonma.commons.snommoc.models.social.SocialTarget
 import org.beatonma.commons.snommoc.models.social.SocialTargetType
 import org.beatonma.commons.snommoc.models.social.SocialVoteType
-import org.beatonma.commons.theme.compose.theme.systemui.withSystemUi
 
 internal val ViewmodelAmbient =
     ambientOf<ComposeMemberProfileViewModel> { error("Viewmodel not set") }
@@ -45,7 +48,7 @@ class MemberProfileComposeFragment : Fragment(),
     BackPressConsumer {
     private val viewmodel: ComposeMemberProfileViewModel by viewModels()
     private val socialViewModel: SocialViewModel by viewModels()
-    private val socialUiState = mutableStateOf(State.COLLAPSED)
+    private val socialUiState = mutableStateOf(SocialUiState.Expanded)
 
     override var theme: PartyColors? = null
 
@@ -74,32 +77,41 @@ class MemberProfileComposeFragment : Fragment(),
         val flow = viewmodel.forMember(memberId)
         socialViewModel.forTarget(SocialTarget(SocialTargetType.member, parliamentdotuk = memberId))
         val socialFlow = socialViewModel.flow
+        val activeUserFlow = viewmodel.getActiveToken()
 
         val socialCallbacks = SocialActions(
             onVoteUpClick = { onVoteClicked(SocialVoteType.aye) },
             onVoteDownClick = { onVoteClicked(SocialVoteType.no) },
-            onExpandedCommentIconClick = {},
+            onExpandedCommentIconClick = { },
             onCommentClick = { comment ->
                 println("Clicked comment $comment")
-            }
+            },
+            onCreateCommentClick = { socialUiState.update(SocialUiState.ComposeComment) },
+            onCommentSubmitClick = {
+
+            },
         )
 
         return composeView {
             Providers(
-                ViewmodelAmbient provides viewmodel,
-                SocialActionsAmbient provides socialCallbacks
+                AmbientSocialActions provides socialCallbacks,
+                AmbientSocialUiState provides socialUiState,
             ) {
-                withSystemUi(window = requireActivity().window) {
+                withSystemUi {
                     val resultState by flow.collectAsState(initial = LoadingResult())
                     val socialState by socialFlow.collectAsState(initial = LoadingResult())
+                    val activeUserState = activeUserFlow?.collectAsState(initial = LoadingResult())
 
                     val data = resultState.data ?: return@withSystemUi
                     withNotNull(data.profile) {
                         socialViewModel.forTarget(it.asSocialTarget())
                     }
 
-                    Providers(SocialAmbient provides (socialState.data ?: EmptySocialContent)) {
-                        MemberProfileLayout(data, state = socialUiState)
+                    Providers(
+                        AmbientSocialContent provides (socialState.data ?: EmptySocialContent),
+                        AmbientUserToken provides (activeUserState?.value?.data ?: NullUserToken),
+                    ) {
+                        MemberProfileLayout(data)
                     }
                 }
             }
@@ -107,8 +119,13 @@ class MemberProfileComposeFragment : Fragment(),
     }
 
     override fun onBackPressed(): Boolean = when (socialUiState.value) {
-        State.EXPANDED -> {
-            socialUiState.update(State.COLLAPSED)
+        SocialUiState.Expanded -> {
+            socialUiState.update(SocialUiState.Collapsed)
+            true
+        }
+
+        SocialUiState.ComposeComment -> {
+            socialUiState.update(SocialUiState.Expanded)
             true
         }
 
