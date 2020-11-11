@@ -84,14 +84,14 @@ fun ValidatedLengthTextField(
     val valueMetrics =
         remember { validator.validate(value, TextLengthValidationMetrics("", 0, false)) }
 
-    Column(modifier) {
+    Column {
         TextField(
             value = value,
             onValueChange = { value ->
                 validator.validate(value, valueMetrics)
                 onValueChange(valueMetrics.value, valueMetrics.isValid)
             },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = modifier.fillMaxWidth(),
             textStyle = textStyle,
             label = label,
             placeholder = placeholder,
