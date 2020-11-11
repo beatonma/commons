@@ -25,12 +25,12 @@ fun ModalScrim(
     val backgroundColor = colors.modalScrim
     Box(
         modifier
-            .fillMaxSize()
             .zIndex(Layer.ModalScrim)
-            .background(backgroundColor.copy(alpha = alpha * backgroundColor.alpha))
+            .fillMaxSize()
             .onlyWhen(alpha > 0F) {
-                clickable(onClick = onClickAction)
-            },
+                clickable(onClick = onClickAction, indication = null)
+            }
+            .background(backgroundColor.copy(alpha = alpha * backgroundColor.alpha)),
         alignment = alignment,
         children = content
     )
