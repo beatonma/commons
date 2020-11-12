@@ -1,6 +1,7 @@
 package org.beatonma.commons.app.ui.compose.components
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Surface
@@ -72,17 +73,22 @@ fun PartyBackground(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    Surface(
-        modifier,
-        color = theme.primary.copy(alpha = 0.9F)
-    ) {
-        PartyPortrait(
-            logo,
-            config,
-            modifier = Modifier.fillMaxWidth()
-        )
+    Box {
+        Surface(
+            modifier,
+        ) {
+            PartyPortrait(
+                logo,
+                config,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
 
-        content()
+        Surface(
+            color = theme.primary.copy(alpha = 0.9F)
+        ) {
+            content()
+        }
     }
 }
 
