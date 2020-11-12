@@ -135,7 +135,7 @@ private fun SocialContentUi(
 
             if (expandedContentIsVisible) {
                 CommentList(
-                    socialContent.comments,
+                    socialContent.comments.sortedByDescending { it.modified },
                     Modifier
                         .wrapContentHeight(progress.progressIn(0.6F, 0.8F))
                         .onlyWhen(isFullyExpanded) {
