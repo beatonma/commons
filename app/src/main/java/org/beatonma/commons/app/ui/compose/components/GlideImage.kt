@@ -18,6 +18,7 @@ package org.beatonma.commons.app.ui.compose.components
  * Lightly modified from https://github.com/wasabeef/composable-images.
  */
 
+import android.app.Activity
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
@@ -33,7 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.WithConstraints
 import androidx.compose.ui.graphics.ImageAsset
 import androidx.compose.ui.graphics.asImageAsset
-import androidx.compose.ui.graphics.drawscope.drawCanvas
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.ContextAmbient
 import com.bumptech.glide.Glide
@@ -106,7 +107,9 @@ private fun GlideImagePrivate(
             onDispose {
                 image.value = null
                 drawable.value = null
-                Glide.with(context).clear(target)
+                if (context is Activity && !context.isDestroyed) {
+                    Glide.with(context).clear(target)
+                }
                 job.cancel()
             }
         }
@@ -116,7 +119,7 @@ private fun GlideImagePrivate(
         }
         else if (drawable.value != null) {
             Canvas(modifier = modifier) {
-                drawCanvas { canvas, _ -> drawable.value!!.draw(canvas.nativeCanvas) }
+                drawIntoCanvas { canvas -> drawable.value!!.draw(canvas.nativeCanvas) }
             }
         }
     }
