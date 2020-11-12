@@ -6,7 +6,6 @@ import androidx.compose.foundation.Text
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.material.ContainerAlpha
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
@@ -29,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.compose.ambient.shapes
 import org.beatonma.commons.compose.ambient.typography
+import org.beatonma.commons.theme.compose.theme.withSquareBottom
 
 fun interface TextFieldValidator<T : TextValidationMetrics> {
     fun validate(value: String, out: T): T
@@ -49,7 +49,7 @@ data class LengthTextFieldValidator(
         val trimmed = value.trim()
         val length = trimmed.length
 
-        out.value = trimmed
+        out.value = value
         out.length = length
         out.isValid = length in minLength..maxLength
 
@@ -75,11 +75,11 @@ fun ValidatedLengthTextField(
     onImeActionPerformed: (ImeAction, SoftwareKeyboardController?) -> Unit = { _, _ -> },
     onTextInputStarted: (SoftwareKeyboardController) -> Unit = {},
     interactionState: InteractionState = remember { InteractionState() },
-    activeColor: Color = colors.primary,
+    activeColor: Color = colors.secondary,
     inactiveColor: Color = colors.onSurface,
     errorColor: Color = colors.error,
     backgroundColor: Color = colors.onSurface.copy(alpha = ContainerAlpha),
-    shape: Shape = shapes.small.copy(bottomLeft = ZeroCornerSize, bottomRight = ZeroCornerSize),
+    shape: Shape = shapes.small.withSquareBottom(),
 ) {
     val valueMetrics =
         remember { validator.validate(value, TextLengthValidationMetrics("", 0, false)) }
