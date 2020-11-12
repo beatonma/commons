@@ -7,12 +7,29 @@ import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.network.core.NetworkException
 import org.beatonma.commons.repo.models.CreatedComment
 import org.beatonma.commons.repo.models.CreatedVote
-import org.beatonma.commons.repo.result.*
+import org.beatonma.commons.repo.result.IoResult
+import org.beatonma.commons.repo.result.NetworkError
+import org.beatonma.commons.repo.result.SuccessCodeResult
+import org.beatonma.commons.repo.result.SuccessResult
 import org.beatonma.commons.snommoc.CommonsService
 import org.beatonma.commons.snommoc.annotations.SignInRequired
-import org.beatonma.commons.snommoc.models.*
+import org.beatonma.commons.snommoc.models.ApiBill
+import org.beatonma.commons.snommoc.models.ApiCompleteMember
+import org.beatonma.commons.snommoc.models.ApiConstituency
+import org.beatonma.commons.snommoc.models.ApiConstituencyElectionDetails
+import org.beatonma.commons.snommoc.models.ApiDivision
+import org.beatonma.commons.snommoc.models.ApiMemberProfile
+import org.beatonma.commons.snommoc.models.ApiMemberVote
+import org.beatonma.commons.snommoc.models.ApiZeitgeist
+import org.beatonma.commons.snommoc.models.MessageOfTheDay
 import org.beatonma.commons.snommoc.models.search.MemberSearchResult
-import org.beatonma.commons.snommoc.models.social.*
+import org.beatonma.commons.snommoc.models.social.ApiUserToken
+import org.beatonma.commons.snommoc.models.social.DeleteUserRequest
+import org.beatonma.commons.snommoc.models.social.DeletedVote
+import org.beatonma.commons.snommoc.models.social.RenameAccountRequest
+import org.beatonma.commons.snommoc.models.social.SocialContent
+import org.beatonma.commons.snommoc.models.social.SocialTargetType
+import org.beatonma.commons.snommoc.models.social.SocialVoteType
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -30,7 +47,7 @@ interface BaseDataSource {
             return NetworkError(response.message(), NetworkException(response))
         }
         catch (e: Exception) {
-            return GenericError("getResult error: ${e.message ?: e}", e)
+            return NetworkError("getResult error: ${e.message ?: e}", e)
         }
     }
 }
