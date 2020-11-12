@@ -3,7 +3,17 @@ package org.beatonma.commons.repo.result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.launch
 import org.beatonma.commons.repo.FlowIoResult
 import java.util.concurrent.TimeUnit
@@ -23,7 +33,7 @@ fun <T, N> cachedResultFlow(
     distinctUntilChanged: Boolean = true,
 ): FlowIoResult<T> = channelFlow<IoResult<T>> {
     send(LoadingResult())
-    var networkCallSuccessful = false
+    var networkCallFinished = false
 
     // Run databaseQuery in separate coroutine and surface results to channelFlow
     launch {
@@ -37,7 +47,7 @@ fun <T, N> cachedResultFlow(
                  * Only emit null/empty [databaseQuery] results if the network call has completed.
                  */
                 when {
-                    networkCallSuccessful -> true
+                    networkCallFinished -> true
                     it is Collection<*> -> it.isNotEmpty()
                     else -> it != null
                 }
@@ -46,7 +56,11 @@ fun <T, N> cachedResultFlow(
             .collectLatest(::send)
     }
 
-    networkCallSuccessful = submitAndSaveNetworkResult(networkCall, saveCallResult)
+    networkCallFinished =
+        submitAndSaveNetworkResult(networkCall, saveCallResult, closeOnError = false)
+}.catch {
+    println(it)
+    emit(GenericError("cachedResultFlow error", it))
 }.flowOn(Dispatchers.IO)
 
 /**
@@ -57,20 +71,24 @@ fun <T, N> resultFlowLocalPreferred(
     networkCall: suspend () -> IoResult<N>,
     saveCallResult: suspend (N) -> Unit,
 ): FlowIoResult<T> = channelFlow<IoResult<T>> {
-    send(LoadingResult<T>())
+    send(LoadingResult())
 
     databaseQuery.invoke()
         .collect { queryResult ->
             when {
                 queryResult == null -> submitAndSaveNetworkResult(networkCall, saveCallResult)
+
                 queryResult is Collection<*> && queryResult.isEmpty() -> {
                     submitAndSaveNetworkResult(networkCall, saveCallResult)
                 }
-                else -> sendAndClose(
+
+                else -> sendError(
                     SuccessResult(queryResult, "DB read")
                 )
             }
         }
+}.catch {
+    emit(GenericError("resultFlowLocalPreferred error", it))
 }.flowOn(Dispatchers.IO)
 
 /**
@@ -83,7 +101,9 @@ fun <T> resultFlowNoCache(
     emit(LoadingResult<T>())
 
     emit(networkCall.invoke())
-}
+}.catch {
+    emit(NetworkError("resultFlowNoCache error", it))
+}.flowOn(Dispatchers.IO)
 
 
 suspend inline fun <T> Flow<IoResult<T>>.await(
@@ -107,10 +127,15 @@ suspend inline fun <T> Flow<IoResult<T>>.await(
     }
 }.single()
 
-
-private suspend fun <E> ProducerScope<E>.sendAndClose(element: E, cause: Throwable? = null) {
+private suspend fun <E> ProducerScope<E>.sendError(
+    element: E,
+    cause: Throwable? = null,
+    closeFlow: Boolean = true,
+) {
     send(element)
-    close(cause)
+    if (closeFlow) {
+        close(cause)
+    }
 }
 
 
@@ -120,26 +145,34 @@ private suspend fun <E> ProducerScope<E>.sendAndClose(element: E, cause: Throwab
  */
 private suspend inline fun <E, N> ProducerScope<IoResult<E>>.submitAndSaveNetworkResult(
     networkCall: suspend () -> IoResult<N>,
-    saveCallResult: suspend (N) -> Unit
+    saveCallResult: suspend (N) -> Unit,
+    closeOnError: Boolean = true,
 ): Boolean {
     val response = networkCall.invoke()
-    when(response) {
-        is SuccessResult -> {
+    when (response) {
+        is SuccessResult<*>,
+        is SuccessCodeResult,
+        -> {
             if (response.data != null) {
                 try {
                     saveCallResult(response.data)
                 }
                 catch (e: Exception) {
-                    sendAndClose(LocalError("Unable to save network result: $e", e), e)
+                    sendError(LocalError("Unable to save network result: $e", e),
+                        e,
+                        closeFlow = closeOnError)
                 }
             }
             else {
-                sendAndClose(UnexpectedValueError("Null data: ${response.message}", null))
+                sendError(UnexpectedValueError("Null data: ${response.message}", null),
+                    closeFlow = closeOnError)
             }
         }
 
         is IoError<*, *> -> {
-            sendAndClose(NetworkError(response.message, response.error), response.error)
+            sendError(NetworkError(response.message, response.error),
+                response.error,
+                closeFlow = closeOnError)
         }
     }
     return true
