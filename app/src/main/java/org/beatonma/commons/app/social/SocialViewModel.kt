@@ -9,6 +9,7 @@ import org.beatonma.commons.BuildConfig
 import org.beatonma.commons.app
 import org.beatonma.commons.app.signin.BaseUserAccountViewModel
 import org.beatonma.commons.data.core.room.entities.user.UserToken
+import org.beatonma.commons.repo.FlowIoResult
 import org.beatonma.commons.repo.LiveDataIoResult
 import org.beatonma.commons.repo.models.CreatedComment
 import org.beatonma.commons.repo.models.CreatedVote
@@ -17,6 +18,7 @@ import org.beatonma.commons.repo.repository.UserRepository
 import org.beatonma.commons.repo.result.IoResult
 import org.beatonma.commons.repo.result.NotSignedInError
 import org.beatonma.commons.snommoc.annotations.SignInRequired
+import org.beatonma.commons.snommoc.models.social.EmptySocialContent
 import org.beatonma.commons.snommoc.models.social.SocialContent
 import org.beatonma.commons.snommoc.models.social.SocialTarget
 import org.beatonma.commons.snommoc.models.social.SocialVoteType
@@ -29,27 +31,36 @@ class SocialViewModel @ViewModelInject constructor(
     @ApplicationContext application: Context,
 ): BaseUserAccountViewModel(userRepository, application.app) {
 
-    lateinit var livedata: LiveDataIoResult<SocialContent>
+    lateinit var flow: FlowIoResult<SocialContent>
+    val livedata: LiveDataIoResult<SocialContent> get() = flow.asLiveData()
+
     lateinit var socialTarget: SocialTarget
+
+    // Keep a copy of the last populated content to avoid abrupt ui changes during refresh.
+    var cachedSocialContent: SocialContent = EmptySocialContent
 
     private var token: UserToken? = null
     private val tokenObserver = Observer<IoResult<UserToken>> { token = it.data }
 
     fun forTarget(target: SocialTarget) {
-        getTokenForCurrentSignedInAccount()
-        activeUserToken?.observeForever(tokenObserver)
-        livedata = socialRepository.getSocialContent(target, token?.snommocToken ).asLiveData()
         socialTarget = target
+        getTokenForCurrentSignedInAccount()
+        activeUserTokenLivedata?.observeForever(tokenObserver)
+        fetchSocialContent()
+    }
+
+    private fun fetchSocialContent() {
+        flow = socialRepository.getSocialContent(socialTarget, token?.snommocToken)
     }
 
     fun refresh() {
         if (::socialTarget.isInitialized) {
-            livedata = socialRepository.getSocialContent(socialTarget, token?.snommocToken).asLiveData()
+            fetchSocialContent()
         }
     }
 
     override fun onCleared() {
-        activeUserToken?.removeObserver(tokenObserver)
+        activeUserTokenLivedata?.removeObserver(tokenObserver)
         super.onCleared()
     }
 
@@ -79,6 +90,16 @@ class SocialViewModel @ViewModelInject constructor(
         return socialRepository.postVote(vote)
     }
 
+    @SignInRequired
+    suspend fun updateVote(voteType: SocialVoteType): IoResult<*> = postVote(
+        if (shouldRemoveVote(voteType)) {
+            SocialVoteType.NULL
+        }
+        else {
+            voteType
+        }
+    )
+
     internal fun validateComment(text: String): CommentValidation {
         val length = text.length
 
@@ -92,14 +113,23 @@ class SocialViewModel @ViewModelInject constructor(
     }
 
     /**
+    //     * Called when a user submits a vote.
+    //     * Returns true if the voteType is the same as that already registered.
+    //     */
+//    internal fun shouldRemoveVote(voteType: SocialVoteType) =
+//        livedata.value?.data?.userVote == voteType
+
+    /**
      * Called when a user submits a vote.
      * Returns true if the voteType is the same as that already registered.
      */
-    internal fun shouldRemoveVote(voteType: SocialVoteType) =
-        livedata.value?.data?.userVote == voteType
+    private fun shouldRemoveVote(voteType: SocialVoteType): Boolean {
+        println("$voteType vs ${cachedSocialContent.userVote}")
+        return voteType == cachedSocialContent.userVote
+    }
 }
 
-
+@Deprecated("Not needed in Compose ui implementation")
 internal enum class CommentValidation {
     VALID,
     INVALID_TOO_SHORT,

@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumnForIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Surface
 import androidx.compose.material.rememberSwipeableState
 import androidx.compose.material.swipeable
@@ -40,6 +39,7 @@ import org.beatonma.commons.R
 import org.beatonma.commons.app.signin.AmbientUserToken
 import org.beatonma.commons.app.signin.NullUserToken
 import org.beatonma.commons.app.social.SocialUiState
+import org.beatonma.commons.app.ui.compose.components.OutlineButton
 import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.ambient.withEmphasisHigh
@@ -83,6 +83,10 @@ internal fun CommentList(
         NoComments(modifier)
     }
     else {
+        if (AmbientCollapseExpandProgress.current < 0.7F) {
+            return
+        }
+
         val progress = AmbientCollapseExpandProgress.current
             .progressIn(0.75F, 1F)
             .withEasing(FastOutSlowInEasing)
@@ -140,16 +144,14 @@ private fun Comment(
 /**
  * Displays a FAB which expands into a bottom sheet dialog for comment authoring.
  */
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalFocus::class)
 @Composable
 fun CreateCommentUi(
     userToken: UserToken = AmbientUserToken.current,
     uiState: MutableState<SocialUiState> = AmbientSocialUiState.current,
-//    progress: Float = AmbientSocialUiTransition.current[ExpandedComposeCommentProgress],
 ) {
     if (userToken == NullUserToken) {
-        // Show sign-in instead of add comment fab
-        // TODO
+        // TODO Show sign-in instead of add comment fab
     }
 
     val swipeState = rememberSwipeableState(
@@ -161,8 +163,10 @@ fun CreateCommentUi(
         500F to SocialUiState.ComposeComment
     )
 
-    val targetState = uiState.value
+    val offset = swipeState.offset.value
+    val progress = (if (offset.isNaN()) 0F else offset).map(0F, 500F, 0F, 1F)
 
+    val targetState = uiState.value
     val swipeable = Modifier.onlyWhen(targetState != SocialUiState.Collapsed) {
         if (targetState != swipeState.value) {
             swipeState.animateTo(targetState, onEnd = { _, finalState ->
@@ -180,8 +184,7 @@ fun CreateCommentUi(
         )
     }
 
-    val offset = swipeState.offset.value
-    val progress = (if (offset.isNaN()) 0F else offset).map(0F, 500F, 0F, 1F)
+    val focusRequester = remember { FocusRequester() }
 
     ModalScrim(
         alignment = Alignment.BottomEnd,
@@ -203,7 +206,7 @@ fun CreateCommentUi(
                         clickable(onClick = AmbientSocialActions.current.onCreateCommentClick)
                     },
                     whenFalse = {
-                        clickable { }
+                        clickable { focusRequester.requestFocus() }
                     }
                 )
                 .drawShadow(Elevation.ModalSurface, surfaceShape),
@@ -212,7 +215,7 @@ fun CreateCommentUi(
         ) {
             Box {
                 CreateCommentButtonContent(progress)
-                CreateCommentSheetContent(progress)
+                CreateCommentSheetContent(progress, focusRequester)
             }
         }
     }
@@ -240,14 +243,22 @@ private fun CreateCommentButtonContent(
 @Composable
 private fun CreateCommentSheetContent(
     progress: Float,
+    focusRequester: FocusRequester,
     commentText: MutableState<String> = remember { mutableStateOf("") },
+    uiState: MutableState<SocialUiState> = AmbientSocialUiState.current,
 ) {
     if (progress == 0F) {
         return
     }
 
     val user = AmbientUserToken.current
-    val focusRequester = remember { FocusRequester() }
+    val commentValidator = remember {
+        LengthTextFieldValidator(
+            BuildConfig.SOCIAL_COMMENT_MIN_LENGTH,
+            BuildConfig.SOCIAL_COMMENT_MAX_LENGTH
+        )
+    }
+    val commentIsValid = remember { mutableStateOf(false) }
 
     if (progress == 1F) {
         // Focus on text field and bring up the IME.
@@ -281,19 +292,13 @@ private fun CreateCommentSheetContent(
 
             ValidatedLengthTextField(
                 value = commentText.value,
-                validator = LengthTextFieldValidator(
-                    BuildConfig.SOCIAL_COMMENT_MIN_LENGTH,
-                    BuildConfig.SOCIAL_COMMENT_MAX_LENGTH
-                ),
+                validator = commentValidator,
                 placeholder = {
                     Hint(stringResource(R.string.social_compose_comment_hint))
                 },
                 onValueChange = { value, isValid ->
                     commentText.update(value)
-
-                    if (isValid) {
-                        // TODO
-                    }
+                    commentIsValid.update(isValid)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -303,9 +308,10 @@ private fun CreateCommentSheetContent(
             )
 
             val socialActions = AmbientSocialActions.current
-            OutlinedButton(
+            OutlineButton(
                 onClick = { socialActions.onCommentSubmitClick(commentText.value) },
                 modifier = Modifier.align(Alignment.End).padding(Padding.CardButton),
+                enabled = commentIsValid.value,
             ) {
                 Text(stringResource(R.string.social_comment_post))
             }

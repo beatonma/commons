@@ -1,11 +1,12 @@
 package org.beatonma.commons.app.memberprofile.compose
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Providers
-import androidx.compose.runtime.ambientOf
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,22 +26,24 @@ import org.beatonma.commons.app.social.compose.AmbientSocialUiState
 import org.beatonma.commons.app.social.compose.SocialActions
 import org.beatonma.commons.app.ui.colors.PartyColors
 import org.beatonma.commons.app.ui.colors.Themed
+import org.beatonma.commons.app.ui.compose.components.Error
 import org.beatonma.commons.app.ui.compose.composeView
 import org.beatonma.commons.app.ui.compose.withSystemUi
 import org.beatonma.commons.app.ui.navigation.BackPressConsumer
 import org.beatonma.commons.compose.util.update
 import org.beatonma.commons.core.ParliamentID
+import org.beatonma.commons.core.extensions.autotag
 import org.beatonma.commons.core.extensions.withNotNull
 import org.beatonma.commons.kotlin.extensions.getParliamentID
+import org.beatonma.commons.repo.FlowIoResult
 import org.beatonma.commons.repo.asSocialTarget
 import org.beatonma.commons.repo.result.LoadingResult
-import org.beatonma.commons.snommoc.models.social.EmptySocialContent
+import org.beatonma.commons.repo.result.isError
+import org.beatonma.commons.repo.result.isSuccess
+import org.beatonma.commons.snommoc.models.social.SocialContent
 import org.beatonma.commons.snommoc.models.social.SocialTarget
 import org.beatonma.commons.snommoc.models.social.SocialTargetType
 import org.beatonma.commons.snommoc.models.social.SocialVoteType
-
-internal val ViewmodelAmbient =
-    ambientOf<ComposeMemberProfileViewModel> { error("Viewmodel not set") }
 
 @AndroidEntryPoint
 class MemberProfileComposeFragment : Fragment(),
@@ -48,25 +51,13 @@ class MemberProfileComposeFragment : Fragment(),
     BackPressConsumer {
     private val viewmodel: ComposeMemberProfileViewModel by viewModels()
     private val socialViewModel: SocialViewModel by viewModels()
-    private val socialUiState = mutableStateOf(SocialUiState.Expanded)
+    private val socialUiState = mutableStateOf(SocialUiState.Collapsed)
+
+    private lateinit var socialFlow: MutableState<FlowIoResult<SocialContent>>
 
     override var theme: PartyColors? = null
 
     private fun getMemberIdFromBundle(): ParliamentID = arguments.getParliamentID()
-
-    private fun onVoteClicked(voteType: SocialVoteType) {
-        println("onVoteClicked $voteType") // TODO handle result and refresh ui state
-        lifecycleScope.launch(Dispatchers.IO) {
-            socialViewModel.postVote(
-                if (socialViewModel.shouldRemoveVote(voteType)) {
-                    SocialVoteType.NULL
-                }
-                else {
-                    voteType
-                }
-            )
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -76,7 +67,7 @@ class MemberProfileComposeFragment : Fragment(),
         val memberId = getMemberIdFromBundle()
         val flow = viewmodel.forMember(memberId)
         socialViewModel.forTarget(SocialTarget(SocialTargetType.member, parliamentdotuk = memberId))
-        val socialFlow = socialViewModel.flow
+        socialFlow = mutableStateOf(socialViewModel.flow)
         val activeUserFlow = viewmodel.getActiveToken()
 
         val socialCallbacks = SocialActions(
@@ -87,28 +78,36 @@ class MemberProfileComposeFragment : Fragment(),
                 println("Clicked comment $comment")
             },
             onCreateCommentClick = { socialUiState.update(SocialUiState.ComposeComment) },
-            onCommentSubmitClick = {
-
-            },
+            onCommentSubmitClick = ::onPostComment
         )
 
         return composeView {
+            val result by flow.collectAsState(initial = LoadingResult())
+            val socialResult by socialFlow.value.collectAsState(initial = LoadingResult())
+            val activeUserState = activeUserFlow?.collectAsState(initial = LoadingResult())
+
+            if (result.isError) {
+                Error()
+                return@composeView
+            }
+
+            val data = result.data ?: return@composeView
+
+            withNotNull(socialResult.data) { socialViewModel.cachedSocialContent = it }
+
+            withNotNull(data.profile) {
+                socialViewModel.forTarget(it.asSocialTarget())
+            }
+
             Providers(
                 AmbientSocialActions provides socialCallbacks,
                 AmbientSocialUiState provides socialUiState,
             ) {
+
                 withSystemUi {
-                    val resultState by flow.collectAsState(initial = LoadingResult())
-                    val socialState by socialFlow.collectAsState(initial = LoadingResult())
-                    val activeUserState = activeUserFlow?.collectAsState(initial = LoadingResult())
-
-                    val data = resultState.data ?: return@withSystemUi
-                    withNotNull(data.profile) {
-                        socialViewModel.forTarget(it.asSocialTarget())
-                    }
-
                     Providers(
-                        AmbientSocialContent provides (socialState.data ?: EmptySocialContent),
+                        AmbientSocialContent provides (socialResult.data
+                            ?: socialViewModel.cachedSocialContent),
                         AmbientUserToken provides (activeUserState?.value?.data ?: NullUserToken),
                     ) {
                         MemberProfileLayout(data)
@@ -116,6 +115,38 @@ class MemberProfileComposeFragment : Fragment(),
                 }
             }
         }
+    }
+
+    private fun onVoteClicked(voteType: SocialVoteType) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val result = socialViewModel.updateVote(voteType)
+
+            if (result.isSuccess) {
+                socialViewModel.refresh()
+                socialFlow.value = socialViewModel.flow
+            }
+            else if (result.isError) {
+                Log.w(autotag, "updateVote failed: ${result.message} $result")
+            }
+        }
+    }
+
+    private fun onPostComment(text: String) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val result = socialViewModel.postComment(text)
+
+            when {
+                result.isSuccess -> {
+                    socialViewModel.refresh()
+                    socialFlow.value = socialViewModel.flow
+                }
+
+                result.isError -> {
+                    Log.w(autotag, "postComment failed: ${result.message} $result")
+                }
+            }
+        }
+        socialUiState.update(SocialUiState.Expanded)
     }
 
     override fun onBackPressed(): Boolean = when (socialUiState.value) {
@@ -129,69 +160,6 @@ class MemberProfileComposeFragment : Fragment(),
             true
         }
 
-        else -> {
-            // TODO
-            false
-        }
+        else -> false
     }
-
-    //    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-//        super.onViewCreated(view, savedInstanceState)
-//        socialViewController = setupViewController(
-//            binding.root,
-//            collapsedConstraintsId = R.id.state_default,
-//        )
-//
-//        binding.recyclerview.setup(
-//            adapter,
-//            space = defaultPrimaryContentSpacing(view.context)
-//        )
-//
-//        viewmodel.liveData.observe(viewLifecycleOwner) { result ->
-//            result.handle { member ->
-//                updateUI(member)
-//
-//                withNotNull(member.profile) { profile ->
-//                    observeSocialContent(profile)
-//                }
-//            }
-//        }
-//    }
-
-//    private fun updateUI(member: CompleteMember) {
-//        applyUiTheme(context?.getPartyTheme(member.party?.parliamentdotuk))
-//
-//        binding.portrait.load(member.profile?.portraitUrl)
-////
-//        lifecycleScope.launch {
-//            @Suppress("UNCHECKED_CAST")
-//            adapter.diffItems(viewmodel.toProfileData(member) as List<ProfileData<Any>>)?.invokeOnCompletion {
-//                binding.recyclerview.scrollToPosition(0)
-//            }
-//        }
-//
-//        updateUiToolbarText(member)
-//    }
-//
-//    private fun updateUiToolbarText(member: CompleteMember) {
-//        bindText(
-//            binding.name to member.profile?.name,
-//        )
-//    }
-//
-//    private fun applyUiTheme(theme: PartyColors?) {
-//        theme ?: return
-//        this.theme = theme
-//        adapter.theme = theme
-//        binding.apply {
-//            setBackgroundColor(theme.primary, titlebarBackground)
-//            setBackgroundColor(theme.accent, accent, portrait)
-//            setTextColor(
-//                theme.textPrimaryOnPrimary,
-//                name,
-//            )
-//        }
-//
-//        socialViewController.collapsedTheme = SocialViewTheme(theme.textSecondaryOnPrimary, theme.textPrimaryOnPrimary)
-//    }
 }
