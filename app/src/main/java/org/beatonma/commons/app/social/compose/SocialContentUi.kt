@@ -32,7 +32,6 @@ import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.core.extensions.withEasing
 import org.beatonma.commons.snommoc.models.social.SocialComment
 import org.beatonma.commons.snommoc.models.social.SocialContent
-import org.beatonma.commons.theme.compose.endOfContent
 import org.beatonma.commons.theme.compose.pdp
 import org.beatonma.commons.theme.compose.theme.systemui.statusBarsPadding
 
@@ -138,9 +137,6 @@ private fun SocialContentUi(
                     socialContent.comments.sortedByDescending { it.modified },
                     Modifier
                         .wrapContentHeight(progress.progressIn(0.6F, 0.8F))
-                        .onlyWhen(isFullyExpanded) {
-                            endOfContent()
-                        }
                         .drawOpacity(expandedContentVisibility),
                     onClick = onCommentClick,
                 )
