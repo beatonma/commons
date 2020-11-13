@@ -3,8 +3,8 @@ package org.beatonma.commons.compose.util
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.annotatedString
+import org.beatonma.commons.theme.compose.theme.CommonsSpanStyle
 
 private const val DOT = '·'
 
@@ -16,6 +16,25 @@ fun dotted(vararg components: String?) =
         )
 
 /**
+ * Styles supported by [String.withAnnotatedStyle]
+ */
+private enum class MarkdownStyle {
+    Normal,
+    Italic,
+    Bold,
+    BoldItalic,
+    Quote,
+    ;
+}
+
+@Composable
+fun String.withAnnotatedStyle() = withAnnotatedStyle(
+    CommonsSpanStyle.italic,
+    CommonsSpanStyle.bold,
+    CommonsSpanStyle.quote(),
+)
+
+/**
  * Render basic asterisk-based markdown-like styling as [AnnotatedString].
  * Currently only handles italic(*) and bold(**) styles.
  *
@@ -24,58 +43,110 @@ fun dotted(vararg components: String?) =
  *      or combinations like ***this***
  *      or **nesting *like* this!**
  */
-fun String.withAnnotatedStyle() = AnnotatedString.Builder().apply {
+fun String.withAnnotatedStyle(
+    italicStyle: SpanStyle,
+    boldStyle: SpanStyle,
+    quoteStyle: SpanStyle,
+) = annotatedString {
 
-    var totalAsterisks = 0
-    var pendingStyle = 0 // Track number of asterisks that we have seen without applying the style.
+    var totalStyleSymbols = 0
+    var pendingStyle = MarkdownStyle.Normal
+    var previousPendingStyle = MarkdownStyle.Normal
 
-    val styleMap = mutableMapOf<Int, Int>()
+    val styleMap = mutableMapOf<Int, MarkdownStyle>()
+
+    fun consumePendingStyle(position: Int) {
+        if (pendingStyle == MarkdownStyle.Normal) return
+        styleMap[position - totalStyleSymbols] = pendingStyle
+        pendingStyle = MarkdownStyle.Normal
+        previousPendingStyle = MarkdownStyle.Normal
+    }
 
     this@withAnnotatedStyle.forEachIndexed { i, c ->
-        if (c == '*') {
-            pendingStyle += 1
-            totalAsterisks += 1
-        }
-        else {
-            if (pendingStyle > 0) {
-                styleMap[i - totalAsterisks] = pendingStyle
-                pendingStyle = 0
+        when (c) {
+            '*' -> {
+                totalStyleSymbols += 1
+
+                pendingStyle = when (pendingStyle) {
+                    MarkdownStyle.Normal -> MarkdownStyle.Italic
+                    MarkdownStyle.Italic -> MarkdownStyle.Bold
+                    MarkdownStyle.Bold -> MarkdownStyle.BoldItalic
+
+                    MarkdownStyle.Quote -> {
+                        consumePendingStyle(i)
+                        MarkdownStyle.Italic
+                    }
+
+                    else -> pendingStyle
+                }
+                if (pendingStyle == previousPendingStyle) {
+                    consumePendingStyle(i)
+                }
+
+                previousPendingStyle = pendingStyle
             }
-            append(c)
+
+            '`', '\'', '"' -> {
+                totalStyleSymbols += 1
+                pendingStyle = MarkdownStyle.Quote
+            }
+
+            else -> {
+                consumePendingStyle(i)
+                append(c)
+            }
         }
     }
-    if (pendingStyle > 0) {
+    if (pendingStyle != MarkdownStyle.Normal) {
         styleMap[length] = pendingStyle
     }
 
     if (styleMap.isEmpty()) {
-        return@apply
+        return@annotatedString
     }
 
-    val italicPositions = mutableListOf<Int>()
-    val boldPositions = mutableListOf<Int>()
+    var italicPosition = -1
+    var boldPosition = -1
+    var boldItalicPosition = -1
+    var quotePosition = -1
 
+    // Traverse styleMap to find pairs of each style type and apply them to the AnnotatedString.
     styleMap.forEach { (position, style) ->
         when (style) {
-            1 -> italicPositions.add(position)
-            2 -> boldPositions.add(position)
-            3 -> {
-                italicPositions.add(position)
-                boldPositions.add(position)
+            MarkdownStyle.Italic -> {
+                italicPosition = if (italicPosition < 0) position
+                else {
+                    addStyle(italicStyle, italicPosition, position)
+                    -1
+                }
+            }
+
+            MarkdownStyle.Bold -> {
+                boldPosition = if (boldPosition < 0) position
+                else {
+                    addStyle(boldStyle, boldPosition, position)
+                    -1
+                }
+            }
+
+            MarkdownStyle.BoldItalic -> {
+                boldItalicPosition = if (boldItalicPosition < 0) position
+                else {
+                    addStyle(italicStyle + boldStyle, boldItalicPosition, position)
+                    -1
+                }
+            }
+
+            MarkdownStyle.Quote -> {
+                quotePosition = if (quotePosition < 0) position
+                else {
+                    addStyle(quoteStyle, quotePosition, position)
+                    -1
+                }
             }
         }
     }
-
-    val italicStyle = SpanStyle(fontStyle = FontStyle.Italic)
-    val boldStyle = SpanStyle(fontWeight = FontWeight.Bold)
-
-    italicPositions.pairwise().forEach { (start, end) ->
-        addStyle(italicStyle, start = start, end = end)
-    }
-    boldPositions.pairwise().forEach { (start, end) ->
-        addStyle(boldStyle, start = start, end = end)
-    }
-}.toAnnotatedString()
+}
 
 /**
  * Take the list in (i, i+1) pairs. If list size is odd the last item will be ignored.
