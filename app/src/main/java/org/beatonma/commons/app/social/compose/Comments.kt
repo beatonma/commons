@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -54,6 +55,7 @@ import org.beatonma.commons.compose.modifiers.either
 import org.beatonma.commons.compose.modifiers.onlyWhen
 import org.beatonma.commons.compose.modifiers.wrapContentSize
 import org.beatonma.commons.compose.util.update
+import org.beatonma.commons.compose.util.withAnnotatedStyle
 import org.beatonma.commons.core.extensions.lerp
 import org.beatonma.commons.core.extensions.lerpBetween
 import org.beatonma.commons.core.extensions.map
@@ -65,6 +67,7 @@ import org.beatonma.commons.kotlin.extensions.formatted
 import org.beatonma.commons.snommoc.models.social.SocialComment
 import org.beatonma.commons.theme.compose.Elevation
 import org.beatonma.commons.theme.compose.Padding
+import org.beatonma.commons.theme.compose.endOfContent
 import org.beatonma.commons.theme.compose.pdp
 import org.beatonma.commons.theme.compose.plus
 import org.beatonma.commons.theme.compose.theme.CORNER_SMALL
@@ -97,6 +100,10 @@ internal fun CommentList(
                 itemModifier.padding(bottom = (4F * i).lerp(0F, progress).pdp),
                 onClick,
             )
+
+            if (i == comments.size - 1) {
+                Spacer(Modifier.endOfContent())
+            }
         }
     }
 }
@@ -125,7 +132,7 @@ private fun Comment(
             .padding(Padding.VerticalListItem + Padding.ScreenHorizontal)
     ) {
         withEmphasisHigh {
-            Text(comment.text)
+            Text(comment.text.withAnnotatedStyle())
         }
 
         withEmphasisMedium {
