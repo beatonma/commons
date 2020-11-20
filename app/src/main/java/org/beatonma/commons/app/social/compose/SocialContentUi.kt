@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.AmbientEmphasisLevels
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.ProvidableAmbient
@@ -22,10 +23,10 @@ import androidx.compose.ui.graphics.Color
 import org.beatonma.commons.ActionBlock
 import org.beatonma.commons.app.social.SocialUiState
 import org.beatonma.commons.compose.ambient.typography
+import org.beatonma.commons.compose.animation.lerpBetween
 import org.beatonma.commons.compose.modifiers.onlyWhen
 import org.beatonma.commons.compose.modifiers.wrapContentHeight
 import org.beatonma.commons.compose.modifiers.wrapContentOrFillWidth
-import org.beatonma.commons.compose.util.lerp
 import org.beatonma.commons.compose.util.update
 import org.beatonma.commons.core.extensions.lerp
 import org.beatonma.commons.core.extensions.progressIn
@@ -57,13 +58,20 @@ fun SocialContentUi(
     val expandComposeCommentProgress = transitionState[ExpandedComposeCommentProgress]
 
     val theme = AmbientSocialTheme.current
-    val foregroundColor = theme.collapsedOnBackground.lerp(
+    val tintProgress = collapseExpandProgress.progressIn(0.5F, 0.8F)
+
+    val inactiveTint = tintProgress.lerpBetween(
+        theme.collapsedOnBackground.copy(alpha = 0.64F),
+        theme.expandedOnBackground.copy(alpha = 0.64F)
+    )
+
+    val activeTint = tintProgress.lerpBetween(
+        theme.collapsedOnBackground,
         theme.expandedOnBackground,
-        collapseExpandProgress.progressIn(0.5F, 0.8F)
     )
 
     Providers(
-        AmbientContentColor provides foregroundColor,
+        AmbientContentColor provides inactiveTint,
         AmbientIconStyle provides SmallIconStyle.lerp(LargeIconStyle, collapseExpandProgress),
         AmbientCollapseExpandProgress provides collapseExpandProgress,
         AmbientExpandComposeCommentProgress provides expandComposeCommentProgress
@@ -72,7 +80,7 @@ fun SocialContentUi(
             AmbientSocialContent.current,
             modifier,
             onVoteUpClick, onVoteDownClick, onCommentIconClick, onCommentClick,
-            state, tint = foregroundColor, expandAction = expandAction
+            state, inactiveTint, activeTint, expandAction = expandAction
         )
     }
 }
@@ -89,14 +97,14 @@ private fun SocialContentUi(
     onCommentIconClick: ActionBlock,
     onCommentClick: (SocialComment) -> Unit,
     state: MutableState<SocialUiState> = AmbientSocialUiState.current,
-    tint: Color = AmbientContentColor.current,
+    inactiveTint: Color = AmbientEmphasisLevels.current.medium.applyEmphasis(AmbientContentColor.current),
+    activeTint: Color = AmbientEmphasisLevels.current.high.applyEmphasis(AmbientContentColor.current),
     progress: Float = AmbientCollapseExpandProgress.current,
     expandAction: ActionBlock = { state.update(SocialUiState.Expanded) },
 ) {
     val expandedContentVisibility = progress.progressIn(0.8F, 1F).withEasing(
         if (state.value == SocialUiState.Expanded) LinearOutSlowInEasing else FastOutLinearInEasing
     )
-    val isFullyExpanded = progress == 1F
     val isFullyCollapsed = progress == 0F
     val expandedContentIsVisible = expandedContentVisibility != 0F
 
@@ -126,7 +134,8 @@ private fun SocialContentUi(
                     )
                     .wrapContentOrFillWidth(progress),
                 arrangement = Arrangement.SpaceEvenly,
-                tint = tint,
+                inactiveTint = inactiveTint,
+                activeTint = activeTint,
                 onCommentIconClick = if (isFullyCollapsed) expandAction else onCommentIconClick,
                 onVoteUpIconClick = if (isFullyCollapsed) expandAction else onVoteUpClick,
                 onVoteDownIconClick = if (isFullyCollapsed) expandAction else onVoteDownClick,

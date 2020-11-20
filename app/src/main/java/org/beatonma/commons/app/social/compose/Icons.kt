@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.AmbientEmphasisLevels
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Comment
@@ -30,7 +31,6 @@ import androidx.compose.ui.platform.AnimationClockAmbient
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.ActionBlock
-import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.compose.ambient.shapes
 import org.beatonma.commons.compose.animation.lerpBetween
 import org.beatonma.commons.compose.util.ComposableBlock
@@ -41,7 +41,6 @@ import org.beatonma.commons.snommoc.models.social.SocialContent
 import org.beatonma.commons.snommoc.models.social.SocialVoteType
 import org.beatonma.commons.theme.compose.Padding
 import org.beatonma.commons.theme.compose.Size
-import org.beatonma.commons.theme.compose.theme.positive
 import kotlin.math.roundToInt
 
 @OptIn(InternalLayoutApi::class)
@@ -49,7 +48,8 @@ import kotlin.math.roundToInt
 internal fun SocialIcons(
     socialContent: SocialContent = AmbientSocialContent.current,
     modifier: Modifier = Modifier,
-    tint: Color = AmbientContentColor.current,
+    inactiveTint: Color = AmbientEmphasisLevels.current.medium.applyEmphasis(AmbientContentColor.current),
+    activeTint: Color = AmbientEmphasisLevels.current.high.applyEmphasis(AmbientContentColor.current),
     arrangement: Arrangement.Horizontal,
     onCommentIconClick: ActionBlock,
     onVoteUpIconClick: ActionBlock,
@@ -62,7 +62,7 @@ internal fun SocialIcons(
         }
     }
 
-    onCommit(socialContent.userVote) {
+    onCommit(socialContent) {
         voteSelection.forEachIndexed { index, fraction ->
             val target = if (index == socialContent.userVote?.ordinal) 1F else 0F
             if (fraction.targetValue != target) {
@@ -75,14 +75,14 @@ internal fun SocialIcons(
         modifier,
         horizontalArrangement = arrangement,
     ) {
-        val upvoteTint = voteSelection[0].value.lerpBetween(tint, colors.positive)
-        val downvoteTint = voteSelection[1].value.lerpBetween(tint, colors.positive)
+        val upvoteTint = voteSelection[0].value.lerpBetween(inactiveTint, activeTint)
+        val downvoteTint = voteSelection[1].value.lerpBetween(inactiveTint, activeTint)
 
         CounterIcon(
             Modifier,
             socialContent.commentCount,
             Icons.Default.Comment,
-            tint,
+            activeTint,
             onClick = onCommentIconClick
         )
 
@@ -144,8 +144,11 @@ private fun CounterIcon(
                 .size(size)
                 .layoutId("icon")
         )
+
+        // Negative count indicates loading state. Show a placeholder instead of zero votes until loading done.
+        val countText = if (count < 0) "-" else "$count"
         Text(
-            "$count",
+            countText,
             Modifier.layoutId("text")
         )
     }
