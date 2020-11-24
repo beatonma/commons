@@ -29,7 +29,6 @@ abstract class CommonsAndroidModule<T : BaseExtension> : AndroidProjectPlugin<T>
     override fun applyPlugins(plugins: PluginContainer) {
         with(plugins) {
             apply("kotlin-android")
-            apply("kotlin-android-extensions")
             apply("kotlin-kapt")
             apply("com.github.ben-manes.versions")
         }
