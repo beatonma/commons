@@ -16,6 +16,7 @@ package org.beatonma.commons.theme.compose.theme.systemui
  * limitations under the License.
  */
 
+import android.app.Activity
 import android.os.Build
 import android.view.View
 import android.view.Window
@@ -147,5 +148,20 @@ fun withSystemUi(
             SystemUiControllerAmbient.current.setSystemBarsColor(systemBarColor)
             content()
         }
+    }
+}
+
+@Suppress("DEPRECATION")
+fun Activity.setDecorFitsSystemWindows(fitsSystemWindows: Boolean = false) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        window.setDecorFitsSystemWindows(fitsSystemWindows)
+    }
+    else {
+        window.decorView.systemUiVisibility = if (fitsSystemWindows) {
+            0
+        }
+        else View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
     }
 }

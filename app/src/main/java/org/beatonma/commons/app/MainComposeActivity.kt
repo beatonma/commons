@@ -10,6 +10,7 @@ import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.navigation.BackPressConsumer
 import org.beatonma.commons.commonsApp
 import org.beatonma.commons.kotlin.extensions.PermissionResults
+import org.beatonma.commons.theme.compose.theme.systemui.setDecorFitsSystemWindows
 
 @AndroidEntryPoint
 class MainComposeActivity : DayNightActivity() {
@@ -19,6 +20,8 @@ class MainComposeActivity : DayNightActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
+        setDecorFitsSystemWindows(false)
+
         navController = findNavController(R.id.nav_host_fragment)
 
         handleIntent(intent)
