@@ -51,6 +51,7 @@ private object State {
 }
 
 @AndroidEntryPoint
+@Deprecated("Replaced by MainComposeActivity")
 class MainActivity : DayNightActivity(), SearchHost, SignInHost, AsyncDiffHost {
 
     override val searchViewModel: SearchViewModel by viewModels()
