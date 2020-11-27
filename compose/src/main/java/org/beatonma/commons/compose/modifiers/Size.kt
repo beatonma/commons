@@ -1,10 +1,11 @@
 package org.beatonma.commons.compose.modifiers
 
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.LayoutModifier
-import androidx.compose.ui.Measurable
-import androidx.compose.ui.MeasureScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.LayoutModifier
+import androidx.compose.ui.layout.Measurable
+import androidx.compose.ui.layout.MeasureResult
+import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.platform.InspectorValueInfo
 import androidx.compose.ui.platform.debugInspectorInfo
@@ -68,13 +69,13 @@ private data class WrapContentModifier(
     private val alignment: Any,
     private val affectHeight: Boolean,
     private val affectWidth: Boolean,
-    private val unbounded: Boolean = true,
+    private val unbounded: Boolean = false,
     private val alignmentCallback: (IntSize, LayoutDirection) -> IntOffset,
 ) : LayoutModifier {
     override fun MeasureScope.measure(
         measurable: Measurable,
         constraints: Constraints,
-    ): MeasureScope.MeasureResult {
+    ): MeasureResult {
         val constrainedHorizontalProgress = horizontalProgress.coerceAtLeast(0F)
         val constrainedVerticalProgress = verticalProgress.coerceAtLeast(0F)
 
@@ -202,7 +203,7 @@ private class WrapOrFillModifier(
     override fun MeasureScope.measure(
         measurable: Measurable,
         constraints: Constraints,
-    ): MeasureScope.MeasureResult {
+    ): MeasureResult {
 
         // Wrap content
         val wrappedConstraints = Constraints(
@@ -234,7 +235,7 @@ private class WrapOrFillModifier(
     }
 }
 
-private fun Constraints.lerp(
+fun Constraints.lerp(
     other: Constraints,
     horizontalProgress: Float,
     verticalProgress: Float,

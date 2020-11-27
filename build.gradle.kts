@@ -11,7 +11,7 @@ buildscript {
         maven("https://dl.bintray.com/kotlin/kotlin-eap")
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:4.2.0-alpha12")
+        classpath("com.android.tools.build:gradle:${Versions.GRADLE_PLUGIN}")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.KOTLIN}")
         classpath("com.github.ben-manes:gradle-versions-plugin:${Versions.GRADLE_DEPENDENCY_UPDATES}")
         classpath("com.google.dagger:hilt-android-gradle-plugin:${Versions.HILT}")

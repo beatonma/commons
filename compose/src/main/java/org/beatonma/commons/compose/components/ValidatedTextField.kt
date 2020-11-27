@@ -1,12 +1,13 @@
 package org.beatonma.commons.compose.components
 
-import androidx.compose.foundation.AmbientTextStyle
 import androidx.compose.foundation.InteractionState
-import androidx.compose.foundation.Text
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.AmbientTextStyle
 import androidx.compose.material.ContainerAlpha
+import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -21,7 +22,6 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
@@ -38,7 +38,7 @@ sealed class TextValidationMetrics(var isValid: Boolean)
 class TextLengthValidationMetrics(var value: String, var length: Int, isValid: Boolean) :
     TextValidationMetrics(isValid)
 
-data class LengthTextFieldValidator(
+class LengthTextFieldValidator(
     val minLength: Int = 0,
     val maxLength: Int,
 ) : TextFieldValidator<TextLengthValidationMetrics> {
@@ -70,12 +70,12 @@ fun ValidatedLengthTextField(
     trailingIcon: @Composable (() -> Unit)? = null,
     isErrorValue: Boolean = false,
     visualTransformation: VisualTransformation = VisualTransformation.None,
-    keyboardType: KeyboardType = KeyboardType.Text,
-    imeAction: ImeAction = ImeAction.Unspecified,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    maxLines: Int = Int.MAX_VALUE,
     onImeActionPerformed: (ImeAction, SoftwareKeyboardController?) -> Unit = { _, _ -> },
     onTextInputStarted: (SoftwareKeyboardController) -> Unit = {},
     interactionState: InteractionState = remember { InteractionState() },
-    activeColor: Color = colors.secondary,
+    activeColor: Color = colors.primary,
     inactiveColor: Color = colors.onSurface,
     errorColor: Color = colors.error,
     backgroundColor: Color = colors.onSurface.copy(alpha = ContainerAlpha),
@@ -99,8 +99,8 @@ fun ValidatedLengthTextField(
             trailingIcon = trailingIcon,
             isErrorValue = isErrorValue,
             visualTransformation = visualTransformation,
-            keyboardType = keyboardType,
-            imeAction = imeAction,
+            keyboardOptions = keyboardOptions,
+            maxLines = maxLines,
             onImeActionPerformed = onImeActionPerformed,
             onTextInputStarted = onTextInputStarted,
             interactionState = interactionState,
@@ -108,7 +108,7 @@ fun ValidatedLengthTextField(
             inactiveColor = inactiveColor,
             errorColor = errorColor,
             backgroundColor = backgroundColor,
-            shape = shape
+            shape = shape,
         )
 
         CounterText(

@@ -3,7 +3,7 @@ package org.beatonma.commons.core.extensions
 import kotlin.math.roundToInt
 
 fun Int.lerp(end: Int, progress: Float): Int = this + ((end - this) * progress).roundToInt()
-fun Float.lerp(start: Int, end: Int): Int = start + ((end - start) * this).roundToInt()
+fun Float.lerpBetween(start: Int, end: Int): Int = start + ((end - start) * this).roundToInt()
 
 /**
  * Map to a value between 0F..1F relative to the given limits.

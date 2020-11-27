@@ -1,6 +1,10 @@
 package org.beatonma.commons.data.core.room.entities.constituency
 
-import androidx.room.*
+import androidx.room.ColumnInfo
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import androidx.room.Relation
 import org.beatonma.commons.core.PARLIAMENTDOTUK
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.interfaces.Named
@@ -26,10 +30,10 @@ data class ConstituencyWithBoundary(
     @Embedded
     val constituency: Constituency,
 
-    @Relation(parentColumn = "constituency_$PARLIAMENTDOTUK", entityColumn = "boundary_constituency_id")
+    @Relation(parentColumn = "constituency_$PARLIAMENTDOTUK",
+        entityColumn = "boundary_constituency_id")
     val boundary: ConstituencyBoundary?,
 )
-
 
 data class CompleteConstituency(
     var constituency: Constituency? = null,
@@ -37,3 +41,5 @@ data class CompleteConstituency(
     var electionResults: List<ConstituencyResultWithDetails>? = null,
     var boundary: ConstituencyBoundary? = null,
 )
+
+val NoConstituency = Constituency(-1, "")

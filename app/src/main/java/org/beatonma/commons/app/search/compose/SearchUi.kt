@@ -3,7 +3,6 @@ package org.beatonma.commons.app.search.compose
 import androidx.compose.animation.core.TransitionDefinition
 import androidx.compose.animation.core.TransitionState
 import androidx.compose.animation.transition
-import androidx.compose.foundation.Text
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,10 +12,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumnFor
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.AmbientContentColor
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.ListItem
 import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -37,7 +38,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.ui.tooling.preview.Preview
 import org.beatonma.commons.R
+import org.beatonma.commons.app.preview.providePreviewAmbients
+import org.beatonma.commons.app.ui.compose.components.DEV_AVATAR
 import org.beatonma.commons.app.ui.compose.components.PartyDot
 import org.beatonma.commons.app.ui.compose.components.Todo
 import org.beatonma.commons.compose.animation.ExpandCollapseState
@@ -52,11 +56,12 @@ import org.beatonma.commons.compose.components.OptionalText
 import org.beatonma.commons.compose.modifiers.wrapContentHeight
 import org.beatonma.commons.compose.modifiers.wrapContentOrFillWidth
 import org.beatonma.commons.compose.util.update
-import org.beatonma.commons.core.extensions.dump
 import org.beatonma.commons.core.extensions.lerpBetween
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.core.extensions.reversed
+import org.beatonma.commons.snommoc.models.search.ConstituencySearchResult
 import org.beatonma.commons.snommoc.models.search.MemberSearchResult
+import org.beatonma.commons.snommoc.models.search.PartySearchResult
 import org.beatonma.commons.snommoc.models.search.SearchResult
 import org.beatonma.commons.theme.compose.Elevation
 import org.beatonma.commons.theme.compose.Layer
@@ -64,10 +69,37 @@ import org.beatonma.commons.theme.compose.Padding
 import org.beatonma.commons.theme.compose.color.CommonsColor
 import org.beatonma.commons.theme.compose.theme.systemui.statusBarsPadding
 
+private const val KeyframeFillWidth = 0.4F
+
 class SearchActions(
     val onSubmit: (query: String) -> Unit,
     val onClickMember: (MemberSearchResult) -> Unit,
 )
+
+@Composable
+@Preview
+fun SearchUiPreview() {
+    val results: MutableState<List<SearchResult>> = mutableStateOf(
+        listOf(
+            MemberSearchResult(
+                name = "Michael Beaton",
+                constituency = ConstituencySearchResult(
+                    10, "Highland"
+                ),
+                party = PartySearchResult(100001, "Independent"),
+                parliamentdotuk = 65,
+                currentPost = "Developer",
+                portraitUrl = DEV_AVATAR,
+            ),
+        )
+    )
+
+    providePreviewAmbients {
+        SearchUi(
+            results,
+        )
+    }
+}
 
 @OptIn(ExperimentalFocus::class)
 @Composable
@@ -79,7 +111,7 @@ fun SearchUi(
     transitionState: TransitionState = transition(transition, toState = state.value),
     focusRequester: FocusRequester = remember { FocusRequester() },
 ) {
-    val progress = transitionState[progressKey].dump("progress")
+    val progress = transitionState[progressKey]
 
     ModalScrim(
         alpha = progress,
@@ -93,14 +125,15 @@ fun SearchUi(
 
             Surface(
                 Modifier
-                    .wrapContentOrFillWidth(progress.progressIn(0.1F, 0.4F))
+                    .wrapContentOrFillWidth(progress.progressIn(0.1F, KeyframeFillWidth))
                     .statusBarsPadding(statusBarProgress.reversed())
                     .align(Alignment.End),
                 elevation = progress.lerpBetween(0.dp, Elevation.ModalSurface),
                 color = progress.progressIn(0F, 0.2F)
                     .lerpBetween(Color.Transparent, CommonsColor.SearchBar),
                 shape = getSearchSurfaceShape(progress.progressIn(0.2F, 1F)),
-                contentColor = CommonsColor.OnSearchBar
+                contentColor = progress.lerpBetween(AmbientContentColor.current,
+                    CommonsColor.OnSearchBar)
             ) {
                 Row(
                     Modifier
@@ -109,12 +142,13 @@ fun SearchUi(
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (progress > 0.4F) {
+                    if (progress > KeyframeFillWidth) {
                         SearchField(
                             focusRequester = focusRequester,
                             modifier = Modifier.weight(10F)
                         )
-                        if (progress == 1F) {
+
+                        if (progress == 1F && state.value == ExpandCollapseState.Expanded) {
                             focusRequester.requestFocus()
                         }
                     }
@@ -137,7 +171,7 @@ fun SearchUi(
 @OptIn(ExperimentalFocus::class)
 @Composable
 private fun SearchField(
-    focusRequester: FocusRequester = remember { FocusRequester() },
+    focusRequester: FocusRequester,
     modifier: Modifier = Modifier,
     onSubmit: (String) -> Unit = AmbientSearchActions.current.onSubmit,
 ) {
@@ -146,10 +180,11 @@ private fun SearchField(
     TextField(
         value = query.value,
         placeholder = { Hint(stringResource(R.string.search_members_hint)) },
-        onValueChange = {
-            query.update(it)
-            onSubmit(it)
+        onValueChange = { queryText ->
+            query.update(queryText)
+            onSubmit(queryText)
         },
+        onImeActionPerformed = { imeAction, controller -> controller?.hideSoftwareKeyboard() },
         modifier = modifier.focusRequester(focusRequester),
     )
 }

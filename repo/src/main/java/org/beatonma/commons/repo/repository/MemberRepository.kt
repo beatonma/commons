@@ -1,19 +1,37 @@
 package org.beatonma.commons.repo.repository
 
 import androidx.annotation.VisibleForTesting
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.launch
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.core.extensions.withNotNull
 import org.beatonma.commons.data.core.CompleteMember
+import org.beatonma.commons.data.core.CompleteMemberBuilder
 import org.beatonma.commons.data.core.room.dao.MemberDao
-import org.beatonma.commons.data.core.room.entities.constituency.Constituency
-import org.beatonma.commons.data.core.room.entities.member.*
+import org.beatonma.commons.data.core.room.entities.constituency.NoConstituency
+import org.beatonma.commons.data.core.room.entities.member.NoParty
+import org.beatonma.commons.data.core.room.entities.member.Post
 import org.beatonma.commons.repo.CommonsApi
 import org.beatonma.commons.repo.FlowIoResult
-import org.beatonma.commons.repo.converters.*
+import org.beatonma.commons.repo.converters.toCommitteeChairship
+import org.beatonma.commons.repo.converters.toCommitteeMembership
+import org.beatonma.commons.repo.converters.toConstituency
+import org.beatonma.commons.repo.converters.toElection
+import org.beatonma.commons.repo.converters.toExperience
+import org.beatonma.commons.repo.converters.toFinancialInterest
+import org.beatonma.commons.repo.converters.toHistoricalConstituency
+import org.beatonma.commons.repo.converters.toHouseMembership
+import org.beatonma.commons.repo.converters.toMemberProfile
+import org.beatonma.commons.repo.converters.toParty
+import org.beatonma.commons.repo.converters.toPartyAssociation
+import org.beatonma.commons.repo.converters.toPhysicalAddress
+import org.beatonma.commons.repo.converters.toPost
+import org.beatonma.commons.repo.converters.toTopicOfInterest
+import org.beatonma.commons.repo.converters.toWebAddress
 import org.beatonma.commons.repo.result.cachedResultFlow
 import org.beatonma.commons.snommoc.models.ApiCompleteMember
 import javax.inject.Inject
@@ -28,76 +46,105 @@ interface MemberRepository {
 class MemberRepositoryImpl @Inject constructor(
     private val remoteSource: CommonsApi,
     private val memberDao: MemberDao,
-): MemberRepository {
-    override fun getMember(parliamentdotuk: ParliamentID): FlowIoResult<CompleteMember> = cachedResultFlow(
-        databaseQuery = { getCompleteMember(parliamentdotuk) },
-        networkCall = { remoteSource.getMember(parliamentdotuk) },
-        saveCallResult = { member -> saveMember(memberDao, parliamentdotuk, member) },
-        distinctUntilChanged = false
-    )
+) : MemberRepository {
+    override fun getMember(parliamentdotuk: ParliamentID): FlowIoResult<CompleteMember> =
+        cachedResultFlow(
+            databaseQuery = { getCompleteMember(parliamentdotuk) },
+            networkCall = { remoteSource.getMember(parliamentdotuk) },
+            saveCallResult = { member -> saveMember(memberDao, parliamentdotuk, member) },
+            distinctUntilChanged = true
+        ).catch {
+            println("getMember ERROR $it")
+        }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun getCompleteMember(parliamentdotuk: ParliamentID): Flow<CompleteMember> = channelFlow {
-        val builder = CompleteMember()
+        val builder = CompleteMemberBuilder()
 
-        val profile = memberDao.getMemberProfileTimestampedFlow(parliamentdotuk)
-        val dataSourceFunctions = listOf(
-            MemberDao::getPhysicalAddresses,
-            MemberDao::getWebAddresses,
-            MemberDao::getPosts,
-            MemberDao::getCommitteeMembershipWithChairship,
-            MemberDao::getHouseMemberships,
-            MemberDao::getFinancialInterests,
-            MemberDao::getExperiences,
-            MemberDao::getTopicsOfInterest,
-            MemberDao::getHistoricalConstituencies,
-            MemberDao::getPartyAssociations,
-            MemberDao::getParty,
-            MemberDao::getConstituency,
-        )
-
-        val mergedFlow = merge(
-            profile,
-            dataSourceFunctions.map { func ->
-                func.invoke(memberDao, parliamentdotuk)
-            }.merge()
-        )
-
-        mergedFlow.collect { data: Any? ->
-            if (data is List<*>) {
-                val first = data.firstOrNull()
-
-                @Suppress("UNCHECKED_CAST")
-                when (first) {
-                    is PhysicalAddress -> builder.addresses = data as List<PhysicalAddress>
-                    is WebAddress -> builder.weblinks = data as List<WebAddress>
-                    is Post -> builder.posts = data as List<Post>
-                    is CommitteeMemberWithChairs -> builder.committees = data as List<CommitteeMemberWithChairs>
-                    is HouseMembership -> builder.houses = data as List<HouseMembership>
-                    is FinancialInterest -> builder.financialInterests = data as List<FinancialInterest>
-                    is Experience -> builder.experiences = data as List<Experience>
-                    is TopicOfInterest -> builder.topicsOfInterest = data as List<TopicOfInterest>
-                    is HistoricalConstituencyWithElection -> builder.historicConstituencies = data as List<HistoricalConstituencyWithElection>
-                    is PartyAssociationWithParty -> builder.parties = data as List<PartyAssociationWithParty>
-                    null -> Unit
-                    else -> error("All valid types must be handled: ${data.javaClass.canonicalName}")
-                }
+        suspend fun submitCompleteMember() {
+            if (builder.isComplete) {
+                send(builder.toCompleteMember())
             }
-            else {
-                when (data) {
-                    is MemberProfile -> builder.profile = data
-                    is Constituency -> builder.constituency = data
-                    is Party -> builder.party = data
-                    null -> Unit
-                    else -> error("All valid types must be handled: ${data.javaClass.canonicalName}")
-                }
+        }
+
+        suspend fun <T> suspendedFetch(
+            func: suspend MemberDao.(ParliamentID) -> Flow<T>,
+            block: (T?) -> Unit,
+        ) = launch {
+            memberDao.func(parliamentdotuk).collect {
+                block(it)
+                submitCompleteMember()
             }
-            send(builder)
+        }
+
+        suspend fun <T> fetch(
+            func: MemberDao.(ParliamentID) -> Flow<T>,
+            block: (T) -> Unit,
+        ) = launch {
+            memberDao.func(parliamentdotuk).collect {
+                block(it)
+                submitCompleteMember()
+            }
+        }
+
+        suspend fun <T> fetchNullable(
+            func: MemberDao.(ParliamentID) -> Flow<T>,
+            block: (T?) -> Unit,
+        ) = launch {
+            memberDao.func(parliamentdotuk).collect {
+                block(it)
+                submitCompleteMember()
+            }
+        }
+
+        suspendedFetch(MemberDao::getMemberProfileTimestampedFlow) {
+            builder.profile = it
+        }
+        fetch(MemberDao::getPhysicalAddresses) {
+            builder.addresses = it
+        }
+        fetch(MemberDao::getWebAddresses) {
+            builder.weblinks = it
+        }
+        fetch(MemberDao::getPosts) {
+            builder.posts = it
+        }
+        fetch(MemberDao::getCommitteeMembershipWithChairship) {
+            builder.committees = it
+        }
+        fetch(MemberDao::getHouseMemberships) {
+            builder.houses = it
+        }
+        fetch(MemberDao::getFinancialInterests) {
+            builder.financialInterests = it
+        }
+        fetch(MemberDao::getExperiences) {
+            builder.experiences = it
+        }
+        fetch(MemberDao::getTopicsOfInterest) {
+            builder.topicsOfInterest = it
+        }
+        fetch(MemberDao::getHistoricalConstituencies) {
+            builder.historicConstituencies = it
+        }
+        fetch(MemberDao::getPartyAssociations) {
+            builder.parties = it
+        }
+        fetchNullable(MemberDao::getParty) {
+            builder.party = it ?: NoParty
+        }
+        fetchNullable(MemberDao::getConstituency) {
+            builder.constituency = it ?: NoConstituency
         }
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    override suspend fun saveMember(dao: MemberDao, parliamentdotuk: ParliamentID, member: ApiCompleteMember) {
+    override suspend fun saveMember(
+        dao: MemberDao,
+        parliamentdotuk: ParliamentID,
+        member: ApiCompleteMember,
+    ) {
         with(dao) {
             insertPartiesIfNotExists(member.parties.map { it.party.toParty() })
             insertPartyIfNotExists(member.profile.party.toParty())

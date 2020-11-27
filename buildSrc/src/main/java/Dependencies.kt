@@ -3,7 +3,7 @@ import org.gradle.api.JavaVersion
 
 object Versions {
     // Build
-    const val GRADLE_PLUGIN = "4.2.0-alpha14"
+    const val GRADLE_PLUGIN = "4.2.0-alpha15"
     const val GRADLE_DEPENDENCY_UPDATES = "0.36.0"
 
     // Core
@@ -30,7 +30,7 @@ object Versions {
     // Android X
     const val AX_ANNOTATIONS = "1.2.0-alpha01"
     const val AX_APPCOMPAT = "1.3.0-alpha02"
-    const val AX_COMPOSE = "1.0.0-alpha06"
+    const val AX_COMPOSE = "1.0.0-alpha07"
     const val AX_CONSTRAINTLAYOUT = "2.0.4"
     const val AX_CORE_KTX = "1.5.0-alpha02"
     const val AX_LIFECYCLE = "2.3.0-alpha06"

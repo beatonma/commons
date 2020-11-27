@@ -4,7 +4,6 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.SpringSpec
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.foundation.ScrollableColumn
-import androidx.compose.foundation.Text
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +18,7 @@ import androidx.compose.material.MaterialTheme.shapes
 import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.filled.ColorLens
@@ -182,7 +182,7 @@ private fun Section(screen: BaseScreen) {
 
 @Composable
 private fun SectionHeader(text: String, progress: Float, modifier: Modifier = Modifier) {
-    Surface(Modifier.fillMaxWidth(), color = colors.secondary) {
+    Surface(Modifier.fillMaxWidth(), color = colors.primary) {
         Text(
             text,
             Modifier.padding(horizontal = ContentPadding, vertical = 32.dp),

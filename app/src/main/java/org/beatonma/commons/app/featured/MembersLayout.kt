@@ -7,15 +7,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Layout
-import androidx.compose.ui.MeasureScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.Placeable
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.MeasureResult
+import androidx.compose.ui.layout.MeasureScope
+import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.annotation.VisibleForTesting
 import androidx.compose.ui.util.fastForEach
-import org.beatonma.commons.compose.util.*
+import org.beatonma.commons.compose.util.HorizontalValue
+import org.beatonma.commons.compose.util.VerticalValue
+import org.beatonma.commons.compose.util.asHorizontal
+import org.beatonma.commons.compose.util.asVertical
+import org.beatonma.commons.compose.util.dimensions
+import org.beatonma.commons.compose.util.layout
+import org.beatonma.commons.compose.util.placeRelative
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 
@@ -68,7 +75,7 @@ internal fun ScrollableMembersLayout(
  */
 private fun MeasureScope.buildProfilesLayoutAllSameSize(
     placeables: List<Placeable>,
-): MeasureScope.MeasureResult {
+): MeasureResult {
 
     val f = placeables.first()
     val (w, h) = f.dimensions()
@@ -94,7 +101,7 @@ private fun MeasureScope.buildProfilesLayoutAllSameSize(
 fun MeasureScope.buildProfilesLayout(
     placeables: List<Placeable>,
     wrapHeight: Int,
-): MeasureScope.MeasureResult {
+): MeasureResult {
 
     if (placeables.isEmpty()) {
         return layout(0, 0) {}

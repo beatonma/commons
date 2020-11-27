@@ -10,7 +10,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.zIndex
 import org.beatonma.commons.compose.ambient.colors
-import org.beatonma.commons.compose.modifiers.onlyWhen
 import org.beatonma.commons.theme.compose.Layer
 import org.beatonma.commons.theme.compose.theme.modalScrim
 
@@ -27,9 +26,7 @@ fun ModalScrim(
         modifier
             .zIndex(Layer.ModalScrim)
             .fillMaxSize()
-            .onlyWhen(alpha > 0F) {
-                clickable(onClick = onClickAction, indication = null)
-            }
+            .clickable(enabled = alpha > 0F, indication = null, onClick = onClickAction)
             .background(backgroundColor.copy(alpha = alpha * backgroundColor.alpha)),
         alignment = alignment,
         children = content

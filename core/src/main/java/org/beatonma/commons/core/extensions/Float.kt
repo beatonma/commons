@@ -72,6 +72,8 @@ fun Float.mapToByte(): Int = mapTo(0, 255)
 fun Float.lerp(end: Float, progress: Float): Float =
     this + ((end - this) * progress)
 
+fun Float.lerpBetween(start: Float, end: Float): Float = start.lerp(end, progress = this)
+
 /**
  * lerp from 0..target and back again.
  */
@@ -84,7 +86,7 @@ fun Float.progressIn(min: Float = 0F, max: Float): Float = coerceIn(min, max).no
  * Reverse direction of a value between 0..1, useful for animations.
  */
 @FloatRange(from = 0.0, to = 1.0)
-fun Float.reverse() = 1F - this
+fun Float.reversed() = 1F - this
 
 typealias Easing = (fraction: Float) -> Float
 

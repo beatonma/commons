@@ -1,11 +1,17 @@
 package org.beatonma.commons.compose.util
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.AlignmentLine
-import androidx.compose.ui.MeasureScope
-import androidx.compose.ui.Placeable
+import androidx.compose.ui.layout.AlignmentLine
+import androidx.compose.ui.layout.MeasureResult
+import androidx.compose.ui.layout.MeasureScope
+import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.platform.ContextAmbient
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.coerceAtLeast
+import androidx.compose.ui.unit.dp
+import org.beatonma.commons.compose.animation.lerpBetween
+import org.beatonma.commons.core.extensions.lerp
 import kotlin.math.roundToInt
 
 /**
@@ -60,7 +66,7 @@ fun MeasureScope.layout(
     height: VerticalValue,
     alignmentLines: Map<AlignmentLine, Int> = emptyMap(),
     placementBlock: Placeable.PlacementScope.() -> Unit,
-): MeasureScope.MeasureResult = layout(width.value, height.value, alignmentLines, placementBlock)
+): MeasureResult = layout(width.value, height.value, alignmentLines, placementBlock)
 
 @Composable
 val Dp.pxF: Float
@@ -76,3 +82,12 @@ val Dp.px: Int
         else -> (value * ContextAmbient.current.resources.displayMetrics.density)
             .roundToInt()
     }
+
+fun Dp.lerp(other: Dp, progress: Float) = Dp(value.lerp(other.value, progress))
+
+fun PaddingValues.lerp(other: PaddingValues, progress: Float) = PaddingValues(
+    start = progress.lerpBetween(this.start, other.start).coerceAtLeast(0.dp),
+    top = progress.lerpBetween(this.top, other.top).coerceAtLeast(0.dp),
+    end = progress.lerpBetween(this.end, other.end).coerceAtLeast(0.dp),
+    bottom = progress.lerpBetween(this.bottom, other.bottom).coerceAtLeast(0.dp),
+)
