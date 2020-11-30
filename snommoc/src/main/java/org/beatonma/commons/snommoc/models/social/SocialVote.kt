@@ -22,7 +22,7 @@ data class SocialVotes(
     @field:Json(name = JSON_NAME_AYE) val aye: Int = 0,
     @field:Json(name = JSON_NAME_NO) val no: Int = 0,
 ) {
-    fun voteCount(): Int = aye + no
+    fun voteCount(): Int = (aye + no).coerceAtLeast(0)
 }
 
 

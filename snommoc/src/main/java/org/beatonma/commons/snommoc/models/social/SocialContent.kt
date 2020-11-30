@@ -28,4 +28,4 @@ data class SocialContent(
     val noVotes: Int get() = votes.no
 }
 
-val EmptySocialContent = SocialContent("empty", listOf(), SocialVotes(), null)
+val EmptySocialContent = SocialContent("", listOf(), SocialVotes(-1, -1), null)
