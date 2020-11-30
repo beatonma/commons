@@ -1,6 +1,8 @@
 package org.beatonma.commons.repo.result
 
+
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -18,6 +20,7 @@ import kotlinx.coroutines.launch
 import org.beatonma.commons.repo.FlowIoResult
 import java.util.concurrent.TimeUnit
 
+
 /**
  * Emits cached results of [databaseQuery] then attempts to update data with [networkCall].
  *
@@ -26,6 +29,7 @@ import java.util.concurrent.TimeUnit
  *
  * - Otherwise
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 fun <T, N> cachedResultFlow(
     databaseQuery: () -> Flow<T>,
     networkCall: suspend () -> IoResult<N>,
@@ -66,6 +70,7 @@ fun <T, N> cachedResultFlow(
 /**
  * [networkCall] will only execute if [databaseQuery] does not emit a useful value.
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 fun <T, N> resultFlowLocalPreferred(
     databaseQuery: () -> Flow<T>,
     networkCall: suspend () -> IoResult<N>,
@@ -82,19 +87,20 @@ fun <T, N> resultFlowLocalPreferred(
                     submitAndSaveNetworkResult(networkCall, saveCallResult)
                 }
 
-                else -> sendError(
+                else -> send(
                     SuccessResult(queryResult, "DB read")
                 )
             }
         }
 }.catch {
-    emit(GenericError("resultFlowLocalPreferred error", it))
+    emit(GenericError("resultFlowLocalPreferred error $it", it))
 }.flowOn(Dispatchers.IO)
 
 /**
  * Run the network call with no local caching.
  * The resulting flow will emit a LoadingResult while waiting for network response.
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 fun <T> resultFlowNoCache(
     networkCall: suspend () -> IoResult<T>,
 ): FlowIoResult<T> = flow {
@@ -105,7 +111,7 @@ fun <T> resultFlowNoCache(
     emit(NetworkError("resultFlowNoCache error", it))
 }.flowOn(Dispatchers.IO)
 
-
+@OptIn(ExperimentalCoroutinesApi::class)
 suspend inline fun <T> Flow<IoResult<T>>.await(
     timeout: Long = 1000,
     timeUnit: TimeUnit = TimeUnit.MILLISECONDS,
@@ -127,6 +133,7 @@ suspend inline fun <T> Flow<IoResult<T>>.await(
     }
 }.single()
 
+@OptIn(ExperimentalCoroutinesApi::class)
 private suspend fun <E> ProducerScope<E>.sendError(
     element: E,
     cause: Throwable? = null,
@@ -143,6 +150,7 @@ private suspend fun <E> ProducerScope<E>.sendError(
  * Shared network handling block for updating local cache.
  * Returns true if saveCallResult completes successfully.
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 private suspend inline fun <E, N> ProducerScope<IoResult<E>>.submitAndSaveNetworkResult(
     networkCall: suspend () -> IoResult<N>,
     saveCallResult: suspend (N) -> Unit,
