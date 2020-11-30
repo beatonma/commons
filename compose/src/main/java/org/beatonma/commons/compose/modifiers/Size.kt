@@ -47,7 +47,7 @@ fun Modifier.wrapContentWidth(progress: Float, align: Alignment = Alignment.Cent
  */
 fun Modifier.wrapContentSize(
     horizontalProgress: Float,
-    verticalProgress: Float,
+    verticalProgress: Float = horizontalProgress,
     align: Alignment = Alignment.Center,
 ): Modifier =
     this.then(
