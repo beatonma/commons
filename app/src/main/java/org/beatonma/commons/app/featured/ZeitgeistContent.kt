@@ -9,7 +9,9 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ProvidableAmbient
 import androidx.compose.runtime.Providers
+import androidx.compose.runtime.ambientOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,6 +52,27 @@ private fun ResolvedZeitgeistMember.reason() = this.zeitgeistMember.reason.reaso
 private fun ResolvedZeitgeistDivision.reason() = this.zeitgeistDivision.reason.reason()
 private fun ResolvedZeitgeistBill.reason() = this.zeitgeistBill.reason.reason()
 
+val AmbientZeitgeistActions: ProvidableAmbient<ZeitgeistActions> =
+    ambientOf { error("ZeitgeistActions have not been provided") }
+
+class ZeitgeistActions(
+    val onMemberClick: (MemberProfile) -> Unit,
+    val onDivisionClick: (Division) -> Unit,
+    val onBillClick: (MinimalBill) -> Unit,
+)
+
+@Composable
+inline fun ZeitgeistContent(
+    zeitgeist: Zeitgeist,
+    actions: ZeitgeistActions = AmbientZeitgeistActions.current,
+) {
+    ZeitgeistContent(
+        zeitgeist = zeitgeist,
+        actions.onMemberClick,
+        actions.onDivisionClick,
+        actions.onBillClick,
+    )
+}
 
 @Composable
 fun ZeitgeistContent(

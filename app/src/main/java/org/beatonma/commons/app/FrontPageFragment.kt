@@ -1,96 +1,109 @@
 package org.beatonma.commons.app
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.IdRes
-import androidx.compose.foundation.Text
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.Composable
+import androidx.activity.result.ActivityResultLauncher
+import androidx.compose.material.AmbientContentColor
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.Providers
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
 import org.beatonma.commons.R
+import org.beatonma.commons.app.featured.AmbientZeitgeistActions
 import org.beatonma.commons.app.featured.FeaturedContentViewModel
-import org.beatonma.commons.app.featured.ZeitgeistContent
-import org.beatonma.commons.app.search.SearchEnabled
+import org.beatonma.commons.app.featured.ZeitgeistActions
+import org.beatonma.commons.app.search.SearchViewModel
+import org.beatonma.commons.app.search.compose.AmbientSearchActions
+import org.beatonma.commons.app.search.compose.SearchActions
+import org.beatonma.commons.app.signin.compose.AmbientSignInActions
+import org.beatonma.commons.app.signin.compose.AmbientUserToken
+import org.beatonma.commons.app.signin.compose.NullUserToken
+import org.beatonma.commons.app.signin.compose.SignInHandler
 import org.beatonma.commons.app.ui.compose.composeView
-import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
-import org.beatonma.commons.kotlin.extensions.bundle
+import org.beatonma.commons.app.ui.compose.withSystemUi
+import org.beatonma.commons.app.ui.navigation.BackPressConsumer
+import org.beatonma.commons.compose.ambient.colors
+import org.beatonma.commons.compose.animation.ExpandCollapseState
+import org.beatonma.commons.compose.animation.rememberExpandCollapseState
+import org.beatonma.commons.compose.util.update
 import org.beatonma.commons.kotlin.extensions.navigateTo
-import org.beatonma.commons.repo.models.Zeitgeist
-import org.beatonma.commons.repo.result.IoResult
 import org.beatonma.commons.repo.result.LoadingResult
-import org.beatonma.commons.repo.result.isLoading
-import org.beatonma.commons.repo.result.isSuccess
-import org.beatonma.commons.theme.compose.theme.systemui.statusBarsHeight
-import org.beatonma.commons.theme.compose.theme.systemui.withSystemUi
 
 @AndroidEntryPoint
-class FrontPageFragment : Fragment(), SearchEnabled {
+class FrontPageFragment : Fragment(), BackPressConsumer {
 
     private val viewmodel: FeaturedContentViewModel by viewModels()
+    private val searchViewModel: SearchViewModel by viewModels()
+
+    private val signInHandler: SignInHandler = object : SignInHandler {
+        override var signInLauncher: ActivityResultLauncher<Intent> =
+            registerSignInLauncher(this@FrontPageFragment)
+        override var signInActions = defaultSignInActions()
+    }
+    lateinit var searchUiState: MutableState<ExpandCollapseState>
+
+    private val zeitgeistActions = ZeitgeistActions(
+        { profile ->
+            navigateTo(R.id.action_frontPageFragment_to_memberProfileFragment, profile)
+        },
+        { bill ->
+            navigateTo(R.id.action_frontPageFragment_to_billFragment, bill)
+        },
+        { division ->
+            navigateTo(R.id.action_frontPageFragment_to_divisionProfileFragment,
+                division)
+        },
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? = composeView {
-        withSystemUi(window = requireActivity().window) {
-            val result by viewmodel.zeitgeist.collectAsState(LoadingResult())
-            Column {
-                Spacer(modifier = Modifier.statusBarsHeight())
-                ZeitgeistResult(result)
+    ): View = composeView {
+        val userTokenState = viewmodel.userTokenLiveData.observeAsState(initial = NullUserToken)
+
+        searchUiState = rememberExpandCollapseState()
+        val searchActions = remember {
+            SearchActions(
+                onSubmit = { query -> searchViewModel.submit(query) },
+                onClickMember = { memberSearchResult ->
+                    navigateTo(
+                        R.id.action_frontPageFragment_to_memberProfileFragment,
+                        memberSearchResult.toUri(),
+                    )
+                }
+            )
+        }
+        val zeitgeistResult by viewmodel.zeitgeist.collectAsState(LoadingResult())
+        val searchResults by searchViewModel.resultLiveData.observeAsState(listOf())
+
+        Providers(
+            AmbientSearchActions provides searchActions,
+            AmbientSignInActions provides signInHandler.signInActions,
+            AmbientUserToken provides userTokenState.value,
+            AmbientContentColor provides colors.onSurface,
+            AmbientZeitgeistActions provides zeitgeistActions,
+        ) {
+            withSystemUi {
+                FrontPageUi(zeitgeistResult, searchResults)
             }
         }
     }
 
-    @Composable
-    fun ZeitgeistResult(result: IoResult<Zeitgeist>) {
-        when {
-            result.isSuccess && result.data != null -> {
-                ZeitgeistContent(
-                    zeitgeist = result.data!!,
-                    memberOnClick = { profile ->
-                        navigateTo(R.id.action_frontPageFragment_to_memberProfileFragment, profile)
-                    },
-                    billOnClick = { bill ->
-                        navigateTo(R.id.action_frontPageFragment_to_billFragment, bill)
-                    },
-                    divisionOnClick = { division ->
-                        navigateTo(R.id.action_frontPageFragment_to_divisionProfileFragment,
-                            division)
-                    },
-                )
-            }
-
-            result.isLoading -> Loading()
-            else -> Error()
+    override fun onBackPressed() = when {
+        searchUiState.value == ExpandCollapseState.Expanded -> {
+            searchUiState.update(ExpandCollapseState.Collapsed)
+            true
         }
+
+        else -> false
     }
-
-    private fun <T : Parliamentdotuk> navigateTo(@IdRes navigationId: Int, target: T) {
-        requireView().navigateTo(navigationId, target.bundle())
-    }
-}
-
-
-@Composable
-fun Loading(
-    modifier: Modifier = Modifier,
-) {
-    Text("Loading", style = MaterialTheme.typography.h1, modifier = modifier)
-}
-
-@Composable
-fun Error(
-    modifier: Modifier = Modifier,
-) {
-    Text("Error", style = MaterialTheme.typography.h1, modifier = modifier)
 }
