@@ -23,16 +23,17 @@ class UserRepository @Inject constructor(
     /**
      * Return local token if exists, otherwise contact web service to get token.
      */
-    fun getTokenForAccount(account: UserAccount): FlowIoResult<UserToken> = resultFlowLocalPreferred(
-        databaseQuery = { userDao.getUserToken(account.googleId) },
-        networkCall = { remoteSource.registerUser(account.googleIdToken) },
-        saveCallResult = { apiToken -> saveApiToken(account, apiToken) }
-    )
+    fun getTokenForAccount(account: GoogleAccount): FlowIoResult<UserToken> =
+        resultFlowLocalPreferred(
+            databaseQuery = { userDao.getUserToken(account.googleId) },
+            networkCall = { remoteSource.registerUser(account.googleIdToken) },
+            saveCallResult = { apiToken -> saveApiToken(account, apiToken) }
+        )
 
     /**
      * Refresh account token from the server, even if we have a cached token.
      */
-    fun forceGetTokenForAccount(account: UserAccount): FlowIoResult<UserToken> = cachedResultFlow(
+    fun forceGetTokenForAccount(account: GoogleAccount): FlowIoResult<UserToken> = cachedResultFlow(
         databaseQuery = { userDao.getUserToken(account.googleId) },
         networkCall = { remoteSource.registerUser(account.googleIdToken) },
         saveCallResult = { apiToken -> saveApiToken(account, apiToken) }
@@ -46,7 +47,7 @@ class UserRepository @Inject constructor(
         remoteSource.deleteUserAccount(token)
     }
 
-    private suspend fun saveApiToken(account: UserAccount, apiToken: ApiUserToken) {
+    private suspend fun saveApiToken(account: GoogleAccount, apiToken: ApiUserToken) {
         val googleTokenStub = account.googleIdToken.substring(0..31)
         if (googleTokenStub == apiToken.googleTokenStub) {
             userDao.insertUserToken(apiToken.composeToUserToken(account))
@@ -57,8 +58,7 @@ class UserRepository @Inject constructor(
     }
 }
 
-
-data class UserAccount(
+data class GoogleAccount(
     val name: String?,
     val photoUrl: String?,
     val email: String?,

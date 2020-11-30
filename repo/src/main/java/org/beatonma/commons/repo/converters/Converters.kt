@@ -1,7 +1,13 @@
 package org.beatonma.commons.repo.converters
 
 import org.beatonma.commons.core.ParliamentID
-import org.beatonma.commons.data.core.room.entities.bill.*
+import org.beatonma.commons.data.core.room.entities.bill.Bill
+import org.beatonma.commons.data.core.room.entities.bill.BillPublication
+import org.beatonma.commons.data.core.room.entities.bill.BillSponsor
+import org.beatonma.commons.data.core.room.entities.bill.BillStage
+import org.beatonma.commons.data.core.room.entities.bill.BillStageSitting
+import org.beatonma.commons.data.core.room.entities.bill.BillType
+import org.beatonma.commons.data.core.room.entities.bill.ParliamentarySession
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyBoundary
 import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyCandidate
@@ -10,13 +16,56 @@ import org.beatonma.commons.data.core.room.entities.division.Division
 import org.beatonma.commons.data.core.room.entities.division.Vote
 import org.beatonma.commons.data.core.room.entities.election.ConstituencyResult
 import org.beatonma.commons.data.core.room.entities.election.Election
-import org.beatonma.commons.data.core.room.entities.member.*
+import org.beatonma.commons.data.core.room.entities.member.CommitteeChairship
+import org.beatonma.commons.data.core.room.entities.member.CommitteeMembership
+import org.beatonma.commons.data.core.room.entities.member.Experience
+import org.beatonma.commons.data.core.room.entities.member.FinancialInterest
+import org.beatonma.commons.data.core.room.entities.member.HistoricalConstituency
+import org.beatonma.commons.data.core.room.entities.member.HouseMembership
+import org.beatonma.commons.data.core.room.entities.member.MemberProfile
+import org.beatonma.commons.data.core.room.entities.member.Party
+import org.beatonma.commons.data.core.room.entities.member.PartyAssociation
+import org.beatonma.commons.data.core.room.entities.member.PhysicalAddress
+import org.beatonma.commons.data.core.room.entities.member.Post
+import org.beatonma.commons.data.core.room.entities.member.TopicOfInterest
+import org.beatonma.commons.data.core.room.entities.member.Town
+import org.beatonma.commons.data.core.room.entities.member.WebAddress
 import org.beatonma.commons.data.core.room.entities.user.UserToken
-import org.beatonma.commons.repo.repository.UserAccount
-import org.beatonma.commons.snommoc.models.*
+import org.beatonma.commons.repo.repository.GoogleAccount
+import org.beatonma.commons.snommoc.models.ApiBill
+import org.beatonma.commons.snommoc.models.ApiBillPublication
+import org.beatonma.commons.snommoc.models.ApiBillSponsor
+import org.beatonma.commons.snommoc.models.ApiBillStage
+import org.beatonma.commons.snommoc.models.ApiBillStageSitting
+import org.beatonma.commons.snommoc.models.ApiBillType
+import org.beatonma.commons.snommoc.models.ApiCommittee
+import org.beatonma.commons.snommoc.models.ApiCommitteeChairship
+import org.beatonma.commons.snommoc.models.ApiConstituency
+import org.beatonma.commons.snommoc.models.ApiConstituencyBoundary
+import org.beatonma.commons.snommoc.models.ApiConstituencyCandidate
+import org.beatonma.commons.snommoc.models.ApiConstituencyElectionDetails
+import org.beatonma.commons.snommoc.models.ApiConstituencyMinimal
+import org.beatonma.commons.snommoc.models.ApiConstituencyResult
+import org.beatonma.commons.snommoc.models.ApiDivision
+import org.beatonma.commons.snommoc.models.ApiElection
+import org.beatonma.commons.snommoc.models.ApiExperience
+import org.beatonma.commons.snommoc.models.ApiFinancialInterest
+import org.beatonma.commons.snommoc.models.ApiHistoricalConstituency
+import org.beatonma.commons.snommoc.models.ApiHouseMembership
+import org.beatonma.commons.snommoc.models.ApiMemberProfile
+import org.beatonma.commons.snommoc.models.ApiMemberVote
+import org.beatonma.commons.snommoc.models.ApiParliamentarySession
+import org.beatonma.commons.snommoc.models.ApiParty
+import org.beatonma.commons.snommoc.models.ApiPartyAssociation
+import org.beatonma.commons.snommoc.models.ApiPhysicalAddress
+import org.beatonma.commons.snommoc.models.ApiPost
+import org.beatonma.commons.snommoc.models.ApiTopicOfInterest
+import org.beatonma.commons.snommoc.models.ApiTown
+import org.beatonma.commons.snommoc.models.ApiVote
+import org.beatonma.commons.snommoc.models.ApiWebAddress
 import org.beatonma.commons.snommoc.models.social.ApiUserToken
 
-fun ApiUserToken.composeToUserToken(account: UserAccount) = UserToken(
+fun ApiUserToken.composeToUserToken(account: GoogleAccount) = UserToken(
     name = account.name,
     photoUrl = account.photoUrl,
     email = account.email,
