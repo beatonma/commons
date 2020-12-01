@@ -39,6 +39,14 @@ fun MutableState<ExpandCollapseState>.toggle() {
     value = value.toggle()
 }
 
+fun MutableState<ExpandCollapseState>.collapse() {
+    value = ExpandCollapseState.Collapsed
+}
+
+fun MutableState<ExpandCollapseState>.expand() {
+    value = ExpandCollapseState.Expanded
+}
+
 val MutableState<ExpandCollapseState>.isCollapsed get() = value == ExpandCollapseState.Collapsed
 val MutableState<ExpandCollapseState>.isExpanded get() = value == ExpandCollapseState.Expanded
 
