@@ -19,6 +19,7 @@ android {
     defaultConfig {
         injectStrings(
             "ACCOUNT_USERNAME_CHARACTERS" to Commons.Account.Username.ALLOWED_CHARACTERS,
+            "ACCOUNT_USERNAME_PATTERN" to Commons.Account.Username.REGEX,
             "GOOGLE_MAPS_API_KEY" to LocalConfig.Api.Google.MAPS,
             "GOOGLE_SIGNIN_CLIENT_ID" to LocalConfig.OAuth.Google.WEB_CLIENT_ID,
             asBuildConfig = true,
@@ -29,6 +30,7 @@ android {
             "ACCOUNT_USERNAME_MAX_LENGTH" to Commons.Account.Username.MAX_LENGTH,
             "ACCOUNT_USERNAME_MIN_LENGTH" to Commons.Account.Username.MIN_LENGTH,
             "SOCIAL_COMMENT_MAX_LENGTH" to Commons.Social.MAX_COMMENT_LENGTH,
+            "SOCIAL_COMMENT_MIN_LENGTH" to Commons.Social.MIN_COMMENT_LENGTH,
             "THEME_TEXT_DARK" to PartyColors.TEXT_DARK,
             "THEME_TEXT_LIGHT" to PartyColors.TEXT_LIGHT,
             asBuildConfig = true,
@@ -62,7 +64,7 @@ android {
 
     buildTypes {
         debug {
-            applicationIdSuffix = git.branch
+//            applicationIdSuffix = git.branch
             manifestPlaceholders.put(
                 "appname" to "DEV:${git.branch}/Commons"
             )
@@ -77,6 +79,10 @@ android {
     }
     kotlinOptions {
         useIR = true
+
+        freeCompilerArgs = freeCompilerArgs + listOf(
+            "-Xopt-in=kotlin.RequiresOptIn"
+        )
     }
 }
 
@@ -123,7 +129,7 @@ dependencies {
 
     debug {
         implementations(
-            Dependencies.Debug.LEAK_CANARY,
+//            Dependencies.Debug.LEAK_CANARY,
             project(":themepreview")
         )
     }
@@ -144,11 +150,14 @@ dependencies {
             Dependencies.Room.RUNTIME,
 
             Dependencies.AndroidX.Compose.ANIMATION,
+            Dependencies.AndroidX.Compose.LIVEDATA,
             Dependencies.AndroidX.Compose.MATERIAL_ICONS_CORE,
             Dependencies.AndroidX.Compose.MATERIAL_ICONS_EXTENDED,
             Dependencies.AndroidX.Compose.RUNTIME,
             Dependencies.AndroidX.Compose.UI,
 
+            Dependencies.AndroidX.ACTIVITY,
+            Dependencies.AndroidX.FRAGMENT,
             Dependencies.AndroidX.APPCOMPAT,
             Dependencies.AndroidX.CONSTRAINTLAYOUT,
             Dependencies.AndroidX.CORE_KTX,

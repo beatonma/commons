@@ -20,6 +20,7 @@ object Commons {
             const val MAX_LENGTH = 16
             const val ALLOWED_CHARACTERS =
                 "-_0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            const val REGEX = "[a-zA-Z0-9][a-zA-Z0-9._-]+[a-zA-Z0-9]" // Use with String.toRegex()
         }
     }
 }
