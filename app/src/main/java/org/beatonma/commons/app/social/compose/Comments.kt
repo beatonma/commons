@@ -2,7 +2,6 @@ package org.beatonma.commons.app.social.compose
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.foundation.Text
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,6 +12,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumnForIndexed
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -31,18 +31,20 @@ import org.beatonma.commons.app.signin.compose.AmbientUserToken
 import org.beatonma.commons.app.signin.compose.NullUserToken
 import org.beatonma.commons.app.signin.compose.SignInUi
 import org.beatonma.commons.app.social.SocialUiState
+import org.beatonma.commons.app.ui.compose.components.CommonsOutlinedButton
 import org.beatonma.commons.app.ui.compose.components.FabBottomSheet
 import org.beatonma.commons.app.ui.compose.components.FabBottomSheetState
 import org.beatonma.commons.app.ui.compose.components.FabText
-import org.beatonma.commons.app.ui.compose.components.OutlineButton
 import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.ambient.withEmphasisHigh
 import org.beatonma.commons.compose.ambient.withEmphasisMedium
 import org.beatonma.commons.compose.components.CardText
 import org.beatonma.commons.compose.components.Hint
-import org.beatonma.commons.compose.components.LengthTextFieldValidator
-import org.beatonma.commons.compose.components.ValidatedLengthTextField
+import org.beatonma.commons.compose.components.TextValidationResult
+import org.beatonma.commons.compose.components.TextValidationRules
+import org.beatonma.commons.compose.components.ValidatedTextField
 import org.beatonma.commons.compose.modifiers.wrapContentSize
+import org.beatonma.commons.compose.util.rememberText
 import org.beatonma.commons.compose.util.update
 import org.beatonma.commons.compose.util.withAnnotatedStyle
 import org.beatonma.commons.core.extensions.lerp
@@ -177,8 +179,8 @@ private fun CreateCommentButtonContent(
 private fun CreateCommentSheetContent(
     progress: Float,
     focusRequester: FocusRequester,
-    commentText: MutableState<String> = remember { mutableStateOf("") },
-    commentValidator: LengthTextFieldValidator = AmbientSocialCommentValidator.current,
+    commentText: MutableState<String> = rememberText(),
+    commentValidator: TextValidationRules = AmbientSocialCommentValidator.current,
 ) {
     if (progress == 0F) {
         return
@@ -188,8 +190,8 @@ private fun CreateCommentSheetContent(
     val commentIsValid = remember { mutableStateOf(false) }
 
     if (progress == 1F) {
-        // Focus on text field and bring up the IME.
-        focusRequester.requestFocus()
+        // Focus on text field and bring up the IME TODO enable.
+//        focusRequester.requestFocus()
     }
 
     CardText(
@@ -217,15 +219,14 @@ private fun CreateCommentSheetContent(
                 Username(user.username)
             }
 
-            ValidatedLengthTextField(
-                value = commentText.value,
-                validator = commentValidator,
+            ValidatedTextField(
+                commentText, commentValidator,
                 placeholder = {
                     Hint(stringResource(R.string.social_compose_comment_hint))
                 },
-                onValueChange = { value, isValid ->
+                onValueChange = { value, validationResult ->
                     commentText.update(value)
-                    commentIsValid.update(isValid)
+                    commentIsValid.update(validationResult == TextValidationResult.OK)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -235,7 +236,7 @@ private fun CreateCommentSheetContent(
             )
 
             val socialActions = AmbientSocialActions.current
-            OutlineButton(
+            CommonsOutlinedButton(
                 onClick = { socialActions.onCommentSubmitClick(commentText.value) },
                 modifier = Modifier.align(Alignment.End).padding(Padding.CardButton),
                 enabled = commentIsValid.value,
