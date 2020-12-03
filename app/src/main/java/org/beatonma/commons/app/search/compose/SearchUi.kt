@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumnFor
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AmbientContentColor
+import androidx.compose.material.AmbientTextStyle
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.ListItem
@@ -23,7 +24,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -45,6 +45,8 @@ import org.beatonma.commons.app.ui.compose.components.DEV_AVATAR
 import org.beatonma.commons.app.ui.compose.components.PartyDot
 import org.beatonma.commons.app.ui.compose.components.Todo
 import org.beatonma.commons.compose.animation.ExpandCollapseState
+import org.beatonma.commons.compose.animation.collapse
+import org.beatonma.commons.compose.animation.isExpanded
 import org.beatonma.commons.compose.animation.lerpBetween
 import org.beatonma.commons.compose.animation.progressKey
 import org.beatonma.commons.compose.animation.rememberExpandCollapseState
@@ -55,6 +57,7 @@ import org.beatonma.commons.compose.components.ModalScrim
 import org.beatonma.commons.compose.components.OptionalText
 import org.beatonma.commons.compose.modifiers.wrapContentHeight
 import org.beatonma.commons.compose.modifiers.wrapContentOrFillWidth
+import org.beatonma.commons.compose.util.rememberText
 import org.beatonma.commons.compose.util.update
 import org.beatonma.commons.core.extensions.lerpBetween
 import org.beatonma.commons.core.extensions.progressIn
@@ -96,7 +99,7 @@ fun SearchUiPreview() {
 
     providePreviewAmbients {
         SearchUi(
-            results,
+            results.value,
         )
     }
 }
@@ -104,7 +107,7 @@ fun SearchUiPreview() {
 @OptIn(ExperimentalFocus::class)
 @Composable
 fun SearchUi(
-    results: State<List<SearchResult>>,
+    results: List<SearchResult>,
     modifier: Modifier = Modifier,
     state: MutableState<ExpandCollapseState> = rememberExpandCollapseState(),
     transition: TransitionDefinition<ExpandCollapseState> = rememberExpandCollapseTransition(),
@@ -115,7 +118,7 @@ fun SearchUi(
 
     ModalScrim(
         alpha = progress,
-        onClickAction = { state.update(ExpandCollapseState.Collapsed) }
+        onClickAction = { state.collapse() }
     ) {
         Column(
             modifier
@@ -148,7 +151,7 @@ fun SearchUi(
                             modifier = Modifier.weight(10F)
                         )
 
-                        if (progress == 1F && state.value == ExpandCollapseState.Expanded) {
+                        if (progress == 1F && state.isExpanded) {
                             focusRequester.requestFocus()
                         }
                     }
@@ -158,7 +161,7 @@ fun SearchUi(
 
             if (progress > 0F) {
                 SearchResults(
-                    results.value,
+                    results,
                     modifier = Modifier
                         .drawOpacity(progress.progressIn(0.6F, 1F))
                         .wrapContentHeight(progress.progressIn(0.4F, 1F))
@@ -175,7 +178,7 @@ private fun SearchField(
     modifier: Modifier = Modifier,
     onSubmit: (String) -> Unit = AmbientSearchActions.current.onSubmit,
 ) {
-    val query = remember { mutableStateOf("") }
+    val query = rememberText()
 
     TextField(
         value = query.value,
@@ -186,6 +189,7 @@ private fun SearchField(
         },
         onImeActionPerformed = { imeAction, controller -> controller?.hideSoftwareKeyboard() },
         modifier = modifier.focusRequester(focusRequester),
+        textStyle = AmbientTextStyle.current.copy(color = CommonsColor.OnSearchBar),
     )
 }
 
