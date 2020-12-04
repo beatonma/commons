@@ -31,11 +31,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.onCommit
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.WithConstraints
 import androidx.compose.ui.graphics.ImageAsset
 import androidx.compose.ui.graphics.asImageAsset
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.layout.WithConstraints
 import androidx.compose.ui.platform.ContextAmbient
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
