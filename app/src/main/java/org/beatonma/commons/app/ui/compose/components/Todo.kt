@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.dp
 import org.beatonma.commons.compose.ambient.colors
 
 @Composable
-fun Todo(message: String? = null, modifier: Modifier = Modifier) {
+fun Todo(modifier: Modifier = Modifier, message: String? = null) {
     val text = if (message == null) "// todo" else "// todo: $message"
     Text(
         text,
