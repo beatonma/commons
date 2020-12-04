@@ -13,8 +13,8 @@ import org.beatonma.commons.kotlin.extensions.colorCompat
 import org.beatonma.commons.theme.compose.color.CommonsColor
 import androidx.compose.ui.graphics.Color as ComposeColor
 
+@Deprecated("Unused in Compose")
 interface Themed {
-
     var theme: PartyColors?
 }
 
@@ -22,7 +22,10 @@ fun Context.getPartyTheme(partyID: ParliamentID?) = getPartyTheme(partyID, this)
 fun Party.getTheme(context: Context): PartyColors = getPartyTheme(parliamentdotuk, context)
 
 @Composable
-fun Party.theme(): ComposePartyColors {
+fun Party.theme(): ComposePartyColors = partyTheme(parliamentdotuk = parliamentdotuk)
+
+@Composable
+fun partyTheme(parliamentdotuk: ParliamentID = -1): ComposePartyColors {
     val isDarkTheme = isSystemInDarkTheme()
     val naiveColors = getNaivePartyTheme(parliamentdotuk)
 
@@ -227,22 +230,22 @@ private data class NaivePartyColors(
     fun resolve(context: Context) =
         PartyColors(context, primary, accent, primaryTextTheme, accentTextTheme)
 
-    @Composable
     fun resolve(): ComposePartyColors = ComposePartyColors(
         primary = ComposeColor(primary),
         accent = ComposeColor(accent),
-        colorOnPrimary = if (primaryTextTheme == THEME_TEXT_DARK) CommonsColor.Text.PrimaryLight else CommonsColor.Text.PrimaryDark,
-        colorOnAccent = if (accentTextTheme == THEME_TEXT_DARK) CommonsColor.Text.PrimaryLight else CommonsColor.Text.PrimaryDark,
+        onPrimary = if (primaryTextTheme == THEME_TEXT_DARK) CommonsColor.Text.PrimaryDark else CommonsColor.Text.PrimaryLight,
+        onAccent = if (accentTextTheme == THEME_TEXT_DARK) CommonsColor.Text.PrimaryDark else CommonsColor.Text.PrimaryLight,
     )
 }
 
 class ComposePartyColors(
     val primary: ComposeColor,
     val accent: ComposeColor,
-    val colorOnPrimary: ComposeColor,
-    val colorOnAccent: ComposeColor,
+    val onPrimary: ComposeColor,
+    val onAccent: ComposeColor,
 )
 
+@Deprecated("Unused in Compose")
 class PartyColors(
     context: Context,
     val primary: Int,
@@ -262,10 +265,12 @@ class PartyColors(
                 if (isPrimary) context.colorCompat(R.color.TextPrimaryDark)
                 else context.colorCompat(R.color.TextSecondaryDark)
             }
+
             THEME_TEXT_LIGHT -> {
                 if (isPrimary) context.colorCompat(R.color.TextPrimaryLight)
                 else context.colorCompat(R.color.TextSecondaryLight)
             }
+
             else -> 0
         }
     }
