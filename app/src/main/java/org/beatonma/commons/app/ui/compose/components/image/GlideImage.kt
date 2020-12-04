@@ -45,6 +45,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+@Deprecated("Use CoilImage instead")
 @Composable
 fun GlideImage(
     @DrawableRes drawableResId: Int,
@@ -54,6 +55,7 @@ fun GlideImage(
     GlideImagePrivate(model = drawableResId, modifier = modifier, options = options)
 }
 
+@Deprecated("Use CoilImage instead")
 @Composable
 fun GlideImage(
     source: String?,

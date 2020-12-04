@@ -172,6 +172,8 @@ dependencies {
             Dependencies.Retrofit.Converter.MOSHI,
 
             Dependencies.Glide.CORE,
+            Dependencies.Coil.COIL,
+            Dependencies.Coil.ACCOMPANIST,
 
             Dependencies.Google.MATERIAL,
             Dependencies.Google.Play.AUTH,

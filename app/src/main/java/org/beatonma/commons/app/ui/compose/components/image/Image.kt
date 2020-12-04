@@ -2,8 +2,14 @@ package org.beatonma.commons.app.ui.compose.components.image
 
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.bumptech.glide.request.RequestOptions
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.imageResource
+import dev.chrisbanes.accompanist.coil.CoilImage
+import dev.chrisbanes.accompanist.imageloading.ImageLoadState
+import org.beatonma.commons.app.ui.compose.components.Error
+import org.beatonma.commons.app.ui.compose.components.Loading
 
 const val DEV_AVATAR = "https://beatonma.org/static/images/profile2.jpg"
 
@@ -11,15 +17,21 @@ const val DEV_AVATAR = "https://beatonma.org/static/images/profile2.jpg"
 fun Avatar(
     source: String?,
     modifier: Modifier = Modifier,
+    fadeIn: Boolean = true,
+    contentScale: ContentScale = ContentScale.Crop,
+    alignment: Alignment = Alignment.Center,
+    loading: @Composable () -> Unit = { Loading() },
+    error: @Composable (ImageLoadState) -> Unit = { Error() },
     @DrawableRes fallback: Int = 0,
     @DrawableRes placeholder: Int = 0,
 ) {
-    GlideImage(
-        source,
+    CoilImage(
+        source ?: imageResource(fallback),
         modifier = modifier,
-        options = RequestOptions()
-            .placeholder(placeholder)
-            .fallback(fallback)
-            .centerCrop()
+        fadeIn = fadeIn,
+        contentScale = contentScale,
+        alignment = alignment,
+        loading = loading,
+        error = error,
     )
 }
