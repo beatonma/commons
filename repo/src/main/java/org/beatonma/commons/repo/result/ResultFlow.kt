@@ -150,6 +150,7 @@ private suspend fun <E> ProducerScope<E>.sendError(
  * Shared network handling block for updating local cache.
  * Returns true if saveCallResult completes successfully.
  */
+@Suppress("REDUNDANT_INLINE_SUSPEND_FUNCTION_TYPE") // networkCall and saveCallResult require suspend keyword
 @OptIn(ExperimentalCoroutinesApi::class)
 private suspend inline fun <E, N> ProducerScope<IoResult<E>>.submitAndSaveNetworkResult(
     networkCall: suspend () -> IoResult<N>,
