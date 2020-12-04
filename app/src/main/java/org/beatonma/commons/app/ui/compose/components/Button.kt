@@ -18,7 +18,7 @@ import org.beatonma.commons.theme.compose.theme.CommonsButtons
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-inline fun OutlineButton(
+inline fun CommonsOutlinedButton(
     noinline onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
