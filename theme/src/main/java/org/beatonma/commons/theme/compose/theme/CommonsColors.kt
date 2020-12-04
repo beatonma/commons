@@ -9,8 +9,8 @@ import androidx.compose.ui.graphics.Color
 import org.beatonma.commons.theme.compose.color.CommonsColor
 
 val CommonsLightThemeColors = lightColors(
-    primary = CommonsColor.Primary,
-    primaryVariant = CommonsColor.PrimaryVariant,
+    primary = CommonsColor.Light.Primary,
+    primaryVariant = CommonsColor.Light.PrimaryVariant,
     onPrimary = CommonsColor.Text.PrimaryLight,
 
     secondary = CommonsColor.Light.Secondary,
@@ -28,8 +28,8 @@ val CommonsLightThemeColors = lightColors(
 )
 
 val CommonsDarkThemeColors: Colors = darkColors(
-    primary = CommonsColor.Primary,
-    primaryVariant = CommonsColor.PrimaryVariant,
+    primary = CommonsColor.Dark.Primary,
+    primaryVariant = CommonsColor.Dark.PrimaryVariant,
     onPrimary = CommonsColor.Text.PrimaryLight,
 
     secondary = CommonsColor.Dark.Secondary,
@@ -47,6 +47,9 @@ val CommonsDarkThemeColors: Colors = darkColors(
 
 val Colors.SystemBars get() = background.copy(alpha = 0.4f)
 val Colors.themed get() = if (isLight) CommonsColor.Light else CommonsColor.Dark
+val Colors.positive get() = CommonsColor.Positive
+val Colors.negative get() = CommonsColor.Negative
+val Colors.modalScrim get() = CommonsColor.ModalScrim
 
 @Composable
 val MaterialTheme.invertedColors
