@@ -4,12 +4,17 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidableAmbient
 import androidx.compose.runtime.ambientOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import org.beatonma.commons.app.ui.colors.ComposePartyColors
+import org.beatonma.commons.app.ui.colors.partyTheme
 import org.beatonma.commons.app.ui.colors.theme
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.room.entities.member.Party
@@ -102,6 +107,22 @@ internal fun PartyPortrait(
         graphic.render(this@Canvas, config)
     }
 }
+
+@Composable
+inline fun PartyDot(
+    party: Party?,
+    size: Dp = 8.dp,
+    shape: Shape = CircleShape,
+    modifier: Modifier = Modifier,
+) = PartyDot(party?.parliamentdotuk ?: -1, size, shape, modifier)
+
+@Composable
+inline fun PartyDot(
+    parliamentID: ParliamentID,
+    size: Dp = 8.dp,
+    shape: Shape = CircleShape,
+    modifier: Modifier = Modifier,
+) = Dot(color = partyTheme(parliamentID).primary, size, shape, modifier)
 
 private fun getLogo(
     cache: MutableMap<ParliamentID, VectorGraphic>,
