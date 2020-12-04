@@ -28,11 +28,13 @@ object Versions {
     const val MATERIAL = "1.3.0-alpha02"
 
     // Android X
+    const val AX_ACTIVITY = "1.2.0-beta01"
     const val AX_ANNOTATIONS = "1.2.0-alpha01"
     const val AX_APPCOMPAT = "1.3.0-alpha02"
     const val AX_COMPOSE = "1.0.0-alpha07"
     const val AX_CONSTRAINTLAYOUT = "2.0.4"
     const val AX_CORE_KTX = "1.5.0-alpha02"
+    const val AX_FRAGMENT = "1.3.0-beta01"
     const val AX_LIFECYCLE = "2.3.0-alpha06"
     const val AX_NAVIGATION = "2.3.1"
     const val AX_RECYCLERVIEW = "1.2.0-alpha05"
@@ -64,6 +66,10 @@ object Versions {
 object Dependencies {
     object AndroidX {
         val APPCOMPAT = androidx("appcompat", version = Versions.AX_APPCOMPAT)
+        val ACTIVITY =
+            androidx(group = "activity", artifact = "activity-ktx", version = Versions.AX_ACTIVITY)
+        val FRAGMENT =
+            androidx(group = "fragment", artifact = "fragment-ktx", version = Versions.AX_FRAGMENT)
         val CONSTRAINTLAYOUT = androidx("constraintlayout", version = Versions.AX_CONSTRAINTLAYOUT)
         val CORE_KTX =
             androidx(group = "core", artifact = "core-ktx", version = Versions.AX_CORE_KTX)
