@@ -5,7 +5,6 @@ import androidx.compose.ui.graphics.Color
 
 object CommonsColor {
     object Accent {
-
         val Mint = Color(0xff_96_DC_BE)
         val DarkMint = Color(0xff_00_54_34)
 
@@ -14,7 +13,6 @@ object CommonsColor {
     }
 
     object Text {
-
         val PrimaryDark = Color(0xD8_00_00_00)
         val PrimaryLight = Color(0xD8_FF_FF_FF)
         val SecondaryDark = Color(0x89_00_00_00)
@@ -24,7 +22,6 @@ object CommonsColor {
     }
 
     interface Themed {
-
         val Background: Color
         val Surface: Color
         val SystemBar: Color
@@ -32,32 +29,36 @@ object CommonsColor {
         val TextSecondary: Color
         val TextTertiary: Color
 
+        val Primary: Color
+        val PrimaryVariant: Color
         val Secondary: Color
         val SecondaryVariant: Color
     }
 
     object Light : Themed {
-
         override val Background: Color = Color(0xff_EB_E9_E8)
         override val Surface: Color = Color.White
         override val SystemBar: Color = Background.copy(alpha = 0.4f)
         override val TextPrimary: Color = Text.PrimaryDark
         override val TextSecondary: Color = Text.SecondaryDark
         override val TextTertiary: Color = Text.TertiaryDark
-        override val Secondary: Color = Accent.Purple
-        override val SecondaryVariant: Color = Accent.DarkPurple
+        override val Primary: Color = Accent.Purple
+        override val PrimaryVariant: Color = Accent.DarkPurple
+        override val Secondary: Color = Accent.Mint
+        override val SecondaryVariant: Color = Accent.DarkMint
     }
 
     object Dark : Themed {
-
         override val Background: Color = Color(0xff_11_11_11)
         override val Surface: Color = Color(0xff_22_22_22)
         override val SystemBar: Color = Background.copy(alpha = 0.4f)
         override val TextPrimary: Color = Text.PrimaryLight
         override val TextSecondary: Color = Text.SecondaryLight
         override val TextTertiary: Color = Text.TertiaryLight
-        override val Secondary: Color = Accent.Mint
-        override val SecondaryVariant: Color = Accent.DarkMint
+        override val Primary: Color = Accent.Mint
+        override val PrimaryVariant: Color = Accent.DarkMint
+        override val Secondary: Color = Accent.Purple
+        override val SecondaryVariant: Color = Accent.Purple
     }
 
     val Primary = Color(0xff_44_44_44)
@@ -67,16 +68,15 @@ object CommonsColor {
     val Negative = Color(0xff_F4_43_36)
 
     val SearchBar = Color(0xff_37_31_51)
-    val DialogBackground = Color(0xbc_00_00_00)
+    val OnSearchBar = Text.PrimaryLight
+    val ModalScrim = Color(0xbc_00_00_00)
 
     object Political {
-
         val Parliament = Color(0xff_37_31_51)  // Purple
         val Westminster = Color(0xff_e8_e9_e8) // Off-white
         val Royal = Color(0xff_23_35_80)       // Blue
 
         object House {
-
             val Commons = Color(0xff_00_6e_46)
             val CommonsDark = Color(0xff_00_42_29)
             val CommonsDeep = Color(0xff_00_54_34)
@@ -86,7 +86,6 @@ object CommonsColor {
 
         object Party {
             object Primary {
-
                 val Default = Parliament
                 val Alliance = Color(0xff_F4_C7_2E)
                 val ChangeUk = Color.White
@@ -127,7 +126,6 @@ object CommonsColor {
             }
 
             object Accent {
-
                 val Default = MaterialRed300
                 val Alliance = Color.Black
                 val ChangeUk = Color(0xff_22_22_21)
@@ -149,7 +147,6 @@ object CommonsColor {
         }
 
         object Vote {
-
             val Aye = Positive
             val No = Negative
             val Abstain = MaterialAmber600
@@ -159,8 +156,7 @@ object CommonsColor {
     }
 
     object Graph {
-
-        val Primary = arrayOf(
+        val Primary = listOf(
             MaterialRed700,
             MaterialPink700,
             MaterialPurple700,
@@ -173,7 +169,7 @@ object CommonsColor {
             MaterialBlueGrey700,
         )
 
-        val Secondary = arrayOf(
+        val Secondary = listOf(
             MaterialRed200,
             MaterialPink200,
             MaterialPurple200,
