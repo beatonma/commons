@@ -19,14 +19,22 @@ data class MemberSearchResult(
 }
 
 data class PartySearchResult(
-    @field:Json(name = Contract.PARLIAMENTDOTUK) val parliamentdotuk: ParliamentID,
-    @field:Json(name = Contract.NAME) val name: String,
-)
+    @field:Json(name = Contract.PARLIAMENTDOTUK) override val parliamentdotuk: ParliamentID,
+    @field:Json(name = Contract.NAME) override val name: String,
+) : SearchResult {
+    override fun toUri(): Uri {
+        TODO("Not yet implemented")
+    }
+}
 
 data class ConstituencySearchResult(
-    @field:Json(name = Contract.PARLIAMENTDOTUK) val parliamentdotuk: ParliamentID,
-    @field:Json(name = Contract.NAME) val name: String,
-)
+    @field:Json(name = Contract.PARLIAMENTDOTUK) override val parliamentdotuk: ParliamentID,
+    @field:Json(name = Contract.NAME) override val name: String,
+) : SearchResult {
+    override fun toUri(): Uri {
+        TODO("Not yet implemented")
+    }
+}
 
 
 interface SearchResult {
