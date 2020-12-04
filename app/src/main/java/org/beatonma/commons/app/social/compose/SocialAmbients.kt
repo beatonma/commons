@@ -37,6 +37,7 @@ class SocialActions(
     val onVoteDownClick: ActionBlock = {},
     val onExpandedCommentIconClick: ActionBlock = {},
     val onCommentClick: (SocialComment) -> Unit = {},
+    val onCreateCommentClick: ActionBlock = {},
     val onCommentSubmitClick: (String) -> Unit = {},
 )
 
