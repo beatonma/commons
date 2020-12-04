@@ -12,7 +12,11 @@ object Layer {
     const val High = Middle + LAYER_STEP
     const val Top = High + LAYER_STEP
 
+    // Dialog/bottomsheet
     const val ModalScrim = Top + LAYER_STEP
     const val ModalSurface = ModalScrim + LAYER_STEP
     const val ModalContent = ModalSurface + LAYER_STEP
+
+    const val AlwaysOnTopSurface = ModalContent + LAYER_STEP
+    const val AlwaysOnTopContent = AlwaysOnTopSurface + LAYER_STEP
 }
