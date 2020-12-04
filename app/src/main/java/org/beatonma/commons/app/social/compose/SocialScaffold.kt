@@ -62,8 +62,8 @@ fun SocialScaffold(
     uiState: MutableState<SocialUiState> = AmbientSocialUiState.current,
     onVoteUpClick: ActionBlock = AmbientSocialActions.current.onVoteUpClick,
     onVoteDownClick: ActionBlock = AmbientSocialActions.current.onVoteDownClick,
-    onCommentIconClick: ActionBlock = { uiState.update(SocialUiState.Collapsed) },
     onCommentClick: (SocialComment) -> Unit = AmbientSocialActions.current.onCommentClick,
+    onCommentIconClick: ActionBlock = { uiState.update(SocialUiState.Collapsed) },
     transitionState: TransitionState = socialTransitionState(toState = uiState.value),
     expandAction: ActionBlock = { uiState.update(SocialUiState.Expanded) },
     constraintBlock: @Composable ConstraintLayoutScope.(

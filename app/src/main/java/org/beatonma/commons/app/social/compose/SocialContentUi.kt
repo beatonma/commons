@@ -3,14 +3,13 @@ package org.beatonma.commons.app.social.compose
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.TransitionState
-import androidx.compose.foundation.AmbientContentColor
-import androidx.compose.foundation.Text
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.AmbientContentColor
 import androidx.compose.material.AmbientEmphasisLevels
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.ProvidableAmbient
@@ -24,7 +23,6 @@ import org.beatonma.commons.ActionBlock
 import org.beatonma.commons.app.social.SocialUiState
 import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.animation.lerpBetween
-import org.beatonma.commons.compose.modifiers.onlyWhen
 import org.beatonma.commons.compose.modifiers.wrapContentHeight
 import org.beatonma.commons.compose.modifiers.wrapContentOrFillWidth
 import org.beatonma.commons.compose.util.update
@@ -125,9 +123,6 @@ private fun SocialContentUi(
 
             SocialIcons(
                 modifier = Modifier
-                    .onlyWhen(isFullyCollapsed) {
-                        clickable(onClick = expandAction)
-                    }
                     .padding(
                         horizontal = 0F.lerp(32F, progress).pdp,
                         vertical = 0F.lerp(16F, progress).pdp

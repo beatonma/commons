@@ -1,7 +1,7 @@
 package org.beatonma.commons.app.social.compose
 
-import androidx.compose.foundation.AmbientTextStyle
-import androidx.compose.foundation.Text
+import androidx.compose.material.AmbientTextStyle
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
@@ -16,7 +16,7 @@ fun Username(
     Text(
         username,
         style = style,
-        color = colors.secondary,
+        color = colors.primary,
         modifier = modifier
     )
 }

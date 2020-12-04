@@ -2,8 +2,6 @@ package org.beatonma.commons.app.social.compose
 
 import androidx.compose.animation.AnimatedFloatModel
 import androidx.compose.animation.asDisposableClock
-import androidx.compose.foundation.AmbientContentColor
-import androidx.compose.foundation.Text
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.InternalLayoutApi
@@ -11,8 +9,10 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.AmbientContentColor
 import androidx.compose.material.AmbientEmphasisLevels
 import androidx.compose.material.Icon
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Comment
 import androidx.compose.material.icons.filled.ThumbDown
@@ -20,11 +20,11 @@ import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.onCommit
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Layout
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.VectorAsset
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.id
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.AnimationClockAmbient
