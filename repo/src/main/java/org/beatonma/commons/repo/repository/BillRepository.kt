@@ -1,16 +1,29 @@
 package org.beatonma.commons.repo.repository
 
 import androidx.annotation.VisibleForTesting
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.merge
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.core.extensions.withNotNull
 import org.beatonma.commons.data.core.room.dao.BillDao
-import org.beatonma.commons.data.core.room.entities.bill.*
+import org.beatonma.commons.data.core.room.entities.bill.Bill
+import org.beatonma.commons.data.core.room.entities.bill.BillPublication
+import org.beatonma.commons.data.core.room.entities.bill.BillSponsorWithParty
+import org.beatonma.commons.data.core.room.entities.bill.BillStageWithSittings
+import org.beatonma.commons.data.core.room.entities.bill.BillType
+import org.beatonma.commons.data.core.room.entities.bill.CompleteBill
+import org.beatonma.commons.data.core.room.entities.bill.ParliamentarySession
 import org.beatonma.commons.repo.CommonsApi
 import org.beatonma.commons.repo.FlowIoResult
-import org.beatonma.commons.repo.converters.*
+import org.beatonma.commons.repo.converters.toBill
+import org.beatonma.commons.repo.converters.toBillPublication
+import org.beatonma.commons.repo.converters.toBillSponsor
+import org.beatonma.commons.repo.converters.toBillStage
+import org.beatonma.commons.repo.converters.toBillStageSitting
+import org.beatonma.commons.repo.converters.toBillType
+import org.beatonma.commons.repo.converters.toParliamentarySession
 import org.beatonma.commons.repo.result.cachedResultFlow
 import org.beatonma.commons.snommoc.models.ApiBill
 import javax.inject.Inject
@@ -31,6 +44,7 @@ class BillRepository @Inject constructor(
         distinctUntilChanged = false,
     )
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun getCompleteBill(parliamentdotuk: ParliamentID) = channelFlow<CompleteBill> {
         val builder = CompleteBill()
