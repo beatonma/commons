@@ -25,8 +25,15 @@ abstract class VectorGraphic(
 ) {
 
     private val _paths: Array<VectorPath?> = Array(pathCount) { null }
-    val paths: Array<VectorPath> get() = _paths as Array<VectorPath>
 
+    @Suppress("UNCHECKED_CAST")
+    val paths: Array<VectorPath>
+        get() = _paths as Array<VectorPath>
+
+    /**
+     * Populate [paths].
+     * Every position in the array (0..(pathCount - 1)) must be given a [VectorPath]!
+     */
     abstract fun buildPaths()
 
     fun render(drawScope: DrawScope, pathConfig: PathConfig? = null) {
