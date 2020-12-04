@@ -3,10 +3,11 @@
 /local.properties
 /.idea
 .DS_Store
-/build
+**/build/
 /captures
 .externalNativeBuild
 **/mipmap*/*.png
 **/drawable*/*.png
 buildSrc/**/local/
 /apk/
+**/env/
