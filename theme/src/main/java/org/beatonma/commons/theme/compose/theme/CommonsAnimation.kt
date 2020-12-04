@@ -8,7 +8,7 @@ import androidx.compose.animation.core.tween
 
 private const val DEFAULT_DURATION = 300
 
-fun <T> CommonsSpring() = spring<T>(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)
+fun <T> CommonsSpring() = spring<T>(Spring.DampingRatioNoBouncy, 100F)
 fun <T> CommonsTween(
     duration: Int = DEFAULT_DURATION,
     easing: CubicBezierEasing = FastOutSlowInEasing,
@@ -17,5 +17,3 @@ fun <T> CommonsTween(
 
 fun cubicBezier(a: Number, b: Number, c: Number, d: Number) =
     CubicBezierEasing(a.toFloat(), b.toFloat(), c.toFloat(), d.toFloat())
-
-val ExpCubicEasing: CubicBezierEasing = cubicBezier(0.55, 0, 1, 0.45)
