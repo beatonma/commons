@@ -2,21 +2,20 @@ package org.beatonma.commons.app.ui.compose.components.chips
 
 import android.net.Uri
 import androidx.compose.foundation.ScrollableRow
-import androidx.compose.foundation.Text
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ContextAmbient
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.dp
 import androidx.ui.tooling.preview.Preview
 import org.beatonma.commons.R
 import org.beatonma.commons.compose.components.CollapsibleChip
-import org.beatonma.commons.compose.util.withAnnotatedStyle
 import org.beatonma.commons.data.core.room.entities.member.WebAddress
 import org.beatonma.commons.kotlin.extensions.openUrl
 
@@ -65,15 +64,8 @@ private fun TwitterWeblink(
     username: String,
     modifier: Modifier,
 ) {
-    val handle = AnnotatedString.Builder().apply {
-        withStyle(SpanStyle(letterSpacing = 1.05.sp)) {
-            append('@')
-            append(username)
-        }
-    }.toAnnotatedString()
-
     Weblink(
-        handle,
+        AnnotatedString("@$username"),
         "https://twitter.com/$username/",
         R.drawable.ic_twitter,
         modifier = modifier
@@ -121,17 +113,13 @@ fun WeblinkPreview() {
     val links = listOf(weblink, weblink, weblink, weblink)
 
     MaterialTheme {
-        Surface {
+        Surface(Modifier.fillMaxSize(), color = Color(1F, .3F, .3F)) {
             Column {
-                Weblink(weblink)
+                Weblink(weblink, Modifier.padding(16.dp))
 
                 ScrollableRow {
-                    links.forEach { Weblink(it) }
+                    links.forEach { Weblink(it, Modifier.padding(16.dp)) }
                 }
-
-                Text("**Hello** *fallofmath*".withAnnotatedStyle())
-                Text("*Hello* **fallofmath**".withAnnotatedStyle())
-                Text("**Hello** **fallofmath**".withAnnotatedStyle())
             }
         }
     }
