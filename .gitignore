@@ -11,3 +11,6 @@
 buildSrc/**/local/
 /apk/
 **/env/
+**/*.jar
+gradle-wrapper.properties
+**/*.gitbundle
