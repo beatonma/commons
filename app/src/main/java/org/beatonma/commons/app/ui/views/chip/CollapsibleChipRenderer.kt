@@ -13,8 +13,19 @@ import androidx.core.graphics.withTranslation
 import org.beatonma.commons.ClickAction
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.Interpolation
+import org.beatonma.commons.core.extensions.mapTo
+import org.beatonma.commons.core.extensions.mapToByte
+import org.beatonma.commons.core.extensions.normalizeIn
 import org.beatonma.commons.core.extensions.withNotNull
-import org.beatonma.commons.kotlin.extensions.*
+import org.beatonma.commons.kotlin.extensions.colorCompat
+import org.beatonma.commons.kotlin.extensions.combineFlags
+import org.beatonma.commons.kotlin.extensions.dimenCompat
+import org.beatonma.commons.kotlin.extensions.dp
+import org.beatonma.commons.kotlin.extensions.drawTextAligned
+import org.beatonma.commons.kotlin.extensions.drawableCompat
+import org.beatonma.commons.kotlin.extensions.hLine
+import org.beatonma.commons.kotlin.extensions.longCompat
+import org.beatonma.commons.kotlin.extensions.vLine
 
 /**
  * Default animation position after which 'expanded' data should be displayed.

@@ -24,7 +24,12 @@ import org.beatonma.commons.data.resolution.PartyResolution
 import org.beatonma.commons.databinding.FragmentConstituencyElectionResultsBinding
 import org.beatonma.commons.databinding.ItemConstituencyCandidateBinding
 import org.beatonma.commons.databinding.ItemConstituencyCandidateDepositSeparatorBinding
-import org.beatonma.commons.kotlin.extensions.*
+import org.beatonma.commons.kotlin.extensions.bindText
+import org.beatonma.commons.kotlin.extensions.context
+import org.beatonma.commons.kotlin.extensions.formatted
+import org.beatonma.commons.kotlin.extensions.inflate
+import org.beatonma.commons.kotlin.extensions.stringCompat
+import org.beatonma.commons.kotlin.extensions.toggleVisibility
 
 private const val TAG = "ConstElectResFragment"
 private const val VIEW_TYPE_DEPOSIT_SEPARATOR = 1

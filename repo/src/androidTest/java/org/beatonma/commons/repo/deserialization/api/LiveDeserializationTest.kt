@@ -4,7 +4,12 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.runBlocking
 import org.beatonma.commons.core.House
-import org.beatonma.commons.repo.deserialization.api.expected.*
+import org.beatonma.commons.repo.deserialization.api.expected.expectedApiBill
+import org.beatonma.commons.repo.deserialization.api.expected.expectedApiConstituency
+import org.beatonma.commons.repo.deserialization.api.expected.expectedApiConstituencyElectionResult
+import org.beatonma.commons.repo.deserialization.api.expected.expectedApiDivisionCommons
+import org.beatonma.commons.repo.deserialization.api.expected.expectedApiDivisionLords
+import org.beatonma.commons.repo.deserialization.api.expected.expectedApiMember
 import org.beatonma.commons.snommoc.CommonsService
 import org.beatonma.commons.test.extensions.assertions.shouldAllBe
 import org.beatonma.commons.test.extensions.assertions.shouldbe

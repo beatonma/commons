@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<injected
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:motion="http://schemas.android.com/apk/res-auto">
+<injected xmlns:android="http://schemas.android.com/apk/res/android">
 
     <Constraint
         android:id="@+id/rationale"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:visibility="gone"
-        />
-    
+        android:visibility="gone" />
+
     <Constraint
         android:id="@+id/g_sign_in_button"
         android:layout_width="0dp"

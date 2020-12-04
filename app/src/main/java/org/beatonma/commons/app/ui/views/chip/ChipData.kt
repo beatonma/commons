@@ -10,7 +10,7 @@ import org.beatonma.commons.kotlin.extensions.openUrl
 import org.beatonma.commons.kotlin.extensions.sendMail
 import org.beatonma.commons.kotlin.extensions.stringCompat
 
-
+@Deprecated("Composables: Weblink, PhoneLink, EmailLink")
 data class ChipData(
     val text: String?,
     @DrawableRes val icon: Int,

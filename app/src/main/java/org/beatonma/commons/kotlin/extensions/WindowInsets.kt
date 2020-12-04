@@ -9,7 +9,12 @@ import android.view.WindowInsets
 import android.view.WindowInsetsAnimation
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.Insets
-import androidx.core.view.*
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.marginBottom
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updateMargins
+import androidx.core.view.updatePadding
 import org.beatonma.commons.core.extensions.autotag
 import org.beatonma.commons.device.Sdk
 

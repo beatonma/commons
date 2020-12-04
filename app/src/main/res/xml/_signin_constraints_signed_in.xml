@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <injected xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:motion="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <Constraint
         android:id="@+id/open_full_account"
@@ -10,8 +9,7 @@
         app:layout_constraintBottom_toTopOf="@+id/account_username"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:visibility="visible"
-        />
+        android:visibility="visible" />
 
     <Constraint
         android:id="@+id/account_avatar"

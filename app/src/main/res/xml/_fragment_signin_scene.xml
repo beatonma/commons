@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MotionScene
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<MotionScene xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:motion="http://schemas.android.com/apk/res-auto"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     motion:defaultDuration="@integer/animation_window_duration">
 
     <Transition
         motion:constraintSetEnd="@+id/state_loading"
         motion:constraintSetStart="@+id/state_signed_out">
-        <inject src="_signin_keyframeset_loading_signedout"/>
+        <inject src="_signin_keyframeset_loading_signedout" />
     </Transition>
 
     <Transition

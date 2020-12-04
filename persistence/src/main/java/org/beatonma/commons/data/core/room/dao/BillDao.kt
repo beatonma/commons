@@ -1,10 +1,26 @@
 package org.beatonma.commons.data.core.room.dao
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.FlowList
-import org.beatonma.commons.data.core.room.entities.bill.*
+import org.beatonma.commons.data.core.room.entities.bill.Bill
+import org.beatonma.commons.data.core.room.entities.bill.BillPublication
+import org.beatonma.commons.data.core.room.entities.bill.BillSponsor
+import org.beatonma.commons.data.core.room.entities.bill.BillSponsorWithParty
+import org.beatonma.commons.data.core.room.entities.bill.BillStage
+import org.beatonma.commons.data.core.room.entities.bill.BillStageSitting
+import org.beatonma.commons.data.core.room.entities.bill.BillStageWithSittings
+import org.beatonma.commons.data.core.room.entities.bill.BillType
+import org.beatonma.commons.data.core.room.entities.bill.FeaturedBill
+import org.beatonma.commons.data.core.room.entities.bill.FeaturedBillWithBill
+import org.beatonma.commons.data.core.room.entities.bill.ParliamentarySession
+import org.beatonma.commons.data.core.room.entities.bill.ResolvedZeitgeistBill
+import org.beatonma.commons.data.core.room.entities.bill.ZeitgeistBill
 
 @Dao
 interface BillDao {

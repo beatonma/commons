@@ -2,12 +2,17 @@ package org.beatonma.commons.data.dao
 
 import kotlinx.coroutines.runBlocking
 import org.beatonma.commons.data.core.room.dao.BillDao
-import org.beatonma.commons.data.core.room.entities.bill.*
+import org.beatonma.commons.data.core.room.entities.bill.Bill
+import org.beatonma.commons.data.core.room.entities.bill.BillPublication
+import org.beatonma.commons.data.core.room.entities.bill.BillSponsor
+import org.beatonma.commons.data.core.room.entities.bill.BillStage
+import org.beatonma.commons.data.core.room.entities.bill.BillStageSitting
+import org.beatonma.commons.data.core.room.entities.bill.BillType
+import org.beatonma.commons.data.core.room.entities.bill.ParliamentarySession
 import org.beatonma.commons.test.extensions.assertions.shouldbe
 import org.beatonma.commons.test.extensions.util.asDate
 import org.junit.Before
 import org.junit.Test
-
 
 private const val BILL_ID = 393258
 

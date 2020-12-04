@@ -344,7 +344,7 @@ internal class Line {
         c = startY - (m * startX)
     }
 
-    fun draw(canvas: Canvas, paint: Paint) = canvas.drawLine(startX, startY, endX, endY, paint)
+//    fun draw(canvas: Canvas, paint: Paint) = canvas.drawLine(startX, startY, endX, endY, paint)
 }
 
 private fun Path.moveTo(line: Line) {
@@ -356,3 +356,6 @@ private fun Path.lineTo(line: Line) {
     lineTo(line.endX, line.endY)
     lineTo(line.startX, line.startY)
 }
+
+internal fun Line.draw(canvas: Canvas, paint: Paint) =
+    canvas.drawLine(startX, startY, endX, endY, paint)

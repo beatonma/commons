@@ -6,7 +6,12 @@ import android.view.ViewGroup
 import androidx.core.content.withStyledAttributes
 import androidx.transition.TransitionManager
 import com.google.android.material.button.MaterialButton
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.beatonma.commons.ClickAction
 import org.beatonma.commons.R
 import org.beatonma.commons.kotlin.extensions.string

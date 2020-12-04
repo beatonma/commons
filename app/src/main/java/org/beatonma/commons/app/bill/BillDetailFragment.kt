@@ -29,7 +29,17 @@ import org.beatonma.commons.data.resolution.describe
 import org.beatonma.commons.databinding.FragmentBillDetailBinding
 import org.beatonma.commons.databinding.ItemBillStageBinding
 import org.beatonma.commons.databinding.ItemMemberCompactBinding
-import org.beatonma.commons.kotlin.extensions.*
+import org.beatonma.commons.kotlin.extensions.bindText
+import org.beatonma.commons.kotlin.extensions.colorCompat
+import org.beatonma.commons.kotlin.extensions.context
+import org.beatonma.commons.kotlin.extensions.dimenCompat
+import org.beatonma.commons.kotlin.extensions.dotted
+import org.beatonma.commons.kotlin.extensions.formatted
+import org.beatonma.commons.kotlin.extensions.getParliamentID
+import org.beatonma.commons.kotlin.extensions.inflate
+import org.beatonma.commons.kotlin.extensions.memberBundle
+import org.beatonma.commons.kotlin.extensions.navigateTo
+import org.beatonma.commons.kotlin.extensions.stringCompat
 
 private const val TAG = "BillDetailFrag"
 

@@ -10,6 +10,7 @@ abstract class ThemedAdapter<T>(
     override var theme: PartyColors? = null
 }
 
+@Deprecated("Compose")
 abstract class ThemedCollapsibleAdapter<T>(
     emptyLayoutID: Int = R.layout.vh_empty_results,
 ): CollapsibleAdapter<T>(emptyLayoutID = emptyLayoutID), Themed {

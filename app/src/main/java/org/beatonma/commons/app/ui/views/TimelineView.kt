@@ -1,19 +1,31 @@
 package org.beatonma.commons.app.ui.views
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffXfermode
+import android.graphics.Typeface
 import android.text.TextPaint
 import android.util.AttributeSet
 import androidx.core.graphics.withTranslation
 import androidx.core.view.NestedScrollingChildHelper
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.views.renderer.SolidBarRenderer
+import org.beatonma.commons.core.extensions.clipToLength
 import org.beatonma.commons.data.core.interfaces.Named
 import org.beatonma.commons.data.core.interfaces.Periodic
 import org.beatonma.commons.data.core.interfaces.Temporal
 import org.beatonma.commons.data.resolution.description
 import org.beatonma.commons.kotlin.data.Dimensions
-import org.beatonma.commons.kotlin.extensions.*
+import org.beatonma.commons.kotlin.extensions.colorCompat
+import org.beatonma.commons.kotlin.extensions.dimenCompat
+import org.beatonma.commons.kotlin.extensions.displaySize
+import org.beatonma.commons.kotlin.extensions.dp
+import org.beatonma.commons.kotlin.extensions.roundDown
+import org.beatonma.commons.kotlin.extensions.roundUp
 import java.time.LocalDate
 import java.time.Period
 import kotlin.math.absoluteValue
@@ -382,4 +394,3 @@ private fun Canvas.drawSolidText(text: String, paint: Paint, vararg xy: Pair<Flo
 
 private fun <T> Array<T>.modGet(index: Int) = this[index % this.size]
 private fun IntArray.modGet(index: Int) = this[index % this.size]
-

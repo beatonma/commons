@@ -3,7 +3,11 @@ package org.beatonma.commons.app.memberprofile
 import kotlinx.coroutines.runBlocking
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import org.beatonma.commons.data.core.room.entities.election.Election
-import org.beatonma.commons.data.core.room.entities.member.*
+import org.beatonma.commons.data.core.room.entities.member.HistoricalConstituency
+import org.beatonma.commons.data.core.room.entities.member.HistoricalConstituencyWithElection
+import org.beatonma.commons.data.core.room.entities.member.Party
+import org.beatonma.commons.data.core.room.entities.member.PartyAssociation
+import org.beatonma.commons.data.core.room.entities.member.PartyAssociationWithParty
 import org.beatonma.commons.test.extensions.assertions.shouldbe
 import org.beatonma.commons.test.extensions.util.asDate
 import org.junit.Test

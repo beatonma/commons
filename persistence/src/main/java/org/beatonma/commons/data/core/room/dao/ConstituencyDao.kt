@@ -1,12 +1,21 @@
 package org.beatonma.commons.data.core.room.dao
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.FlowList
 import org.beatonma.commons.data.core.room.dao.shared.SharedConstituencyDao
 import org.beatonma.commons.data.core.room.dao.shared.SharedElectionDao
-import org.beatonma.commons.data.core.room.entities.constituency.*
+import org.beatonma.commons.data.core.room.entities.constituency.Constituency
+import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyBoundary
+import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyCandidate
+import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyElectionDetails
+import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyElectionDetailsWithCandidates
+import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyWithBoundary
 import org.beatonma.commons.data.core.room.entities.election.ConstituencyResult
 import org.beatonma.commons.data.core.room.entities.election.ConstituencyResultWithDetails
 import org.beatonma.commons.data.core.room.entities.election.Election

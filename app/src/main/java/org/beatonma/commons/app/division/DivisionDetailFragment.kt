@@ -33,7 +33,17 @@ import org.beatonma.commons.databinding.FragmentDivisionDetailBinding
 import org.beatonma.commons.databinding.ItemDivisionVoteBinding
 import org.beatonma.commons.databinding.MergeDivisionResultsChartKeyBinding
 import org.beatonma.commons.kotlin.data.asStateList
-import org.beatonma.commons.kotlin.extensions.*
+import org.beatonma.commons.kotlin.extensions.BundledDivision
+import org.beatonma.commons.kotlin.extensions.bindText
+import org.beatonma.commons.kotlin.extensions.colorCompat
+import org.beatonma.commons.kotlin.extensions.dotted
+import org.beatonma.commons.kotlin.extensions.formatted
+import org.beatonma.commons.kotlin.extensions.getDivision
+import org.beatonma.commons.kotlin.extensions.inflate
+import org.beatonma.commons.kotlin.extensions.memberBundle
+import org.beatonma.commons.kotlin.extensions.navigateTo
+import org.beatonma.commons.kotlin.extensions.setDependantVisibility
+import org.beatonma.commons.kotlin.extensions.stringCompat
 import org.beatonma.commons.repo.IoResultObserver
 import org.beatonma.commons.snommoc.models.social.SocialContent
 

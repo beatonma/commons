@@ -1,6 +1,12 @@
 package org.beatonma.commons.repo.deserialization.api.expected
 
-import org.beatonma.commons.snommoc.models.*
+import org.beatonma.commons.snommoc.models.ApiConstituency
+import org.beatonma.commons.snommoc.models.ApiConstituencyBoundary
+import org.beatonma.commons.snommoc.models.ApiConstituencyMinimal
+import org.beatonma.commons.snommoc.models.ApiConstituencyResult
+import org.beatonma.commons.snommoc.models.ApiElection
+import org.beatonma.commons.snommoc.models.ApiMemberProfile
+import org.beatonma.commons.snommoc.models.ApiParty
 import org.beatonma.commons.test.extensions.util.asDate
 
 /** https://snommoc.org/api/constituency/147277/ */

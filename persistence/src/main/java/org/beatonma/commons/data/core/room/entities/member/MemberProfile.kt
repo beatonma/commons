@@ -1,9 +1,20 @@
 package org.beatonma.commons.data.core.room.entities.member
 
-import androidx.room.*
+import androidx.room.ColumnInfo
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Ignore
+import androidx.room.PrimaryKey
+import androidx.room.Relation
 import org.beatonma.commons.core.PARLIAMENTDOTUK
 import org.beatonma.commons.core.ParliamentID
-import org.beatonma.commons.data.core.interfaces.*
+import org.beatonma.commons.data.core.interfaces.Commentable
+import org.beatonma.commons.data.core.interfaces.Named
+import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
+import org.beatonma.commons.data.core.interfaces.Periodic
+import org.beatonma.commons.data.core.interfaces.Timestamped
+import org.beatonma.commons.data.core.interfaces.Votable
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import java.time.LocalDate
 

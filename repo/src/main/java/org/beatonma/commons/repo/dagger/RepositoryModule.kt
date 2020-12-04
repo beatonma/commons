@@ -6,9 +6,19 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
-import org.beatonma.commons.data.core.room.dao.*
+import org.beatonma.commons.data.core.room.dao.BillDao
+import org.beatonma.commons.data.core.room.dao.ConstituencyDao
+import org.beatonma.commons.data.core.room.dao.DivisionDao
+import org.beatonma.commons.data.core.room.dao.MemberDao
+import org.beatonma.commons.data.core.room.dao.UserDao
 import org.beatonma.commons.repo.CommonsApi
-import org.beatonma.commons.repo.repository.*
+import org.beatonma.commons.repo.repository.BillRepository
+import org.beatonma.commons.repo.repository.ConstituencyRepository
+import org.beatonma.commons.repo.repository.DivisionRepository
+import org.beatonma.commons.repo.repository.MemberRepository
+import org.beatonma.commons.repo.repository.MemberRepositoryImpl
+import org.beatonma.commons.repo.repository.SocialRepository
+import org.beatonma.commons.repo.repository.UserRepository
 import javax.inject.Singleton
 
 @Module

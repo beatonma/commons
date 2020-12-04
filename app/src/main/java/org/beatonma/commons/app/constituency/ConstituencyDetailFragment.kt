@@ -28,7 +28,15 @@ import org.beatonma.commons.databinding.FragmentConstituencyDetailBinding
 import org.beatonma.commons.databinding.H2Binding
 import org.beatonma.commons.databinding.ItemWideImageTitleSubtitleDescriptionBinding
 import org.beatonma.commons.databinding.ItemWideTitleDescriptionBinding
-import org.beatonma.commons.kotlin.extensions.*
+import org.beatonma.commons.kotlin.extensions.bindText
+import org.beatonma.commons.kotlin.extensions.context
+import org.beatonma.commons.kotlin.extensions.dimenCompat
+import org.beatonma.commons.kotlin.extensions.getParliamentID
+import org.beatonma.commons.kotlin.extensions.ifPermissionAvailable
+import org.beatonma.commons.kotlin.extensions.inflate
+import org.beatonma.commons.kotlin.extensions.load
+import org.beatonma.commons.kotlin.extensions.navigateTo
+import org.beatonma.commons.kotlin.extensions.size
 
 private const val TAG = "ConstitDetailFragment"
 private const val MAPVIEW_BUNDLE_KEY = "MapViewBundle"

@@ -1,6 +1,10 @@
 package org.beatonma.commons.data.core.room.dao
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 
