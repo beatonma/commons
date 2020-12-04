@@ -77,7 +77,8 @@ abstract class CommonsAndroidModule<T : BaseExtension> : AndroidProjectPlugin<T>
                 languageVersion = Versions.KOTLIN_LANGUAGE_VERSION
                 freeCompilerArgs = freeCompilerArgs + listOf(
                     "-XXLanguage:+InlineClasses",
-                    "-XXLanguage:+NonParenthesizedAnnotationsOnFunctionalTypes"
+                    "-XXLanguage:+NonParenthesizedAnnotationsOnFunctionalTypes",
+                    "-Xopt-in=kotlin.RequiresOptIn" // Hide warnings about @OptIn annotations.
                 )
             }
         }
