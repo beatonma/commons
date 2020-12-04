@@ -1,6 +1,7 @@
 package org.beatonma.commons.repo.repository
 
 import androidx.annotation.VisibleForTesting
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collect
@@ -8,12 +9,22 @@ import kotlinx.coroutines.flow.merge
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.room.dao.ConstituencyDao
 import org.beatonma.commons.data.core.room.dao.MemberDao
-import org.beatonma.commons.data.core.room.entities.constituency.*
+import org.beatonma.commons.data.core.room.entities.constituency.CompleteConstituency
+import org.beatonma.commons.data.core.room.entities.constituency.Constituency
+import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyElectionDetailsWithCandidates
+import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyElectionDetailsWithExtras
+import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyWithBoundary
 import org.beatonma.commons.data.core.room.entities.election.ConstituencyResultWithDetails
 import org.beatonma.commons.data.core.room.entities.election.Election
 import org.beatonma.commons.repo.CommonsApi
 import org.beatonma.commons.repo.FlowIoResult
-import org.beatonma.commons.repo.converters.*
+import org.beatonma.commons.repo.converters.toConstituency
+import org.beatonma.commons.repo.converters.toConstituencyBoundary
+import org.beatonma.commons.repo.converters.toConstituencyCandidate
+import org.beatonma.commons.repo.converters.toConstituencyElectionDetails
+import org.beatonma.commons.repo.converters.toConstituencyResult
+import org.beatonma.commons.repo.converters.toElection
+import org.beatonma.commons.repo.converters.toMemberProfile
 import org.beatonma.commons.repo.result.cachedResultFlow
 import org.beatonma.commons.snommoc.models.ApiConstituency
 import org.beatonma.commons.snommoc.models.ApiConstituencyElectionDetails
@@ -43,6 +54,7 @@ class ConstituencyRepository @Inject constructor(
         saveCallResult = { result -> saveRseults(constituencyDao, result) }
     )
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun getCachedConstituencyDetails(parliamentdotuk: ParliamentID): Flow<CompleteConstituency> = channelFlow {
         val builder = CompleteConstituency()
         val dataSourceFunctions = listOf(
@@ -53,6 +65,7 @@ class ConstituencyRepository @Inject constructor(
             it.invoke(constituencyDao, parliamentdotuk)
         }.merge()
 
+        @Suppress("UNCHECKED_CAST")
         mergedFlow.collect { data ->
             if (data is List<*>) {
                 val first = data.firstOrNull()
@@ -63,11 +76,13 @@ class ConstituencyRepository @Inject constructor(
                 }
             }
             else {
+                @Suppress("SENSELESS_NULL_IN_WHEN") // Room result can be null
                 when (data) {
                     is ConstituencyWithBoundary -> {
                         builder.constituency = data.constituency
                         builder.boundary = data.boundary
                     }
+
                     null -> Unit
                     else -> error("All valid types must be handled: ${data.javaClass.canonicalName}")
                 }
@@ -76,6 +91,7 @@ class ConstituencyRepository @Inject constructor(
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun getCachedConstituencyElectionDetails(
         constituencyId: ParliamentID,
         electionId: ParliamentID
@@ -92,10 +108,12 @@ class ConstituencyRepository @Inject constructor(
             when (data) {
                 is Constituency -> builder.constituency = data
                 is Election -> builder.election = data
+
                 is ConstituencyElectionDetailsWithCandidates -> {
                     builder.candidates = data.candidates
                     builder.details = data.details
                 }
+
                 null -> Unit
                 else -> error("All valid types must be handled: ${data.javaClass.canonicalName}")
             }
