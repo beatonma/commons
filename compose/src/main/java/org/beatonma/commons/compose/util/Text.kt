@@ -1,5 +1,6 @@
 package org.beatonma.commons.compose.util
 
+import android.util.Patterns
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -148,17 +149,18 @@ fun String.withAnnotatedStyle(
     }
 }
 
-/**
- * Take the list in (i, i+1) pairs. If list size is odd the last item will be ignored.
- */
-private fun <T> List<T>.pairwise(): List<Pair<T, T>> {
-    val s = size
-    val result = mutableListOf<Pair<T, T>>()
+@Composable
+fun String.linkify(
+    style: SpanStyle = CommonsSpanStyle.hyperlink,
+    tag: String = "url",
+) = annotatedString {
+    append(this@linkify)
 
-    for (i in 0 until s step 2) {
-        if (i + 1 < s) {
-            result.add(this[i] to this[i + 1])
-        }
+    Patterns.WEB_URL.toRegex().findAll(this@linkify).forEach { result ->
+        val first = result.range.first
+        val last = result.range.last
+
+        addStyle(style, first, last + 1)
+        addStringAnnotation(tag, result.value, first, last)
     }
-    return result
 }
