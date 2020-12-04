@@ -15,8 +15,8 @@ object Padding {
     val ScreenHorizontal = PaddingValues(start = 12.dp, end = 12.dp)
     val Screen = PaddingValues(16.dp)
 
-    val VerticalList = PaddingValues()
     val VerticalListItem = PaddingValues(bottom = 8.dp)
+    val VerticalListItemLarge = PaddingValues(top = 8.dp, bottom = 8.dp)
     val HorizontalListItem = PaddingValues(end = 12.dp)
 
     val HorizontalSeparator = PaddingValues(vertical = 8.dp)
@@ -34,6 +34,8 @@ object Padding {
     val Fab = Screen
     val FabContent = PaddingValues(16.dp)
     val ExtendedFabContent = PaddingValues(horizontal = 20.dp, vertical = 16.dp)
+
+    val Snackbar = PaddingValues(16.dp)
 
     val CardButton = PaddingValues(top = 24.dp)
     val EndOfContent = PaddingValues(bottom = 160.dp)
