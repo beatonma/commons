@@ -1,7 +1,8 @@
-package org.beatonma.commons.app.signin
+package org.beatonma.commons.app.signin.compose
 
 import androidx.compose.runtime.ProvidableAmbient
 import androidx.compose.runtime.ambientOf
+import org.beatonma.commons.ActionBlock
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 
 val AmbientUserToken: ProvidableAmbient<UserToken> = ambientOf { NullUserToken }
@@ -10,4 +11,11 @@ val AmbientUserToken: ProvidableAmbient<UserToken> = ambientOf { NullUserToken }
 val NullUserToken = UserToken(
     name = null, photoUrl = null, email = null,
     snommocToken = "null", googleId = "null", username = "NoUser"
+)
+
+class SignInActions(
+    val signIn: ActionBlock = {},
+    val signOut: ActionBlock = {},
+    val renameAccount: (newName: String) -> Unit = {},
+    val deleteAccount: ActionBlock = {},
 )
