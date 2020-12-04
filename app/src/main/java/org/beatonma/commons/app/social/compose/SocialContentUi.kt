@@ -17,7 +17,7 @@ import androidx.compose.runtime.Providers
 import androidx.compose.runtime.ambientOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawOpacity
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import org.beatonma.commons.ActionBlock
 import org.beatonma.commons.app.social.SocialUiState
@@ -26,7 +26,7 @@ import org.beatonma.commons.compose.animation.lerpBetween
 import org.beatonma.commons.compose.modifiers.wrapContentHeight
 import org.beatonma.commons.compose.modifiers.wrapContentOrFillWidth
 import org.beatonma.commons.compose.util.update
-import org.beatonma.commons.core.extensions.lerp
+import org.beatonma.commons.core.extensions.lerpTo
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.core.extensions.withEasing
 import org.beatonma.commons.snommoc.models.social.SocialComment
@@ -116,7 +116,7 @@ private fun SocialContentUi(
                     style = typography.h4,
                     modifier = Modifier
                         .wrapContentHeight(expandedContentVisibility)
-                        .drawOpacity(expandedContentVisibility)
+                        .alpha(expandedContentVisibility)
                         .align(Alignment.CenterHorizontally)
                 )
             }
@@ -124,8 +124,8 @@ private fun SocialContentUi(
             SocialIcons(
                 modifier = Modifier
                     .padding(
-                        horizontal = 0F.lerp(32F, progress).pdp,
-                        vertical = 0F.lerp(16F, progress).pdp
+                        horizontal = 0F.lerpTo(32F, progress).pdp,
+                        vertical = 0F.lerpTo(16F, progress).pdp
                     )
                     .wrapContentOrFillWidth(progress),
                 arrangement = Arrangement.SpaceEvenly,
@@ -141,7 +141,7 @@ private fun SocialContentUi(
                     socialContent.comments.sortedByDescending { it.modified },
                     Modifier
                         .wrapContentHeight(progress.progressIn(0.6F, 0.8F))
-                        .drawOpacity(expandedContentVisibility),
+                        .alpha(expandedContentVisibility),
                     onClick = onCommentClick,
                 )
             }

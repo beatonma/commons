@@ -13,17 +13,17 @@ import androidx.compose.runtime.Providers
 import androidx.compose.runtime.ambientOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawShadow
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.app.ui.colors.theme
 import org.beatonma.commons.app.ui.compose.components.AmbientPartyTheme
-import org.beatonma.commons.app.ui.compose.components.Avatar
-import org.beatonma.commons.app.ui.compose.components.DEV_AVATAR
 import org.beatonma.commons.app.ui.compose.components.PartyBackground
 import org.beatonma.commons.app.ui.compose.components.PartyWithTheme
+import org.beatonma.commons.app.ui.compose.components.image.Avatar
+import org.beatonma.commons.app.ui.compose.components.image.DEV_AVATAR
 import org.beatonma.commons.compose.ambient.invertedColors
 import org.beatonma.commons.compose.ambient.shapes
 import org.beatonma.commons.compose.ambient.typography
@@ -38,7 +38,7 @@ private val PortraitWidth = 260.dp
 private val TextPadding = 16.dp
 private val MemberPadding = 4.dp // Space between members
 
-private val MemberTextHeightAmbient = ambientOf<Dp> { error("No size set for member text height") }
+private val AmbientMemberTextHeight = ambientOf<Dp> { error("No size set for member text height") }
 
 @Composable
 fun Member(
@@ -65,10 +65,10 @@ fun Member(
         Surface(
             modifier.width(PortraitWidth)
                 .padding(MemberPadding)
-                .drawShadow(4.dp, shapes.small),
+                .shadow(4.dp, shapes.small),
             color = invertedColors.surface,
         ) {
-            Providers(MemberTextHeightAmbient provides memberTextHeight) {
+            Providers(AmbientMemberTextHeight provides memberTextHeight) {
                 if (profile.portraitUrl == null) {
                     MemberWithoutPortrait(profile, onClick)
                 }
@@ -84,8 +84,8 @@ fun Member(
 private fun MemberWithoutPortrait(
     profile: MemberProfile,
     onClick: (MemberProfile) -> Unit,
-    height: Dp = MemberTextHeightAmbient.current,
     modifier: Modifier = Modifier,
+    height: Dp = AmbientMemberTextHeight.current,
 ) {
     PartyBackground(
         modifier.clickable(onClick = { onClick(profile) })
@@ -109,13 +109,13 @@ private fun MemberWithPortrait(
             /* profile.portraitUrl,*/
             DEV_AVATAR,
             modifier = Modifier
-                .height((MemberTextHeightAmbient.current * 2) + (MemberPadding * 4))
+                .height((AmbientMemberTextHeight.current * 2) + (MemberPadding * 4))
                 .fillMaxWidth(),
         )
 
         PartyBackground(
             Modifier
-                .height(MemberTextHeightAmbient.current)
+                .height(AmbientMemberTextHeight.current)
                 .clip(shapes.small.withSquareTop())
         ) {
             MemberText(profile)
@@ -144,7 +144,7 @@ private fun MemberText(
 ) {
     Column(
         modifier
-            .height(MemberTextHeightAmbient.current)
+            .height(AmbientMemberTextHeight.current)
             .fillMaxWidth()
             .padding(TextPadding)
     ) {

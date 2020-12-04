@@ -31,7 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.savedinstancestate.savedInstanceState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.VectorAsset
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 
@@ -45,13 +45,13 @@ internal val ContentPadding = 16.dp
 interface BaseScreen {
 
     val title: String
-    val icon: VectorAsset
+    val icon: ImageVector
     val content: @Composable () -> Unit
 }
 
 internal enum class Screen(
     override val title: String,
-    override val icon: VectorAsset,
+    override val icon: ImageVector,
     override val content: @Composable () -> Unit,
 ) : BaseScreen {
 
@@ -64,7 +64,7 @@ internal enum class Screen(
 
 data class CustomPreviewScreen(
     override val title: String = "Custom app content",
-    override val icon: VectorAsset = Icons.Default.Android,
+    override val icon: ImageVector = Icons.Default.Android,
     override val content: @Composable () -> Unit,
 ) : BaseScreen
 

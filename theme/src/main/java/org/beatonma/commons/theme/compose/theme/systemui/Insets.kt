@@ -42,9 +42,9 @@ import androidx.compose.ui.layout.LayoutModifier
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
-import androidx.compose.ui.platform.DensityAmbient
-import androidx.compose.ui.platform.LayoutDirectionAmbient
-import androidx.compose.ui.platform.ViewAmbient
+import androidx.compose.ui.platform.AmbientDensity
+import androidx.compose.ui.platform.AmbientLayoutDirection
+import androidx.compose.ui.platform.AmbientView
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
@@ -132,10 +132,10 @@ class Insets {
         internal set
 }
 
-val InsetsAmbient = staticAmbientOf { DisplayInsets() }
+val AmbientInsets = staticAmbientOf { DisplayInsets() }
 
 /**
- * Applies any [WindowInsetsCompat] values to [InsetsAmbient], which are then available
+ * Applies any [WindowInsetsCompat] values to [AmbientInsets], which are then available
  * within [content].
  *
  * @param animateIme Whether to enable IME animation callbacks on Android 11+
@@ -150,7 +150,7 @@ fun ProvideDisplayInsets(
     animateIme: Boolean = true,
     content: @Composable () -> Unit,
 ) {
-    val view = ViewAmbient.current
+    val view = AmbientView.current
 
     val displayInsets = remember { DisplayInsets() }
     val preferAnimatedIme = animateIme && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
@@ -202,7 +202,7 @@ fun ProvideDisplayInsets(
         }
     }
 
-    Providers(InsetsAmbient provides displayInsets) {
+    Providers(AmbientInsets provides displayInsets) {
         content()
     }
 }
@@ -229,7 +229,7 @@ private fun Insets.updateFrom(windowInsets: WindowInsetsCompat, type: Int) {
  */
 fun Modifier.systemBarsPadding(enabled: Boolean = true, scale: Float = 1.0F) = composed {
     insetsPadding(
-        insets = InsetsAmbient.current.systemBars,
+        insets = AmbientInsets.current.systemBars,
         left = enabled,
         top = enabled,
         right = enabled,
@@ -243,7 +243,7 @@ fun Modifier.systemBarsPadding(enabled: Boolean = true, scale: Float = 1.0F) = c
  * of the content.
  */
 fun Modifier.statusBarsPadding(scale: Float = 1.0F) = composed {
-    insetsPadding(insets = InsetsAmbient.current.statusBars, top = true, scale = scale)
+    insetsPadding(insets = AmbientInsets.current.statusBars, top = true, scale = scale)
 }
 
 /**
@@ -265,7 +265,7 @@ fun Modifier.navigationBarsPadding(
     scale: Float = 1.0F,
 ) = composed {
     insetsPadding(
-        insets = InsetsAmbient.current.navigationBars,
+        insets = AmbientInsets.current.navigationBars,
         left = left,
         right = right,
         bottom = bottom,
@@ -274,7 +274,7 @@ fun Modifier.navigationBarsPadding(
 }
 
 fun Modifier.imePadding(scale: Float = 1.0F) = composed {
-    insetsPadding(insets = InsetsAmbient.current.ime, bottom = true, scale = scale)
+    insetsPadding(insets = AmbientInsets.current.ime, bottom = true, scale = scale)
 }
 
 fun Modifier.imeOrNavigationBarsPadding(
@@ -284,8 +284,8 @@ fun Modifier.imeOrNavigationBarsPadding(
     scale: Float = 1.0F,
 ) = composed {
     val maxInsets = maxInsetsOf(
-        InsetsAmbient.current.ime,
-        InsetsAmbient.current.navigationBars
+        AmbientInsets.current.ime,
+        AmbientInsets.current.navigationBars
     )
 
     insetsPadding(
@@ -300,7 +300,7 @@ fun maxInsetsOf(
     first: Insets,
     second: Insets,
 ): Insets {
-    val insets = InsetsAmbient.current.mutableInsets
+    val insets = AmbientInsets.current.mutableInsets
 
     insets.left = max(first.left, second.left)
     insets.top = max(first.top, second.top)
@@ -337,7 +337,7 @@ fun maxInsetsOf(
  */
 fun Modifier.statusBarsHeight(additional: Dp = 0.dp) = composed {
     InsetsSizeModifier(
-        insets = InsetsAmbient.current.statusBars,
+        insets = AmbientInsets.current.statusBars,
         heightSide = VerticalSide.Top,
         additionalHeight = additional
     )
@@ -389,7 +389,7 @@ inline fun Modifier.statusBarsHeight() = statusBarsHeightPlus(0.dp)
  */
 fun Modifier.statusBarsHeightPlus(additional: Dp) = composed {
     InsetsSizeModifier(
-        insets = InsetsAmbient.current.statusBars,
+        insets = AmbientInsets.current.statusBars,
         heightSide = VerticalSide.Top,
         additionalHeight = additional
     )
@@ -441,7 +441,7 @@ inline fun Modifier.navigationBarsHeight() = navigationBarsHeightPlus(0.dp)
  */
 fun Modifier.navigationBarsHeightPlus(additional: Dp) = composed {
     InsetsSizeModifier(
-        insets = InsetsAmbient.current.navigationBars,
+        insets = AmbientInsets.current.navigationBars,
         heightSide = VerticalSide.Bottom,
         additionalHeight = additional
     )
@@ -500,7 +500,7 @@ fun Modifier.navigationBarsWidthPlus(
     additional: Dp
 ) = composed {
     InsetsSizeModifier(
-        insets = InsetsAmbient.current.navigationBars,
+        insets = AmbientInsets.current.navigationBars,
         widthSide = side,
         additionalWidth = additional
     )
@@ -520,8 +520,8 @@ fun Insets.toPaddingValues(
     top: Boolean = true,
     end: Boolean = true,
     bottom: Boolean = true,
-): PaddingValues = with(DensityAmbient.current) {
-    val layoutDirection = LayoutDirectionAmbient.current
+): PaddingValues = with(AmbientDensity.current) {
+    val layoutDirection = AmbientLayoutDirection.current
     PaddingValues(
         start = when {
             start && layoutDirection == LayoutDirection.Ltr -> this@toPaddingValues.left.toDp()

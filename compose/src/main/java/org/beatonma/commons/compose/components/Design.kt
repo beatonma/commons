@@ -1,7 +1,7 @@
 package org.beatonma.commons.compose.components
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.Stack
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -53,16 +53,16 @@ fun Gridlines(
  */
 @Composable
 fun WithDesignGridlines(
+    modifier: Modifier = Modifier,
     spacing: Dp = 8.dp,
     highlightFrequency: Int = 8,
     enabled: Boolean = true,
     vertical: Boolean = enabled,
     horizontal: Boolean = enabled,
     color: Color = invertedColors.secondary.copy(alpha = 0.6F),
-    modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    Stack(modifier) {
+    Box(modifier) {
         content()
         Gridlines(spacing, highlightFrequency, vertical, horizontal, color)
     }

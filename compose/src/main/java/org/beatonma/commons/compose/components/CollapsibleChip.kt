@@ -20,9 +20,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawOpacity
-import androidx.compose.ui.graphics.vector.VectorAsset
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Job
@@ -66,8 +66,8 @@ fun CollapsibleChip(
 @Composable
 fun CollapsibleChip(
     displayText: AnnotatedString,
-    icon: VectorAsset,
-    cancelIcon: VectorAsset,
+    icon: ImageVector,
+    cancelIcon: ImageVector,
     modifier: Modifier = Modifier,
     autoCollapse: Long = 2000,
     state: MutableState<ExpandCollapseState> = rememberExpandCollapseState(),
@@ -116,7 +116,7 @@ fun CollapsibleChip(
                     .wrapContentWidth(progress)
                     .padding(start = 16.dp, top = 8.dp, end = 8.dp, bottom = 8.dp)
                     .size(Size.IconSmall)
-                    .drawOpacity(progress),
+                    .alpha(progress),
                 tint = CommonsColor.Negative
             )
         }
@@ -124,7 +124,7 @@ fun CollapsibleChip(
         // Separator
         Spacer(
             Modifier
-                .drawOpacity(progress)
+                .alpha(progress)
                 .background(tint)
                 .preferredHeight(20.dp)
                 .preferredWidth(1.dp)
@@ -150,7 +150,7 @@ fun CollapsibleChip(
                 Modifier
                     .wrapContentWidth(progress)
                     .padding(top = 8.dp, end = 16.dp, bottom = 8.dp)
-                    .drawOpacity(progress)
+                    .alpha(progress)
             )
         }
     }

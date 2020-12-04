@@ -23,11 +23,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.VectorAsset
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.id
 import androidx.compose.ui.layout.layoutId
-import androidx.compose.ui.platform.AnimationClockAmbient
+import androidx.compose.ui.platform.AmbientAnimationClock
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.ActionBlock
@@ -46,8 +46,8 @@ import kotlin.math.roundToInt
 @OptIn(InternalLayoutApi::class)
 @Composable
 internal fun SocialIcons(
-    socialContent: SocialContent = AmbientSocialContent.current,
     modifier: Modifier = Modifier,
+    socialContent: SocialContent = AmbientSocialContent.current,
     inactiveTint: Color = AmbientEmphasisLevels.current.medium.applyEmphasis(AmbientContentColor.current),
     activeTint: Color = AmbientEmphasisLevels.current.high.applyEmphasis(AmbientContentColor.current),
     arrangement: Arrangement.Horizontal,
@@ -55,7 +55,7 @@ internal fun SocialIcons(
     onVoteUpIconClick: ActionBlock,
     onVoteDownIconClick: ActionBlock,
 ) {
-    val clock = AnimationClockAmbient.current.asDisposableClock()
+    val clock = AmbientAnimationClock.current.asDisposableClock()
     val voteSelection = remember {
         SocialVoteType.values().map {
             AnimatedFloatModel(if (socialContent.userVote == it) 1F else 0F, clock)
@@ -108,7 +108,7 @@ internal fun SocialIcons(
 private fun CounterIcon(
     modifier: Modifier = Modifier,
     count: Int,
-    icon: VectorAsset,
+    icon: ImageVector,
     tint: Color,
     style: IconStyle = AmbientIconStyle.current,
     onClick: ActionBlock,
@@ -130,7 +130,7 @@ private fun CounterIcon(
     size: Dp,
     padding: PaddingValues,
     count: Int,
-    icon: VectorAsset,
+    icon: ImageVector,
     tint: Color,
     onClick: ActionBlock,
 ) {

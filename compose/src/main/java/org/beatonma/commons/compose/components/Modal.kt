@@ -16,9 +16,9 @@ import org.beatonma.commons.theme.compose.theme.modalScrim
 @Composable
 fun ModalScrim(
     onClickAction: () -> Unit,
+    modifier: Modifier = Modifier,
     alignment: Alignment = Alignment.TopStart,
     alpha: Float = 1F,
-    modifier: Modifier = Modifier,
     content: @Composable BoxScope.() -> Unit,
 ) {
     val backgroundColor = colors.modalScrim
@@ -28,7 +28,7 @@ fun ModalScrim(
             .fillMaxSize()
             .clickable(enabled = alpha > 0F, indication = null, onClick = onClickAction)
             .background(backgroundColor.copy(alpha = alpha * backgroundColor.alpha)),
-        alignment = alignment,
-        children = content
+        contentAlignment = alignment,
+        content = content
     )
 }

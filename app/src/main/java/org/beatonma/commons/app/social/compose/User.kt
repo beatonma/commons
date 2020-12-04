@@ -10,8 +10,8 @@ import org.beatonma.commons.compose.ambient.colors
 @Composable
 fun Username(
     username: String,
-    style: TextStyle = AmbientTextStyle.current,
     modifier: Modifier = Modifier,
+    style: TextStyle = AmbientTextStyle.current,
 ) {
     Text(
         username,

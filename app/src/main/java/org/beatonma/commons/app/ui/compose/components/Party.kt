@@ -2,7 +2,6 @@ package org.beatonma.commons.app.ui.compose.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Surface
@@ -35,7 +34,7 @@ internal val PartyImageCache: ProvidableAmbient<MutableMap<ParliamentID, VectorG
 data class PartyWithTheme(val party: Party, val theme: ComposePartyColors)
 
 @Composable
-fun PartyWithTheme(party: Party) = PartyWithTheme(party, party.theme())
+fun partyWithTheme(party: Party) = PartyWithTheme(party, party.theme())
 
 @Composable
 fun PartyBackground(
@@ -55,8 +54,8 @@ fun PartyBackground(
 fun PartyBackground(
     party: Party,
     theme: ComposePartyColors,
-    imageConfig: ImageConfig = AmbientImageConfig.current,
     modifier: Modifier = Modifier,
+    imageConfig: ImageConfig = AmbientImageConfig.current,
     content: @Composable () -> Unit,
 ) {
     val logo = getLogo(PartyImageCache.current, party)
@@ -101,7 +100,7 @@ fun PartyBackground(
 internal fun PartyPortrait(
     graphic: VectorGraphic,
     config: ImageConfig,
-    modifier: Modifier = Modifier.fillMaxSize(),
+    modifier: Modifier = Modifier,
 ) {
     Canvas(modifier) {
         graphic.render(this@Canvas, config)
@@ -111,18 +110,18 @@ internal fun PartyPortrait(
 @Composable
 inline fun PartyDot(
     party: Party?,
+    modifier: Modifier = Modifier,
     size: Dp = 8.dp,
     shape: Shape = CircleShape,
-    modifier: Modifier = Modifier,
-) = PartyDot(party?.parliamentdotuk ?: -1, size, shape, modifier)
+) = PartyDot(party?.parliamentdotuk ?: -1, modifier, size, shape)
 
 @Composable
 inline fun PartyDot(
     parliamentID: ParliamentID,
+    modifier: Modifier = Modifier,
     size: Dp = 8.dp,
     shape: Shape = CircleShape,
-    modifier: Modifier = Modifier,
-) = Dot(color = partyTheme(parliamentID).primary, size, shape, modifier)
+) = Dot(color = partyTheme(parliamentID).primary, modifier, size, shape)
 
 private fun getLogo(
     cache: MutableMap<ParliamentID, VectorGraphic>,

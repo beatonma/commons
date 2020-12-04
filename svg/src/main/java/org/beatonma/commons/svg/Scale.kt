@@ -5,6 +5,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.LayoutDirection
 import kotlin.math.max
 import kotlin.math.min
 
@@ -36,10 +37,9 @@ fun VectorGraphic.fitTo(
     } * scaleMultiplier
 
     val alignmentOffset = alignment.align(
-        IntSize(
-            (availableSize.width - (widthF * scale)).toInt(),
-            (availableSize.height - (heightF * scale)).toInt()
-        )
+        intSize(widthF * scale, heightF * scale),
+        availableSize.toIntSize(),
+        LayoutDirection.Ltr
     )
 
     val scaledWidth = scale * widthF
@@ -56,3 +56,6 @@ fun VectorGraphic.fitTo(
         scale(x = scale, y = scale)
     }
 }
+
+private fun intSize(width: Float, height: Float) = IntSize(width.toInt(), height.toInt())
+private fun Size.toIntSize() = intSize(width, height)

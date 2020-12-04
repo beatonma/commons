@@ -16,11 +16,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.google.android.gms.common.SignInButton
 import org.beatonma.commons.R
-import org.beatonma.commons.app.ui.compose.components.Avatar
 import org.beatonma.commons.app.ui.compose.components.BottomSheetText
 import org.beatonma.commons.app.ui.compose.components.CommonsOutlinedButton
 import org.beatonma.commons.app.ui.compose.components.FabBottomSheet
 import org.beatonma.commons.app.ui.compose.components.FabText
+import org.beatonma.commons.app.ui.compose.components.image.Avatar
 import org.beatonma.commons.compose.ambient.shapes
 import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.components.LinkedText

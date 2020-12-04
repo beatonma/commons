@@ -19,7 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawOpacity
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.ExperimentalFocus
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focusRequester
@@ -47,7 +47,7 @@ import org.beatonma.commons.compose.modifiers.wrapContentSize
 import org.beatonma.commons.compose.util.rememberText
 import org.beatonma.commons.compose.util.update
 import org.beatonma.commons.compose.util.withAnnotatedStyle
-import org.beatonma.commons.core.extensions.lerp
+import org.beatonma.commons.core.extensions.lerpTo
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.core.extensions.withEasing
 import org.beatonma.commons.data.core.room.entities.user.UserToken
@@ -81,7 +81,7 @@ internal fun CommentList(
         LazyColumnForIndexed(comments, modifier) { i, comment ->
             Comment(
                 comment,
-                itemModifier.padding(bottom = (4F * i).lerp(0F, progress).pdp),
+                itemModifier.padding(bottom = (4F * i).lerpTo(0F, progress).pdp),
                 onClick,
             )
 
@@ -157,7 +157,7 @@ fun CreateCommentUi(
     }
 
     FabBottomSheet(
-        fabBottomSheetState,
+        uiState = fabBottomSheetState,
         fabContent = { progress ->
             CreateCommentButtonContent(progress)
         },
@@ -200,7 +200,7 @@ private fun CreateCommentSheetContent(
                 horizontalProgress = progress.progressIn(0F, 0.4F),
                 verticalProgress = progress.progressIn(0F, 0.8F)
             )
-            .drawOpacity(progress.progressIn(0.8F, 1F))
+            .alpha(progress.progressIn(0.8F, 1F))
             .imeOrNavigationBarsPadding(scale = progress)
     ) {
 

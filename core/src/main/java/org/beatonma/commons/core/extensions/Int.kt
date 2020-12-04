@@ -2,7 +2,7 @@ package org.beatonma.commons.core.extensions
 
 import kotlin.math.roundToInt
 
-fun Int.lerp(end: Int, progress: Float): Int = this + ((end - this) * progress).roundToInt()
+fun Int.lerpTo(end: Int, progress: Float): Int = this + ((end - this) * progress).roundToInt()
 fun Float.lerpBetween(start: Int, end: Int): Int = start + ((end - start) * this).roundToInt()
 
 /**

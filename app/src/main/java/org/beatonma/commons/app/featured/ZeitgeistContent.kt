@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastForEach
 import org.beatonma.commons.BuildConfig
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.compose.components.AmbientImageConfig
@@ -29,6 +28,7 @@ import org.beatonma.commons.compose.components.OptionalText
 import org.beatonma.commons.compose.util.dotted
 import org.beatonma.commons.compose.util.withHsl
 import org.beatonma.commons.core.ParliamentID
+import org.beatonma.commons.core.extensions.fastForEach
 import org.beatonma.commons.data.core.room.entities.bill.MinimalBill
 import org.beatonma.commons.data.core.room.entities.bill.ResolvedZeitgeistBill
 import org.beatonma.commons.data.core.room.entities.division.Division
@@ -92,15 +92,15 @@ fun ZeitgeistContent(
                     style = MaterialTheme.typography.h1)
 
 
-                provideImageConfigs {
+                ProvideImageConfigs {
                     ScrollableMembersLayout {
                         zeitgeist.members.fastForEach {
                             Member(it.member, memberOnClick, it.reason())
                         }
                     }
 
-                    Todo("Divisions")
-                    Todo("Bills")
+                    Todo(message = "Divisions")
+                    Todo(message = "Bills")
                     // TODO
 //                    LazyRowFor(zeitgeist.divisions.shuffled()) {
 //                        Division(it, divisionOnClick, it.reason())
@@ -151,7 +151,7 @@ private fun Bill(
 }
 
 @Composable
-fun provideImageConfigs(content: @Composable () -> Unit) {
+fun ProvideImageConfigs(content: @Composable () -> Unit) {
     val backgroundPortraitConfig = remember {
         ImageConfig(ScaleType.Max, Alignment.Center,
             scaleMultiplier = 1.5F,
@@ -171,6 +171,6 @@ fun provideImageConfigs(content: @Composable () -> Unit) {
     Providers(
         AmbientImageConfig provides backgroundPortraitConfig,
         PartyImageCache provides partyImageCache,
-        children = content
+        content = content
     )
 }

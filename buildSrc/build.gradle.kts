@@ -1,13 +1,15 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+val gradleVersion = "4.2.0-alpha15"
+val kotlinVersion = "1.4.20"
+
 plugins {
     `kotlin-dsl`
 }
 
 dependencies {
-    implementation("com.android.tools.build:gradle:4.1.0-rc02")
-    implementation(kotlin("gradle-plugin", "1.4.0"))
-    implementation(kotlin("android-extensions"))
+    implementation("com.android.tools.build:gradle:$gradleVersion")
+    implementation(kotlin("gradle-plugin", kotlinVersion))
 }
 
 repositories {

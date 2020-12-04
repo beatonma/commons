@@ -69,10 +69,10 @@ fun Float.normalize(max: Float): Float = normalizeIn(0F, max)
  */
 fun Float.mapToByte(): Int = mapTo(0, 255)
 
-fun Float.lerp(end: Float, progress: Float): Float =
+fun Float.lerpTo(end: Float, progress: Float): Float =
     this + ((end - this) * progress)
 
-fun Float.lerpBetween(start: Float, end: Float): Float = start.lerp(end, progress = this)
+fun Float.lerpBetween(start: Float, end: Float): Float = start.lerpTo(end, progress = this)
 
 /**
  * lerp from 0..target and back again.

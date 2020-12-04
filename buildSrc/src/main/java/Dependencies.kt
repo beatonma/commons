@@ -8,7 +8,7 @@ object Versions {
 
     // Core
     const val COROUTINES = "1.4.1"
-    const val KOTLIN = "1.4.10"
+    const val KOTLIN = "1.4.20"
     const val KOTLIN_LANGUAGE_VERSION = "1.4"
     val JAVA = JavaVersion.VERSION_1_8
 
@@ -31,7 +31,7 @@ object Versions {
     const val AX_ACTIVITY = "1.2.0-beta01"
     const val AX_ANNOTATIONS = "1.2.0-alpha01"
     const val AX_APPCOMPAT = "1.3.0-alpha02"
-    const val AX_COMPOSE = "1.0.0-alpha07"
+    const val AX_COMPOSE = "1.0.0-alpha08"
     const val AX_CONSTRAINTLAYOUT = "2.0.4"
     const val AX_CORE_KTX = "1.5.0-alpha02"
     const val AX_FRAGMENT = "1.3.0-beta01"
@@ -51,7 +51,7 @@ object Versions {
     // Other 3rd party
     const val GLIDE = "4.11.0"
     const val GROUPIE = "2.8.0"
-    const val COIL = "1.0.0-rc1"
+    const val COIL = "1.1.0"
     const val CHRISBANES_ACCOMPANIST_COIL = "0.2.1"
 
     // Testing
@@ -112,7 +112,7 @@ object Dependencies {
                 version: String = Versions.AX_COMPOSE
             ) = androidx(group = "compose.$group", artifact = artifact, version = version)
 
-            val COMPILER = compose("compiler", version = Versions.AX_COMPOSE)
+            val COMPILER = compose("compiler")
 
             val ANIMATION = compose("animation")
 
@@ -127,10 +127,10 @@ object Dependencies {
             val RUNTIME = compose("runtime")
             val LIVEDATA = compose("runtime", "runtime-livedata")
 
-            val TEST = androidx(group = "ui", artifact = "ui-test", version = Versions.AX_COMPOSE)
+            val TEST = compose(group = "ui", artifact = "ui-test")
+            val TEST_JUNIT = compose(group = "ui", artifact = "ui-test-junit4")
 
-            val TOOLING =
-                androidx(group = "ui", artifact = "ui-tooling", version = Versions.AX_COMPOSE)
+            val TOOLING = compose(group = "ui", artifact = "ui-tooling")
 
             val UI = compose("ui")
         }

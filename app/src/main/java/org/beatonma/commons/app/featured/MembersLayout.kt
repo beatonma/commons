@@ -1,10 +1,10 @@
 package org.beatonma.commons.app.featured
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,8 +14,6 @@ import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.annotation.VisibleForTesting
-import androidx.compose.ui.util.fastForEach
 import org.beatonma.commons.compose.util.HorizontalValue
 import org.beatonma.commons.compose.util.VerticalValue
 import org.beatonma.commons.compose.util.asHorizontal
@@ -23,6 +21,7 @@ import org.beatonma.commons.compose.util.asVertical
 import org.beatonma.commons.compose.util.dimensions
 import org.beatonma.commons.compose.util.layout
 import org.beatonma.commons.compose.util.placeRelative
+import org.beatonma.commons.core.extensions.fastForEach
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 
@@ -40,9 +39,9 @@ import kotlin.math.roundToInt
 internal fun MembersLayout(
     modifier: Modifier = Modifier,
     wrapHeight: Int = 240.dp.value.toInt(),
-    children: @Composable () -> Unit,
+    content: @Composable () -> Unit,
 ) {
-    Layout(children, modifier) { measurables, constraints ->
+    Layout(content, modifier) { measurables, constraints ->
         val placeables = measurables.map { it.measure(constraints) }
 
         buildProfilesLayout(placeables, wrapHeight)
@@ -51,12 +50,12 @@ internal fun MembersLayout(
 
 @Composable
 internal fun ScrollableMembersLayout(
-    modifier: Modifier = Modifier.wrapContentSize(),
+    modifier: Modifier = Modifier,
     scrollState: ScrollState = rememberScrollState(0f),
     isScrollEnabled: Boolean = true,
     reverseScrollDirection: Boolean = false,
     contentPadding: PaddingValues = PaddingValues(0.dp),
-    children: @Composable () -> Unit,
+    content: @Composable () -> Unit,
 ) {
     MembersLayout(modifier = modifier
         .horizontalScroll(
@@ -66,7 +65,7 @@ internal fun ScrollableMembersLayout(
         )
         .clipToBounds()
         .padding(contentPadding),
-        children = children
+        content = content
     )
 }
 

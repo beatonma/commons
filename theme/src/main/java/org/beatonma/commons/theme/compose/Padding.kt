@@ -42,6 +42,8 @@ object Padding {
 }
 
 fun Modifier.endOfContent() = padding(Padding.EndOfContent)
+
+@Suppress("NOTHING_TO_INLINE")
 private inline fun PaddingValues(
     horizontal: Dp = 0.dp,
     vertical: Dp = 0.dp,

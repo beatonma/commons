@@ -23,7 +23,8 @@ class CommonsComposeModule : SimpleAndroidProjectPlugin() {
         with(dependencies) {
             instrumentationTest {
                 implementations(
-                    Dependencies.AndroidX.Compose.TEST
+                    Dependencies.AndroidX.Compose.TEST,
+                    Dependencies.AndroidX.Compose.TEST_JUNIT
                 )
             }
 

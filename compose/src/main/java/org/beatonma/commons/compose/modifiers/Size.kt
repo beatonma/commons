@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
-import org.beatonma.commons.core.extensions.lerp
+import org.beatonma.commons.core.extensions.lerpTo
 import kotlin.math.roundToInt
 
 /**
@@ -23,8 +23,8 @@ fun Modifier.wrapContentHeight(progress: Float, align: Alignment = Alignment.Cen
     return this.then(
         WrapContentModifier(
             progress, alignment = align, affectHeight = true, affectWidth = false,
-        ) { size, layoutDirection ->
-            align.align(size, layoutDirection)
+        ) { size, space, layoutDirection ->
+            align.align(size, space, layoutDirection)
         }
     )
 }
@@ -36,8 +36,8 @@ fun Modifier.wrapContentWidth(progress: Float, align: Alignment = Alignment.Cent
     return this.then(
         WrapContentModifier(
             progress, alignment = align, affectHeight = false, affectWidth = true,
-        ) { size, layoutDirection ->
-            align.align(size, layoutDirection)
+        ) { size, space, layoutDirection ->
+            align.align(size, space, layoutDirection)
         }
     )
 }
@@ -54,8 +54,8 @@ fun Modifier.wrapContentSize(
         WrapContentModifier(
             horizontalProgress = horizontalProgress, verticalProgress = verticalProgress,
             alignment = align, affectHeight = true, affectWidth = true,
-        ) { size, layoutDirection ->
-            align.align(size, layoutDirection)
+        ) { size, space, layoutDirection ->
+            align.align(size, space, layoutDirection)
         }
     )
 
@@ -70,7 +70,7 @@ private data class WrapContentModifier(
     private val affectHeight: Boolean,
     private val affectWidth: Boolean,
     private val unbounded: Boolean = false,
-    private val alignmentCallback: (IntSize, LayoutDirection) -> IntOffset,
+    private val alignmentCallback: (IntSize, IntSize, LayoutDirection) -> IntOffset,
 ) : LayoutModifier {
     override fun MeasureScope.measure(
         measurable: Measurable,
@@ -119,7 +119,8 @@ private data class WrapContentModifier(
             wrapperHeight
         ) {
             val position = alignmentCallback(
-                IntSize(wrapperWidth - placeable.width, wrapperHeight - placeable.height),
+                IntSize(placeable.width, placeable.height),
+                IntSize(wrapperWidth, wrapperHeight),
                 layoutDirection
             )
             placeable.place(position)
@@ -223,7 +224,7 @@ private class WrapOrFillModifier(
 
         val constrainedHorizontalProgress = horizontalProgress.coerceAtLeast(0F)
         val constrainedVerticalProgress = verticalProgress.coerceAtLeast(0F)
-        val interpolatedConstraints = wrappedConstraints.lerp(fillConstraints,
+        val interpolatedConstraints = wrappedConstraints.lerpTo(fillConstraints,
             constrainedHorizontalProgress,
             constrainedVerticalProgress)
 
@@ -235,15 +236,15 @@ private class WrapOrFillModifier(
     }
 }
 
-fun Constraints.lerp(
+fun Constraints.lerpTo(
     other: Constraints,
     horizontalProgress: Float,
     verticalProgress: Float,
 ): Constraints {
-    val minW = minWidth.lerp(other.minWidth, horizontalProgress)
-    val maxW = maxWidth.lerp(other.maxWidth, horizontalProgress).coerceAtLeast(minW)
-    val minH = minHeight.lerp(other.minHeight, verticalProgress)
-    val maxH = maxHeight.lerp(other.maxHeight, verticalProgress).coerceAtLeast(minH)
+    val minW = minWidth.lerpTo(other.minWidth, horizontalProgress)
+    val maxW = maxWidth.lerpTo(other.maxWidth, horizontalProgress).coerceAtLeast(minW)
+    val minH = minHeight.lerpTo(other.minHeight, verticalProgress)
+    val maxH = maxHeight.lerpTo(other.maxHeight, verticalProgress).coerceAtLeast(minH)
 
     return Constraints(
         minWidth = minW,

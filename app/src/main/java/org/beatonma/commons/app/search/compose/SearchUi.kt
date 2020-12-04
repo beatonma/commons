@@ -28,7 +28,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawOpacity
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.ExperimentalFocus
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focusRequester
@@ -36,14 +36,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import androidx.ui.tooling.preview.Preview
 import org.beatonma.commons.R
-import org.beatonma.commons.app.preview.providePreviewAmbients
-import org.beatonma.commons.app.ui.compose.components.DEV_AVATAR
+import org.beatonma.commons.app.preview.ProvidePreviewAmbients
 import org.beatonma.commons.app.ui.compose.components.PartyDot
 import org.beatonma.commons.app.ui.compose.components.Todo
+import org.beatonma.commons.app.ui.compose.components.image.DEV_AVATAR
 import org.beatonma.commons.compose.animation.ExpandCollapseState
 import org.beatonma.commons.compose.animation.collapse
 import org.beatonma.commons.compose.animation.isExpanded
@@ -97,7 +97,7 @@ fun SearchUiPreview() {
         )
     )
 
-    providePreviewAmbients {
+    ProvidePreviewAmbients {
         SearchUi(
             results.value,
         )
@@ -163,7 +163,7 @@ fun SearchUi(
                 SearchResults(
                     results,
                     modifier = Modifier
-                        .drawOpacity(progress.progressIn(0.6F, 1F))
+                        .alpha(progress.progressIn(0.6F, 1F))
                         .wrapContentHeight(progress.progressIn(0.4F, 1F))
                 )
             }
@@ -206,8 +206,8 @@ private fun SearchIcon(
 @Composable
 fun SearchResults(
     results: List<SearchResult>,
-    actions: SearchActions = AmbientSearchActions.current,
     modifier: Modifier = Modifier,
+    actions: SearchActions = AmbientSearchActions.current,
 ) {
     Surface(
         modifier.zIndex(Layer.AlwaysOnTopSurface)
@@ -215,7 +215,7 @@ fun SearchResults(
         LazyColumnFor(items = results) { item ->
             when (item) {
                 is MemberSearchResult -> MemberSearchResult(item, actions.onClickMember)
-                else -> Todo("Unimplemented search result class: ${item.javaClass.canonicalName}")
+                else -> Todo(message = "Unimplemented search result class: ${item.javaClass.canonicalName}")
             }
         }
     }

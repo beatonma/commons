@@ -20,13 +20,13 @@ private const val ALPHA = 0.1F
 
 @Composable
 fun HorizontalSeparator(
-    color: Color = AmbientContentColor.current.copy(alpha = ALPHA),
     modifier: Modifier = Modifier,
+    color: Color = AmbientContentColor.current.copy(alpha = ALPHA),
 ) {
 
     Box(
         Modifier.fillMaxWidth(),
-        alignment = Alignment.Center,
+        contentAlignment = Alignment.Center,
     ) {
         Separator(
             color = color,
@@ -41,12 +41,12 @@ fun HorizontalSeparator(
 
 @Composable
 fun VerticalSeparator(
-    color: Color = AmbientContentColor.current.copy(alpha = ALPHA),
     modifier: Modifier = Modifier,
+    color: Color = AmbientContentColor.current.copy(alpha = ALPHA),
 ) {
     Box(
         Modifier.fillMaxHeight(),
-        alignment = Alignment.Center,
+        contentAlignment = Alignment.Center,
     ) {
         Separator(
             color = color,

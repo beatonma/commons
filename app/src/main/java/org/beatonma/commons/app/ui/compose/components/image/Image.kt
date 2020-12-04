@@ -1,4 +1,4 @@
-package org.beatonma.commons.app.ui.compose.components
+package org.beatonma.commons.app.ui.compose.components.image
 
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable

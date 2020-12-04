@@ -7,6 +7,7 @@ import androidx.compose.animation.core.transitionDefinition
 import androidx.compose.animation.transition
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
@@ -21,8 +22,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawOpacity
-import androidx.compose.ui.draw.drawShadow
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.gesture.scrollorientationlocking.Orientation
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
@@ -61,12 +62,12 @@ fun rememberFabBottomSheetState() = remember { mutableStateOf(FabBottomSheetStat
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun FabBottomSheet(
+    modifier: Modifier = Modifier,
     uiState: MutableState<FabBottomSheetState> = rememberFabBottomSheetState(),
     transition: TransitionDefinition<FabBottomSheetState> = rememberFabBottomSheetTransition(),
     transitionState: TransitionState = transition(transition, toState = uiState.value),
     fabContent: @Composable (progress: Float) -> Unit,
     bottomSheetContent: @Composable (progress: Float) -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     FabBottomSheetLayout(
         uiState,
@@ -83,6 +84,7 @@ fun FabBottomSheet(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SwipeableFabBottomSheet(
+    modifier: Modifier = Modifier,
     uiState: MutableState<FabBottomSheetState> = rememberFabBottomSheetState(),
     swipeState: SwipeableState<FabBottomSheetState> = rememberSwipeableState(
         initialValue = uiState.value,
@@ -94,7 +96,6 @@ fun SwipeableFabBottomSheet(
     ),
     fabContent: @Composable (progress: Float) -> Unit,
     bottomSheetContent: @Composable (progress: Float) -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     val offset = swipeState.offset.value
     val progress = (if (offset.isNaN()) 0F else offset).map(0F, 500F, 0F, 1F)
@@ -129,7 +130,7 @@ fun FabText(
         text,
         Modifier
             .padding(Padding.ExtendedFabContent)
-            .drawOpacity(progress.reversed().progressIn(0.8F, 1.0F)),
+            .alpha(progress.reversed().progressIn(0.8F, 1.0F)),
         color = colors.onSecondary,
         style = typography.button,
     )
@@ -139,7 +140,7 @@ fun FabText(
 fun BottomSheetContent(
     progress: Float,
     handleImeInsets: Boolean = true,
-    content: @Composable () -> Unit,
+    content: @Composable BoxScope.() -> Unit,
 ) {
     Box(
         Modifier
@@ -152,17 +153,16 @@ fun BottomSheetContent(
                 horizontalProgress = progress.progressIn(0F, 0.4F),
                 verticalProgress = progress.progressIn(0F, 0.8F)
             )
-            .drawOpacity(progress.progressIn(0.8F, 1F)),
-    ) {
-        content()
-    }
+            .alpha(progress.progressIn(0.8F, 1F)),
+        content = content,
+    )
 }
 
 @Composable
 fun BottomSheetText(
     progress: Float,
     handleImeInsets: Boolean = true,
-    content: @Composable () -> Unit,
+    content: @Composable BoxScope.() -> Unit,
 ) {
     BottomSheetContent(progress, handleImeInsets) {
         CardText(content = content)
@@ -197,7 +197,7 @@ private fun FabBottomSheetLayout(
                         uiState.update(FabBottomSheetState.BottomSheet)
                     }
                 }
-                .drawShadow(Elevation.ModalSurface, surfaceShape),
+                .shadow(Elevation.ModalSurface, surfaceShape),
             shape = surfaceShape,
             color = progress.progressIn(0F, 0.4F).lerpBetween(colors.primary, colors.surface),
         ) {

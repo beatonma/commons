@@ -14,9 +14,9 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun Dot(
     color: Color,
+    modifier: Modifier = Modifier,
     size: Dp = 8.dp,
     shape: Shape = CircleShape,
-    modifier: Modifier = Modifier,
 ) {
     Spacer(
         modifier

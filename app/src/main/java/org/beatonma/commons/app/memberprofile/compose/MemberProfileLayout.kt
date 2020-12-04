@@ -26,13 +26,11 @@ import androidx.compose.runtime.Providers
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawOpacity
-import androidx.compose.ui.draw.drawShadow
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastForEach
-import androidx.compose.ui.util.fastForEachIndexed
 import androidx.compose.ui.zIndex
 import org.beatonma.commons.R
 import org.beatonma.commons.app.social.SocialUiState
@@ -45,12 +43,12 @@ import org.beatonma.commons.app.social.compose.asSocialTheme
 import org.beatonma.commons.app.social.rememberSocialUiState
 import org.beatonma.commons.app.social.socialTransitionState
 import org.beatonma.commons.app.ui.compose.components.AmbientPartyTheme
-import org.beatonma.commons.app.ui.compose.components.Avatar
 import org.beatonma.commons.app.ui.compose.components.PartyBackground
-import org.beatonma.commons.app.ui.compose.components.PartyWithTheme
 import org.beatonma.commons.app.ui.compose.components.chips.EmailLink
 import org.beatonma.commons.app.ui.compose.components.chips.PhoneLink
 import org.beatonma.commons.app.ui.compose.components.chips.Weblink
+import org.beatonma.commons.app.ui.compose.components.image.Avatar
+import org.beatonma.commons.app.ui.compose.components.partyWithTheme
 import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.animation.ExpandCollapseState
@@ -66,7 +64,9 @@ import org.beatonma.commons.compose.util.dotted
 import org.beatonma.commons.compose.util.lerp
 import org.beatonma.commons.compose.util.update
 import org.beatonma.commons.compose.util.withAnnotatedStyle
-import org.beatonma.commons.core.extensions.lerp
+import org.beatonma.commons.core.extensions.fastForEach
+import org.beatonma.commons.core.extensions.fastForEachIndexed
+import org.beatonma.commons.core.extensions.lerpTo
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.core.extensions.reversed
 import org.beatonma.commons.core.extensions.withEasing
@@ -96,7 +96,7 @@ fun MemberProfileLayout(
     state: MutableState<SocialUiState> = AmbientSocialUiState.current,
 ) {
     val profile = completeMember.profile
-    val partyData = PartyWithTheme(completeMember.party)
+    val partyData = partyWithTheme(completeMember.party)
     val socialTheme = partyData.theme.asSocialTheme()
 
     Providers(
@@ -347,7 +347,7 @@ private fun MemberProfileScaffold(
                             top.linkTo(parent.top)
                         }
                         .wrapContentHeight(reverseProgress)
-                        .drawOpacity(reverseProgress.progressIn(0F, 0.6F))
+                        .alpha(reverseProgress.progressIn(0F, 0.6F))
                         .zIndex(Layer.Bottom)
                 ) {
                     contentBefore(Modifier)
@@ -360,7 +360,7 @@ private fun MemberProfileScaffold(
                         .constrainAs(after) {
                             top.linkTo(social.bottom)
                         }
-                        .drawOpacity(reverseProgress.progressIn(0F, 0.6F))
+                        .alpha(reverseProgress.progressIn(0F, 0.6F))
                         .zIndex(Layer.Bottom)
                 ) {
                     contentAfter(Modifier)
@@ -380,7 +380,7 @@ private fun MemberProfileScaffold(
                         progress.progressIn(0.5F, .8F))
                     )
                     .zIndex(Layer.Low)
-                    .drawShadow(1.dp)
+                    .shadow(1.dp)
             )
 
             Box(
@@ -388,7 +388,7 @@ private fun MemberProfileScaffold(
                     top.linkTo(before.bottom)
                 }
                     .zIndex(Layer.Middle)
-                    .drawOpacity(reverseProgress.progressIn(.85F, 1F))
+                    .alpha(reverseProgress.progressIn(.85F, 1F))
                     .wrapContentHeight(reverseProgress)
                     .padding(top = 8.dp)
             ) {
@@ -407,7 +407,7 @@ private fun MemberProfileScaffold(
                 }
                 .zIndex(Layer.High)
                 .wrapContentOrFillHeight(progress.withEasing(FastOutSlowInEasing))
-                .padding(start = 12.lerp(0, progress).pdp, bottom = 8.lerp(0, progress).pdp)
+                .padding(start = 12.lerpTo(0, progress).pdp, bottom = 8.lerpTo(0, progress).pdp)
         }
     }
 }

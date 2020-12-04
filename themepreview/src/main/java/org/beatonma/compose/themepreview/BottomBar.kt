@@ -2,10 +2,9 @@ package org.beatonma.compose.themepreview
 
 import androidx.compose.animation.AnimatedFloatModel
 import androidx.compose.animation.core.AnimationSpec
-import androidx.compose.foundation.Box
-import androidx.compose.foundation.Icon
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.preferredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.BottomAppBar
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -20,15 +20,14 @@ import androidx.compose.runtime.onCommit
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawOpacity
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.VectorAsset
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.platform.AnimationClockAmbient
+import androidx.compose.ui.platform.AmbientAnimationClock
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.lerp
 
 private val BottomBarHeight = 56.dp
 
@@ -40,7 +39,7 @@ internal fun BottomBar(
     modifier: Modifier = Modifier,
     content: @Composable (List<AnimatedFloatModel>) -> Unit,
 ) {
-    val clock = AnimationClockAmbient.current
+    val clock = AmbientAnimationClock.current
     val selectionFractions = remember(itemCount) {
         // 'selectedness' of each item.
         List(itemCount) { i ->
@@ -65,7 +64,7 @@ internal fun BottomBar(
     ) {
         Layout(
             modifier = modifier.fillMaxSize(),
-            children = {
+            content = {
                 content(selectionFractions)
             }
         ) { measurables, constraints ->
@@ -76,8 +75,9 @@ internal fun BottomBar(
 
             val itemPlaceables = measurables
                 .mapIndexed { index, measurable ->
-                    val width =
-                        lerp(unselectedWidth, selectedWidth, selectionFractions[index].value)
+                    val width = interpolate(unselectedWidth,
+                        selectedWidth,
+                        progress = selectionFractions[index].value)
                     measurable.measure(
                         constraints.copy(
                             minWidth = width,
@@ -109,7 +109,7 @@ internal fun SectionIcon(screen: Screen, progress: Float, onSelected: (Screen) -
 internal fun SectionIcon(
     screen: Screen,
     title: String,
-    icon: VectorAsset,
+    icon: ImageVector,
     progress: Float,
     onSelected: (Screen) -> Unit,
 ) {
@@ -124,17 +124,19 @@ internal fun SectionIcon(
     ) {
         Box(
             modifier = Modifier.size(BottomBarHeight),
-            gravity = Alignment.Center,
+            contentAlignment = Alignment.Center,
         ) {
-            Icon(icon,
-                tint = MaterialTheme.colors.onSurface.lerp(MaterialTheme.colors.primary,
+            Icon(
+                icon,
+                tint = MaterialTheme.colors.onSurface.lerp(
+                    MaterialTheme.colors.primary,
                     progress))
         }
 
         Text(
             title,
             style = MaterialTheme.typography.caption,
-            modifier = Modifier.drawOpacity(progress),
+            modifier = Modifier.alpha(progress),
             color = MaterialTheme.colors.primary,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
@@ -151,3 +153,6 @@ private fun Color.lerp(other: Color, progress: Float) = Color(
 
 private fun interpolate(start: Float, end: Float, progress: Float) =
     start + ((end - start) * progress)
+
+private fun interpolate(start: Int, end: Int, progress: Float): Int =
+    start + ((end - start) * progress).toInt()

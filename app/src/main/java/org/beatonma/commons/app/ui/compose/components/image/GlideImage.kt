@@ -1,4 +1,4 @@
-package org.beatonma.commons.app.ui.compose.components
+package org.beatonma.commons.app.ui.compose.components.image
 
 /**
  * Copyright (C) 2020 Wasabeef
@@ -24,19 +24,18 @@ import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.FrameManager
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.onCommit
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ImageAsset
-import androidx.compose.ui.graphics.asImageAsset
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.layout.WithConstraints
-import androidx.compose.ui.platform.ContextAmbient
+import androidx.compose.ui.platform.AmbientContext
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.CustomTarget
@@ -49,7 +48,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun GlideImage(
     @DrawableRes drawableResId: Int,
-    modifier: Modifier = Modifier.fillMaxWidth(),
+    modifier: Modifier = Modifier,
     options: RequestOptions = RequestOptions(),
 ) {
     GlideImagePrivate(model = drawableResId, modifier = modifier, options = options)
@@ -58,7 +57,7 @@ fun GlideImage(
 @Composable
 fun GlideImage(
     source: String?,
-    modifier: Modifier = Modifier.fillMaxWidth(),
+    modifier: Modifier = Modifier,
     options: RequestOptions = RequestOptions(),
 ) {
     GlideImagePrivate(model = source, modifier = modifier, options = options)
@@ -67,11 +66,11 @@ fun GlideImage(
 @Composable
 private fun GlideImagePrivate(
     model: Any?,
-    modifier: Modifier = Modifier.fillMaxWidth(),
+    modifier: Modifier = Modifier,
     options: RequestOptions = RequestOptions(),
 ) {
     WithConstraints(modifier) {
-        val context = ContextAmbient.current
+        val context = AmbientContext.current
 
         val width =
             if (constraints.maxWidth > 0 && constraints.maxWidth < Int.MAX_VALUE) constraints.maxWidth
@@ -80,7 +79,7 @@ private fun GlideImagePrivate(
             if (constraints.maxHeight > 0 && constraints.maxHeight < Int.MAX_VALUE) constraints.maxHeight
             else SIZE_ORIGINAL
 
-        val image = remember { mutableStateOf<ImageAsset?>(null) }
+        val image = remember { mutableStateOf<ImageBitmap?>(null) }
         val drawable = remember { mutableStateOf<Drawable?>(null) }
 
         onCommit(model) {
@@ -92,7 +91,7 @@ private fun GlideImagePrivate(
 
                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
                     FrameManager.ensureStarted()
-                    image.value = resource.asImageAsset()
+                    image.value = resource.asImageBitmap()
                 }
             }
             val job = CoroutineScope(Dispatchers.IO).launch {
@@ -115,7 +114,7 @@ private fun GlideImagePrivate(
         }
 
         if (image.value != null) {
-            Image(asset = image.value!!, modifier = modifier)
+            Image(image.value!!, modifier = modifier)
         }
         else if (drawable.value != null) {
             Canvas(modifier = modifier) {

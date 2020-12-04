@@ -23,6 +23,7 @@ internal fun ColorsPreview() {
     ColorPreview("Error", MaterialTheme.colors.error)
 }
 
+@OptIn(ExperimentalUnsignedTypes::class)
 @Composable
 private fun ColorPreview(name: String, colorBackground: Color) {
     Surface(Modifier.height(128.dp).fillMaxWidth(), color = colorBackground) {

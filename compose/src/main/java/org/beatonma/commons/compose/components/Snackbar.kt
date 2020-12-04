@@ -16,7 +16,7 @@ import androidx.compose.runtime.ambientOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawOpacity
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.zIndex
 import org.beatonma.commons.compose.animation.ExpandCollapseState
 import org.beatonma.commons.compose.animation.lerpBetween
@@ -57,8 +57,8 @@ fun FeedbackLayout(
 
 @Composable
 private fun FeedbackMessage(
-    message: String = AmbientFeedbackMessage.current.value,
     modifier: Modifier = Modifier,
+    message: String = AmbientFeedbackMessage.current.value,
     alignment: Alignment,
     state: MutableState<ExpandCollapseState> = rememberExpandCollapseState(),
     transition: TransitionDefinition<ExpandCollapseState> = rememberExpandCollapseTransition(),
@@ -81,7 +81,7 @@ private fun FeedbackMessage(
                         whenTrue = { statusBarsPadding(scale = progress) },
                         whenFalse = { imeOrNavigationBarsPadding(scale = progress) }
                     )
-                    .drawOpacity(progress)
+                    .alpha(progress)
             )
         }
     }

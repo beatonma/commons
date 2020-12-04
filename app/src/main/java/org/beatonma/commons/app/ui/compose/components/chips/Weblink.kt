@@ -10,10 +10,10 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ContextAmbient
+import androidx.compose.ui.platform.AmbientContext
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.ui.tooling.preview.Preview
 import org.beatonma.commons.R
 import org.beatonma.commons.compose.components.CollapsibleChip
 import org.beatonma.commons.data.core.room.entities.member.WebAddress
@@ -77,10 +77,10 @@ private fun Weblink(
     displayText: AnnotatedString,
     url: String,
     drawableId: Int,
-    autoCollapse: Long = 2500,
     modifier: Modifier = Modifier,
+    autoCollapse: Long = 2500,
 ) {
-    val context = ContextAmbient.current
+    val context = AmbientContext.current
     CollapsibleChip(displayText, drawableId, R.drawable.ic_close, modifier, autoCollapse) {
         context.openUrl(url)
     }

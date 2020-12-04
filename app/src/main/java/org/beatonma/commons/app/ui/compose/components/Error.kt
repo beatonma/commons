@@ -1,7 +1,6 @@
 package org.beatonma.commons.app.ui.compose.components
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -12,10 +11,10 @@ import org.beatonma.commons.compose.ambient.typography
 
 @Composable
 fun Error(
+    modifier: Modifier = Modifier,
     errorText: String? = "Error",
-    modifier: Modifier = Modifier.fillMaxSize(),
 ) {
-    Box(modifier, alignment = Alignment.Center) {
+    Box(modifier, contentAlignment = Alignment.Center) {
         Text(
             errorText ?: "Error",
             style = typography.h3,

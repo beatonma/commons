@@ -6,12 +6,12 @@ import androidx.compose.ui.layout.AlignmentLine
 import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.layout.Placeable
-import androidx.compose.ui.platform.ContextAmbient
+import androidx.compose.ui.platform.AmbientContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.compose.animation.lerpBetween
-import org.beatonma.commons.core.extensions.lerp
+import org.beatonma.commons.core.extensions.lerpTo
 import kotlin.math.roundToInt
 
 /**
@@ -72,18 +72,18 @@ fun MeasureScope.layout(
 val Dp.pxF: Float
     get() = when (this) {
         Dp.Hairline -> 1F
-        else -> (value * ContextAmbient.current.resources.displayMetrics.density)
+        else -> (value * AmbientContext.current.resources.displayMetrics.density)
     }
 
 @Composable
 val Dp.px: Int
     get() = when (this) {
         Dp.Hairline -> 1
-        else -> (value * ContextAmbient.current.resources.displayMetrics.density)
+        else -> (value * AmbientContext.current.resources.displayMetrics.density)
             .roundToInt()
     }
 
-fun Dp.lerp(other: Dp, progress: Float) = Dp(value.lerp(other.value, progress))
+fun Dp.lerp(other: Dp, progress: Float) = Dp(value.lerpTo(other.value, progress))
 
 fun PaddingValues.lerp(other: PaddingValues, progress: Float) = PaddingValues(
     start = progress.lerpBetween(this.start, other.start).coerceAtLeast(0.dp),

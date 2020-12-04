@@ -1,9 +1,9 @@
 package org.beatonma.commons.compose.util
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
-import androidx.compose.ui.util.annotation.VisibleForTesting
-import org.beatonma.commons.core.extensions.lerp
+import org.beatonma.commons.core.extensions.lerpTo
 import org.beatonma.commons.core.extensions.mapToByte
 import org.beatonma.commons.core.extensions.normalize
 import org.beatonma.commons.theme.compose.color.CommonsColor
@@ -194,6 +194,7 @@ val Color.blueByte get() = blue.mapToByte()
 val Color.alphaByte get() = alpha.mapToByte()
 val HslColor.alphaByte get() = alpha.mapToByte()
 
+@OptIn(ExperimentalUnsignedTypes::class)
 fun Color.toHexString() = value.toString(16).substring(0, 8)
 fun Color.toPrettyHexString() = "#${toHexString()}"
 
@@ -210,8 +211,8 @@ fun Float.positiveMod(mod: Float): Float {
 }
 
 fun Color.lerp(other: Color, progress: Float) = Color(
-    alpha = alpha.lerp(other.alpha, progress),
-    red = red.lerp(other.red, progress),
-    green = green.lerp(other.green, progress),
-    blue = blue.lerp(other.blue, progress),
+    alpha = alpha.lerpTo(other.alpha, progress),
+    red = red.lerpTo(other.red, progress),
+    green = green.lerpTo(other.green, progress),
+    blue = blue.lerpTo(other.blue, progress),
 )
