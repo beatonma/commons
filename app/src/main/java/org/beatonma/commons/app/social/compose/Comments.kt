@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumnForIndexed
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -35,9 +36,8 @@ import org.beatonma.commons.app.ui.compose.components.CommonsOutlinedButton
 import org.beatonma.commons.app.ui.compose.components.FabBottomSheet
 import org.beatonma.commons.app.ui.compose.components.FabBottomSheetState
 import org.beatonma.commons.app.ui.compose.components.FabText
+import org.beatonma.commons.compose.ambient.WithContentAlpha
 import org.beatonma.commons.compose.ambient.typography
-import org.beatonma.commons.compose.ambient.withEmphasisHigh
-import org.beatonma.commons.compose.ambient.withEmphasisMedium
 import org.beatonma.commons.compose.components.CardText
 import org.beatonma.commons.compose.components.Hint
 import org.beatonma.commons.compose.components.TextValidationResult
@@ -94,13 +94,11 @@ internal fun CommentList(
 
 @Composable
 private fun NoComments(modifier: Modifier = Modifier) {
-    withEmphasisHigh {
-        Text(
-            stringResource(R.string.social_comment_no_comments),
-            modifier.fillMaxWidth(),
-            style = typography.h6, textAlign = TextAlign.Center
-        )
-    }
+    Text(
+        stringResource(R.string.social_comment_no_comments),
+        modifier.fillMaxWidth(),
+        style = typography.h6, textAlign = TextAlign.Center
+    )
 }
 
 @Composable
@@ -115,11 +113,11 @@ private fun Comment(
             .clickable { onClick(comment) }
             .padding(Padding.VerticalListItem + Padding.ScreenHorizontal)
     ) {
-        withEmphasisHigh {
+        WithContentAlpha(ContentAlpha.high) {
             Text(comment.text.withAnnotatedStyle())
         }
 
-        withEmphasisMedium {
+        WithContentAlpha(ContentAlpha.medium) {
             Row {
                 Username(
                     comment.username,

@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.AmbientContentColor
-import androidx.compose.material.AmbientEmphasisLevels
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -48,8 +48,8 @@ import kotlin.math.roundToInt
 internal fun SocialIcons(
     modifier: Modifier = Modifier,
     socialContent: SocialContent = AmbientSocialContent.current,
-    inactiveTint: Color = AmbientEmphasisLevels.current.medium.applyEmphasis(AmbientContentColor.current),
-    activeTint: Color = AmbientEmphasisLevels.current.high.applyEmphasis(AmbientContentColor.current),
+    inactiveTint: Color = AmbientContentColor.current.copy(alpha = ContentAlpha.medium),
+    activeTint: Color = AmbientContentColor.current.copy(alpha = ContentAlpha.high),
     arrangement: Arrangement.Horizontal,
     onCommentIconClick: ActionBlock,
     onVoteUpIconClick: ActionBlock,

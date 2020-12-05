@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.AmbientContentColor
-import androidx.compose.material.AmbientEmphasisLevels
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -95,8 +95,8 @@ private fun SocialContentUi(
     onCommentIconClick: ActionBlock,
     onCommentClick: (SocialComment) -> Unit,
     state: MutableState<SocialUiState> = AmbientSocialUiState.current,
-    inactiveTint: Color = AmbientEmphasisLevels.current.medium.applyEmphasis(AmbientContentColor.current),
-    activeTint: Color = AmbientEmphasisLevels.current.high.applyEmphasis(AmbientContentColor.current),
+    inactiveTint: Color = AmbientContentColor.current.copy(alpha = ContentAlpha.medium),
+    activeTint: Color = AmbientContentColor.current.copy(alpha = ContentAlpha.high),
     progress: Float = AmbientCollapseExpandProgress.current,
     expandAction: ActionBlock = { state.update(SocialUiState.Expanded) },
 ) {
