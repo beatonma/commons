@@ -9,3 +9,6 @@ fun <T> MutableState<T>.update(newValue: T) = component2()(newValue)
 
 @Composable
 fun rememberText(default: String = ""): MutableState<String> = remember { mutableStateOf(default) }
+
+@Composable
+fun rememberBoolean(default: Boolean = false) = remember { mutableStateOf(default) }
