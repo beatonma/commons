@@ -52,7 +52,7 @@ object Versions {
     const val GLIDE = "4.11.0"
     const val GROUPIE = "2.8.0"
     const val COIL = "1.1.0"
-    const val CHRISBANES_ACCOMPANIST_COIL = "0.2.1"
+    const val CHRISBANES_ACCOMPANIST_COIL = "0.4.0"
 
     // Testing
     const val AX_TEST_CORE = "1.3.0"
