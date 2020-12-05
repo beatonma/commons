@@ -1,5 +1,6 @@
 package org.beatonma.commons.app.signin.compose
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
@@ -8,6 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -93,8 +96,8 @@ private fun ProfileSheetContent(
     userProfileActions: UserProfileActions = AmbientUserProfileActions.current,
 ) =
     BottomSheetText(progress) {
-        Column(Modifier.wrapContentHeight()) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+        Column(Modifier.wrapContentHeight().animateContentSize()) {
+            Row(verticalAlignment = Alignment.Top) {
                 Avatar(
                     userToken.photoUrl,
                     Modifier
@@ -104,10 +107,13 @@ private fun ProfileSheetContent(
                         .clip(shapes.small)
                 )
 
+                val usernameState = remember { mutableStateOf(EditableState.ReadOnly) }
                 Column(Modifier.weight(7F)) {
-                    EditableUsername(userToken)
+                    EditableUsername(userToken, state = usernameState)
 
-                    Text(dotted(userToken.name, userToken.email), style = typography.caption)
+                    if (usernameState.value == EditableState.ReadOnly) {
+                        Text(dotted(userToken.name, userToken.email), style = typography.caption)
+                    }
                 }
             }
 
