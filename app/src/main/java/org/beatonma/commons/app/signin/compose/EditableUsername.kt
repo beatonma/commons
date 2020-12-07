@@ -37,6 +37,7 @@ import org.beatonma.commons.app.social.compose.Username
 import org.beatonma.commons.app.ui.compose.components.LoadingIcon
 import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.animation.progressKey
+import org.beatonma.commons.compose.components.Hint
 import org.beatonma.commons.compose.components.TextValidationResult
 import org.beatonma.commons.compose.components.TextValidationRules
 import org.beatonma.commons.compose.components.ValidatedTextField
@@ -147,6 +148,11 @@ private fun EditableUsernameLayout(
                 validationResultMessage.update(validationMessages.getMessage(validationResult))
             },
             validationResultMessage = validationResultMessage,
+            placeholder = {
+                Hint(stringResource(
+                    R.string.account_username_validation_too_short,
+                    BuildConfig.ACCOUNT_USERNAME_MIN_LENGTH))
+            },
             maxLines = 1,
             modifier = Modifier
                 .weight(10F)
