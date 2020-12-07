@@ -72,12 +72,16 @@ import org.beatonma.commons.theme.compose.Padding
 import org.beatonma.commons.theme.compose.color.CommonsColor
 import org.beatonma.commons.theme.compose.theme.systemui.statusBarsPadding
 
+private const val KeyframeIsOpaque = 0.2F
 private const val KeyframeFillWidth = 0.4F
+private const val KeyframeFillStatusBar = 0.6F
 
 class SearchActions(
     val onSubmit: (query: String) -> Unit,
     val onClickMember: (MemberSearchResult) -> Unit,
 )
+
+private typealias SearchUiState = ExpandCollapseState
 
 @Composable
 @Preview
@@ -109,8 +113,8 @@ fun SearchUiPreview() {
 fun SearchUi(
     results: List<SearchResult>,
     modifier: Modifier = Modifier,
-    state: MutableState<ExpandCollapseState> = rememberExpandCollapseState(),
-    transition: TransitionDefinition<ExpandCollapseState> = rememberExpandCollapseTransition(),
+    state: MutableState<SearchUiState> = rememberExpandCollapseState(),
+    transition: TransitionDefinition<SearchUiState> = rememberExpandCollapseTransition(),
     transitionState: TransitionState = transition(transition, toState = state.value),
     focusRequester: FocusRequester = remember { FocusRequester() },
 ) {
@@ -118,13 +122,13 @@ fun SearchUi(
 
     ModalScrim(
         alpha = progress,
-        onClickAction = { state.collapse() }
+        onClickAction = state::collapse,
     ) {
         Column(
             modifier
                 .zIndex(Layer.AlwaysOnTopSurface),
         ) {
-            val statusBarProgress = progress.progressIn(0.6F, 1F)
+            val statusBarProgress = progress.progressIn(KeyframeFillStatusBar, 1F)
 
             Surface(
                 Modifier
@@ -132,9 +136,9 @@ fun SearchUi(
                     .statusBarsPadding(statusBarProgress.reversed())
                     .align(Alignment.End),
                 elevation = progress.lerpBetween(0.dp, Elevation.ModalSurface),
-                color = progress.progressIn(0F, 0.2F)
+                color = progress.progressIn(0F, KeyframeIsOpaque)
                     .lerpBetween(Color.Transparent, CommonsColor.SearchBar),
-                shape = getSearchSurfaceShape(progress.progressIn(0.2F, 1F)),
+                shape = getSearchSurfaceShape(progress.progressIn(KeyframeIsOpaque, 1F)),
                 contentColor = progress.lerpBetween(AmbientContentColor.current,
                     CommonsColor.OnSearchBar)
             ) {
@@ -163,8 +167,8 @@ fun SearchUi(
                 SearchResults(
                     results,
                     modifier = Modifier
-                        .alpha(progress.progressIn(0.6F, 1F))
-                        .wrapContentHeight(progress.progressIn(0.4F, 1F))
+                        .alpha(progress.progressIn(KeyframeFillStatusBar, 1F))
+                        .wrapContentHeight(progress.progressIn(KeyframeFillWidth, 1F))
                 )
             }
         }
@@ -187,7 +191,7 @@ private fun SearchField(
             query.update(queryText)
             onSubmit(queryText)
         },
-        onImeActionPerformed = { imeAction, controller -> controller?.hideSoftwareKeyboard() },
+        onImeActionPerformed = { _, controller -> controller?.hideSoftwareKeyboard() },
         modifier = modifier.focusRequester(focusRequester),
         textStyle = AmbientTextStyle.current.copy(color = CommonsColor.OnSearchBar),
     )
@@ -195,10 +199,10 @@ private fun SearchField(
 
 @Composable
 private fun SearchIcon(
-    state: MutableState<ExpandCollapseState>,
+    state: MutableState<SearchUiState>,
     modifier: Modifier = Modifier,
 ) {
-    IconButton(onClick = { state.toggle() }, modifier = modifier) {
+    IconButton(onClick = state::toggle, modifier = modifier) {
         Icon(Icons.Default.Search)
     }
 }
