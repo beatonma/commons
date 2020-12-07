@@ -145,7 +145,7 @@ fun CreateCommentUi(
         return
     }
 
-    val focusRequester = remember { FocusRequester() }
+    val focusRequester = remember(::FocusRequester)
 
     val fabBottomSheetState = remember { mutableStateOf(FabBottomSheetState.Fab) }.apply {
         value = when (uiState.value) {
@@ -186,11 +186,6 @@ private fun CreateCommentSheetContent(
 
     val user = AmbientUserToken.current
     val commentIsValid = remember { mutableStateOf(false) }
-
-    if (progress == 1F) {
-        // Focus on text field and bring up the IME TODO enable.
-//        focusRequester.requestFocus()
-    }
 
     CardText(
         Modifier
@@ -242,5 +237,10 @@ private fun CreateCommentSheetContent(
                 Text(stringResource(R.string.social_comment_post))
             }
         }
+    }
+
+    if (progress == 1F) {
+        // Focus on text field and bring up the IME TODO enable.
+        focusRequester.requestFocus()
     }
 }

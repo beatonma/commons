@@ -25,6 +25,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.focus.ExperimentalFocus
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
@@ -53,20 +56,25 @@ private val readOnlyAlpha = FloatPropKey()
 private val editableAlpha = FloatPropKey()
 private val awaitingResultAlpha = FloatPropKey()
 
+@OptIn(ExperimentalFocus::class)
 @Composable
 internal fun EditableUsername(
     userToken: UserToken,
     state: MutableState<EditableState> = remember { mutableStateOf(EditableState.ReadOnly) },
     transitionDef: TransitionDefinition<EditableState> = rememberEditableStateTransition(),
     transition: TransitionState = transition(transitionDef, state.value),
+    focusRequester: FocusRequester = remember(::FocusRequester),
 ) {
     when (state.value) {
         EditableState.ReadOnly -> ReadOnlyUsernameLayout(userToken,
             state,
             Modifier.alpha(transition[readOnlyAlpha]))
+
         EditableState.Editable -> EditableUsernameLayout(userToken,
             state,
-            Modifier.alpha(transition[editableAlpha]))
+            Modifier.alpha(transition[editableAlpha]),
+            focusRequester = focusRequester)
+
         EditableState.AwaitingResult -> AwaitingResultLayout(userToken,
             Modifier.alpha(transition[awaitingResultAlpha]))
     }
@@ -109,6 +117,7 @@ private fun AwaitingResultLayout(
     }
 }
 
+@OptIn(ExperimentalFocus::class)
 @Composable
 private fun EditableUsernameLayout(
     userToken: UserToken,
@@ -116,6 +125,7 @@ private fun EditableUsernameLayout(
     modifier: Modifier = Modifier,
     validationMessages: ValidationMessages = rememberValidationMessages(),
     actions: UserProfileActions = AmbientUserProfileActions.current,
+    focusRequester: FocusRequester = remember(::FocusRequester),
 ) {
     val text = rememberText(userToken.username)
     val keyboardOptions = remember {
@@ -138,7 +148,9 @@ private fun EditableUsernameLayout(
             },
             validationResultMessage = validationResultMessage,
             maxLines = 1,
-            modifier = Modifier.weight(10F),
+            modifier = Modifier
+                .weight(10F)
+                .focusRequester(focusRequester),
             keyboardOptions = keyboardOptions,
             textStyle = TextStyle(color = AmbientContentColor.current),
         )
@@ -154,6 +166,10 @@ private fun EditableUsernameLayout(
 
         IconButton(onClick = { state.update(EditableState.ReadOnly) }) {
             Icon(Icons.Default.Undo)
+        }
+
+        if (state.value == EditableState.Editable) {
+            focusRequester.requestFocus()
         }
     }
 }

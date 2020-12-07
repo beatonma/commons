@@ -116,7 +116,7 @@ fun SearchUi(
     state: MutableState<SearchUiState> = rememberExpandCollapseState(),
     transition: TransitionDefinition<SearchUiState> = rememberExpandCollapseTransition(),
     transitionState: TransitionState = transition(transition, toState = state.value),
-    focusRequester: FocusRequester = remember { FocusRequester() },
+    focusRequester: FocusRequester = remember(::FocusRequester),
 ) {
     val progress = transitionState[progressKey]
 
