@@ -20,7 +20,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.ExperimentalFocus
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focusRequester
@@ -32,18 +31,18 @@ import org.beatonma.commons.app.signin.compose.AmbientUserToken
 import org.beatonma.commons.app.signin.compose.NullUserToken
 import org.beatonma.commons.app.signin.compose.SignInUi
 import org.beatonma.commons.app.social.SocialUiState
+import org.beatonma.commons.app.ui.compose.components.BottomSheetText
 import org.beatonma.commons.app.ui.compose.components.CommonsOutlinedButton
 import org.beatonma.commons.app.ui.compose.components.FabBottomSheet
 import org.beatonma.commons.app.ui.compose.components.FabBottomSheetState
 import org.beatonma.commons.app.ui.compose.components.FabText
 import org.beatonma.commons.compose.ambient.WithContentAlpha
 import org.beatonma.commons.compose.ambient.typography
-import org.beatonma.commons.compose.components.CardText
 import org.beatonma.commons.compose.components.Hint
 import org.beatonma.commons.compose.components.TextValidationResult
 import org.beatonma.commons.compose.components.TextValidationRules
 import org.beatonma.commons.compose.components.ValidatedTextField
-import org.beatonma.commons.compose.modifiers.wrapContentSize
+import org.beatonma.commons.compose.util.rememberBoolean
 import org.beatonma.commons.compose.util.rememberText
 import org.beatonma.commons.compose.util.update
 import org.beatonma.commons.compose.util.withAnnotatedStyle
@@ -57,7 +56,6 @@ import org.beatonma.commons.theme.compose.Padding
 import org.beatonma.commons.theme.compose.endOfContent
 import org.beatonma.commons.theme.compose.pdp
 import org.beatonma.commons.theme.compose.plus
-import org.beatonma.commons.theme.compose.theme.systemui.imeOrNavigationBarsPadding
 
 @Composable
 internal fun CommentList(
@@ -70,9 +68,7 @@ internal fun CommentList(
         NoComments(modifier)
     }
     else {
-        if (AmbientCollapseExpandProgress.current < 0.7F) {
-            return
-        }
+        if (AmbientCollapseExpandProgress.current < 0.7F) return
 
         val progress = AmbientCollapseExpandProgress.current
             .progressIn(0.75F, 1F)
@@ -93,20 +89,19 @@ internal fun CommentList(
 }
 
 @Composable
-private fun NoComments(modifier: Modifier = Modifier) {
+private fun NoComments(modifier: Modifier = Modifier) =
     Text(
         stringResource(R.string.social_comment_no_comments),
         modifier.fillMaxWidth(),
         style = typography.h6, textAlign = TextAlign.Center
     )
-}
 
 @Composable
 private fun Comment(
     comment: SocialComment,
     modifier: Modifier = Modifier,
     onClick: (SocialComment) -> Unit,
-) {
+) =
     Column(
         modifier
             .fillMaxWidth()
@@ -128,7 +123,7 @@ private fun Comment(
             }
         }
     }
-}
+
 
 /**
  * Displays a FAB which expands into a bottom sheet dialog for comment authoring.
@@ -166,11 +161,8 @@ fun CreateCommentUi(
 }
 
 @Composable
-private fun CreateCommentButtonContent(
-    progress: Float,
-) {
+private fun CreateCommentButtonContent(progress: Float) =
     FabText(stringResource(R.string.social_new_comment), progress)
-}
 
 @OptIn(ExperimentalFocus::class)
 @Composable
@@ -180,22 +172,9 @@ private fun CreateCommentSheetContent(
     commentText: MutableState<String> = rememberText(),
     commentValidator: TextValidationRules = AmbientSocialCommentValidator.current,
 ) {
-    if (progress == 0F) {
-        return
-    }
-
-    val user = AmbientUserToken.current
-    val commentIsValid = remember { mutableStateOf(false) }
-
-    CardText(
-        Modifier
-            .wrapContentSize(
-                horizontalProgress = progress.progressIn(0F, 0.4F),
-                verticalProgress = progress.progressIn(0F, 0.8F)
-            )
-            .alpha(progress.progressIn(0.8F, 1F))
-            .imeOrNavigationBarsPadding(scale = progress)
-    ) {
+    BottomSheetText(progress) {
+        val user = AmbientUserToken.current
+        val commentIsValid = rememberBoolean(false)
 
         Column {
             Row(
@@ -240,7 +219,6 @@ private fun CreateCommentSheetContent(
     }
 
     if (progress == 1F) {
-        // Focus on text field and bring up the IME TODO enable.
         focusRequester.requestFocus()
     }
 }
