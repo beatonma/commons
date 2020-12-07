@@ -202,7 +202,7 @@ private fun SearchIcon(
     state: MutableState<SearchUiState>,
     modifier: Modifier = Modifier,
 ) {
-    IconButton(onClick = state::toggle, modifier = modifier) {
+    IconButton(onClick = { state.toggle() }, modifier = modifier) {
         Icon(Icons.Default.Search)
     }
 }
