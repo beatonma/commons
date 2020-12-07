@@ -3,7 +3,6 @@ package org.beatonma.commons.app.ui.compose.components
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.TransitionDefinition
 import androidx.compose.animation.core.TransitionState
-import androidx.compose.animation.core.transitionDefinition
 import androidx.compose.animation.transition
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -29,8 +28,10 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.compose.ambient.typography
+import org.beatonma.commons.compose.animation.TwoState
 import org.beatonma.commons.compose.animation.lerpBetween
 import org.beatonma.commons.compose.animation.progressKey
+import org.beatonma.commons.compose.animation.twoStateProgressTransition
 import org.beatonma.commons.compose.components.CardText
 import org.beatonma.commons.compose.components.ModalScrim
 import org.beatonma.commons.compose.modifiers.either
@@ -48,9 +49,15 @@ import org.beatonma.commons.theme.compose.theme.CommonsSpring
 import org.beatonma.commons.theme.compose.theme.systemui.imeOrNavigationBarsPadding
 import org.beatonma.commons.theme.compose.theme.systemui.navigationBarsPadding
 
-enum class FabBottomSheetState {
+enum class FabBottomSheetState : TwoState<FabBottomSheetState> {
     Fab,
     BottomSheet,
+    ;
+
+    override fun toggle() = when (this) {
+        Fab -> BottomSheet
+        BottomSheet -> Fab
+    }
 }
 
 @Composable
@@ -182,16 +189,14 @@ private fun FabBottomSheetLayout(
     ModalScrim(
         alignment = Alignment.BottomEnd,
         alpha = progress,
-        onClickAction = {
-            uiState.update(FabBottomSheetState.Fab)
-        }
+        onClickAction = { uiState.update(FabBottomSheetState.Fab) }
     ) {
         val surfaceShape = getFabBottomsheetSurfaceShape(progress)
 
         Surface(
             modifier
                 .padding(progress.lerpBetween(Padding.Fab, Padding.Zero))
-                .navigationBarsPadding(scale = progress.reversed()) // The bottom sheet should extend behind navigation bar as it expands.
+                .imeOrNavigationBarsPadding(scale = progress.reversed()) // The bottom sheet should extend behind navigation bar as it expands.
                 .clickable {
                     if (targetState == FabBottomSheetState.Fab) {
                         uiState.update(FabBottomSheetState.BottomSheet)
@@ -215,21 +220,7 @@ private fun FabBottomSheetLayout(
 
 @Composable
 private fun rememberFabBottomSheetTransition() = remember {
-    transitionDefinition<FabBottomSheetState> {
-        state(FabBottomSheetState.Fab) {
-            this[progressKey] = 0F
-        }
-        state(FabBottomSheetState.BottomSheet) {
-            this[progressKey] = 1F
-        }
-
-        transition(
-            FabBottomSheetState.Fab to FabBottomSheetState.BottomSheet,
-            FabBottomSheetState.BottomSheet to FabBottomSheetState.Fab,
-        ) {
-            progressKey using CommonsSpring()
-        }
-    }
+    twoStateProgressTransition(FabBottomSheetState.Fab, FabBottomSheetState.BottomSheet)
 }
 
 private fun getFabBottomsheetSurfaceShape(progress: Float): Shape {
