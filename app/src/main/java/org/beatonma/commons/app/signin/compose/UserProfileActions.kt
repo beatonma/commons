@@ -15,7 +15,9 @@ lateinit var AmbientUserProfileActions: ProvidableAmbient<UserProfileActions>
 
 interface UserProfileActions {
     val signInLauncher: ActivityResultLauncher<Intent>
-    val signInActions: SignInActions
+    val userAccountActions: UserAccountActions
+
+    fun handleSignInResult(data: Intent?)
 
     private val resultHandler
         get() = { activityResult: ActivityResult ->
@@ -26,27 +28,25 @@ interface UserProfileActions {
         host.registerForActivityResult(ActivityResultContracts.StartActivityForResult(),
             resultHandler)
 
-    fun defaultSignInActions(signinIntent: Intent) = SignInActions(
-        signIn = { googleSignIn(signinIntent) },
-        signOut = ::googleSignOut,
-        renameAccount = ::requestNewUsername,
-        deleteAccount = { /* TODO("deleteAccount action has not been implemented") */ }
+    fun defaultSignInActions(viewmodel: UserAccountViewModel) = UserAccountActions(
+        signIn = { googleSignIn(viewmodel.signInIntent) },
+        signOut = viewmodel::signOut,
+        renameAccount = viewmodel::requestRename,
+        deleteAccount = viewmodel::deleteAccount,
     )
 
-    private fun requestNewUsername(newName: String) {
-//        TODO()
-    }
-
-    fun googleSignIn(intent: Intent) {
-        println("googleSignIn()")
+    private fun googleSignIn(intent: Intent) {
         signInLauncher.launch(intent)
     }
 
     private fun googleSignOut() {
+        println("googleSignOut()")
 //        TODO()
     }
 
-    fun handleSignInResult(data: Intent?)
+    private fun deleteAccount() {
+        println("deleteAccount()")
+    }
 }
 
 fun UserProfileActions(
@@ -54,7 +54,7 @@ fun UserProfileActions(
     viewmodel: UserAccountViewModel,
 ) = object : UserProfileActions {
     override val signInLauncher: ActivityResultLauncher<Intent> = registerSignInLauncher(activity)
-    override val signInActions: SignInActions = defaultSignInActions(viewmodel.signInIntent)
+    override val userAccountActions: UserAccountActions = defaultSignInActions(viewmodel)
 
     override fun handleSignInResult(data: Intent?) {
         viewmodel.getTokenFromSignInResult(data)

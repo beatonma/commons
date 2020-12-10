@@ -1,10 +1,10 @@
 package org.beatonma.commons.repo.result
 
 
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.ProducerScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.channelFlow
@@ -12,14 +12,15 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
+import org.beatonma.commons.core.extensions.autotag
 import org.beatonma.commons.repo.FlowIoResult
 import java.util.concurrent.TimeUnit
-
 
 /**
  * Emits cached results of [databaseQuery] then attempts to update data with [networkCall].
@@ -63,7 +64,6 @@ fun <T, N> cachedResultFlow(
     networkCallFinished =
         submitAndSaveNetworkResult(networkCall, saveCallResult, closeOnError = false)
 }.catch {
-    println(it)
     emit(GenericError("cachedResultFlow error", it))
 }.flowOn(Dispatchers.IO)
 
@@ -103,35 +103,27 @@ fun <T, N> resultFlowLocalPreferred(
 @OptIn(ExperimentalCoroutinesApi::class)
 fun <T> resultFlowNoCache(
     networkCall: suspend () -> IoResult<T>,
-): FlowIoResult<T> = flow {
-    emit(LoadingResult<T>())
+): FlowIoResult<T> =
+    flow {
+        emit(LoadingResult<T>())
 
-    emit(networkCall.invoke())
-}.catch {
-    emit(NetworkError("resultFlowNoCache error", it))
-}.flowOn(Dispatchers.IO)
+        val response = networkCall()
+        emit(response)
+    }
+        .catch { e ->
+            emit(NetworkError("resultFlowNoCache error", e))
+        }
+        .flowOn(Dispatchers.IO)
 
-@OptIn(ExperimentalCoroutinesApi::class)
 suspend inline fun <T> Flow<IoResult<T>>.await(
     timeout: Long = 1000,
     timeUnit: TimeUnit = TimeUnit.MILLISECONDS,
-    crossinline predicate: (IoResult<T>) -> Boolean,
-) = channelFlow {
-    val timeoutJob = launch {
-        delay(timeUnit.toMillis(timeout))
-        close()
-    }
-
-    launch {
-        this@await.collect {
-            if (predicate(it)) {
-                timeoutJob.cancel()
-                this@channelFlow.send(it)
-                this@channelFlow.close()
-            }
-        }
-    }
-}.single()
+    crossinline predicate: (IoResult<T>) -> Boolean = { true },
+): IoResult<T> = withTimeout(timeUnit.toMillis(timeout)) {
+    filter { predicate(it) }
+        .catch { error(it) }
+        .first()
+}
 
 @OptIn(ExperimentalCoroutinesApi::class)
 private suspend fun <E> ProducerScope<E>.sendError(
@@ -139,6 +131,9 @@ private suspend fun <E> ProducerScope<E>.sendError(
     cause: Throwable? = null,
     closeFlow: Boolean = true,
 ) {
+    if (cause != null) {
+        Log.w(autotag, cause)
+    }
     send(element)
     if (closeFlow) {
         close(cause)

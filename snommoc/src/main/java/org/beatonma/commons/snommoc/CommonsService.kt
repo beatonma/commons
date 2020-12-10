@@ -4,7 +4,6 @@ import org.beatonma.commons.core.House
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.core.SnommocToken
 import org.beatonma.commons.network.core.Http
-import org.beatonma.commons.snommoc.Contract.PARLIAMENTDOTUK
 import org.beatonma.commons.snommoc.annotations.SignInRequired
 import org.beatonma.commons.snommoc.converters.EnvelopePayload
 import org.beatonma.commons.snommoc.models.ApiBill
@@ -17,6 +16,7 @@ import org.beatonma.commons.snommoc.models.ApiMemberVote
 import org.beatonma.commons.snommoc.models.ApiZeitgeist
 import org.beatonma.commons.snommoc.models.MessageOfTheDay
 import org.beatonma.commons.snommoc.models.search.MemberSearchResult
+import org.beatonma.commons.snommoc.models.social.ApiUserName
 import org.beatonma.commons.snommoc.models.social.ApiUserToken
 import org.beatonma.commons.snommoc.models.social.DeleteUserRequest
 import org.beatonma.commons.snommoc.models.social.DeletedVote
@@ -48,14 +48,15 @@ private object Endpoints {
     const val SEARCH = "$MEMBER_API_PATH/?page_size=5"
     const val MOTD = "$API_PATH/motd/"
 
-    const val MEMBER_PROFILE = "$MEMBER_API_PATH/profile/{$PARLIAMENTDOTUK}/"
-    const val VOTES_BY_MEMBER = "$MEMBER_API_PATH/votes/{${Contract.HOUSE}}/{$PARLIAMENTDOTUK}/"
+    const val MEMBER_PROFILE = "$MEMBER_API_PATH/profile/${Contract.PARLIAMENTDOTUK}/"
+    const val VOTES_BY_MEMBER =
+        "$MEMBER_API_PATH/votes/{${Contract.HOUSE}}/${Contract.PARLIAMENTDOTUK}/"
 
-    const val BILL = "$BILL_API_PATH/{$PARLIAMENTDOTUK}/"
+    const val BILL = "$BILL_API_PATH/${Contract.PARLIAMENTDOTUK}/"
 
-    const val DIVISION = "$DIVISION_API_PATH/{${Contract.HOUSE}}/{$PARLIAMENTDOTUK}/"
+    const val DIVISION = "$DIVISION_API_PATH/{${Contract.HOUSE}}/${Contract.PARLIAMENTDOTUK}/"
 
-    const val CONSTITUENCY = "$CONSTITUENCY_API_PATH/{$PARLIAMENTDOTUK}/"
+    const val CONSTITUENCY = "$CONSTITUENCY_API_PATH/${Contract.PARLIAMENTDOTUK}/"
     const val CONSTITUENCY_ELECTION_RESULTS =
         "$CONSTITUENCY_API_PATH/{${Contract.CONSTITUENCY_ID}}/election/{${Contract.ELECTION_ID}}/"
 
@@ -139,23 +140,35 @@ interface SnommocService {
  */
 interface CommonsDataService {
     @GET(Endpoints.MEMBER_PROFILE)
-    suspend fun getMember(@Path(PARLIAMENTDOTUK) parliamentdotuk: ParliamentID): Response<ApiCompleteMember>
+    suspend fun getMember(
+        @Path(Contract.PARLIAMENTDOTUK) parliamentdotuk: ParliamentID,
+    ): Response<ApiCompleteMember>
 
     @GET(Endpoints.BILL)
-    suspend fun getBill(@Path(PARLIAMENTDOTUK) parliamentdotuk: ParliamentID): Response<ApiBill>
+    suspend fun getBill(
+        @Path(Contract.PARLIAMENTDOTUK) parliamentdotuk: ParliamentID,
+    ): Response<ApiBill>
 
     /**
      * Votes by a particular member on all divisions
      */
     @EnvelopePayload
     @GET(Endpoints.VOTES_BY_MEMBER)
-    suspend fun getVotesForMember(@Path(Contract.HOUSE) house: House, @Path(PARLIAMENTDOTUK) parliamentdotuk: ParliamentID): ListResponse<ApiMemberVote>
+    suspend fun getVotesForMember(
+        @Path(Contract.HOUSE) house: House,
+        @Path(Contract.PARLIAMENTDOTUK) parliamentdotuk: ParliamentID,
+    ): ListResponse<ApiMemberVote>
 
     @GET(Endpoints.DIVISION)
-    suspend fun getDivision(@Path(Contract.HOUSE) house: House, @Path(PARLIAMENTDOTUK) parliamentdotuk: ParliamentID): Response<ApiDivision>
+    suspend fun getDivision(
+        @Path(Contract.HOUSE) house: House,
+        @Path(Contract.PARLIAMENTDOTUK) parliamentdotuk: ParliamentID,
+    ): Response<ApiDivision>
 
     @GET(Endpoints.CONSTITUENCY)
-    suspend fun getConstituency(@Path(PARLIAMENTDOTUK) parliamentdotuk: ParliamentID): Response<ApiConstituency>
+    suspend fun getConstituency(
+        @Path(Contract.PARLIAMENTDOTUK) parliamentdotuk: ParliamentID,
+    ): Response<ApiConstituency>
 
     @GET(Endpoints.CONSTITUENCY_ELECTION_RESULTS)
     suspend fun getConstituencyElectionResults(
@@ -182,11 +195,16 @@ interface CommonsSocialService {
     ): Response<Void>
 
     @SignInRequired
+    @GET(Endpoints.Social.ACCOUNT)
+    suspend fun getUsername(
+        @Query(Contract.SNOMMOC_TOKEN) snommocToken: SnommocToken,
+    ): Response<ApiUserName>
+
+    @SignInRequired
     @HTTP(method = Http.Method.DELETE, path = Endpoints.Social.ACCOUNT, hasBody = true)
     suspend fun deleteUserAccount(
         @Body user: DeleteUserRequest,
     ): Response<Void>
-
 
     @GET(Endpoints.Social.ALL)
     suspend fun getSocialContentForTarget(

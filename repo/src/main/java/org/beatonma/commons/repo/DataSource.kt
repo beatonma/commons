@@ -18,11 +18,11 @@ import org.beatonma.commons.snommoc.models.ApiCompleteMember
 import org.beatonma.commons.snommoc.models.ApiConstituency
 import org.beatonma.commons.snommoc.models.ApiConstituencyElectionDetails
 import org.beatonma.commons.snommoc.models.ApiDivision
-import org.beatonma.commons.snommoc.models.ApiMemberProfile
 import org.beatonma.commons.snommoc.models.ApiMemberVote
 import org.beatonma.commons.snommoc.models.ApiZeitgeist
 import org.beatonma.commons.snommoc.models.MessageOfTheDay
 import org.beatonma.commons.snommoc.models.search.MemberSearchResult
+import org.beatonma.commons.snommoc.models.social.ApiUserName
 import org.beatonma.commons.snommoc.models.social.ApiUserToken
 import org.beatonma.commons.snommoc.models.social.DeleteUserRequest
 import org.beatonma.commons.snommoc.models.social.DeletedVote
@@ -35,42 +35,34 @@ import javax.inject.Inject
 
 interface BaseDataSource {
     suspend fun <T> getResult(call: suspend () -> Response<T>): IoResult<T> {
-        try {
-            val response = call()
-            if (response.isSuccessful) {
-                val body = response.body()
-                return when(body) {
-                    null -> SuccessCodeResult(response.code(), message = "Network OK")
-                    else -> SuccessResult(body, message = "Network OK")
-                }
+        val response = call()
+        if (response.isSuccessful) {
+            val body = response.body()
+            return when (body) {
+                null -> SuccessCodeResult(response.code(), message = "Network OK")
+                else -> SuccessResult(body, message = "Network OK")
             }
-            return NetworkError(response.message(), NetworkException(response))
         }
-        catch (e: Exception) {
-            return NetworkError("getResult error: ${e.message ?: e}", e)
-        }
+        return NetworkError(response.message(), NetworkException(response))
     }
 }
 
 
 interface CommonsApi {
     // READ
-    @Deprecated("Use Zeitgeist")
-    suspend fun getFeaturedPeople(): IoResultList<ApiMemberProfile>
     suspend fun getMember(parliamentdotuk: ParliamentID): IoResult<ApiCompleteMember>
 
-    @Deprecated("Use Zeitgeist")
-    suspend fun getFeaturedBills(): IoResultList<ApiBill>
     suspend fun getBill(parliamentdotuk: ParliamentID): IoResult<ApiBill>
 
     suspend fun getVotesForMember(house: House, parliamentdotuk: ParliamentID): IoResultList<ApiMemberVote>
 
-    @Deprecated("Use Zeitgeist")
-    suspend fun getFeaturedDivisions(): IoResultList<ApiDivision>
     suspend fun getDivision(house: House, parliamentdotuk: ParliamentID): IoResult<ApiDivision>
 
     suspend fun getConstituency(parliamentdotuk: ParliamentID): IoResult<ApiConstituency>
-    suspend fun getConstituencyDetailsForElection(constituencyId: Int, electionId: Int): IoResult<ApiConstituencyElectionDetails>
+    suspend fun getConstituencyDetailsForElection(
+        constituencyId: Int,
+        electionId: Int,
+    ): IoResult<ApiConstituencyElectionDetails>
 
     suspend fun getSearchResults(query: String): IoResultList<MemberSearchResult>
 
@@ -79,6 +71,8 @@ interface CommonsApi {
         parliamentdotuk: ParliamentID,
         snommocToken: SnommocToken?,
     ): IoResult<SocialContent>
+
+    suspend fun getUsername(userToken: UserToken): IoResult<ApiUserName>
 
     suspend fun getMessageOfTheDay(): IoResultList<MessageOfTheDay>
 
@@ -106,19 +100,13 @@ class CommonsRemoteDataSource @Inject constructor(
 
     override suspend fun getZeitgeist() = getResult(service::getZeitgeist)
 
-    override suspend fun getFeaturedPeople() = getResult(service::getFeaturedPeople)
-
     override suspend fun getMember(parliamentdotuk: ParliamentID) = getResult {
         service.getMember(parliamentdotuk)
     }
 
-    override suspend fun getFeaturedBills() = getResult(service::getFeaturedBills)
-
     override suspend fun getBill(parliamentdotuk: ParliamentID) = getResult {
         service.getBill(parliamentdotuk)
     }
-
-    override suspend fun getFeaturedDivisions() = getResult(service::getFeaturedDivisions)
 
     override suspend fun getVotesForMember(house: House, parliamentdotuk: ParliamentID) = getResult {
         service.getVotesForMember(house, parliamentdotuk)
@@ -132,12 +120,17 @@ class CommonsRemoteDataSource @Inject constructor(
         service.getConstituency(parliamentdotuk)
     }
 
-    override suspend fun getConstituencyDetailsForElection(constituencyId: Int, electionId: Int) = getResult {
-        service.getConstituencyElectionResults(constituencyId, electionId)
-    }
+    override suspend fun getConstituencyDetailsForElection(constituencyId: Int, electionId: Int) =
+        getResult {
+            service.getConstituencyElectionResults(constituencyId, electionId)
+        }
 
     override suspend fun getSearchResults(query: String) = getResult {
         service.getSearchResults(query)
+    }
+
+    override suspend fun getUsername(userToken: UserToken) = getResult {
+        service.getUsername(userToken.snommocToken)
     }
 
     override suspend fun getMessageOfTheDay() = getResult(service::getMessageOfTheDay)

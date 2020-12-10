@@ -30,13 +30,12 @@ class UserRepository @Inject constructor(
             saveCallResult = { apiToken -> saveApiToken(account, apiToken) }
         )
 
-    /**
-     * Refresh account token from the server, even if we have a cached token.
-     */
-    fun forceGetTokenForAccount(account: GoogleAccount): FlowIoResult<UserToken> = cachedResultFlow(
-        databaseQuery = { userDao.getUserToken(account.googleId) },
-        networkCall = { remoteSource.registerUser(account.googleIdToken) },
-        saveCallResult = { apiToken -> saveApiToken(account, apiToken) }
+    fun refreshUsername(userToken: UserToken): FlowIoResult<UserToken> = cachedResultFlow(
+        databaseQuery = { userDao.getUserToken(userToken.googleId) },
+        networkCall = { remoteSource.getUsername(userToken) },
+        saveCallResult = { apiUsername ->
+            userDao.update(userToken.copy(username = apiUsername.username))
+        }
     )
 
     fun requestRenameAccount(token: UserToken, newName: String) = resultFlowNoCache {
