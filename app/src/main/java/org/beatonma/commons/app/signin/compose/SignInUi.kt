@@ -1,6 +1,7 @@
 package org.beatonma.commons.app.signin.compose
 
 import androidx.compose.animation.transition
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.preferredWidth
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material.ButtonConstants
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -21,6 +23,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.ExperimentalFocus
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -30,33 +33,50 @@ import org.beatonma.commons.app.ui.compose.components.BottomSheetText
 import org.beatonma.commons.app.ui.compose.components.CommonsOutlinedButton
 import org.beatonma.commons.app.ui.compose.components.FabBottomSheet
 import org.beatonma.commons.app.ui.compose.components.FabText
+import org.beatonma.commons.app.ui.compose.components.LoadingIcon
+import org.beatonma.commons.app.ui.compose.components.WarningButton
 import org.beatonma.commons.app.ui.compose.components.image.Avatar
+import org.beatonma.commons.app.ui.compose.components.rememberFabBottomSheetState
+import org.beatonma.commons.app.ui.compose.components.rememberFabBottomSheetTransition
+import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.compose.ambient.shapes
 import org.beatonma.commons.compose.ambient.typography
+import org.beatonma.commons.compose.animation.lerpBetween
+import org.beatonma.commons.compose.animation.progressKey
+import org.beatonma.commons.compose.animation.twoStateProgressTransition
+import org.beatonma.commons.compose.components.ConfirmationState
+import org.beatonma.commons.compose.components.DoubleConfirmationButton
 import org.beatonma.commons.compose.components.LinkedText
+import org.beatonma.commons.compose.components.doubleConfirmationColors
+import org.beatonma.commons.compose.components.rememberConfirmationState
 import org.beatonma.commons.compose.modifiers.wrapContentHeight
 import org.beatonma.commons.compose.modifiers.wrapContentSize
 import org.beatonma.commons.compose.modifiers.wrapContentWidth
 import org.beatonma.commons.compose.util.dotted
+import org.beatonma.commons.compose.util.update
 import org.beatonma.commons.core.extensions.lerpBetween
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.core.extensions.reversed
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.theme.compose.Padding
+import org.beatonma.commons.theme.compose.theme.CommonsButtons
+import org.beatonma.commons.theme.compose.theme.onWarningSurface
+import org.beatonma.commons.theme.compose.theme.warningSurface
+import org.beatonma.commons.compose.components.Text as ResourceText
 
 /**
  * Chooses the appropriate user UI to display depending on whether they are
  * already signed in.
  */
 @Composable
-fun ContextualUserAccountUi(userToken: UserToken = AmbientUserToken.current) =
+fun ContextualUserAccountFabUi(userToken: UserToken = AmbientUserToken.current) =
     when (userToken) {
-        NullUserToken -> SignInUi()
-        else -> UserProfileUi()
+        NullUserToken -> SignInFabUi()
+        else -> UserProfileFabUi()
     }
 
 @Composable
-fun SignInUi(actions: UserAccountActions = AmbientUserProfileActions.current.userAccountActions) =
+fun SignInFabUi(actions: UserAccountActions = AmbientUserProfileActions.current.userAccountActions) =
     FabBottomSheet(
         fabContent = { progress ->
             FabText(stringResource(R.string.account_sign_in), progress)
@@ -86,21 +106,50 @@ fun SignInUi(actions: UserAccountActions = AmbientUserProfileActions.current.use
     )
 
 @Composable
-fun UserProfileUi(userToken: UserToken = AmbientUserToken.current) =
+fun UserProfileFabUi(userToken: UserToken = AmbientUserToken.current) {
+    val fabUiState = rememberFabBottomSheetState()
+    val transition = rememberFabBottomSheetTransition()
+    val transitionState = transition(transition, toState = fabUiState.value)
+
+    val profileState = remember { mutableStateOf(ProfileState.OVERVIEW) }
+    val profileTransition =
+        remember { twoStateProgressTransition(ProfileState.OVERVIEW, ProfileState.DELETE_ACCOUNT) }
+    val profileTransitionState = transition(profileTransition, toState = profileState.value)
+
+    val fabProgress = transitionState[progressKey]
+    val profileProgress = profileTransitionState[progressKey]
+
     FabBottomSheet(
+        uiState = fabUiState,
+        transition = transition,
+        transitionState = transitionState,
+        surfaceColor = getSurfaceColor(fabProgress, profileProgress),
+        contentColor = getContentColor(fabProgress, profileProgress),
+        onDismiss = { profileState.update(ProfileState.OVERVIEW) },
         fabContent = { progress ->
             FabText(userToken.username, progress)
         },
         bottomSheetContent = { progress ->
-            ProfileSheetContent(userToken, progress)
+            if (profileProgress != 1F) {
+                ProfileSheetContent(userToken,
+                    progress - profileProgress,
+                    profileState = profileState
+                )
+            }
+
+            if (profileProgress > 0F) {
+                DeleteAccountUi(userToken, progress = profileProgress, profileState = profileState)
+            }
         },
     )
+}
 
 @OptIn(ExperimentalFocus::class)
 @Composable
 private fun ProfileSheetContent(
     userToken: UserToken,
     progress: Float,
+    profileState: MutableState<ProfileState>,
     userProfileActions: UserProfileActions = AmbientUserProfileActions.current,
     focusRequester: FocusRequester = remember(::FocusRequester),
 ) {
@@ -141,18 +190,114 @@ private fun ProfileSheetContent(
 
             Spacer(Modifier.height(nonEditableVisibility.reversed().lerpBetween(0, 16).dp))
 
-            CommonsOutlinedButton(
-                onClick = userProfileActions.userAccountActions.signOut,
-                modifier = Modifier
-                    .align(Alignment.End)
-                    .wrapContentHeight(nonEditableVisibility)
-                    .alpha(nonEditableVisibility)
-                    .padding(Padding.CardButton)
+            Row(
+                Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(stringResource(R.string.account_sign_out))
+                WarningButton(
+                    onClick = { profileState.update(ProfileState.DELETE_ACCOUNT) },
+                    modifier = Modifier
+                        .wrapContentHeight(nonEditableVisibility)
+                        .alpha(nonEditableVisibility)
+                        .padding(Padding.CardButton),
+                ) {
+                    ResourceText(R.string.account_delete_account_button)
+                }
+
+                CommonsOutlinedButton(
+                    onClick = userProfileActions.userAccountActions.signOut,
+                    modifier = Modifier
+                        .wrapContentHeight(nonEditableVisibility)
+                        .alpha(nonEditableVisibility)
+                        .padding(Padding.CardButton),
+                ) {
+                    ResourceText(R.string.account_sign_out)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun DeleteAccountUi(
+    userToken: UserToken,
+    progress: Float,
+    profileState: MutableState<ProfileState>,
+    confirmDeleteAction: suspend (UserToken) -> Unit = AmbientUserProfileActions.current.userAccountActions.deleteAccount,
+) {
+    val confirmationState = rememberConfirmationState()
+
+    BottomSheetText(progress) {
+        Column(Modifier.fillMaxWidth().alpha(progress.progressIn(0.6F, 1F))) {
+            ResourceText(R.string.account_delete_account_title, style = typography.h4)
+
+            ResourceText(R.string.account_delete_explanation)
+
+            Spacer(Modifier.height(16.dp))
+
+            Row(
+                Modifier.fillMaxWidth().padding(Padding.EndOfContent),
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                DoubleConfirmationButton(
+                    onClick = { println("(FAKE) Account deletion confirmed!") },
+                    colors = doubleConfirmationColors(
+                        safeColors = CommonsButtons.contentButtonColors(),
+                        awaitingConfirmationColors = CommonsButtons.buttonColors(
+                            contentColor = colors.warningSurface,
+                            backgroundColor = colors.onWarningSurface),
+                        confirmedColor = CommonsButtons.contentButtonColors()
+                    ),
+                    confirmationState = confirmationState,
+                    border = if (confirmationState.value == ConfirmationState.Confirmed) null else ButtonConstants.defaultOutlinedBorder,
+                    safeContent = { ResourceText(R.string.account_delete_confirm_button) },
+                    awaitingConfirmationContent = { ResourceText(R.string.account_delete_confirm_twice_button) },
+                    confirmedContent = { LoadingIcon() }
+                )
+
+                CommonsOutlinedButton(
+                    onClick = { profileState.update(ProfileState.OVERVIEW) },
+                    colors = CommonsButtons.contentButtonColors()
+                ) {
+                    ResourceText(R.string.account_delete_cancel_button)
+                }
             }
         }
     }
 }
 
 private val MutableState<EditableState>.isReadOnly get() = value == EditableState.ReadOnly
+
+private enum class ProfileState {
+    OVERVIEW,
+    DELETE_ACCOUNT,
+}
+
+@Composable
+private fun getSurfaceColor(fabProgress: Float, profileProgress: Float): Color {
+    val startColor = if (fabProgress == 1F) colors.surface else colors.primary
+    val endColor = if (profileProgress == 0F) colors.surface else colors.warningSurface
+
+    return getColor(
+        if (profileProgress > 0F) profileProgress else fabProgress,
+        startColor,
+        endColor
+    )
+}
+
+@Composable
+private fun getContentColor(fabProgress: Float, profileProgress: Float): Color {
+    val startColor = if (fabProgress == 1F) colors.onSurface else colors.onPrimary
+    val endColor = if (profileProgress == 0F) colors.onSurface else colors.onWarningSurface
+
+    return getColor(
+        if (profileProgress > 0F) profileProgress else fabProgress,
+        startColor,
+        endColor
+    )
+}
+
+private fun getColor(progress: Float, start: Color, end: Color) =
+    progress.progressIn(0F, 0.4F).lerpBetween(start, end)
