@@ -31,6 +31,7 @@ abstract class CommonsAndroidModule<T : BaseExtension> : AndroidProjectPlugin<T>
             apply("kotlin-android")
             apply("kotlin-kapt")
             apply("com.github.ben-manes.versions")
+            apply("kotlin-parcelize")
         }
     }
 
