@@ -13,6 +13,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Surface
 import androidx.compose.material.SwipeableState
 import androidx.compose.material.Text
+import androidx.compose.material.contentColorFor
 import androidx.compose.material.rememberSwipeableState
 import androidx.compose.material.swipeable
 import androidx.compose.runtime.Composable
@@ -24,8 +25,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.gesture.scrollorientationlocking.Orientation
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
+import org.beatonma.commons.ActionBlock
 import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.animation.TwoState
@@ -71,17 +74,26 @@ fun rememberFabBottomSheetState() = remember { mutableStateOf(FabBottomSheetStat
 fun FabBottomSheet(
     modifier: Modifier = Modifier,
     uiState: MutableState<FabBottomSheetState> = rememberFabBottomSheetState(),
+    surfaceColor: Color? = null,
+    contentColor: Color? = null,
     transition: TransitionDefinition<FabBottomSheetState> = rememberFabBottomSheetTransition(),
     transitionState: TransitionState = transition(transition, toState = uiState.value),
+    onDismiss: ActionBlock = {},
     fabContent: @Composable (progress: Float) -> Unit,
     bottomSheetContent: @Composable (progress: Float) -> Unit,
 ) {
+    val progress = transitionState[progressKey]
+    val resolvedSurfaceColor = surfaceColor ?: getSurfaceColor(progress)
+
     FabBottomSheetLayout(
         uiState,
-        transitionState[progressKey],
+        progress,
         fabContent,
         bottomSheetContent,
         modifier,
+        surfaceColor = resolvedSurfaceColor,
+        contentColor = contentColor ?: contentColorFor(resolvedSurfaceColor),
+        onDismiss = onDismiss,
     )
 }
 
@@ -97,10 +109,13 @@ fun SwipeableFabBottomSheet(
         initialValue = uiState.value,
         animationSpec = CommonsSpring(),
     ),
+    surfaceColor: Color? = null,
+    contentColor: Color? = null,
     swipeAnchors: Map<Float, FabBottomSheetState> = mapOf(
         0F to FabBottomSheetState.Fab,
         500F to FabBottomSheetState.BottomSheet,
     ),
+    onDismiss: ActionBlock = {},
     fabContent: @Composable (progress: Float) -> Unit,
     bottomSheetContent: @Composable (progress: Float) -> Unit,
 ) {
@@ -114,6 +129,8 @@ fun SwipeableFabBottomSheet(
         })
     }
 
+    val resolvedSurfaceColor = surfaceColor ?: getSurfaceColor(progress)
+
     FabBottomSheetLayout(
         uiState,
         progress,
@@ -124,7 +141,10 @@ fun SwipeableFabBottomSheet(
             anchors = swipeAnchors,
             orientation = Orientation.Vertical,
             reverseDirection = true,
-        )
+        ),
+        surfaceColor = resolvedSurfaceColor,
+        contentColor = contentColor ?: contentColorFor(resolvedSurfaceColor),
+        onDismiss = onDismiss,
     )
 }
 
@@ -138,7 +158,6 @@ fun FabText(
         Modifier
             .padding(Padding.ExtendedFabContent)
             .alpha(progress.reversed().progressIn(0.8F, 1.0F)),
-        color = colors.onSecondary,
         style = typography.button,
     )
 }
@@ -183,15 +202,21 @@ private fun FabBottomSheetLayout(
     fabContent: @Composable (progress: Float) -> Unit,
     bottomSheetContent: @Composable (progress: Float) -> Unit,
     modifier: Modifier,
+    surfaceColor: Color,
+    contentColor: Color,
+    onDismiss: ActionBlock,
 ) {
     val targetState = uiState.value
 
     ModalScrim(
         alignment = Alignment.BottomEnd,
         alpha = progress,
-        onClickAction = { uiState.update(FabBottomSheetState.Fab) }
+        onClickAction = {
+            uiState.update(FabBottomSheetState.Fab)
+            onDismiss()
+        }
     ) {
-        val surfaceShape = getFabBottomsheetSurfaceShape(progress)
+        val surfaceShape = getSurfaceShape(progress)
 
         Surface(
             modifier
@@ -204,7 +229,8 @@ private fun FabBottomSheetLayout(
                 }
                 .shadow(Elevation.ModalSurface, surfaceShape),
             shape = surfaceShape,
-            color = progress.progressIn(0F, 0.4F).lerpBetween(colors.primary, colors.surface),
+            color = surfaceColor,
+            contentColor = contentColor,
         ) {
             Box {
                 if (progress != 1F) {
@@ -219,13 +245,17 @@ private fun FabBottomSheetLayout(
 }
 
 @Composable
-private fun rememberFabBottomSheetTransition() = remember {
+fun rememberFabBottomSheetTransition() = remember {
     twoStateProgressTransition(FabBottomSheetState.Fab, FabBottomSheetState.BottomSheet)
 }
 
-private fun getFabBottomsheetSurfaceShape(progress: Float): Shape {
+private fun getSurfaceShape(progress: Float): Shape {
     val eased = progress.withEasing(LinearOutSlowInEasing)
     val upperCornerSize = eased.lerpBetween(24, CORNER_SMALL).dp
     val lowerCornerSize = eased.lerpBetween(24, 0).dp
     return RoundedCornerShape(upperCornerSize, upperCornerSize, lowerCornerSize, lowerCornerSize)
 }
+
+@Composable
+private fun getSurfaceColor(progress: Float) =
+    progress.progressIn(0F, 0.4F).lerpBetween(colors.primary, colors.surface)
