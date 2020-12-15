@@ -47,24 +47,24 @@ fun <T, N> cachedResultFlow(
                 distinctUntilChanged()
             }
         }
-            .filter {
+            .filter { result ->
                 /**
                  * Only emit null/empty [databaseQuery] results if the network call has completed.
                  */
                 when {
                     networkCallFinished -> true
-                    it is Collection<*> -> it.isNotEmpty()
-                    else -> it != null
+                    result is Collection<*> -> result.isNotEmpty()
+                    else -> result != null
                 }
             }
-            .mapLatest { SuccessResult(it, "DB read") }
+            .mapLatest { SuccessResult(it) }
             .collectLatest(::send)
     }
 
     networkCallFinished =
         submitAndSaveNetworkResult(networkCall, saveCallResult, closeOnError = false)
-}.catch {
-    emit(GenericError("cachedResultFlow error", it))
+}.catch { e ->
+    emit(GenericError(e, "cachedResultFlow error"))
 }.flowOn(Dispatchers.IO)
 
 /**
@@ -88,12 +88,12 @@ fun <T, N> resultFlowLocalPreferred(
                 }
 
                 else -> send(
-                    SuccessResult(queryResult, "DB read")
+                    SuccessResult(queryResult)
                 )
             }
         }
-}.catch {
-    emit(GenericError("resultFlowLocalPreferred error $it", it))
+}.catch { e ->
+    emit(GenericError(e, "resultFlowLocalPreferred error"))
 }.flowOn(Dispatchers.IO)
 
 /**
@@ -111,7 +111,7 @@ fun <T> resultFlowNoCache(
         emit(response)
     }
         .catch { e ->
-            emit(NetworkError("resultFlowNoCache error", e))
+            emit(NetworkError(e, "resultFlowNoCache error"))
         }
         .flowOn(Dispatchers.IO)
 
@@ -121,7 +121,6 @@ suspend inline fun <T> Flow<IoResult<T>>.await(
     crossinline predicate: (IoResult<T>) -> Boolean = { true },
 ): IoResult<T> = withTimeout(timeUnit.toMillis(timeout)) {
     filter { predicate(it) }
-        .catch { error(it) }
         .first()
 }
 
@@ -162,19 +161,19 @@ private suspend inline fun <E, N> ProducerScope<IoResult<E>>.submitAndSaveNetwor
                     saveCallResult(response.data)
                 }
                 catch (e: Exception) {
-                    sendError(LocalError("Unable to save network result: $e", e),
+                    sendError(LocalError(e, "Unable to save network result"),
                         e,
                         closeFlow = closeOnError)
                 }
             }
             else {
-                sendError(UnexpectedValueError("Null data: ${response.message}", null),
+                sendError(UnexpectedValueError("Null data: ${response.message}"),
                     closeFlow = closeOnError)
             }
         }
 
         is IoError<*, *> -> {
-            sendError(NetworkError(response.message, response.error),
+            sendError(NetworkError(response.error, response.message),
                 response.error,
                 closeFlow = closeOnError)
         }

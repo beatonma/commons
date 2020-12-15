@@ -39,11 +39,11 @@ interface BaseDataSource {
         if (response.isSuccessful) {
             val body = response.body()
             return when (body) {
-                null -> SuccessCodeResult(response.code(), message = "Network OK")
-                else -> SuccessResult(body, message = "Network OK")
+                null -> SuccessCodeResult(response.code())
+                else -> SuccessResult(body)
             }
         }
-        return NetworkError(response.message(), NetworkException(response))
+        return NetworkError(NetworkException(response), response.message())
     }
 }
 
