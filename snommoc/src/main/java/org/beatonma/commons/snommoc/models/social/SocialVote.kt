@@ -1,6 +1,8 @@
 package org.beatonma.commons.snommoc.models.social
 
+import android.os.Parcelable
 import com.squareup.moshi.Json
+import kotlinx.parcelize.Parcelize
 import org.beatonma.commons.core.SnommocToken
 
 private const val JSON_NAME_AYE = "aye"
@@ -17,11 +19,11 @@ enum class SocialVoteType(val apiName: String) {
     ;
 }
 
-
+@Parcelize
 data class SocialVotes(
     @field:Json(name = JSON_NAME_AYE) val aye: Int = 0,
     @field:Json(name = JSON_NAME_NO) val no: Int = 0,
-) {
+) : Parcelable {
     fun voteCount(): Int = (aye + no).coerceAtLeast(0)
 }
 
