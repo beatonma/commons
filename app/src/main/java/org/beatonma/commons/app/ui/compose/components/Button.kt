@@ -18,17 +18,17 @@ import org.beatonma.commons.theme.compose.theme.CommonsButtons
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-inline fun CommonsOutlinedButton(
-    noinline onClick: () -> Unit,
+fun CommonsOutlinedButton(
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    interactionState: InteractionState = remember { InteractionState() },
+    interactionState: InteractionState = remember(::InteractionState),
     elevation: ButtonElevation? = null,
     shape: Shape = shapes.small,
     border: BorderStroke? = ButtonConstants.defaultOutlinedBorder,
     colors: ButtonColors = CommonsButtons.outlineButtonColors(),
     contentPadding: PaddingValues = ButtonConstants.DefaultContentPadding,
-    noinline content: @Composable RowScope.() -> Unit,
+    content: @Composable RowScope.() -> Unit,
 ) = Button(
     onClick = onClick,
     modifier = modifier,
@@ -41,3 +41,31 @@ inline fun CommonsOutlinedButton(
     contentPadding = contentPadding,
     content = content
 )
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun WarningButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    interactionState: InteractionState = remember(::InteractionState),
+    elevation: ButtonElevation? = null,
+    shape: Shape = shapes.small,
+    border: BorderStroke? = ButtonConstants.defaultOutlinedBorder,
+    colors: ButtonColors = CommonsButtons.warningButtonColors(),
+    contentPadding: PaddingValues = ButtonConstants.DefaultContentPadding,
+    content: @Composable RowScope.() -> Unit,
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+        interactionState = interactionState,
+        elevation = elevation,
+        shape = shape,
+        border = border,
+        colors = colors,
+        contentPadding = contentPadding,
+        content = content
+    )
+}
