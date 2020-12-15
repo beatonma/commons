@@ -22,6 +22,7 @@ import org.beatonma.commons.ActionBlock
 import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.util.rememberBoolean
 import org.beatonma.commons.theme.compose.theme.CommonsRepeatable
+import org.beatonma.commons.theme.compose.theme.systemui.systemBarsPadding
 
 private val rotationKey = FloatPropKey()
 
@@ -29,7 +30,7 @@ private val rotationKey = FloatPropKey()
 fun Loading(
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier, contentAlignment = Alignment.Center) {
+    Box(modifier.systemBarsPadding(), contentAlignment = Alignment.Center) {
         Text(
             "Loading",
             style = typography.h3,
