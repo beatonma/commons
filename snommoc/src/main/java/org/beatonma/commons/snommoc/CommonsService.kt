@@ -48,15 +48,15 @@ private object Endpoints {
     const val SEARCH = "$MEMBER_API_PATH/?page_size=5"
     const val MOTD = "$API_PATH/motd/"
 
-    const val MEMBER_PROFILE = "$MEMBER_API_PATH/profile/${Contract.PARLIAMENTDOTUK}/"
+    const val MEMBER_PROFILE = "$MEMBER_API_PATH/profile/{${Contract.PARLIAMENTDOTUK}}/"
     const val VOTES_BY_MEMBER =
-        "$MEMBER_API_PATH/votes/{${Contract.HOUSE}}/${Contract.PARLIAMENTDOTUK}/"
+        "$MEMBER_API_PATH/votes/{${Contract.HOUSE}}/{${Contract.PARLIAMENTDOTUK}}/"
 
-    const val BILL = "$BILL_API_PATH/${Contract.PARLIAMENTDOTUK}/"
+    const val BILL = "$BILL_API_PATH/{${Contract.PARLIAMENTDOTUK}}/"
 
-    const val DIVISION = "$DIVISION_API_PATH/{${Contract.HOUSE}}/${Contract.PARLIAMENTDOTUK}/"
+    const val DIVISION = "$DIVISION_API_PATH/{${Contract.HOUSE}}/{${Contract.PARLIAMENTDOTUK}}/"
 
-    const val CONSTITUENCY = "$CONSTITUENCY_API_PATH/${Contract.PARLIAMENTDOTUK}/"
+    const val CONSTITUENCY = "$CONSTITUENCY_API_PATH/{${Contract.PARLIAMENTDOTUK}}/"
     const val CONSTITUENCY_ELECTION_RESULTS =
         "$CONSTITUENCY_API_PATH/{${Contract.CONSTITUENCY_ID}}/election/{${Contract.ELECTION_ID}}/"
 
