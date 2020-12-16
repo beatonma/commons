@@ -7,10 +7,14 @@ import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.network.core.NetworkException
 import org.beatonma.commons.repo.models.CreatedComment
 import org.beatonma.commons.repo.models.CreatedVote
+import org.beatonma.commons.repo.result.Failure
 import org.beatonma.commons.repo.result.IoResult
 import org.beatonma.commons.repo.result.NetworkError
+import org.beatonma.commons.repo.result.ResponseCode
+import org.beatonma.commons.repo.result.Success
 import org.beatonma.commons.repo.result.SuccessCodeResult
 import org.beatonma.commons.repo.result.SuccessResult
+import org.beatonma.commons.repo.result.ThrowableResult
 import org.beatonma.commons.snommoc.CommonsService
 import org.beatonma.commons.snommoc.annotations.SignInRequired
 import org.beatonma.commons.snommoc.models.ApiBill
@@ -20,7 +24,6 @@ import org.beatonma.commons.snommoc.models.ApiConstituencyElectionDetails
 import org.beatonma.commons.snommoc.models.ApiDivision
 import org.beatonma.commons.snommoc.models.ApiMemberVote
 import org.beatonma.commons.snommoc.models.ApiZeitgeist
-import org.beatonma.commons.snommoc.models.MessageOfTheDay
 import org.beatonma.commons.snommoc.models.search.MemberSearchResult
 import org.beatonma.commons.snommoc.models.social.ApiUserName
 import org.beatonma.commons.snommoc.models.social.ApiUserToken
@@ -34,6 +37,7 @@ import retrofit2.Response
 import javax.inject.Inject
 
 interface BaseDataSource {
+    @Deprecated("Migrate to [getResultMonad] using [ThrowableResult]")
     suspend fun <T> getResult(call: suspend () -> Response<T>): IoResult<T> {
         val response = call()
         if (response.isSuccessful) {
@@ -44,6 +48,18 @@ interface BaseDataSource {
             }
         }
         return NetworkError(NetworkException(response), response.message())
+    }
+
+    suspend fun <T> getResultMonad(call: suspend () -> Response<T>): ThrowableResult<T> {
+        val response = call()
+        if (response.isSuccessful) {
+            val body = response.body()
+            return when (body) {
+                null -> ResponseCode(response.code())
+                else -> Success(body)
+            }
+        }
+        return Failure(Exception("[${response.code()}] ${response.message()}"))
     }
 }
 
@@ -56,7 +72,10 @@ interface CommonsApi {
 
     suspend fun getVotesForMember(house: House, parliamentdotuk: ParliamentID): IoResultList<ApiMemberVote>
 
-    suspend fun getDivision(house: House, parliamentdotuk: ParliamentID): IoResult<ApiDivision>
+    suspend fun getDivision(
+        house: House,
+        parliamentdotuk: ParliamentID,
+    ): ThrowableResult<ApiDivision>
 
     suspend fun getConstituency(parliamentdotuk: ParliamentID): IoResult<ApiConstituency>
     suspend fun getConstituencyDetailsForElection(
@@ -70,11 +89,11 @@ interface CommonsApi {
         targetType: SocialTargetType,
         parliamentdotuk: ParliamentID,
         snommocToken: SnommocToken?,
-    ): IoResult<SocialContent>
+    ): ThrowableResult<SocialContent>
 
     suspend fun getUsername(userToken: UserToken): IoResult<ApiUserName>
 
-    suspend fun getMessageOfTheDay(): IoResultList<MessageOfTheDay>
+//    suspend fun getMessageOfTheDay(): IoResultList<MessageOfTheDay>
 
     suspend fun getZeitgeist(): IoResult<ApiZeitgeist>
 
@@ -112,7 +131,7 @@ class CommonsRemoteDataSource @Inject constructor(
         service.getVotesForMember(house, parliamentdotuk)
     }
 
-    override suspend fun getDivision(house: House, parliamentdotuk: ParliamentID) = getResult {
+    override suspend fun getDivision(house: House, parliamentdotuk: ParliamentID) = getResultMonad {
         service.getDivision(house, parliamentdotuk)
     }
 
@@ -133,13 +152,13 @@ class CommonsRemoteDataSource @Inject constructor(
         service.getUsername(userToken.snommocToken)
     }
 
-    override suspend fun getMessageOfTheDay() = getResult(service::getMessageOfTheDay)
+//    override suspend fun getMessageOfTheDay() = getResult(service::getMessageOfTheDay)
 
     override suspend fun getSocialForTarget(
         targetType: SocialTargetType,
         parliamentdotuk: ParliamentID,
         snommocToken: SnommocToken?,
-    ) = getResult {
+    ) = getResultMonad {
         service.getSocialContentForTarget(targetType.name, parliamentdotuk, snommocToken)
     }
 

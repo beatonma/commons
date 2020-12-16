@@ -27,5 +27,6 @@ object Http {
         fun isSuccess(status: Int) = status in OK_200 until MULTIPLE_CHOICE_300
         fun isClientError(status: Int) = status in BAD_REQUEST_400 until INTERNAL_SERVER_ERROR_500
         fun isServerError(status: Int) = status >= INTERNAL_SERVER_ERROR_500
+        fun isError(status: Int) = status >= BAD_REQUEST_400
     }
 }

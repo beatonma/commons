@@ -1,6 +1,5 @@
 package org.beatonma.commons.repo.result
 
-
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -12,15 +11,11 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeout
 import org.beatonma.commons.core.extensions.autotag
-import org.beatonma.commons.repo.FlowIoResult
-import java.util.concurrent.TimeUnit
 
 /**
  * Emits cached results of [databaseQuery] then attempts to update data with [networkCall].
@@ -30,15 +25,14 @@ import java.util.concurrent.TimeUnit
  *
  * - Otherwise
  */
-@Deprecated("Replace with equivalent in [MonadResultFlow]")
 @OptIn(ExperimentalCoroutinesApi::class)
-fun <T, N> cachedResultFlow(
+fun <T, N> cachedResultFlowMonad(
     databaseQuery: () -> Flow<T>,
-    networkCall: suspend () -> IoResult<N>,
+    networkCall: suspend () -> ThrowableResult<N>,
     saveCallResult: suspend (N) -> Unit,
     distinctUntilChanged: Boolean = true,
-): FlowIoResult<T> = channelFlow<IoResult<T>> {
-    send(LoadingResult())
+): Flow<ThrowableResult<T>> = channelFlow<ThrowableResult<T>> {
+    send(Loading)
     var networkCallFinished = false
 
     // Run databaseQuery in separate coroutine and surface results to channelFlow
@@ -58,27 +52,26 @@ fun <T, N> cachedResultFlow(
                     else -> result != null
                 }
             }
-            .mapLatest { SuccessResult(it) }
+            .mapLatest(::Success)
             .collectLatest(::send)
     }
 
     networkCallFinished =
         submitAndSaveNetworkResult(networkCall, saveCallResult, closeOnError = false)
 }.catch { e ->
-    emit(GenericError(e, "cachedResultFlow error"))
+    emit(Failure(e, "cachedResultFlow error"))
 }.flowOn(Dispatchers.IO)
 
 /**
  * [networkCall] will only execute if [databaseQuery] does not emit a useful value.
  */
-@Deprecated("Replace with equivalent in [MonadResultFlow]")
 @OptIn(ExperimentalCoroutinesApi::class)
-fun <T, N> resultFlowLocalPreferred(
+fun <T, N> resultFlowLocalPreferredMonad(
     databaseQuery: () -> Flow<T>,
-    networkCall: suspend () -> IoResult<N>,
+    networkCall: suspend () -> ThrowableResult<N>,
     saveCallResult: suspend (N) -> Unit,
-): FlowIoResult<T> = channelFlow<IoResult<T>> {
-    send(LoadingResult())
+): Flow<ThrowableResult<T>> = channelFlow<ThrowableResult<T>> {
+    send(Loading)
 
     databaseQuery.invoke()
         .collect { queryResult ->
@@ -90,41 +83,52 @@ fun <T, N> resultFlowLocalPreferred(
                 }
 
                 else -> send(
-                    SuccessResult(queryResult)
+                    Success(queryResult)
                 )
             }
         }
 }.catch { e ->
-    emit(GenericError(e, "resultFlowLocalPreferred error"))
+    emit(Failure(e, "resultFlowLocalPreferred error"))
 }.flowOn(Dispatchers.IO)
 
 /**
  * Run the network call with no local caching.
  * The resulting flow will emit a LoadingResult while waiting for network response.
  */
-@Deprecated("Replace with equivalent in [MonadResultFlow]")
 @OptIn(ExperimentalCoroutinesApi::class)
-fun <T> resultFlowNoCache(
-    networkCall: suspend () -> IoResult<T>,
-): FlowIoResult<T> =
+fun <T> resultFlowNoCacheMonad(
+    networkCall: suspend () -> ThrowableResult<T>,
+): Flow<ThrowableResult<T>> =
     flow {
-        emit(LoadingResult<T>())
+        emit(Loading)
 
         val response = networkCall()
         emit(response)
     }
         .catch { e ->
-            emit(NetworkError(e, "resultFlowNoCache error"))
+            emit(Failure(e, "resultFlowNoCache error"))
         }
         .flowOn(Dispatchers.IO)
 
-suspend inline fun <T> Flow<IoResult<T>>.await(
-    timeout: Long = 1000,
-    timeUnit: TimeUnit = TimeUnit.MILLISECONDS,
-    crossinline predicate: (IoResult<T>) -> Boolean = { true },
-): IoResult<T> = withTimeout(timeUnit.toMillis(timeout)) {
-    filter { predicate(it) }
-        .first()
+/**
+ * Shared network handling block for updating local cache.
+ * Returns true if saveCallResult completes successfully.
+ */
+@Suppress("REDUNDANT_INLINE_SUSPEND_FUNCTION_TYPE") // networkCall and saveCallResult require suspend keyword
+@OptIn(ExperimentalCoroutinesApi::class)
+private suspend inline fun <E, N> ProducerScope<ThrowableResult<E>>.submitAndSaveNetworkResult(
+    networkCall: suspend () -> ThrowableResult<N>,
+    saveCallResult: suspend (N) -> Unit,
+    closeOnError: Boolean = true,
+): Boolean {
+    val response: ThrowableResult<N> = networkCall.invoke()
+
+    when (response) {
+        is Success -> saveCallResult(response.data)
+        is Failure -> sendError(response, response.error, closeOnError)
+        is ResponseCode -> println("Response code: ${response.responseCode}")
+    }
+    return true
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -136,50 +140,10 @@ private suspend fun <E> ProducerScope<E>.sendError(
     if (cause != null) {
         Log.w(autotag, cause)
     }
+
     send(element)
+
     if (closeFlow) {
         close(cause)
     }
-}
-
-
-/**
- * Shared network handling block for updating local cache.
- * Returns true if saveCallResult completes successfully.
- */
-@Suppress("REDUNDANT_INLINE_SUSPEND_FUNCTION_TYPE") // networkCall and saveCallResult require suspend keyword
-@OptIn(ExperimentalCoroutinesApi::class)
-private suspend inline fun <E, N> ProducerScope<IoResult<E>>.submitAndSaveNetworkResult(
-    networkCall: suspend () -> IoResult<N>,
-    saveCallResult: suspend (N) -> Unit,
-    closeOnError: Boolean = true,
-): Boolean {
-    val response = networkCall.invoke()
-    when (response) {
-        is SuccessResult<*>,
-        is SuccessCodeResult,
-        -> {
-            if (response.data != null) {
-                try {
-                    saveCallResult(response.data)
-                }
-                catch (e: Exception) {
-                    sendError(LocalError(e, "Unable to save network result"),
-                        e,
-                        closeFlow = closeOnError)
-                }
-            }
-            else {
-                sendError(UnexpectedValueError("Null data: ${response.message}"),
-                    closeFlow = closeOnError)
-            }
-        }
-
-        is IoError<*, *> -> {
-            sendError(NetworkError(response.error, response.message),
-                response.error,
-                closeFlow = closeOnError)
-        }
-    }
-    return true
 }
