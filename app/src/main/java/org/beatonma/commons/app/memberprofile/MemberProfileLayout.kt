@@ -1,4 +1,4 @@
-package org.beatonma.commons.app.memberprofile.compose
+package org.beatonma.commons.app.memberprofile
 
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -30,6 +30,8 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import org.beatonma.commons.R
@@ -282,6 +284,7 @@ private fun FinancialInterests(interests: List<FinancialInterest>, modifier: Mod
 
 @Composable
 fun CollapsibleColumn(state: MutableState<ExpandCollapseState> = rememberExpandCollapseState()) {
+    TODO()
 }
 
 @Composable
@@ -381,6 +384,7 @@ private fun MemberProfileScaffold(
                     )
                     .zIndex(Layer.Low)
                     .shadow(1.dp)
+                    .semantics { testTag = "title_bar" }
             )
 
             Box(
@@ -408,6 +412,7 @@ private fun MemberProfileScaffold(
                 .zIndex(Layer.High)
                 .wrapContentOrFillHeight(progress.withEasing(FastOutSlowInEasing))
                 .padding(start = 12.lerpTo(0, progress).pdp, bottom = 8.lerpTo(0, progress).pdp)
+                .semantics { testTag = "social_content" }
         }
     }
 }

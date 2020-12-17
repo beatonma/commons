@@ -1,4 +1,4 @@
-package org.beatonma.commons.app.memberprofile.compose
+package org.beatonma.commons.app.memberprofile
 
 import android.content.Context
 import androidx.annotation.VisibleForTesting
