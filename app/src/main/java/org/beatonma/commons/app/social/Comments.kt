@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import org.beatonma.commons.R
 import org.beatonma.commons.app.signin.compose.AmbientUserToken
 import org.beatonma.commons.app.signin.compose.NullUserToken
-import org.beatonma.commons.app.signin.compose.SignInUi
+import org.beatonma.commons.app.signin.compose.SignInFabUi
 import org.beatonma.commons.app.social.SocialUiState
 import org.beatonma.commons.app.ui.compose.components.BottomSheetText
 import org.beatonma.commons.app.ui.compose.components.CommonsOutlinedButton
@@ -136,7 +136,7 @@ fun CreateCommentUi(
 ) {
     if (userToken == NullUserToken) {
         // User can't create a new comment until they are signed in.
-        SignInUi()
+        SignInFabUi()
         return
     }
 

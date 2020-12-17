@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.ProvidableAmbient
 import androidx.compose.runtime.ambientOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.staticAmbientOf
 import androidx.compose.ui.graphics.Color
 import org.beatonma.commons.ActionBlock
@@ -22,7 +23,7 @@ val AmbientSocialTheme: ProvidableAmbient<SocialTheme> =
     ambientOf { error("Social theme has not been provided") }
 val AmbientSocialActions: ProvidableAmbient<SocialActions> = ambientOf { SocialActions() }
 val AmbientSocialUiState: ProvidableAmbient<MutableState<SocialUiState>> =
-    ambientOf { error("SocialUiState has not been set") }
+    ambientOf { mutableStateOf(SocialUiState.Collapsed) }
 val AmbientSocialUiTransition: ProvidableAmbient<TransitionState> =
     ambientOf { error("TransitionState has not been set") }
 val AmbientSocialCommentValidator: ProvidableAmbient<TextValidationRules> = staticAmbientOf {

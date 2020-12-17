@@ -41,7 +41,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import org.beatonma.commons.R
 import org.beatonma.commons.app.preview.ProvidePreviewAmbients
-import org.beatonma.commons.app.search.compose.AmbientSearchActions
 import org.beatonma.commons.app.ui.compose.components.PartyDot
 import org.beatonma.commons.app.ui.compose.components.Todo
 import org.beatonma.commons.app.ui.compose.components.image.DEV_AVATAR
