@@ -1,4 +1,4 @@
-package org.beatonma.commons.app.social.compose
+package org.beatonma.commons.app.social
 
 import androidx.compose.animation.AnimatedFloatModel
 import androidx.compose.animation.asDisposableClock

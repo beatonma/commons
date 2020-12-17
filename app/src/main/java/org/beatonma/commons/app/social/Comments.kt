@@ -1,4 +1,4 @@
-package org.beatonma.commons.app.social.compose
+package org.beatonma.commons.app.social
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -27,10 +27,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.R
-import org.beatonma.commons.app.signin.compose.AmbientUserToken
-import org.beatonma.commons.app.signin.compose.NullUserToken
-import org.beatonma.commons.app.signin.compose.SignInFabUi
-import org.beatonma.commons.app.social.SocialUiState
+import org.beatonma.commons.app.signin.AmbientUserToken
+import org.beatonma.commons.app.signin.NullUserToken
+import org.beatonma.commons.app.signin.SignInFabUi
 import org.beatonma.commons.app.ui.compose.components.BottomSheetText
 import org.beatonma.commons.app.ui.compose.components.CommonsOutlinedButton
 import org.beatonma.commons.app.ui.compose.components.FabBottomSheet

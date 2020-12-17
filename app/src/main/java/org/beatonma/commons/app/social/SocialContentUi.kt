@@ -1,4 +1,4 @@
-package org.beatonma.commons.app.social.compose
+package org.beatonma.commons.app.social
 
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import org.beatonma.commons.ActionBlock
-import org.beatonma.commons.app.social.SocialUiState
 import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.animation.lerpBetween
 import org.beatonma.commons.compose.modifiers.wrapContentHeight

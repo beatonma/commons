@@ -5,7 +5,6 @@ import androidx.compose.animation.transition
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import org.beatonma.commons.app.social.compose.rememberSocialScaffoldTransition
 
 enum class SocialUiState {
     Collapsed,

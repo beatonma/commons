@@ -1,4 +1,4 @@
-package org.beatonma.commons.app.social.compose
+package org.beatonma.commons.app.social
 
 import androidx.compose.animation.core.TransitionState
 import androidx.compose.material.MaterialTheme.colors
@@ -11,7 +11,6 @@ import androidx.compose.runtime.staticAmbientOf
 import androidx.compose.ui.graphics.Color
 import org.beatonma.commons.ActionBlock
 import org.beatonma.commons.BuildConfig
-import org.beatonma.commons.app.social.SocialUiState
 import org.beatonma.commons.app.ui.colors.ComposePartyColors
 import org.beatonma.commons.compose.components.TextValidationRules
 import org.beatonma.commons.snommoc.models.social.EmptySocialContent

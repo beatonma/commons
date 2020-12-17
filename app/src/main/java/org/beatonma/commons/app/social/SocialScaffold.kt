@@ -1,4 +1,4 @@
-package org.beatonma.commons.app.social.compose
+package org.beatonma.commons.app.social
 
 import androidx.compose.animation.core.FloatPropKey
 import androidx.compose.animation.core.TransitionState
@@ -11,8 +11,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import org.beatonma.commons.ActionBlock
-import org.beatonma.commons.app.social.SocialUiState
-import org.beatonma.commons.app.social.socialTransitionState
 import org.beatonma.commons.compose.util.update
 import org.beatonma.commons.snommoc.models.social.SocialComment
 import org.beatonma.commons.theme.compose.theme.CommonsSpring
