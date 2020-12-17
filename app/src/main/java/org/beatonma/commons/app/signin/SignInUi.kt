@@ -1,4 +1,4 @@
-package org.beatonma.commons.app.signin.compose
+package org.beatonma.commons.app.signin
 
 import androidx.compose.animation.transition
 import androidx.compose.foundation.layout.Arrangement
@@ -47,6 +47,7 @@ import org.beatonma.commons.compose.animation.twoStateProgressTransition
 import org.beatonma.commons.compose.components.ConfirmationState
 import org.beatonma.commons.compose.components.DoubleConfirmationButton
 import org.beatonma.commons.compose.components.LinkedText
+import org.beatonma.commons.compose.components.ResourceText
 import org.beatonma.commons.compose.components.doubleConfirmationColors
 import org.beatonma.commons.compose.components.rememberConfirmationState
 import org.beatonma.commons.compose.modifiers.wrapContentHeight
@@ -62,7 +63,6 @@ import org.beatonma.commons.theme.compose.Padding
 import org.beatonma.commons.theme.compose.theme.CommonsButtons
 import org.beatonma.commons.theme.compose.theme.onWarningSurface
 import org.beatonma.commons.theme.compose.theme.warningSurface
-import org.beatonma.commons.compose.components.Text as ResourceText
 
 /**
  * Chooses the appropriate user UI to display depending on whether they are

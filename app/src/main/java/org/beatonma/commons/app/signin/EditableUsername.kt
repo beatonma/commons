@@ -1,4 +1,4 @@
-package org.beatonma.commons.app.signin.compose
+package org.beatonma.commons.app.signin
 
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.FloatPropKey
@@ -41,7 +41,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.beatonma.commons.BuildConfig
 import org.beatonma.commons.R
-import org.beatonma.commons.app.signin.RenameResult
 import org.beatonma.commons.app.social.compose.Username
 import org.beatonma.commons.app.ui.compose.components.LoadingIcon
 import org.beatonma.commons.compose.ambient.typography

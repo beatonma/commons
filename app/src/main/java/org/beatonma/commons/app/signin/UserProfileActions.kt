@@ -1,4 +1,4 @@
-package org.beatonma.commons.app.signin.compose
+package org.beatonma.commons.app.signin
 
 import android.content.Intent
 import androidx.activity.ComponentActivity
@@ -6,7 +6,6 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.ProvidableAmbient
-import org.beatonma.commons.app.signin.UserAccountViewModel
 
 /**
  * Initiate value in the activity from which you are calling [UserProfileActions.registerSignInLauncher]
@@ -37,15 +36,6 @@ interface UserProfileActions {
 
     private fun googleSignIn(intent: Intent) {
         signInLauncher.launch(intent)
-    }
-
-    private fun googleSignOut() {
-        println("googleSignOut()")
-//        TODO()
-    }
-
-    private fun deleteAccount() {
-        println("deleteAccount()")
     }
 }
 
