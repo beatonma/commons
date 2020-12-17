@@ -16,7 +16,7 @@ import org.beatonma.commons.data.core.room.entities.bill.BillType
 import org.beatonma.commons.data.core.room.entities.bill.CompleteBill
 import org.beatonma.commons.data.core.room.entities.bill.ParliamentarySession
 import org.beatonma.commons.repo.CommonsApi
-import org.beatonma.commons.repo.FlowIoResult
+import org.beatonma.commons.repo.ResultFlow
 import org.beatonma.commons.repo.converters.toBill
 import org.beatonma.commons.repo.converters.toBillPublication
 import org.beatonma.commons.repo.converters.toBillSponsor
@@ -37,7 +37,7 @@ class BillRepository @Inject constructor(
     private val billDao: BillDao,
 ) {
 
-    fun getBill(parliamentdotuk: ParliamentID): FlowIoResult<CompleteBill> = cachedResultFlow(
+    fun getBill(parliamentdotuk: ParliamentID): ResultFlow<CompleteBill> = cachedResultFlow(
         databaseQuery = { getCompleteBill(parliamentdotuk) },
         networkCall = { remoteSource.getBill(parliamentdotuk) },
         saveCallResult = { apiBill -> saveBill(billDao, parliamentdotuk, apiBill) },

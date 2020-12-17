@@ -2,7 +2,11 @@ package org.beatonma.commons.app.constituency
 
 import android.content.Context
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MapStyleOptions
@@ -27,9 +31,10 @@ import org.beatonma.commons.data.parse.KmlParser
 import org.beatonma.commons.kotlin.data.Color
 import org.beatonma.commons.kotlin.extensions.dp
 import org.beatonma.commons.kotlin.extensions.stringCompat
-import org.beatonma.commons.repo.IoResultObserver
-import org.beatonma.commons.repo.LiveDataIoResult
+import org.beatonma.commons.repo.ResultLiveData
+import org.beatonma.commons.repo.ResultObserver
 import org.beatonma.commons.repo.repository.ConstituencyRepository
+import org.beatonma.commons.repo.result.onSuccess
 
 private const val MAP_OUTLINE_WIDTH_DP = 2F
 
@@ -38,13 +43,13 @@ class ConstituencyDetailViewModel @ViewModelInject constructor(
     @ApplicationContext application: Context,
 ): AndroidViewModel(application.app) {
 
-    private lateinit var constituencyLiveData: LiveDataIoResult<CompleteConstituency>
+    private lateinit var constituencyLiveData: ResultLiveData<CompleteConstituency>
     private val geometryLiveData: MutableLiveData<Geometry> = MutableLiveData()
 
     internal val liveData = MediatorLiveData<ConstituencyData>()
 
-    private val geometryObserver = IoResultObserver<CompleteConstituency> {
-        buildGeometry(it.data?.boundary)
+    private val geometryObserver = ResultObserver<CompleteConstituency> { result ->
+        result.onSuccess { buildGeometry(it.boundary) }
     }
 
     private var constituencyData = ConstituencyData()
@@ -53,29 +58,28 @@ class ConstituencyDetailViewModel @ViewModelInject constructor(
             liveData.value = field
         }
 
-
     fun forConstituency(parliamentdotuk: ParliamentID) {
         constituencyLiveData = repository.getConstituency(parliamentdotuk).asLiveData()
         constituencyLiveData.observeForever(geometryObserver)
 
         liveData.apply {
             addSource(constituencyLiveData) { result ->
-                val data = result.data ?: return@addSource
+                result.onSuccess { data ->
+                    val electionResults = data.electionResults
+                        ?.sortedByDescending {
+                            it.election.date
+                        }
 
-                val electionResults = data.electionResults
-                    ?.sortedByDescending {
-                        it.election.date
-                    }
+                    val party = electionResults?.firstOrNull()?.party
+                    val theme = party?.getTheme(context)
 
-                val party = electionResults?.firstOrNull()?.party
-                val theme = party?.getTheme(context)
-
-                constituencyData = constituencyData.copy(
-                    constituency = data.constituency,
-                    party = party,
-                    theme = theme,
-                    electionResults = electionResults?.composeWithHeaders(context),
-                )
+                    constituencyData = constituencyData.copy(
+                        constituency = data.constituency,
+                        party = party,
+                        theme = theme,
+                        electionResults = electionResults?.composeWithHeaders(context),
+                    )
+                }
             }
 
             addSource(geometryLiveData) { geometry ->

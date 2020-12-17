@@ -2,9 +2,11 @@ package org.beatonma.commons.app.constituency
 
 import android.content.Context
 import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import dagger.hilt.android.qualifiers.ApplicationContext
-import org.beatonma.commons.app.ui.BaseIoAndroidViewModel
+import org.beatonma.commons.app
 import org.beatonma.commons.context
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyCandidate
@@ -13,20 +15,24 @@ import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyEle
 import org.beatonma.commons.data.resolution.PartyResolution
 import org.beatonma.commons.kotlin.extensions.formatPercent
 import org.beatonma.commons.repo.repository.ConstituencyRepository
+import org.beatonma.commons.repo.result.IoResult
 
 class ConstituencyElectionResultsViewModel @ViewModelInject constructor(
     private val repository: ConstituencyRepository,
     @ApplicationContext context: Context,
-): BaseIoAndroidViewModel<ConstituencyElectionDetailsWithExtras>(context) {
+) : AndroidViewModel(context.app) {
+    lateinit var liveData: LiveData<IoResult<ConstituencyElectionDetailsWithExtras>>
 
     fun forConstituencyInElection(constituencyId: ParliamentID, electionId: ParliamentID) {
-        liveData = repository.getConstituencyResultsForElection(constituencyId, electionId).asLiveData()
+        liveData =
+            repository.getConstituencyResultsForElection(constituencyId, electionId).asLiveData()
     }
 
     private fun getPercentage(value: Int, outOf: Int): Float =
         value.coerceAtLeast(1).toFloat() / outOf.coerceAtLeast(1).toFloat()
 
-    fun getFormattedPercentage(value: Int, outOf: Int): String = getPercentage(value, outOf).formatPercent()
+    fun getFormattedPercentage(value: Int, outOf: Int): String =
+        getPercentage(value, outOf).formatPercent()
 
     fun getTurnoutPercentage(details: ConstituencyElectionDetails?): String? {
         details ?: return null

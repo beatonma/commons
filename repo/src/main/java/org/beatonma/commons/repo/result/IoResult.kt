@@ -1,57 +1,41 @@
 package org.beatonma.commons.repo.result
 
-private const val TAG = "IoResult"
+import org.beatonma.commons.network.core.Http
+import retrofit2.Response
 
-@Deprecated("Migrate to [org.beatonma.commons.repo.result.Result]")
-sealed class IoResult<out T>(
-    val data: T?,
-    val message: String?,
-) {
-    override fun toString() = "[${this.javaClass.canonicalName}] [$message] $data"
-}
+sealed class BaseResult<out T, out E>
+typealias IoResult<T> = BaseResult<T, Throwable>
 
-class SuccessResult<T>(data: T, message: String? = null) : IoResult<T>(data, message) {
-    fun copy(data: T = this.data!!, message: String? = this.message) = SuccessResult(data, message)
-}
+object IoLoading : BaseResult<Nothing, Nothing>()
 
-class SuccessCodeResult(
-    val responseCode: Int,
-    message: String? = null,
-) : IoResult<Nothing>(null, message) {
-    fun copy(responseCode: Int = this.responseCode, message: String? = this.message) =
-        SuccessCodeResult(responseCode, message)
+data class Success<out T>(
+    val data: T,
+    val message: String? = null,
+) : BaseResult<T, Nothing>()
 
-    override fun toString(): String = "[${this.javaClass.canonicalName}] responseCode=$responseCode"
-}
-
-sealed class IoError<T, E : Throwable>(
-    data: T?,
-    message: String?,
+data class Failure<out E>(
     val error: E,
-) : IoResult<T>(data, message) {
-    override fun toString(): String =
-        "[${this.javaClass.canonicalName}] data=`$data`, message=`$message`, error=`$error`"
+    val message: String? = null,
+) : BaseResult<Nothing, E>()
+
+sealed class HttpCodeResult(
+    val responseCode: ResponseCode,
+    val message: String? = null,
+) : BaseResult<Nothing, Nothing>()
+
+class SuccessCode(responseCode: ResponseCode, message: String?) :
+    HttpCodeResult(responseCode, message) {
+    constructor(response: Response<*>) : this(ResponseCode(response.code()), response.message())
 }
 
-class NetworkError(error: Throwable, message: String?) :
-    IoError<Nothing, Throwable>(null, message, error)
-
-class GenericError(error: Throwable, message: String?) :
-    IoError<Nothing, Throwable>(null, message, error)
-
-class LocalError(error: Throwable, message: String?) :
-    IoError<Nothing, Throwable>(null, message, error)
-
-class UnexpectedValueError(message: String) :
-    IoError<Nothing, Throwable>(null, message, Exception(message))
-
-class NotSignedInError(message: String) :
-    IoError<Nothing, Throwable>(null, message, Exception(message))
-
-class LoadingResult<T>(message: String? = null) : IoResult<T>(null, message) {
-    override fun toString(): String = "[${this.javaClass.canonicalName}]"
+class ErrorCode(responseCode: ResponseCode, message: String?) :
+    HttpCodeResult(responseCode, message) {
+    constructor(response: Response<*>) : this(ResponseCode(response.code()), response.message())
 }
 
-val <R : IoResult<*>> R.isSuccess: Boolean get() = this is SuccessResult<*> || this is SuccessCodeResult
-val <R : IoResult<*>> R.isLoading: Boolean get() = this is LoadingResult<*>
-val <R : IoResult<*>> R.isError: Boolean get() = this is IoError<*, *>
+inline class ResponseCode(val code: Int) {
+    val isSuccess: Boolean get() = Http.Status.isSuccess(code)
+    val isError: Boolean get() = Http.Status.isClientError(code)
+    val isClientError: Boolean get() = Http.Status.isClientError(code)
+    val isServerError: Boolean get() = Http.Status.isServerError(code)
+}

@@ -4,17 +4,12 @@ import org.beatonma.commons.core.House
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.core.SnommocToken
 import org.beatonma.commons.data.core.room.entities.user.UserToken
-import org.beatonma.commons.network.core.NetworkException
 import org.beatonma.commons.repo.models.CreatedComment
 import org.beatonma.commons.repo.models.CreatedVote
-import org.beatonma.commons.repo.result.Failure
+import org.beatonma.commons.repo.result.ErrorCode
 import org.beatonma.commons.repo.result.IoResult
-import org.beatonma.commons.repo.result.NetworkError
-import org.beatonma.commons.repo.result.ResponseCode
 import org.beatonma.commons.repo.result.Success
-import org.beatonma.commons.repo.result.SuccessCodeResult
-import org.beatonma.commons.repo.result.SuccessResult
-import org.beatonma.commons.repo.result.ThrowableResult
+import org.beatonma.commons.repo.result.SuccessCode
 import org.beatonma.commons.snommoc.CommonsService
 import org.beatonma.commons.snommoc.annotations.SignInRequired
 import org.beatonma.commons.snommoc.models.ApiBill
@@ -37,29 +32,16 @@ import retrofit2.Response
 import javax.inject.Inject
 
 interface BaseDataSource {
-    @Deprecated("Migrate to [getResultMonad] using [ThrowableResult]")
     suspend fun <T> getResult(call: suspend () -> Response<T>): IoResult<T> {
         val response = call()
         if (response.isSuccessful) {
             val body = response.body()
             return when (body) {
-                null -> SuccessCodeResult(response.code())
-                else -> SuccessResult(body)
-            }
-        }
-        return NetworkError(NetworkException(response), response.message())
-    }
-
-    suspend fun <T> getResultMonad(call: suspend () -> Response<T>): ThrowableResult<T> {
-        val response = call()
-        if (response.isSuccessful) {
-            val body = response.body()
-            return when (body) {
-                null -> ResponseCode(response.code())
+                null -> SuccessCode(response)
                 else -> Success(body)
             }
         }
-        return Failure(Exception("[${response.code()}] ${response.message()}"))
+        return ErrorCode(response)
     }
 }
 
@@ -70,12 +52,15 @@ interface CommonsApi {
 
     suspend fun getBill(parliamentdotuk: ParliamentID): IoResult<ApiBill>
 
-    suspend fun getVotesForMember(house: House, parliamentdotuk: ParliamentID): IoResultList<ApiMemberVote>
+    suspend fun getVotesForMember(
+        house: House,
+        parliamentdotuk: ParliamentID,
+    ): IoResult<List<ApiMemberVote>>
 
     suspend fun getDivision(
         house: House,
         parliamentdotuk: ParliamentID,
-    ): ThrowableResult<ApiDivision>
+    ): IoResult<ApiDivision>
 
     suspend fun getConstituency(parliamentdotuk: ParliamentID): IoResult<ApiConstituency>
     suspend fun getConstituencyDetailsForElection(
@@ -83,17 +68,15 @@ interface CommonsApi {
         electionId: Int,
     ): IoResult<ApiConstituencyElectionDetails>
 
-    suspend fun getSearchResults(query: String): IoResultList<MemberSearchResult>
+    suspend fun getSearchResults(query: String): IoResult<List<MemberSearchResult>>
 
     suspend fun getSocialForTarget(
         targetType: SocialTargetType,
         parliamentdotuk: ParliamentID,
         snommocToken: SnommocToken?,
-    ): ThrowableResult<SocialContent>
+    ): IoResult<SocialContent>
 
     suspend fun getUsername(userToken: UserToken): IoResult<ApiUserName>
-
-//    suspend fun getMessageOfTheDay(): IoResultList<MessageOfTheDay>
 
     suspend fun getZeitgeist(): IoResult<ApiZeitgeist>
 
@@ -131,7 +114,7 @@ class CommonsRemoteDataSource @Inject constructor(
         service.getVotesForMember(house, parliamentdotuk)
     }
 
-    override suspend fun getDivision(house: House, parliamentdotuk: ParliamentID) = getResultMonad {
+    override suspend fun getDivision(house: House, parliamentdotuk: ParliamentID) = getResult {
         service.getDivision(house, parliamentdotuk)
     }
 
@@ -152,13 +135,11 @@ class CommonsRemoteDataSource @Inject constructor(
         service.getUsername(userToken.snommocToken)
     }
 
-//    override suspend fun getMessageOfTheDay() = getResult(service::getMessageOfTheDay)
-
     override suspend fun getSocialForTarget(
         targetType: SocialTargetType,
         parliamentdotuk: ParliamentID,
         snommocToken: SnommocToken?,
-    ) = getResultMonad {
+    ) = getResult {
         service.getSocialContentForTarget(targetType.name, parliamentdotuk, snommocToken)
     }
 

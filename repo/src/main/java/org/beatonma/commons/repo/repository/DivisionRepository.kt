@@ -10,8 +10,8 @@ import org.beatonma.commons.repo.CommonsApi
 import org.beatonma.commons.repo.converters.toDivision
 import org.beatonma.commons.repo.converters.toParty
 import org.beatonma.commons.repo.converters.toVote
-import org.beatonma.commons.repo.result.ThrowableResult
-import org.beatonma.commons.repo.result.cachedResultFlowMonad
+import org.beatonma.commons.repo.result.IoResult
+import org.beatonma.commons.repo.result.cachedResultFlow
 import org.beatonma.commons.snommoc.models.ApiDivision
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -24,7 +24,7 @@ class DivisionRepository @Inject constructor(
     fun getDivision(
         house: House,
         parliamentdotuk: ParliamentID,
-    ): Flow<ThrowableResult<DivisionWithVotes>> = cachedResultFlowMonad(
+    ): Flow<IoResult<DivisionWithVotes>> = cachedResultFlow(
         databaseQuery = { divisionDao.getDivisionWithVotes(parliamentdotuk) },
         networkCall = { remoteSource.getDivision(house, parliamentdotuk) },
         saveCallResult = { division -> saveDivision(divisionDao, parliamentdotuk, division) }

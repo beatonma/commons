@@ -17,7 +17,7 @@ import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyWit
 import org.beatonma.commons.data.core.room.entities.election.ConstituencyResultWithDetails
 import org.beatonma.commons.data.core.room.entities.election.Election
 import org.beatonma.commons.repo.CommonsApi
-import org.beatonma.commons.repo.FlowIoResult
+import org.beatonma.commons.repo.ResultFlow
 import org.beatonma.commons.repo.converters.toConstituency
 import org.beatonma.commons.repo.converters.toConstituencyBoundary
 import org.beatonma.commons.repo.converters.toConstituencyCandidate
@@ -37,20 +37,28 @@ class ConstituencyRepository @Inject constructor(
     private val constituencyDao: ConstituencyDao,
     private val memberDao: MemberDao,
 ) {
-    fun getConstituency(parliamentdotuk: ParliamentID): FlowIoResult<CompleteConstituency> = cachedResultFlow(
-        databaseQuery = { getCachedConstituencyDetails(parliamentdotuk) },
-        networkCall = { remoteSource.getConstituency(parliamentdotuk) },
-        saveCallResult = { apiConstituency -> saveConstituency(constituencyDao, memberDao, parliamentdotuk, apiConstituency) },
-        distinctUntilChanged = false,
-    )
-
+    fun getConstituency(parliamentdotuk: ParliamentID): ResultFlow<CompleteConstituency> =
+        cachedResultFlow(
+            databaseQuery = { getCachedConstituencyDetails(parliamentdotuk) },
+            networkCall = { remoteSource.getConstituency(parliamentdotuk) },
+            saveCallResult = { apiConstituency ->
+                saveConstituency(constituencyDao,
+                    memberDao,
+                    parliamentdotuk,
+                    apiConstituency)
+            },
+            distinctUntilChanged = false,
+        )
 
     fun getConstituencyResultsForElection(
         constituencyId: Int,
-        electionId: Int
-    ): FlowIoResult<ConstituencyElectionDetailsWithExtras> = cachedResultFlow(
+        electionId: Int,
+    ): ResultFlow<ConstituencyElectionDetailsWithExtras> = cachedResultFlow(
         databaseQuery = { getCachedConstituencyElectionDetails(constituencyId, electionId) },
-        networkCall = { remoteSource.getConstituencyDetailsForElection(constituencyId, electionId) },
+        networkCall = {
+            remoteSource.getConstituencyDetailsForElection(constituencyId,
+                electionId)
+        },
         saveCallResult = { result -> saveRseults(constituencyDao, result) }
     )
 

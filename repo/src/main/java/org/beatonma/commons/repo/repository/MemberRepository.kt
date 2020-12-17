@@ -16,7 +16,7 @@ import org.beatonma.commons.data.core.room.entities.constituency.NoConstituency
 import org.beatonma.commons.data.core.room.entities.member.NoParty
 import org.beatonma.commons.data.core.room.entities.member.Post
 import org.beatonma.commons.repo.CommonsApi
-import org.beatonma.commons.repo.FlowIoResult
+import org.beatonma.commons.repo.ResultFlow
 import org.beatonma.commons.repo.converters.toCommitteeChairship
 import org.beatonma.commons.repo.converters.toCommitteeMembership
 import org.beatonma.commons.repo.converters.toConstituency
@@ -38,7 +38,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 interface MemberRepository {
-    fun getMember(parliamentdotuk: ParliamentID): FlowIoResult<CompleteMember>
+    fun getMember(parliamentdotuk: ParliamentID): ResultFlow<CompleteMember>
     suspend fun saveMember(dao: MemberDao, parliamentdotuk: ParliamentID, member: ApiCompleteMember)
 }
 
@@ -47,7 +47,7 @@ class MemberRepositoryImpl @Inject constructor(
     private val remoteSource: CommonsApi,
     private val memberDao: MemberDao,
 ) : MemberRepository {
-    override fun getMember(parliamentdotuk: ParliamentID): FlowIoResult<CompleteMember> =
+    override fun getMember(parliamentdotuk: ParliamentID): ResultFlow<CompleteMember> =
         cachedResultFlow(
             databaseQuery = { getCompleteMember(parliamentdotuk) },
             networkCall = { remoteSource.getMember(parliamentdotuk) },

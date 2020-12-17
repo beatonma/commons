@@ -9,13 +9,10 @@ import androidx.compose.ui.Modifier
 import org.beatonma.commons.app.featured.ZeitgeistContent
 import org.beatonma.commons.app.search.compose.SearchUi
 import org.beatonma.commons.app.signin.compose.ContextualUserAccountFabUi
-import org.beatonma.commons.app.ui.compose.components.Loading
-import org.beatonma.commons.app.ui.compose.components.Warning
+import org.beatonma.commons.app.ui.compose.WithResultData
 import org.beatonma.commons.compose.animation.rememberExpandCollapseState
 import org.beatonma.commons.repo.models.Zeitgeist
 import org.beatonma.commons.repo.result.IoResult
-import org.beatonma.commons.repo.result.isLoading
-import org.beatonma.commons.repo.result.isSuccess
 import org.beatonma.commons.snommoc.models.search.SearchResult
 import org.beatonma.commons.theme.compose.theme.systemui.statusBarsHeight
 
@@ -41,12 +38,7 @@ fun FrontPageUi(result: IoResult<Zeitgeist>, searchResults: List<SearchResult>) 
 
 @Composable
 fun ZeitgeistResult(result: IoResult<Zeitgeist>) {
-    when {
-        result.isSuccess && result.data != null -> {
-            ZeitgeistContent(zeitgeist = result.data!!)
-        }
-
-        result.isLoading -> Loading()
-        else -> Warning()
+    WithResultData(result) { data ->
+        ZeitgeistContent(data)
     }
 }

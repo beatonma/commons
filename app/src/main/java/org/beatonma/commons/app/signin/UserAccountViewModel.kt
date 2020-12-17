@@ -7,7 +7,6 @@ import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -16,7 +15,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
@@ -25,18 +23,18 @@ import org.beatonma.commons.BuildConfig
 import org.beatonma.commons.app
 import org.beatonma.commons.app.signin.compose.NullUserToken
 import org.beatonma.commons.context
-import org.beatonma.commons.core.extensions.withNotNull
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.network.core.Http
-import org.beatonma.commons.network.core.NetworkException
+import org.beatonma.commons.repo.ResultFlow
 import org.beatonma.commons.repo.repository.GoogleAccount
 import org.beatonma.commons.repo.repository.UserRepository
-import org.beatonma.commons.repo.result.IoResult
-import org.beatonma.commons.repo.result.LoadingResult
-import org.beatonma.commons.repo.result.NetworkError
-import org.beatonma.commons.repo.result.isSuccess
+import org.beatonma.commons.repo.result.isComplete
+import org.beatonma.commons.repo.result.onResponseCode
+import org.beatonma.commons.repo.result.onSuccess
 
 private const val TAG = "SignInViewModel"
+
+private const val SavedStateUserToken = "usertoken"
 
 class UserAccountViewModel @ViewModelInject constructor(
     private val repository: UserRepository,
@@ -45,9 +43,8 @@ class UserAccountViewModel @ViewModelInject constructor(
     @Assisted private val savedStateHandle: SavedStateHandle,
 ) : AndroidViewModel(application.app) {
 
-    private val _userTokenLiveData = MutableLiveData(NullUserToken)
-    val userTokenLiveData: LiveData<UserToken> = _userTokenLiveData
-
+    val userTokenLiveData: LiveData<UserToken> =
+        savedStateHandle.getLiveData(SavedStateUserToken, NullUserToken)
     val signInIntent: Intent get() = googleSignInClient.signInIntent
 
     init {
@@ -70,32 +67,40 @@ class UserAccountViewModel @ViewModelInject constructor(
             return localValidationResult
         }
 
-        val result = repository.requestRenameAccount(userToken, newName)
-            .filter { it !is LoadingResult }
+        repository.requestRenameAccount(userToken, newName)
+            .filter { it.isComplete }
             .first()
-
-        when {
-            result.isSuccess -> {
-                refreshTokenForCurrentAccount(userToken)
+            .onSuccess {
+                refreshUsername(userToken)
                 return RenameResult.ACCEPTED
             }
-
-            result is NetworkError -> {
-                val code = (result.error as NetworkException).code
+            .onResponseCode { responseCode ->
+                val code = responseCode.code
                 return when {
                     code == Http.Status.FORBIDDEN_403 -> RenameResult.SERVER_DENIED
                     Http.Status.isServerError(code) -> RenameResult.SERVER_ERROR
                     else -> RenameResult.SERVER_BAD_REQUEST
                 }
             }
-        }
 
         return RenameResult.ERROR
     }
 
+    suspend fun deleteAccount(userToken: UserToken): ResultFlow<Void> {
+        signOut()
+        return repository.deleteAccount(userToken)
+    }
+
     fun signOut(): Task<Void> {
-        _userTokenLiveData.postValue(NullUserToken)
+        savedStateHandle[SavedStateUserToken] = NullUserToken
         return googleSignInClient.signOut()
+    }
+
+    /**
+     * Force a refresh from server.
+     */
+    private fun refreshUsername(userToken: UserToken) {
+        repository.refreshUsername(userToken).cacheTokenResult()
     }
 
     /**
@@ -111,22 +116,11 @@ class UserAccountViewModel @ViewModelInject constructor(
         repository.getTokenForAccount(account).cacheTokenResult()
     }
 
-    /**
-     * Force a refresh from server.
-     */
-    fun refreshTokenForCurrentAccount(userToken: UserToken) {
-        repository.refreshUsername(userToken).cacheTokenResult()
-    }
-
-    suspend fun deleteAccount(userToken: UserToken) {
-        TODO()
-    }
-
-    private fun Flow<IoResult<UserToken>>.cacheTokenResult() {
+    private fun ResultFlow<UserToken>.cacheTokenResult() {
         viewModelScope.launch {
             collect { result ->
-                withNotNull(result.data) { data ->
-                    _userTokenLiveData.postValue(data)
+                result.onSuccess { data ->
+                    savedStateHandle[SavedStateUserToken] = data
                 }
             }
         }
@@ -164,7 +158,7 @@ enum class RenameResult {
  * Check basic validation rules before submitting to server.
  * The server runs its own validation but we can check some of the basics locally.
  */
-private suspend fun quickValidate(oldName: String, newName: String): RenameResult = when {
+private fun quickValidate(oldName: String, newName: String): RenameResult = when {
     oldName == newName -> RenameResult.NO_CHANGE
     newName.length > BuildConfig.ACCOUNT_USERNAME_MAX_LENGTH -> RenameResult.TOO_LONG
     newName.length < BuildConfig.ACCOUNT_USERNAME_MIN_LENGTH -> RenameResult.TOO_SHORT

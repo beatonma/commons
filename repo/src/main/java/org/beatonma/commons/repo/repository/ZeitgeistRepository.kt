@@ -12,7 +12,7 @@ import org.beatonma.commons.data.core.room.entities.bill.ZeitgeistBill
 import org.beatonma.commons.data.core.room.entities.division.ZeitgeistDivision
 import org.beatonma.commons.data.core.room.entities.member.ZeitgeistMember
 import org.beatonma.commons.repo.CommonsApi
-import org.beatonma.commons.repo.FlowIoResult
+import org.beatonma.commons.repo.ResultFlow
 import org.beatonma.commons.repo.converters.toBill
 import org.beatonma.commons.repo.converters.toDivision
 import org.beatonma.commons.repo.converters.toMemberProfile
@@ -31,7 +31,7 @@ class ZeitgeistRepository @Inject constructor(
     private val divisionDao: DivisionDao,
 ) {
 
-    fun getZeitgeist(): FlowIoResult<Zeitgeist> = cachedResultFlow(
+    fun getZeitgeist(): ResultFlow<Zeitgeist> = cachedResultFlow(
         databaseQuery = ::loadZeitgeist,
         networkCall = remoteSource::getZeitgeist,
         saveCallResult = ::saveZeitgeist

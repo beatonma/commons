@@ -40,8 +40,8 @@ class CacheResultFlowTest: ResultFlowTest() {
                 .awaitValues(latchCount = 3, timeoutThrows = false)
                 .single()
                 .assertEach(
-                    { it shouldBeInstanceOf LoadingResult::class },
-                    { it.data!!.parliamentdotuk shouldbe MEMBER_PUK_KEIR_STARMER },
+                    { it shouldbe IoLoading },
+                    { (it as Success).data.parliamentdotuk shouldbe MEMBER_PUK_KEIR_STARMER },
                 )
         }
     }
@@ -65,9 +65,9 @@ class CacheResultFlowTest: ResultFlowTest() {
                 .awaitValues(latchCount = 3)
                 .single()
                 .assertEach(
-                    { it shouldBeInstanceOf LoadingResult::class },
-                    { it.data!!.name shouldbe "Boris Johnson" }, // Cached before network call
-                    { it.data!!.name shouldbe "Joris Bohnson" }, // After network call
+                    { it shouldbe IoLoading },
+                    { (it as Success).data.name shouldbe "Boris Johnson" }, // Cached before network call
+                    { (it as Success).data.name shouldbe "Joris Bohnson" }, // After network call
                 )
         }
     }
@@ -86,9 +86,9 @@ class CacheResultFlowTest: ResultFlowTest() {
                 .awaitValues(latchCount = 3)
                 .single()
                 .assertEach(
-                    { it shouldBeInstanceOf LoadingResult::class },
-                    { it.data!!.name shouldbe "Boris Johnson" }, // Cached before network call
-                    { it shouldBeInstanceOf NetworkError::class }
+                    { it shouldbe IoLoading },
+                    { (it as Success).data.name shouldbe "Boris Johnson" }, // Cached before network call
+                    { it shouldBeInstanceOf ErrorCode::class }
                 )
         }
     }
@@ -101,11 +101,11 @@ class CacheResultFlowTest: ResultFlowTest() {
                 networkCall = ::makeErrorfulNetworkCall,
                 saveCallResult = ::saveProfiles
             )
-                .awaitValues(latchCount = 3, timeoutThrows = false)
+                .awaitValues(latchCount = 2, timeoutThrows = false)
                 .single()
                 .assertEach(
-                    { it shouldBeInstanceOf LoadingResult::class },
-                    { it shouldBeInstanceOf NetworkError::class }
+                    { it shouldbe IoLoading },
+                    { it shouldBeInstanceOf ErrorCode::class }
                 )
         }
     }
@@ -130,16 +130,12 @@ class ResultFlowLocalPreferredTest: ResultFlowTest() {
                 networkCall = { makeSuccessfulNetworkCall(listOf(editedNetworkResult)) },
                 saveCallResult = ::saveProfiles
             )
-                .awaitValues(latchCount = 3, timeoutThrows = false)
+                .awaitValues(latchCount = 2, timeoutThrows = false)
                 .single()
 
             results.assertEach(
-                { it shouldBeInstanceOf LoadingResult::class },
-                {
-                    it.data!!.run {
-                        name shouldbe "Boris Johnson" // Original cached data, network call skipped.
-                    }
-                },
+                { it shouldbe IoLoading },
+                { (it as Success).data.name shouldbe "Boris Johnson" },
             )
         }
     }
@@ -158,11 +154,11 @@ class ResultFlowLocalPreferredTest: ResultFlowTest() {
                 databaseQuery = { getProfileFromDatabase(MEMBER_PUK_BORIS_JOHNSON) },
                 networkCall = { makeSuccessfulNetworkCall(listOf(editedNetworkResult)) },
                 saveCallResult = ::saveProfiles
-            ).awaitValues(latchCount = 3, timeoutThrows = false)
+            ).awaitValues(latchCount = 2, timeoutThrows = false)
                 .single()
                 .assertEach(
-                    { it shouldBeInstanceOf LoadingResult::class },
-                    { it.data!!.name shouldbe "Joris Bohnson" }  // Updated network name - no pre-cached version exists
+                    { it shouldbe IoLoading },
+                    { (it as Success).data.name shouldbe "Joris Bohnson" }  // Updated network name - no pre-cached version exists
                 )
         }
     }
@@ -176,11 +172,11 @@ class ResultFlowLocalPreferredTest: ResultFlowTest() {
                 databaseQuery = { getProfileFromDatabase(MEMBER_PUK_BORIS_JOHNSON) },
                 networkCall = ::makeErrorfulNetworkCall,
                 saveCallResult = ::saveProfiles
-            ).awaitValues(latchCount = 3, timeoutThrows = false)
+            ).awaitValues(latchCount = 2, timeoutThrows = false)
                 .single()
                 .assertEach(
-                    { it shouldBeInstanceOf LoadingResult::class },
-                    { it shouldBeInstanceOf NetworkError::class }
+                    { it shouldbe IoLoading },
+                    { it shouldBeInstanceOf ErrorCode::class }
                 )
         }
     }
@@ -201,11 +197,13 @@ class ResultFlowNoCacheTest: ResultFlowTest() {
             }.awaitValues(2)
                 .single()
                 .assertEach(
-                    { result -> result shouldBeInstanceOf LoadingResult::class },
-                    { result -> result.data!!.assertEach(
-                        { it.name shouldbe "Boris Johnson" },
-                        { it.name shouldbe "Keir Starmer" },
-                    ) }
+                    { it shouldbe IoLoading },
+                    {
+                        (it as Success).data.assertEach(
+                            { profile -> profile.name shouldbe "Boris Johnson" },
+                            { profile -> profile.name shouldbe "Keir Starmer" },
+                        )
+                    },
                 )
         }
     }
@@ -214,12 +212,12 @@ class ResultFlowNoCacheTest: ResultFlowTest() {
     @Test
     fun resultFlowNoCache_should_emit_loading_then_network_errors() {
         runBlocking {
-            resultFlowNoCache(::makeErrorfulNetworkCall)
+            resultFlowNoCache { makeErrorfulNetworkCall<Nothing>() }
                 .awaitValues(2)
                 .single()
                 .assertEach(
-                    { it shouldBeInstanceOf LoadingResult::class },
-                    { it shouldBeInstanceOf NetworkError::class }
+                    { it shouldbe IoLoading },
+                    { it shouldBeInstanceOf ErrorCode::class }
                 )
         }
     }
@@ -240,14 +238,11 @@ abstract class ResultFlowTest: BaseRoomTest() {
         responseData: List<ApiMemberProfile> = listOf(EXAMPLE_MEMBER_PROFILE_KEIR_STARMER)
     ): IoResult<List<ApiMemberProfile>> {
         delay(100)
-        return SuccessResult(
-            responseData,
-            "Fake network result"
-        )
+        return Success(responseData)
     }
 
-    protected suspend fun makeErrorfulNetworkCall(): NetworkError {
+    protected suspend fun <T> makeErrorfulNetworkCall(): IoResult<T> {
         delay(100)
-        return NetworkError("Fake network error", error = null)
+        return ErrorCode(ResponseCode(400), "")
     }
 }

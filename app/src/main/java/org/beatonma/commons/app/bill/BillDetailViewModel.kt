@@ -3,51 +3,59 @@ package org.beatonma.commons.app.bill
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
-import org.beatonma.commons.app.ui.BaseIoAndroidViewModel
+import org.beatonma.commons.app
 import org.beatonma.commons.core.House
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.room.entities.bill.BillStageWithSittings
 import org.beatonma.commons.data.core.room.entities.bill.CompleteBill
 import org.beatonma.commons.data.extensions.BillStageCanonicalNames
 import org.beatonma.commons.data.extensions.startedIn
+import org.beatonma.commons.repo.ResultLiveData
 import org.beatonma.commons.repo.repository.BillRepository
 import org.beatonma.commons.repo.result.IoResult
+import org.beatonma.commons.repo.result.onSuccess
 import java.util.*
 
 class BillDetailViewModel @ViewModelInject constructor(
     private val repository: BillRepository,
     @ApplicationContext context: Context,
-) : BaseIoAndroidViewModel<CompleteBill>(context) {
-    internal val stagesLiveData: MutableLiveData<List<AnnotatedBillStage>> = MutableLiveData()
-    private val stagesObserver =  { result: IoResult<CompleteBill> ->
-        val bill = result.data
-        if (bill != null) {
+) : AndroidViewModel(context.app) {
+
+    lateinit var billLiveData: ResultLiveData<CompleteBill>
+
+    private val _stagesLiveData: MutableLiveData<List<AnnotatedBillStage>> = MutableLiveData()
+    internal val stagesLiveData: LiveData<List<AnnotatedBillStage>> = _stagesLiveData
+
+    private val stagesObserver = Observer { result: IoResult<CompleteBill> ->
+        result.onSuccess { bill ->
             viewModelScope.launch {
-                val annotated = getAnnotatedStages(result.data as CompleteBill)
-                stagesLiveData.postValue(annotated)
+                _stagesLiveData.postValue(getAnnotatedStages(bill))
             }
         }
     }
 
     fun forBill(parliamentdotuk: ParliamentID) {
-        liveData = repository.getBill(parliamentdotuk).asLiveData()
-        liveData.observeForever(stagesObserver)
+        billLiveData = repository.getBill(parliamentdotuk).asLiveData()
+        billLiveData.observeForever(stagesObserver)
     }
 
     override fun onCleared() {
-        liveData.removeObserver(stagesObserver)
+        billLiveData.removeObserver(stagesObserver)
         super.onCleared()
     }
 
     /**
      * Resolve House and BillStageProgress data for each BillStage.
      */
-    internal suspend fun getAnnotatedStages(completeBill: CompleteBill): List<AnnotatedBillStage> {
+    private suspend fun getAnnotatedStages(completeBill: CompleteBill): List<AnnotatedBillStage> {
         val originatingHouse = completeBill.bill?.startedIn() ?: return listOf()
         val stages = completeBill.stages ?: return listOf()
 

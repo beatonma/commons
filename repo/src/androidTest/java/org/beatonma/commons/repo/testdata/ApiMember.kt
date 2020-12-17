@@ -2,6 +2,7 @@ package org.beatonma.commons.repo.testdata
 
 import org.beatonma.commons.core.House
 import org.beatonma.commons.data.core.CompleteMember
+import org.beatonma.commons.data.core.room.entities.constituency.NoConstituency
 import org.beatonma.commons.data.core.room.entities.member.CommitteeMemberWithChairs
 import org.beatonma.commons.data.core.room.entities.member.HistoricalConstituencyWithElection
 import org.beatonma.commons.data.core.room.entities.member.PartyAssociationWithParty
@@ -247,12 +248,15 @@ val API_MEMBER_BORIS_JOHNSON = ApiCompleteMember(
 fun ApiCompleteMember.toCompleteMember() = CompleteMember(
     profile = profile.toMemberProfile(),
     party = profile.party.toParty(),
-    constituency = profile.constituency?.toConstituency(),
+    constituency = profile.constituency?.toConstituency() ?: NoConstituency,
     addresses = addresses.physical.map { it.toPhysicalAddress(MEMBER_PUK_BORIS_JOHNSON) },
     weblinks = addresses.web.map { it.toWebAddress(MEMBER_PUK_BORIS_JOHNSON) },
     posts = listOf(
         posts.governmental.map { it.toPost(MEMBER_PUK_BORIS_JOHNSON, Post.PostType.GOVERNMENTAL) },
-        posts.parliamentary.map { it.toPost(MEMBER_PUK_BORIS_JOHNSON, Post.PostType.PARLIAMENTARY) },
+        posts.parliamentary.map {
+            it.toPost(MEMBER_PUK_BORIS_JOHNSON,
+                Post.PostType.PARLIAMENTARY)
+        },
         posts.opposition.map { it.toPost(MEMBER_PUK_BORIS_JOHNSON, Post.PostType.OPPOSITION) },
     ).flatten(),
     committees = committees.map { committee ->

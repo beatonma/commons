@@ -18,7 +18,6 @@ import org.beatonma.commons.app.ui.recyclerview.setup
 import org.beatonma.commons.app.ui.recyclerview.viewholder.StaticViewHolder
 import org.beatonma.commons.app.ui.views.BarChartCategory
 import org.beatonma.commons.core.ParliamentID
-import org.beatonma.commons.core.extensions.withNotNull
 import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyElectionDetailsWithExtras
 import org.beatonma.commons.data.resolution.PartyResolution
 import org.beatonma.commons.databinding.FragmentConstituencyElectionResultsBinding
@@ -30,6 +29,7 @@ import org.beatonma.commons.kotlin.extensions.formatted
 import org.beatonma.commons.kotlin.extensions.inflate
 import org.beatonma.commons.kotlin.extensions.stringCompat
 import org.beatonma.commons.kotlin.extensions.toggleVisibility
+import org.beatonma.commons.repo.result.onSuccess
 
 private const val TAG = "ConstElectResFragment"
 private const val VIEW_TYPE_DEPOSIT_SEPARATOR = 1
@@ -74,11 +74,7 @@ class ConstituencyElectionResultsFragment : CommonsFragment<FragmentConstituency
         )
 
         viewmodel.liveData.observe(viewLifecycleOwner) { result ->
-            result.report()
-
-            withNotNull(result.data) {
-                updateUi(it)
-            }
+            result.onSuccess(::updateUi)
         }
     }
 
