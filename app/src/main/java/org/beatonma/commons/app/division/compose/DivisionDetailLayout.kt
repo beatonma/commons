@@ -1,21 +1,13 @@
 package org.beatonma.commons.app.division.compose
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayout
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.AmbientContentColor
-import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.ListItem
 import androidx.compose.material.Text
@@ -29,18 +21,18 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.ProvidableAmbient
 import androidx.compose.runtime.ambientOf
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.compose.components.LoadingIcon
+import org.beatonma.commons.app.ui.compose.components.charts.ChartItem
+import org.beatonma.commons.app.ui.compose.components.charts.ChartKeyItem
+import org.beatonma.commons.app.ui.compose.components.charts.HorizontalStackedBarChart
 import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.components.Hint
@@ -52,7 +44,6 @@ import org.beatonma.commons.compose.util.withAnnotatedStyle
 import org.beatonma.commons.core.House
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.core.VoteType
-import org.beatonma.commons.core.extensions.fastForEach
 import org.beatonma.commons.data.core.room.entities.division.Division
 import org.beatonma.commons.data.core.room.entities.division.DivisionWithVotes
 import org.beatonma.commons.data.core.room.entities.division.VoteWithParty
@@ -114,7 +105,7 @@ private fun Header(
             GraphKey(VoteType.SuspendedOrExpelledVote, division.suspendedOrExpelled ?: 0)
         }
 
-        BarChart(division, Modifier.fillMaxWidth())
+        Chart(division, Modifier.fillMaxWidth())
     }
 }
 
@@ -209,13 +200,14 @@ private fun VoteIcon(
 }
 
 @Composable
-private fun GraphKey(voteType: VoteType, voteCount: Int) {
+private fun GraphKey(voteType: VoteType, voteCount: Int, modifier: Modifier = Modifier) {
     if (voteCount == 0) return
 
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        VoteIcon(voteType.icon, voteType.color)
-        Text(stringResource(voteType.descriptionRes, voteCount).withAnnotatedStyle())
-    }
+    ChartKeyItem(
+        { VoteIcon(voteType.icon, voteType.color) },
+        { Text(stringResource(voteType.descriptionRes, voteCount).withAnnotatedStyle()) },
+        modifier = modifier,
+    )
 }
 
 @Composable
@@ -247,64 +239,18 @@ private val VoteType.descriptionRes
     }
 
 @Composable
-private fun BarChart(
+private fun Chart(
     division: Division,
     modifier: Modifier = Modifier,
     height: Dp = 16.dp,
 ) {
-    val totalVotes = arrayOf(
-        division.ayes,
-        division.noes,
-        division.didNotVote ?: 0,
-        division.abstentions ?: 0,
-        division.suspendedOrExpelled ?: 0
-    ).sum()
-
-    if (totalVotes == 0) return
-    val totalVotesF = totalVotes.toFloat()
-
-    val itemModifier = Modifier.height(height - 4.dp)
-
-    @Composable
-    fun Bar(color: Color, voteCount: Int) {
-        if (voteCount == 0) return
-        val barWidthPercent = voteCount.toFloat() / totalVotesF
-
-        Spacer(
-            itemModifier
-                .fillMaxWidth(barWidthPercent)
-                .background(color)
-        )
-    }
-
-    Box(modifier, contentAlignment = Alignment.Center) {
-        Layout(content = {
-            Bar(colors.politicalVotes.Aye, division.ayes)
-            Bar(colors.politicalVotes.DidNotVote, division.didNotVote ?: 0)
-            Bar(colors.politicalVotes.Abstain, division.abstentions ?: 0)
-            Bar(colors.politicalVotes.SuspendedOrExpelled, division.suspendedOrExpelled ?: 0)
-            Bar(colors.politicalVotes.No, division.noes)
-        }) { measurables, constraints ->
-            val placeables = measurables.map { it.measure(constraints) }
-
-            val w = placeables.sumBy { it.width }
-            val h = placeables.maxOf { it.height }
-
-            var consumedWidth = 0
-            layout(w, h) {
-                placeables.fastForEach {
-                    it.placeRelative(consumedWidth, 0)
-                    consumedWidth += it.width
-                }
-            }
-        }
-
-        Spacer(
-            Modifier
-                .width(2.dp)
-                .height(height)
-                .background(AmbientContentColor.current)
-                .alpha(ContentAlpha.medium)
-        )
-    }
+    HorizontalStackedBarChart(
+        ChartItem(division.ayes, colors.politicalVotes.Aye, ""),
+        ChartItem(division.didNotVote ?: 0, colors.politicalVotes.DidNotVote, ""),
+        ChartItem(division.abstentions ?: 0, colors.politicalVotes.Abstain, ""),
+        ChartItem(division.suspendedOrExpelled ?: 0, colors.politicalVotes.SuspendedOrExpelled, ""),
+        ChartItem(division.noes, colors.politicalVotes.No, ""),
+        modifier = modifier,
+        height = height,
+    )
 }
