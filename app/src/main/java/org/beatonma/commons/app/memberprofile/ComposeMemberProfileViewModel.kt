@@ -1,30 +1,36 @@
 package org.beatonma.commons.app.memberprofile
 
-import android.content.Context
 import androidx.annotation.VisibleForTesting
+import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
-import dagger.hilt.android.qualifiers.ApplicationContext
-import org.beatonma.commons.app
-import org.beatonma.commons.app.signin.BaseUserAccountViewModel
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.core.extensions.withNotNull
+import org.beatonma.commons.data.SavedStateKey
 import org.beatonma.commons.data.core.CompleteMember
 import org.beatonma.commons.data.core.interfaces.Temporal
 import org.beatonma.commons.data.core.interfaces.compressConsecutiveItems
 import org.beatonma.commons.data.core.room.entities.member.HistoricalConstituencyWithElection
 import org.beatonma.commons.data.core.room.entities.member.PartyAssociationWithParty
+import org.beatonma.commons.data.get
+import org.beatonma.commons.data.set
 import org.beatonma.commons.repo.repository.MemberRepository
-import org.beatonma.commons.repo.repository.UserRepository
+
+private val MemberIdKey = SavedStateKey("member_id")
 
 class ComposeMemberProfileViewModel
 @ViewModelInject constructor(
     private val memberRepository: MemberRepository,
-    userRepository: UserRepository,
-    @ApplicationContext context: Context,
-) : BaseUserAccountViewModel(userRepository, context.app) {
+    @Assisted private val savedStateHandle: SavedStateHandle,
+) : ViewModel() {
+    var memberID: ParliamentID
+        set(value) {
+            savedStateHandle[MemberIdKey] = value
+        }
+        get() = savedStateHandle[MemberIdKey] ?: error("Member ID has not been set")
 
-    fun forMember(parliamentID: ParliamentID) =
-        memberRepository.getMember(parliamentID)
+    fun getMemberData() = memberRepository.getMember(memberID)
 
     suspend fun constructHistoryOf(member: CompleteMember): List<Temporal> {
         fun <T : Temporal> MutableList<Temporal>.addEvents(items: List<T>?) {

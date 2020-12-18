@@ -1,5 +1,7 @@
 package org.beatonma.commons.app.social
 
+import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
@@ -9,8 +11,11 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import org.beatonma.commons.core.extensions.autotag
+import org.beatonma.commons.data.SavedStateKey
 import org.beatonma.commons.data.core.interfaces.Sociable
 import org.beatonma.commons.data.core.room.entities.user.UserToken
+import org.beatonma.commons.data.set
 import org.beatonma.commons.kotlin.extensions.withMainContext
 import org.beatonma.commons.repo.asSocialTarget
 import org.beatonma.commons.repo.models.CreatedComment
@@ -18,6 +23,8 @@ import org.beatonma.commons.repo.models.CreatedVote
 import org.beatonma.commons.repo.repository.SocialRepository
 import org.beatonma.commons.repo.result.IoResult
 import org.beatonma.commons.repo.result.isSuccess
+import org.beatonma.commons.repo.result.onError
+import org.beatonma.commons.repo.result.onErrorCode
 import org.beatonma.commons.repo.result.onSuccess
 import org.beatonma.commons.snommoc.annotations.SignInRequired
 import org.beatonma.commons.snommoc.models.social.EmptySocialContent
@@ -27,7 +34,8 @@ import org.beatonma.commons.snommoc.models.social.SocialVoteType
 
 private const val TAG = "SocialViewModel"
 
-private const val SavedStateSocialContent = "social_content"
+private val SavedSocialContent = SavedStateKey("social_content")
+private val SavedUiState = SavedStateKey("ui_state") // TODO
 
 class SocialViewModel @ViewModelInject constructor(
     private val socialRepository: SocialRepository,
@@ -35,13 +43,24 @@ class SocialViewModel @ViewModelInject constructor(
 ) : ViewModel() {
 
     val livedata: LiveData<SocialContent> =
-        savedStateHandle.getLiveData(SavedStateSocialContent, EmptySocialContent)
+        savedStateHandle.getLiveData(SavedSocialContent.name, EmptySocialContent)
+
+    val uiState = mutableStateOf(SocialUiState.Collapsed)
 
     lateinit var socialTarget: SocialTarget
 
+    fun forTarget(target: SocialTarget, userToken: UserToken?) {
+        if (!this::socialTarget.isInitialized) {
+            socialTarget = target
+            refresh(userToken)
+        }
+    }
+
     fun forTarget(target: Sociable, userToken: UserToken?) {
-        socialTarget = target.asSocialTarget()
-        refresh(userToken)
+        if (!this::socialTarget.isInitialized) {
+            socialTarget = target.asSocialTarget()
+            refresh(userToken)
+        }
     }
 
     fun refresh(userToken: UserToken?) {
@@ -51,32 +70,47 @@ class SocialViewModel @ViewModelInject constructor(
     }
 
     @SignInRequired
-    suspend fun postComment(text: String, userToken: UserToken): IoResult<*> {
-        val comment = CreatedComment(
-            userToken = userToken,
-            target = socialTarget,
-            text = text,
-        )
+    fun postComment(text: String, userToken: UserToken) {
+        submitSocialContent(userToken) {
+            val comment = CreatedComment(
+                userToken = userToken,
+                target = socialTarget,
+                text = text,
+            )
 
-        return socialRepository.postComment(comment)
+            socialRepository.postComment(comment)
+        }
     }
 
     @SignInRequired
-    suspend fun postVote(voteType: SocialVoteType, userToken: UserToken): IoResult<*> {
-        val vote = CreatedVote(
-            userToken = userToken,
-            target = socialTarget,
-            voteType = voteType
-        )
+    private fun postVote(voteType: SocialVoteType, userToken: UserToken) {
+        submitSocialContent(userToken) {
+            val vote = CreatedVote(
+                userToken = userToken,
+                target = socialTarget,
+                voteType = voteType
+            )
 
-        return socialRepository.postVote(vote)
+            socialRepository.postVote(vote)
+        }
     }
 
     @SignInRequired
-    suspend fun updateVote(voteType: SocialVoteType, userToken: UserToken): IoResult<*> = postVote(
-        voteType = if (shouldRemoveVote(voteType)) SocialVoteType.NULL else voteType,
-        userToken = userToken
-    )
+    fun updateVote(voteType: SocialVoteType, userToken: UserToken) {
+        postVote(
+            voteType = if (shouldRemoveVote(voteType)) SocialVoteType.NULL else voteType,
+            userToken = userToken
+        )
+    }
+
+    private fun <T> submitSocialContent(userToken: UserToken, block: suspend () -> IoResult<T>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            block()
+                .onSuccess { refresh(userToken) }
+                .onError { e -> Log.w(autotag, "Social content submission failed $e") }
+                .onErrorCode { e -> Log.w(autotag, "Social content submission failed $e") }
+        }
+    }
 
     /**
      * Called when a user submits a vote.
@@ -91,7 +125,7 @@ class SocialViewModel @ViewModelInject constructor(
             userToken?.snommocToken
         ).first { it.isSuccess }.onSuccess { data ->
             withMainContext {
-                savedStateHandle[SavedStateSocialContent] = data
+                savedStateHandle[SavedSocialContent] = data
             }
         }
     }

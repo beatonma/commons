@@ -23,6 +23,9 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Providers
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -35,15 +38,23 @@ import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import org.beatonma.commons.R
+import org.beatonma.commons.app.signin.AmbientUserToken
+import org.beatonma.commons.app.signin.NullUserToken
+import org.beatonma.commons.app.signin.UserAccountViewModel
+import org.beatonma.commons.app.social.AmbientSocialActions
+import org.beatonma.commons.app.social.AmbientSocialContent
 import org.beatonma.commons.app.social.AmbientSocialTheme
 import org.beatonma.commons.app.social.AmbientSocialUiState
 import org.beatonma.commons.app.social.AmbientSocialUiTransition
 import org.beatonma.commons.app.social.CollapseExpandProgress
+import org.beatonma.commons.app.social.SocialActions
 import org.beatonma.commons.app.social.SocialScaffold
 import org.beatonma.commons.app.social.SocialUiState
+import org.beatonma.commons.app.social.SocialViewModel
 import org.beatonma.commons.app.social.asSocialTheme
 import org.beatonma.commons.app.social.rememberSocialUiState
 import org.beatonma.commons.app.social.socialTransitionState
+import org.beatonma.commons.app.ui.compose.WithResultData
 import org.beatonma.commons.app.ui.compose.components.AmbientPartyTheme
 import org.beatonma.commons.app.ui.compose.components.PartyBackground
 import org.beatonma.commons.app.ui.compose.components.chips.EmailLink
@@ -79,17 +90,67 @@ import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 import org.beatonma.commons.data.core.room.entities.member.Party
 import org.beatonma.commons.data.core.room.entities.member.PhysicalAddress
 import org.beatonma.commons.data.core.room.entities.member.WebAddress
+import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.kotlin.extensions.dateRange
 import org.beatonma.commons.logos.PartyLogos
+import org.beatonma.commons.repo.result.IoLoading
+import org.beatonma.commons.snommoc.models.social.EmptySocialContent
+import org.beatonma.commons.snommoc.models.social.SocialTarget
+import org.beatonma.commons.snommoc.models.social.SocialTargetType
+import org.beatonma.commons.snommoc.models.social.SocialVoteType
 import org.beatonma.commons.svg.ImageConfig
 import org.beatonma.commons.svg.ScaleType
 import org.beatonma.commons.theme.compose.Layer
 import org.beatonma.commons.theme.compose.Padding
 import org.beatonma.commons.theme.compose.endOfContent
 import org.beatonma.commons.theme.compose.pdp
+import org.beatonma.commons.theme.compose.theme.screenTitle
 import org.beatonma.commons.theme.compose.theme.systemui.navigationBarsPadding
 
 private const val AVATAR_ASPECT_RATIO = 3F / 2F
+
+@Composable
+fun MemberProfileLayout(
+    viewmodel: ComposeMemberProfileViewModel,
+    socialViewModel: SocialViewModel,
+    userAccountViewModel: UserAccountViewModel,
+) {
+    val activeUserToken by userAccountViewModel.userTokenLiveData.observeAsState(NullUserToken)
+    socialViewModel.forTarget(SocialTarget(SocialTargetType.member, viewmodel.memberID),
+        activeUserToken)
+
+    val memberData by viewmodel.getMemberData().collectAsState(IoLoading)
+    val socialContent by socialViewModel.livedata.observeAsState(EmptySocialContent)
+    val socialActions = rememberSocialActions(socialViewModel, activeUserToken)
+
+    Providers(
+        AmbientSocialActions provides socialActions,
+        AmbientSocialUiState provides socialViewModel.uiState,
+        AmbientSocialContent provides socialContent,
+        AmbientUserToken provides activeUserToken,
+    ) {
+        WithResultData(memberData) { data ->
+            MemberProfileLayout(data)
+        }
+    }
+}
+
+@Composable
+private fun rememberSocialActions(socialViewModel: SocialViewModel, activeUserToken: UserToken) =
+    remember {
+        SocialActions(
+            onVoteUpClick = { socialViewModel.updateVote(SocialVoteType.aye, activeUserToken) },
+            onVoteDownClick = { socialViewModel.updateVote(SocialVoteType.no, activeUserToken) },
+            onExpandedCommentIconClick = { },
+            onCommentClick = { comment ->
+                println("Clicked comment $comment")
+            },
+            onCreateCommentClick = { socialViewModel.uiState.update(SocialUiState.ComposeComment) },
+            onCommentSubmitClick = { commentText ->
+                socialViewModel.postComment(commentText, activeUserToken)
+            }
+        )
+    }
 
 @Composable
 fun MemberProfileLayout(
@@ -398,7 +459,7 @@ private fun MemberProfileScaffold(
             ) {
                 Providers(AmbientContentColor provides AmbientPartyTheme.current.theme.onPrimary) {
                     Text(name,
-                        style = typography.h4,
+                        style = typography.screenTitle,
                         modifier = Modifier.padding(Padding.ScreenHorizontal))
                 }
             }
