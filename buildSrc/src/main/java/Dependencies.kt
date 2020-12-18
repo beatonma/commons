@@ -8,7 +8,7 @@ object Versions {
 
     // Core
     const val COROUTINES = "1.4.1"
-    const val KOTLIN = "1.4.20"
+    const val KOTLIN = "1.4.21"
     const val KOTLIN_LANGUAGE_VERSION = "1.4"
     val JAVA = JavaVersion.VERSION_1_8
 
@@ -31,7 +31,7 @@ object Versions {
     const val AX_ACTIVITY = "1.2.0-beta01"
     const val AX_ANNOTATIONS = "1.2.0-alpha01"
     const val AX_APPCOMPAT = "1.3.0-alpha02"
-    const val AX_COMPOSE = "1.0.0-alpha08"
+    const val AX_COMPOSE = "1.0.0-alpha09"
     const val AX_CONSTRAINTLAYOUT = "2.0.4"
     const val AX_CORE_KTX = "1.5.0-alpha02"
     const val AX_FRAGMENT = "1.3.0-beta01"

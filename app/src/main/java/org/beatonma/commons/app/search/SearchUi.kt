@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumnFor
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AmbientContentColor
 import androidx.compose.material.AmbientTextStyle
@@ -29,7 +29,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.focus.ExperimentalFocus
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -108,7 +107,6 @@ fun SearchUiPreview() {
     }
 }
 
-@OptIn(ExperimentalFocus::class)
 @Composable
 fun SearchUi(
     results: List<SearchResult>,
@@ -175,7 +173,6 @@ fun SearchUi(
     }
 }
 
-@OptIn(ExperimentalFocus::class)
 @Composable
 private fun SearchField(
     focusRequester: FocusRequester,
@@ -216,11 +213,13 @@ fun SearchResults(
     Surface(
         modifier.zIndex(Layer.AlwaysOnTopSurface)
     ) {
-        LazyColumnFor(items = results) { item ->
-            when (item) {
-                is MemberSearchResult -> MemberSearchResult(item, actions.onClickMember)
-                else -> Todo(message = "Unimplemented search result class: ${item.javaClass.canonicalName}")
-            }
+        LazyColumn {
+            items(items = results, itemContent = { item ->
+                when (item) {
+                    is MemberSearchResult -> MemberSearchResult(item, actions.onClickMember)
+                    else -> Todo(message = "Unimplemented search result class: ${item.javaClass.canonicalName}")
+                }
+            })
         }
     }
 }

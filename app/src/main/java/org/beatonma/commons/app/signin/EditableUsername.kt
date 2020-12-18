@@ -27,7 +27,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.focus.ExperimentalFocus
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -41,7 +40,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.beatonma.commons.BuildConfig
 import org.beatonma.commons.R
-import org.beatonma.commons.app.social.compose.Username
+import org.beatonma.commons.app.social.Username
 import org.beatonma.commons.app.ui.compose.components.LoadingIcon
 import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.animation.progressKey
@@ -66,7 +65,6 @@ internal val readOnlyVisibility = FloatPropKey()
 internal val editableVisibility = FloatPropKey()
 internal val awaitingResultVisibility = FloatPropKey()
 
-@OptIn(ExperimentalFocus::class)
 @Composable
 internal fun EditableUsername(
     userToken: UserToken,
@@ -131,7 +129,7 @@ private fun AwaitingResultLayout(
     }
 }
 
-@OptIn(ExperimentalFocus::class, InternalCoroutinesApi::class)
+@OptIn(InternalCoroutinesApi::class)
 @Composable
 private fun EditableUsernameLayout(
     userToken: UserToken,
@@ -182,7 +180,6 @@ private fun EditableUsernameLayout(
         ::renameAction)
 }
 
-@OptIn(ExperimentalFocus::class)
 @Composable
 private fun EditableUsernameLayout(
     text: MutableState<String>,

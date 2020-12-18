@@ -30,10 +30,11 @@ class CommonsComposeModule : SimpleAndroidProjectPlugin() {
 
             main {
                 implementations(
-                    Dependencies.AndroidX.Compose.UI,
+                    Dependencies.AndroidX.Compose.COMPILER,
                     Dependencies.AndroidX.Compose.FOUNDATION,
                     Dependencies.AndroidX.Compose.MATERIAL,
-                    Dependencies.AndroidX.Compose.TOOLING
+                    Dependencies.AndroidX.Compose.TOOLING,
+                    Dependencies.AndroidX.Compose.UI
                 )
             }
         }

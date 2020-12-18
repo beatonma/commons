@@ -25,7 +25,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.layout.id
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.AmbientAnimationClock
 import androidx.compose.ui.unit.Dp
@@ -167,8 +166,8 @@ private fun CounterIcon(
         val verticalSpace = progress.lerpBetween(0, iconTextSpace) + avoidOffset
         val horizontalSpace = progress.lerpBetween(iconTextSpace, 0) + avoidOffset
 
-        val iconPlaceable = measurables.find { it.id == "icon" }!!.measure(constraints)
-        val textPlaceable = measurables.find { it.id == "text" }!!.measure(constraints)
+        val iconPlaceable = measurables.find { it.layoutId == "icon" }!!.measure(constraints)
+        val textPlaceable = measurables.find { it.layoutId == "text" }!!.measure(constraints)
 
         val textStart = progress.lerpBetween(iconPlaceable.width + horizontalSpace, 0)
         val textTop = progress.lerpBetween(0, iconPlaceable.height + verticalSpace)

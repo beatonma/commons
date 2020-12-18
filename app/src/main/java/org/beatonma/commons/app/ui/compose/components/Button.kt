@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonColors
-import androidx.compose.material.ButtonConstants
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ButtonElevation
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
@@ -25,9 +25,9 @@ fun CommonsOutlinedButton(
     interactionState: InteractionState = remember(::InteractionState),
     elevation: ButtonElevation? = null,
     shape: Shape = shapes.small,
-    border: BorderStroke? = ButtonConstants.defaultOutlinedBorder,
+    border: BorderStroke? = ButtonDefaults.outlinedBorder,
     colors: ButtonColors = CommonsButtons.outlineButtonColors(),
-    contentPadding: PaddingValues = ButtonConstants.DefaultContentPadding,
+    contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     content: @Composable RowScope.() -> Unit,
 ) = Button(
     onClick = onClick,
@@ -51,9 +51,9 @@ fun WarningButton(
     interactionState: InteractionState = remember(::InteractionState),
     elevation: ButtonElevation? = null,
     shape: Shape = shapes.small,
-    border: BorderStroke? = ButtonConstants.defaultOutlinedBorder,
+    border: BorderStroke? = ButtonDefaults.outlinedBorder,
     colors: ButtonColors = CommonsButtons.warningButtonColors(),
-    contentPadding: PaddingValues = ButtonConstants.DefaultContentPadding,
+    contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     content: @Composable RowScope.() -> Unit,
 ) {
     Button(

@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumnForIndexed
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
@@ -20,7 +20,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.ExperimentalFocus
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focusRequester
 import androidx.compose.ui.res.stringResource
@@ -73,15 +72,17 @@ internal fun CommentList(
             .progressIn(0.75F, 1F)
             .withEasing(FastOutSlowInEasing)
 
-        LazyColumnForIndexed(comments, modifier) { i, comment ->
-            Comment(
-                comment,
-                itemModifier.padding(bottom = (4F * i).lerpTo(0F, progress).pdp),
-                onClick,
-            )
+        LazyColumn(modifier) {
+            itemsIndexed(comments) { i, comment ->
+                Comment(
+                    comment,
+                    itemModifier.padding(bottom = (4F * i).lerpTo(0F, progress).pdp),
+                    onClick,
+                )
 
-            if (i == comments.size - 1) {
-                Spacer(Modifier.endOfContent())
+                if (i == comments.size - 1) {
+                    Spacer(Modifier.endOfContent())
+                }
             }
         }
     }
@@ -127,7 +128,7 @@ private fun Comment(
 /**
  * Displays a FAB which expands into a bottom sheet dialog for comment authoring.
  */
-@OptIn(ExperimentalMaterialApi::class, ExperimentalFocus::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CreateCommentUi(
     userToken: UserToken = AmbientUserToken.current,
@@ -163,7 +164,6 @@ fun CreateCommentUi(
 private fun CreateCommentButtonContent(progress: Float) =
     FabText(stringResource(R.string.social_new_comment), progress)
 
-@OptIn(ExperimentalFocus::class)
 @Composable
 private fun CreateCommentSheetContent(
     progress: Float,

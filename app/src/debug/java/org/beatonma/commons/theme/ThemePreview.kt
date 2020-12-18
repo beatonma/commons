@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumnFor
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -14,9 +13,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.annotatedString
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
@@ -57,9 +55,14 @@ private fun Colors() {
             .shuffled()
     }
 
-    LazyColumnFor(colors) {
-        ColorRow(it)
+    Column {
+        colors.forEach {
+            ColorRow(it)
+        }
     }
+//    LazyColumnFor(colors) {
+//        ColorRow(it)
+//    }
 }
 
 @Composable
@@ -140,7 +143,7 @@ private fun PartyPortraits(
  * Only for short strings!
  */
 @Composable
-fun CharSequence.diff(other: CharSequence): AnnotatedString = annotatedString {
+fun CharSequence.diff(other: CharSequence) = buildAnnotatedString {
     val differenceStyle = SpanStyle(
         textDecoration = TextDecoration.Underline,
     )

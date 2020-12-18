@@ -4,7 +4,7 @@ import android.util.Patterns
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.annotatedString
+import androidx.compose.ui.text.buildAnnotatedString
 import org.beatonma.commons.theme.compose.theme.CommonsSpanStyle
 
 private const val DOT = '·'
@@ -48,7 +48,7 @@ fun String.withAnnotatedStyle(
     italicStyle: SpanStyle,
     boldStyle: SpanStyle,
     quoteStyle: SpanStyle,
-) = annotatedString {
+) = buildAnnotatedString {
 
     var totalStyleSymbols = 0
     var pendingStyle = MarkdownStyle.Normal
@@ -103,7 +103,7 @@ fun String.withAnnotatedStyle(
     }
 
     if (styleMap.isEmpty()) {
-        return@annotatedString
+        return@buildAnnotatedString
     }
 
     var italicPosition = -1
@@ -153,7 +153,7 @@ fun String.withAnnotatedStyle(
 fun String.linkify(
     style: SpanStyle = CommonsSpanStyle.hyperlink,
     tag: String = "url",
-) = annotatedString {
+) = buildAnnotatedString {
     append(this@linkify)
 
     Patterns.WEB_URL.toRegex().findAll(this@linkify).forEach { result ->

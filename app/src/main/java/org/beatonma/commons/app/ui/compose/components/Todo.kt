@@ -5,7 +5,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.annotatedString
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.compose.ambient.colors
 
@@ -21,7 +21,7 @@ fun Todo(modifier: Modifier = Modifier, message: String? = null) {
 
 @Composable
 fun Todo(message: AnnotatedString, modifier: Modifier = Modifier) {
-    val text = annotatedString {
+    val text = buildAnnotatedString {
         append("// todo: ")
         append(message)
     }

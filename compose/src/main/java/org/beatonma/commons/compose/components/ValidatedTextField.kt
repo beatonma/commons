@@ -22,7 +22,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.SoftwareKeyboardController
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.annotatedString
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
@@ -195,7 +195,7 @@ private fun CounterText(
     val defaultStyle = remember { SpanStyle() }
 
     val counterText = mutableStateOf(
-        annotatedString {
+        buildAnnotatedString {
             val showWarning =
                 textLength < validationRules.minLength || textLength > validationRules.maxLength
             withStyle(if (showWarning) warningStyle else defaultStyle) {

@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumnFor
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.AmbientContentColor
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
@@ -151,8 +151,10 @@ fun VoteList(
             }
         }
 
-        LazyColumnFor(items = filteredVotes.value) { vote ->
-            Vote(vote)
+        LazyColumn {
+            items(items = filteredVotes.value, itemContent = { vote ->
+                Vote(vote)
+            })
         }
     }
 }
@@ -268,7 +270,6 @@ private fun BarChart(
         if (voteCount == 0) return
         val barWidthPercent = voteCount.toFloat() / totalVotesF
 
-        println("$voteCount -> $barWidthPercent")
         Spacer(
             itemModifier
                 .fillMaxWidth(barWidthPercent)

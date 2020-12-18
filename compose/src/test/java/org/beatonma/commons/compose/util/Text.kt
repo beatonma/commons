@@ -3,7 +3,7 @@ package org.beatonma.commons.compose.util
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.SpanStyleRange
-import androidx.compose.ui.text.annotatedString
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -39,7 +39,7 @@ class ComposeTextUtilTest {
         if (self == null) return
         if (self == other) return
 
-        block(self!!)
+        block(self)
     }
 
     private fun spanStyleString(span: SpanStyleRange): String =
@@ -60,7 +60,7 @@ class ComposeTextUtilTest {
 
         // Italics alone
         val italicResult = italic.withAnnotatedStyle(italicStyle, boldStyle, quoteStyle)
-        italicResult shouldbe annotatedString {
+        italicResult shouldbe buildAnnotatedString {
             append("Hello ")
             withStyle(italicStyle) {
                 append("Username")
@@ -70,7 +70,7 @@ class ComposeTextUtilTest {
 
         // Bold alone
         val boldResult = bold.withAnnotatedStyle(italicStyle, boldStyle, quoteStyle)
-        boldResult shouldbe annotatedString {
+        boldResult shouldbe buildAnnotatedString {
             append("Hello ")
             withStyle(boldStyle) {
                 append("Username")
@@ -85,7 +85,7 @@ class ComposeTextUtilTest {
         println(text)
 
         val result = text.withAnnotatedStyle(italicStyle, boldStyle, quoteStyle)
-        val expected = annotatedString {
+        val expected = buildAnnotatedString {
             append("Hello ")
             withStyle(boldStyle) {
                 append("Username")
@@ -110,7 +110,7 @@ class ComposeTextUtilTest {
         println(text)
 
         val result = text.withAnnotatedStyle(italicStyle, boldStyle, quoteStyle)
-        val expected = annotatedString {
+        val expected = buildAnnotatedString {
             withStyle(boldStyle) {
                 append("Hello Username! How are ")
                 withStyle(italicStyle) {
@@ -129,7 +129,7 @@ class ComposeTextUtilTest {
         println(text)
 
         val result = text.withAnnotatedStyle(italicStyle, boldStyle, quoteStyle)
-        val expected = annotatedString {
+        val expected = buildAnnotatedString {
             withStyle(italicStyle) {
                 append("Hello")
             }
@@ -159,7 +159,7 @@ class ComposeTextUtilTest {
         val text = "Hello 'yourname'"
 
         val result = text.withAnnotatedStyle(italicStyle, boldStyle, quoteStyle)
-        val expected = annotatedString {
+        val expected = buildAnnotatedString {
             append("Hello ")
             withStyle(quoteStyle) {
                 append("yourname")

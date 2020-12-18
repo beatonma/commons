@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.preferredWidth
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material.ButtonConstants
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -21,7 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.ExperimentalFocus
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -144,7 +143,6 @@ fun UserProfileFabUi(userToken: UserToken = AmbientUserToken.current) {
     )
 }
 
-@OptIn(ExperimentalFocus::class)
 @Composable
 private fun ProfileSheetContent(
     userToken: UserToken,
@@ -251,7 +249,7 @@ private fun DeleteAccountUi(
                         confirmedColor = CommonsButtons.contentButtonColors()
                     ),
                     confirmationState = confirmationState,
-                    border = if (confirmationState.value == ConfirmationState.Confirmed) null else ButtonConstants.defaultOutlinedBorder,
+                    border = if (confirmationState.value == ConfirmationState.Confirmed) null else ButtonDefaults.outlinedBorder,
                     safeContent = { ResourceText(R.string.account_delete_confirm_button) },
                     awaitingConfirmationContent = { ResourceText(R.string.account_delete_confirm_twice_button) },
                     confirmedContent = { LoadingIcon() }
