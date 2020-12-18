@@ -1,3 +1,5 @@
+package org.beatonma.commons.network.core.ktx
+
 import android.util.Log
 import okhttp3.HttpUrl
 import okhttp3.Interceptor

@@ -7,16 +7,16 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
 import okhttp3.OkHttpClient
 import org.beatonma.commons.network.core.Http
+import org.beatonma.commons.network.core.ktx.withDefaultHeaders
 import org.beatonma.commons.snommoc.BuildConfig
 import org.beatonma.commons.snommoc.CommonsService
 import org.beatonma.commons.snommoc.Contract
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import withDefaultHeaders
 import javax.inject.Singleton
 
-
-@Module @Suppress("unused")
+@Module
+@Suppress("unused")
 @InstallIn(ApplicationComponent::class)
 class CommonsServiceModule {
     @Singleton
@@ -37,7 +37,7 @@ class CommonsServiceModule {
     @SnommocClient
     fun provideCommonsRetrofit(
         moshi: Moshi,
-        @SnommocClient httpClient: OkHttpClient
+        @SnommocClient httpClient: OkHttpClient,
     ): Retrofit =
         Retrofit.Builder()
             .baseUrl(CommonsService.BASE_URL)
