@@ -19,7 +19,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.ListItem
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
@@ -33,7 +32,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -51,13 +49,11 @@ import org.beatonma.commons.compose.animation.progressKey
 import org.beatonma.commons.compose.animation.rememberExpandCollapseState
 import org.beatonma.commons.compose.animation.rememberExpandCollapseTransition
 import org.beatonma.commons.compose.animation.toggle
-import org.beatonma.commons.compose.components.Hint
 import org.beatonma.commons.compose.components.ModalScrim
 import org.beatonma.commons.compose.components.OptionalText
+import org.beatonma.commons.compose.components.SearchTextField
 import org.beatonma.commons.compose.modifiers.wrapContentHeight
 import org.beatonma.commons.compose.modifiers.wrapContentOrFillWidth
-import org.beatonma.commons.compose.util.rememberText
-import org.beatonma.commons.compose.util.update
 import org.beatonma.commons.core.extensions.lerpBetween
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.core.extensions.reversed
@@ -179,16 +175,9 @@ private fun SearchField(
     modifier: Modifier = Modifier,
     onSubmit: (String) -> Unit = AmbientSearchActions.current.onSubmit,
 ) {
-    val query = rememberText()
-
-    TextField(
-        value = query.value,
-        placeholder = { Hint(stringResource(R.string.search_members_hint)) },
-        onValueChange = { queryText ->
-            query.update(queryText)
-            onSubmit(queryText)
-        },
-        onImeActionPerformed = { _, controller -> controller?.hideSoftwareKeyboard() },
+    SearchTextField(
+        hint = R.string.search_members_hint,
+        onQueryChange = onSubmit,
         modifier = modifier.focusRequester(focusRequester),
         textStyle = AmbientTextStyle.current.copy(color = CommonsColor.OnSearchBar),
     )
