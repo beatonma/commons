@@ -51,6 +51,7 @@ class CommonsComposeModule : SimpleAndroidProjectPlugin() {
                     "-Xallow-jvm-ir-dependencies",
                     "-Xskip-prerelease-check"
                 )
+                languageVersion = Versions.KOTLIN_LANGUAGE_VERSION
             }
 
             composeOptions {
