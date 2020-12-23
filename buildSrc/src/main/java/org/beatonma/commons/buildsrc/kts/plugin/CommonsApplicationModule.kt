@@ -4,9 +4,7 @@ import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import org.beatonma.commons.buildsrc.Commons
 import org.beatonma.commons.buildsrc.Git
-import org.beatonma.commons.buildsrc.kts.extensions.debug
 import org.beatonma.commons.buildsrc.kts.extensions.minify
-import org.beatonma.commons.buildsrc.kts.extensions.release
 import org.gradle.api.Project
 import org.gradle.api.plugins.PluginContainer
 
@@ -62,8 +60,6 @@ class CommonsApplicationModule: CommonsAndroidModule<BaseAppModuleExtension>() {
                     minify()
                 }
             }
-
-            applyPackagingOptions()
         }
     }
 
@@ -83,28 +79,6 @@ class CommonsApplicationModule: CommonsAndroidModule<BaseAppModuleExtension>() {
             }
 
             tasks.named("assembleRelease").get().finalizedBy(taskName)
-        }
-    }
-
-    private fun BaseAppModuleExtension.applyPackagingOptions() {
-        val exclusions = arrayOf(
-            "META-INF/DEPENDENCIES",
-            "META-INF/LICENSE",
-            "META-INF/LICENSE.txt",
-            "META-INF/license.txt",
-            "META-INF/NOTICE",
-            "META-INF/NOTICE.txt",
-            "META-INF/notice.txt",
-            "META-INF/ASL2.0",
-            "META-INF/AL2.0",
-            "META-INF/LGPL2.1",
-            "META-INF/*.kotlin_module",
-            "META-INF/licenses/*",
-            "**/attach_hotspot_windows.dll"
-        )
-
-        packagingOptions {
-            exclusions.forEach(::exclude)
         }
     }
 }

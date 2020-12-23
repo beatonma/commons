@@ -79,8 +79,27 @@ abstract class CommonsAndroidModule<T : BaseExtension> : AndroidProjectPlugin<T>
                 freeCompilerArgs = freeCompilerArgs + listOf(
                     "-XXLanguage:+InlineClasses",
                     "-XXLanguage:+NonParenthesizedAnnotationsOnFunctionalTypes",
-                    "-Xopt-in=kotlin.RequiresOptIn" // Hide warnings about @OptIn annotations.
+                    "-Xopt-in=kotlin.RequiresOptIn", // Hide warnings about @OptIn annotations.
+                    "-XXLanguage:+UnitConversion",
+                    "-XXLanguage:+NewInference"
                 )
+            }
+
+            packagingOptions {
+                resources {
+                    excludes += setOf(
+                        "META-INF/DEPENDENCIES",
+                        "META-INF/LICENSE",
+                        "META-INF/NOTICE",
+                        "META-INF/*.txt",
+                        "META-INF/ASL2.0",
+                        "META-INF/AL2.0",
+                        "META-INF/LGPL2.1",
+                        "META-INF/*.kotlin_module",
+                        "META-INF/licenses/*",
+                        "**/attach_hotspot_windows.dll"
+                    )
+                }
             }
         }
     }
