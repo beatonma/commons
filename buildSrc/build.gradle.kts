@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val gradleVersion = "4.2.0-alpha15"
-val kotlinVersion = "1.4.20"
+val gradleVersion = "7.0.0-alpha03"
+val kotlinVersion = "1.4.21"
 
 plugins {
     `kotlin-dsl`
