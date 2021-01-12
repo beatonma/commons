@@ -1,11 +1,14 @@
 package org.beatonma.commons.compose.animation
 
 import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.FloatPropKey
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import org.beatonma.commons.theme.compose.theme.CommonsSpring
+
+
 
 @Composable
 fun rememberExpandCollapseState(
@@ -15,11 +18,13 @@ fun rememberExpandCollapseState(
 @Composable
 fun rememberExpandCollapseTransition(
     animSpec: AnimationSpec<Float> = CommonsSpring(),
+    key: FloatPropKey = progressKey,
 ) = remember {
     twoStateProgressTransition(
         defaultState = ExpandCollapseState.Collapsed,
         altState = ExpandCollapseState.Expanded,
         animSpec = animSpec,
+        key = key,
     )
 }
 

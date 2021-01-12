@@ -1,6 +1,7 @@
 package org.beatonma.commons.compose.animation
 
 import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.FloatPropKey
 import androidx.compose.animation.core.TransitionDefinition
 import androidx.compose.animation.core.transitionDefinition
 import androidx.compose.runtime.MutableState
@@ -18,19 +19,20 @@ fun <T> twoStateProgressTransition(
     defaultState: T,
     altState: T,
     animSpec: AnimationSpec<Float> = CommonsSpring(),
+    key: FloatPropKey = progressKey,
 ): TransitionDefinition<T> =
     transitionDefinition {
         state(defaultState) {
-            this[progressKey] = 0F
+            this[key] = 0F
         }
         state(altState) {
-            this[progressKey] = 1F
+            this[key] = 1F
         }
 
         transition(
             defaultState to altState,
             altState to defaultState,
         ) {
-            progressKey using animSpec
+            key using animSpec
         }
     }
