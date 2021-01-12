@@ -1,3 +1,4 @@
+import org.beatonma.commons.buildsrc.kts.extensions.instrumentationTest
 import org.beatonma.commons.buildsrc.kts.extensions.main
 
 plugins {
@@ -6,6 +7,12 @@ plugins {
 }
 
 dependencies {
+    instrumentationTest {
+        implementations(
+            project(":testcompose")
+        )
+    }
+    
     main {
         implementations(
             Dependencies.AndroidX.CORE_KTX,

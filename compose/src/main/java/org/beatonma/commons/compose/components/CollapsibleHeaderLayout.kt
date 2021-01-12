@@ -37,7 +37,6 @@ import org.beatonma.commons.compose.animation.rememberExpandCollapseState
 import org.beatonma.commons.compose.animation.rememberExpandCollapseTransition
 import org.beatonma.commons.compose.modifiers.colorize
 import org.beatonma.commons.core.extensions.reversed
-import org.beatonma.commons.theme.compose.theme.CommonsTheme
 
 private val HeaderExpandProgress =
     FloatPropKey(label = "Track the progress of [CollapsibleHeaderLayout] header expansion.")
@@ -107,11 +106,10 @@ fun LinearCollapsibleHeaderLayout(
     lazyListContent: LazyListScope.() -> Unit,
     modifier: Modifier = Modifier,
     touchInterceptModifier: Modifier = Modifier,
+    headerState: CollapsibleHeaderState = remember { CollapsibleHeaderState() },
     lazyListState : LazyListState = rememberLazyListState(),
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
 ) {
-    val headerState = remember { HeaderState() }
-
     /**
      * Run the block in the [ScrollScope] of [lazyListState], launched on [coroutineScope].
      */
@@ -192,9 +190,6 @@ private fun TouchInterceptor(
                 controller = controller,
                 orientation = Orientation.Vertical,
                 reverseDirection = true,
-                onScrollStopped = {
-
-                }
             )
             .zIndex(Float.MAX_VALUE)
     )
@@ -205,36 +200,34 @@ private fun TouchInterceptor(
 fun CollapsibleHeaderLayoutPreview() {
     val listItems = (1..100).toList()
 
-    CommonsTheme {
-        Box(Modifier.fillMaxSize()) {
-            LinearCollapsibleHeaderLayout(
-                collapsingHeader = { expandedProgress ->
-                    Column {
-                        Text("This should stay here", Modifier.colorize())
-                        Box(
-                            Modifier.colorize()
-                                .height(300.dp * expandedProgress)
-                        ) {
-                            Text("This should collapse")
-                        }
-                    }
-                },
-                lazyListContent = {
-                    items(
-                        items = listItems,
-                    ) { item ->
-                        Text("$item", Modifier.padding(4.dp).colorize())
+    Box(Modifier.fillMaxSize()) {
+        LinearCollapsibleHeaderLayout(
+            collapsingHeader = { expandedProgress ->
+                Column {
+                    Text("This should stay here", Modifier.colorize())
+                    Box(
+                        Modifier.colorize()
+                            .height(300.dp * expandedProgress)
+                    ) {
+                        Text("This should collapse")
                     }
                 }
-            )
-        }
+            },
+            lazyListContent = {
+                items(
+                    items = listItems,
+                ) { item ->
+                    Text("$item", Modifier.padding(4.dp).colorize())
+                }
+            }
+        )
     }
 }
 
 private val LazyListState.isAtTop get() =
     this.firstVisibleItemIndex == 0 && this.firstVisibleItemScrollOffset == 0
 
-internal class HeaderState(
+class CollapsibleHeaderState(
     initial: Float = 0F,
 ) {
     var value by mutableStateOf(initial)

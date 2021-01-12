@@ -8,7 +8,7 @@ import org.junit.Test
 class CollapsibleHeaderStateTest {
     @Test
     fun HeaderState_isCorrect() {
-        val state = HeaderState().apply {
+        val state = CollapsibleHeaderState().apply {
             updateMaxValue(100F)
         }
 
