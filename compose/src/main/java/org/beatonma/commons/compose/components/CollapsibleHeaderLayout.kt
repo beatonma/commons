@@ -1,8 +1,11 @@
 package org.beatonma.commons.compose.components
 
-import androidx.compose.animation.core.FloatPropKey
-import androidx.compose.animation.core.TransitionDefinition
-import androidx.compose.animation.transition
+import androidx.compose.animation.AnimatedFloatModel
+import androidx.compose.animation.asDisposableClock
+import androidx.compose.animation.core.AnimationClockObservable
+import androidx.compose.animation.core.TargetAnimation
+import androidx.compose.animation.core.fling
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.ScrollScope
 import androidx.compose.foundation.gestures.ScrollableController
 import androidx.compose.foundation.gestures.rememberScrollableController
@@ -14,99 +17,38 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.gesture.scrollorientationlocking.Orientation
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.platform.AmbientAnimationClock
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.beatonma.commons.compose.animation.ExpandCollapseState
-import org.beatonma.commons.compose.animation.collapse
-import org.beatonma.commons.compose.animation.expand
-import org.beatonma.commons.compose.animation.isCollapsed
-import org.beatonma.commons.compose.animation.isExpanded
-import org.beatonma.commons.compose.animation.rememberExpandCollapseState
-import org.beatonma.commons.compose.animation.rememberExpandCollapseTransition
 import org.beatonma.commons.compose.modifiers.colorize
 import org.beatonma.commons.core.extensions.reversed
+import org.beatonma.commons.theme.compose.theme.CommonsDecay
+import org.beatonma.commons.theme.compose.theme.CommonsSpring
+import kotlin.math.absoluteValue
+import kotlin.random.Random
 
-private val HeaderExpandProgress =
-    FloatPropKey(label = "Track the progress of [CollapsibleHeaderLayout] header expansion.")
-
-/**
- * Stateful header reacts to scrolling but semi-independent.
- */
-@Composable
-fun CollapsibleHeaderLayout(
-    collapsingHeader: @Composable ColumnScope.(collapseProgress: Float) -> Unit,
-    lazyListContent: LazyListScope.() -> Unit,
-    modifier: Modifier = Modifier,
-    headerState: MutableState<ExpandCollapseState> = rememberExpandCollapseState(ExpandCollapseState.Expanded),
-    transitionDef: TransitionDefinition<ExpandCollapseState> =
-        rememberExpandCollapseTransition(key = HeaderExpandProgress),
-    lazyListState : LazyListState = rememberLazyListState(),
-    coroutineScope: CoroutineScope = rememberCoroutineScope()
-) {
-    val transition = transition(transitionDef, headerState.value)
-    val expandProgress = transition[HeaderExpandProgress]
-
-    val controller = rememberScrollableController { scrollDelta ->
-        val isScrollTowardsTopOfList = scrollDelta > 0F
-        val isScrollTowardsBottomOfList = scrollDelta < 0F
-
-        when {
-            headerState.isExpanded && isScrollTowardsBottomOfList -> {
-                headerState.collapse()
-            }
-
-            headerState.isCollapsed -> {
-                if (isScrollTowardsTopOfList && lazyListState.isAtTop) {
-                    headerState.expand()
-                }
-
-                else {
-                    coroutineScope.launch {
-                        lazyListState.scroll { scrollBy(-scrollDelta) }
-                    }
-                }
-            }
-        }
-        0F
-    }
-
-    Box(modifier) {
-        Column {
-            collapsingHeader(expandProgress)
-
-            LazyColumn(
-                state = lazyListState,
-                content = lazyListContent,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-
-        TouchInterceptor(controller)
-    }
-}
 
 /**
  * Directly tracks input
  */
 @Composable
-fun LinearCollapsibleHeaderLayout(
+fun CollapsibleHeaderLayout(
     collapsingHeader: @Composable (collapseProgress: Float) -> Unit,
     lazyListContent: LazyListScope.() -> Unit,
     modifier: Modifier = Modifier,
+    onScrollStarted: (startedPosition: Offset) -> Unit = {},
+    onScrollStopped: (velocity: Float) -> Unit = {},
     touchInterceptModifier: Modifier = Modifier,
-    headerState: CollapsibleHeaderState = remember { CollapsibleHeaderState() },
+    headerState: CollapsibleHeaderState = collapsibleHeaderState(),
     lazyListState : LazyListState = rememberLazyListState(),
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
 ) {
@@ -156,7 +98,9 @@ fun LinearCollapsibleHeaderLayout(
             Layout(
                 content = { collapsingHeader(headerState.expandProgress) }
             ) { measurables, constraints ->
-                require(measurables.size == 1) { "CollapsibleHeaderLayout header should contain exactly one child" }
+                require(measurables.size == 1) {
+                    "CollapsibleHeaderLayout header should contain exactly one child"
+                }
 
                 val placeable = measurables[0].measure(constraints)
 
@@ -174,7 +118,11 @@ fun LinearCollapsibleHeaderLayout(
             )
         }
 
-        TouchInterceptor(controller, touchInterceptModifier)
+        TouchInterceptor(
+            controller, touchInterceptModifier,
+            onScrollStarted = onScrollStarted,
+            onScrollStopped = onScrollStopped,
+        )
     }
 }
 
@@ -182,6 +130,8 @@ fun LinearCollapsibleHeaderLayout(
 private fun TouchInterceptor(
     controller: ScrollableController,
     modifier: Modifier = Modifier,
+    onScrollStarted: (startedPosition: Offset) -> Unit = {},
+    onScrollStopped: (velocity: Float) -> Unit = {},
 ) {
     Box(
         modifier
@@ -190,6 +140,8 @@ private fun TouchInterceptor(
                 controller = controller,
                 orientation = Orientation.Vertical,
                 reverseDirection = true,
+                onScrollStarted = onScrollStarted,
+                onScrollStopped = onScrollStopped,
             )
             .zIndex(Float.MAX_VALUE)
     )
@@ -199,14 +151,31 @@ private fun TouchInterceptor(
 @Composable
 fun CollapsibleHeaderLayoutPreview() {
     val listItems = (1..100).toList()
+    val headerState = collapsibleHeaderState()
 
     Box(Modifier.fillMaxSize()) {
-        LinearCollapsibleHeaderLayout(
+        CollapsibleHeaderLayout(
+            modifier = Modifier
+                .clickable {
+                    println("Click")
+                    if (Random.nextBoolean()) {
+                        headerState.expand()
+                    }
+                    else {
+                        headerState.collapse()
+                    }
+                },
             collapsingHeader = { expandedProgress ->
                 Column {
-                    Text("This should stay here", Modifier.colorize())
+                    Text(
+                        "This should stay here",
+                        Modifier
+                            .colorize()
+                            .height(80.dp)
+                    )
                     Box(
-                        Modifier.colorize()
+                        Modifier
+                            .colorize()
                             .height(300.dp * expandedProgress)
                     ) {
                         Text("This should collapse")
@@ -217,9 +186,15 @@ fun CollapsibleHeaderLayoutPreview() {
                 items(
                     items = listItems,
                 ) { item ->
-                    Text("$item", Modifier.padding(4.dp).colorize())
+                    Text(
+                        "$item",
+                        Modifier
+                            .padding(4.dp)
+                            .colorize()
+                    )
                 }
-            }
+            },
+            headerState = headerState,
         )
     }
 }
@@ -227,29 +202,71 @@ fun CollapsibleHeaderLayoutPreview() {
 private val LazyListState.isAtTop get() =
     this.firstVisibleItemIndex == 0 && this.firstVisibleItemScrollOffset == 0
 
-class CollapsibleHeaderState(
+@Composable
+fun collapsibleHeaderState(
     initial: Float = 0F,
+    clock: AnimationClockObservable = AmbientAnimationClock.current.asDisposableClock(),
+) = remember {
+    CollapsibleHeaderState(
+        initial,
+        clock
+    )
+}
+
+class CollapsibleHeaderState internal constructor(
+    initial: Float,
+    clock: AnimationClockObservable,
 ) {
-    var value by mutableStateOf(initial)
+    val value = AnimatedFloatModel(
+        initialValue = initial,
+        clock = clock,
+    )
     var maxValue: Float = Float.POSITIVE_INFINITY
         private set(newMax) {
             field = newMax
-            if (value > newMax) {
-                value = newMax
-            }
+            value.setBounds(0F, newMax)
         }
 
     val expandProgress: Float
         get() = when {
             maxValue == 0F || maxValue.isNaN() -> 0F
-            else -> this.value / this.maxValue
+            else -> this.value.value / this.maxValue
         }.reversed()
 
     val isCollapsed: Boolean get() = expandProgress == 0F
     val isExpanded: Boolean get() = expandProgress == 1F
 
+    fun expand() {
+        value.animateTo(0F)
+    }
+
+    fun collapse() {
+        value.animateTo(maxValue)
+    }
+
+    fun expand(velocity: Float) {
+        value.fling(
+            velocity,
+            adjustTarget = {
+                TargetAnimation(0F, CommonsSpring())
+            },
+            decay = CommonsDecay(),
+        )
+    }
+
+    fun collapse(velocity: Float) {
+        value.fling(
+            velocity,
+            adjustTarget = {
+                TargetAnimation(maxValue, CommonsSpring())
+            },
+            decay = CommonsDecay(),
+        )
+    }
+
     /**
-     * Only update maxValue if the new value is larger, or no value has been set yet (i.e. still has default INFINITY value)
+     * Only update maxValue if the new value is larger, or no value has been set yet
+     * (i.e. still has default INFINITY value)
      */
     fun updateMaxValue(newMaxValue: Float) {
         if (
@@ -264,9 +281,13 @@ class CollapsibleHeaderState(
      * Scroll by up to [delta] and return any unconsumed remainder.
      */
     fun scrollBy(delta: Float): Float {
-        val rawResult = value + delta
+        if (value.isRunning && value.velocity.absoluteValue < 20F) {
+            return 0F
+        }
 
-        value = rawResult.coerceIn(0F, maxValue)
+        val rawResult = value.value + delta
+
+        value.snapTo(rawResult.coerceIn(0F, maxValue))
 
         return when {
             rawResult < 0F -> rawResult
