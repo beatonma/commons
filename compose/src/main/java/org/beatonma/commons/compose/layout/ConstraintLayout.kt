@@ -32,21 +32,29 @@ inline fun ConstrainScope.linkTo(
 
 /**
  * Apply constraints to [children] so they form a column.
- * @return Set of [ConstrainedLayoutReference]s that were applied to the children in the same order
+ * @return Array of [ConstrainedLayoutReference]s that were applied to the children in the same order
  *         as provided in input.
  */
 @Composable
 fun ConstraintLayoutScope.verticalChain(
     vararg children: @Composable (Modifier) -> Unit,
+    first: (ConstrainScope.() -> Unit)? = null,
+    last: (ConstrainScope.() -> Unit)? = null,
 ): Array<ConstrainedLayoutReference> {
-    val refs = Array(children.size) { createRef() }
+    val size = children.size
+    val lastIndex = size - 1
+    val refs = Array(size) { createRef() }
+
     children.fastForEachIndexed { i, child ->
         val self = refs[i]
         val previous: ConstrainedLayoutReference? = if (i == 0) null else refs[i - 1]
 
         child(
             Modifier.constrainAs(self) {
-                top.linkTo(previous?.bottom ?: parent.top)
+                if (i == 0) first?.invoke(this)
+                else top.linkTo(previous!!.bottom)
+                
+                if (i == lastIndex) last?.invoke(this)
             }
         )
     }
@@ -56,21 +64,29 @@ fun ConstraintLayoutScope.verticalChain(
 
 /**
  * Apply constraints to [children] so they form a column.
- * @return Set of [ConstrainedLayoutReference]s that were applied to the children in the same order
+ * @return Array of [ConstrainedLayoutReference]s that were applied to the children in the same order
  *         as provided in input.
  */
 @Composable
 fun ConstraintLayoutScope.horizontalChain(
     vararg children: @Composable (Modifier) -> Unit,
+    first: (ConstrainScope.() -> Unit)? = null,
+    last: (ConstrainScope.() -> Unit)? = null,
 ): Array<ConstrainedLayoutReference> {
-    val refs = Array(children.size) { createRef() }
+    val size = children.size
+    val lastIndex = size - 1
+    val refs = Array(size) { createRef() }
+
     children.fastForEachIndexed { i, child ->
         val self = refs[i]
         val previous: ConstrainedLayoutReference? = if (i == 0) null else refs[i - 1]
 
         child(
             Modifier.constrainAs(self) {
-                start.linkTo(previous?.end ?: parent.start)
+                if (i == 0) first?.invoke(this)
+                else start.linkTo(previous!!.end)
+
+                if (i == lastIndex) last?.invoke(this)
             }
         )
     }
