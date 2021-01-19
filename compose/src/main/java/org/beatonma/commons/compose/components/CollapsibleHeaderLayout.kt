@@ -3,14 +3,18 @@ package org.beatonma.commons.compose.components
 import androidx.compose.animation.AnimatedFloatModel
 import androidx.compose.animation.asDisposableClock
 import androidx.compose.animation.core.AnimationClockObservable
+import androidx.compose.animation.core.Easing
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.TargetAnimation
 import androidx.compose.animation.core.fling
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.ScrollScope
-import androidx.compose.foundation.gestures.ScrollableController
 import androidx.compose.foundation.gestures.rememberScrollableController
 import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
@@ -18,19 +22,22 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.gesture.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.gesture.nestedscroll.NestedScrollDispatcher
+import androidx.compose.ui.gesture.nestedscroll.NestedScrollSource
+import androidx.compose.ui.gesture.nestedscroll.nestedScroll
 import androidx.compose.ui.gesture.scrollorientationlocking.Orientation
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.AmbientAnimationClock
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import org.beatonma.commons.compose.modifiers.colorize
+import org.beatonma.commons.core.extensions.inverted
 import org.beatonma.commons.core.extensions.reversed
+import org.beatonma.commons.core.extensions.withEasing
+import org.beatonma.commons.theme.compose.EndOfContent
 import org.beatonma.commons.theme.compose.theme.CommonsDecay
 import org.beatonma.commons.theme.compose.theme.CommonsSpring
 import kotlin.math.absoluteValue
@@ -47,175 +54,131 @@ fun CollapsibleHeaderLayout(
     modifier: Modifier = Modifier,
     onScrollStarted: (startedPosition: Offset) -> Unit = {},
     onScrollStopped: (velocity: Float) -> Unit = {},
-    touchInterceptModifier: Modifier = Modifier,
-    headerState: CollapsibleHeaderState = collapsibleHeaderState(),
-    lazyListState : LazyListState = rememberLazyListState(),
-    coroutineScope: CoroutineScope = rememberCoroutineScope(),
+    headerScrollEasing: Easing = FastOutSlowInEasing,
+    headerState: CollapsibleHeaderState = collapsibleHeaderState(easing = headerScrollEasing),
+    lazyListState: LazyListState = rememberLazyListState(),
+    scrollEnabled: Boolean = true,
+    appendEndOfContentSpacing: Boolean = true,
 ) {
-    /**
-     * Run the block in the [ScrollScope] of [lazyListState], launched on [coroutineScope].
-     */
-    fun withScrollScope(block: ScrollScope.() -> Unit) {
-        coroutineScope.launch {
-            lazyListState.scroll {
-                block()
-            }
-        }
-    }
-
-    fun dispatchScrollBy(delta: Float): Float {
-        if (delta == 0F) return 0F
-
-        val isScrollTowardsTopOfList = delta < 0F
-
-        if (isScrollTowardsTopOfList) {
-            // List has first chance to consume scroll
-            withScrollScope {
-                val consumed = scrollBy(delta)
-                val unconsumed = delta - consumed
-
-                headerState.scrollBy(unconsumed)
-            }
-        }
-
-        else {
-            // Header has first chance to consume scroll
-            val unconsumed = headerState.scrollBy(delta)
-
-            if (unconsumed != 0F) {
-                withScrollScope {
-                    scrollBy(unconsumed)
-                }
-            }
-        }
-        return delta
-    }
-
-    val controller = rememberScrollableController(consumeScrollDelta = ::dispatchScrollBy)
-
-    Box(modifier) {
-        Column {
-            Layout(
-                content = { collapsingHeader(headerState.expandProgress) }
-            ) { measurables, constraints ->
-                require(measurables.size == 1) {
-                    "CollapsibleHeaderLayout header should contain exactly one child"
-                }
-
-                val placeable = measurables[0].measure(constraints)
-
-                headerState.updateMaxValue(placeable.height.toFloat())
-
-                layout(placeable.width, placeable.height) {
-                    placeable.placeRelative(0, 0)
-                }
-            }
-
-            LazyColumn(
-                state = lazyListState,
-                content = lazyListContent,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-
-        TouchInterceptor(
-            controller, touchInterceptModifier,
-            onScrollStarted = onScrollStarted,
-            onScrollStopped = onScrollStopped,
-        )
-    }
-}
-
-@Composable
-private fun TouchInterceptor(
-    controller: ScrollableController,
-    modifier: Modifier = Modifier,
-    onScrollStarted: (startedPosition: Offset) -> Unit = {},
-    onScrollStopped: (velocity: Float) -> Unit = {},
-) {
-    Box(
+    Column(
         modifier
             .fillMaxSize()
-            .scrollable(
-                controller = controller,
-                orientation = Orientation.Vertical,
-                reverseDirection = true,
+            .interceptScrolling(
+                headerState = headerState,
                 onScrollStarted = onScrollStarted,
                 onScrollStopped = onScrollStopped,
-            )
-            .zIndex(Float.MAX_VALUE)
-    )
-}
+                scrollEnabled = scrollEnabled,
+            ),
+    ) {
+        Layout(
+            content = { collapsingHeader(headerState.expandProgress) },
+            modifier = Modifier,
+        ) { measurables, constraints ->
+            require(measurables.size == 1) {
+                "CollapsibleHeaderLayout header should contain exactly one child"
+            }
 
-@Preview
-@Composable
-fun CollapsibleHeaderLayoutPreview() {
-    val listItems = (1..100).toList()
-    val headerState = collapsibleHeaderState()
+            val placeable = measurables[0].measure(constraints)
 
-    Box(Modifier.fillMaxSize()) {
-        CollapsibleHeaderLayout(
+            headerState.updateMaxValue(placeable.height.toFloat())
+
+            layout(placeable.width, placeable.height) {
+                placeable.placeRelative(0, 0)
+            }
+        }
+
+        val resolvedListContent = when {
+            appendEndOfContentSpacing -> {
+                {
+                    lazyListContent()
+                    item { EndOfContent() }
+                }
+            }
+            else -> lazyListContent
+        }
+
+        LazyColumn(
+            state = lazyListState,
             modifier = Modifier
-                .clickable {
-                    println("Click")
-                    if (Random.nextBoolean()) {
-                        headerState.expand()
-                    }
-                    else {
-                        headerState.collapse()
-                    }
-                },
-            collapsingHeader = { expandedProgress ->
-                Column {
-                    Text(
-                        "This should stay here",
-                        Modifier
-                            .colorize()
-                            .height(80.dp)
-                    )
-                    Box(
-                        Modifier
-                            .colorize()
-                            .height(300.dp * expandedProgress)
-                    ) {
-                        Text("This should collapse")
-                    }
-                }
-            },
-            lazyListContent = {
-                items(
-                    items = listItems,
-                ) { item ->
-                    Text(
-                        "$item",
-                        Modifier
-                            .padding(4.dp)
-                            .colorize()
-                    )
-                }
-            },
-            headerState = headerState,
+                .fillMaxSize()
+                .colorize(),
+            content = resolvedListContent
         )
     }
 }
 
-private val LazyListState.isAtTop get() =
-    this.firstVisibleItemIndex == 0 && this.firstVisibleItemScrollOffset == 0
+@Composable
+private fun Modifier.interceptScrolling(
+    headerState: CollapsibleHeaderState,
+    onScrollStarted: (startedPosition: Offset) -> Unit = {},
+    onScrollStopped: (velocity: Float) -> Unit = {},
+    scrollEnabled: Boolean = true,
+): Modifier {
+
+    val scrollConnection = remember {
+        object: NestedScrollConnection {
+            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                val availableY = available.y
+                val isScrollTowardsTopOfList = availableY < 0F
+
+                return when {
+                    isScrollTowardsTopOfList -> {
+                        val unconsumedY = headerState.scrollBy(available.y)
+
+                        return available.copy(y = available.y - unconsumedY)
+                    }
+                    else -> super.onPreScroll(available, source)
+                }
+            }
+
+            override fun onPostScroll(
+                consumed: Offset,
+                available: Offset,
+                source: NestedScrollSource,
+            ): Offset {
+                val unconsumed = headerState.scrollBy(available.y)
+                val consumedY = available.y - unconsumed
+                return available.copy(y = consumedY)
+            }
+        }
+    }
+
+    val dispatcher = remember(::NestedScrollDispatcher)
+    val controller = rememberScrollableController { 0F }
+
+    return this
+        .nestedScroll(
+            connection = scrollConnection,
+            dispatcher = dispatcher,
+        )
+        .scrollable(
+            Orientation.Vertical,
+            controller = controller,
+            onScrollStarted = onScrollStarted,
+            onScrollStopped = onScrollStopped,
+            enabled = scrollEnabled,
+        )
+
+}
 
 @Composable
 fun collapsibleHeaderState(
     initial: Float = 0F,
     clock: AnimationClockObservable = AmbientAnimationClock.current.asDisposableClock(),
+    easing: Easing = FastOutSlowInEasing,
 ) = remember {
     CollapsibleHeaderState(
         initial,
-        clock
+        clock,
+        easing = easing,
     )
 }
 
 class CollapsibleHeaderState internal constructor(
     initial: Float,
     clock: AnimationClockObservable,
+    private val easing: (Float) -> Float = FastOutSlowInEasing,
+    private val reverseScrollDirection: Boolean = true
 ) {
     val value = AnimatedFloatModel(
         initialValue = initial,
@@ -230,7 +193,7 @@ class CollapsibleHeaderState internal constructor(
     val expandProgress: Float
         get() = when {
             maxValue == 0F || maxValue.isNaN() -> 0F
-            else -> this.value.value / this.maxValue
+            else -> (this.value.value / this.maxValue).withEasing(easing)
         }.reversed()
 
     val isCollapsed: Boolean get() = expandProgress == 0F
@@ -285,14 +248,71 @@ class CollapsibleHeaderState internal constructor(
             return 0F
         }
 
-        val rawResult = value.value + delta
+        val resolvedDelta = if (reverseScrollDirection) delta.inverted() else delta
+        val rawResult = value.value + resolvedDelta
 
         value.snapTo(rawResult.coerceIn(0F, maxValue))
 
         return when {
             rawResult < 0F -> rawResult
-            rawResult > maxValue -> rawResult - maxValue
+            rawResult > maxValue -> {
+                val unconsumed = (rawResult - maxValue)
+                return if (reverseScrollDirection) unconsumed.inverted() else unconsumed
+            }
             else -> 0F
         }
+    }
+}
+
+
+@Preview
+@Composable
+private fun CollapsibleHeaderLayoutPreview() {
+    val listItems = (1..100).toList()
+    val headerState = collapsibleHeaderState()
+
+    Box(Modifier.fillMaxSize()) {
+        CollapsibleHeaderLayout(
+            modifier = Modifier
+                .clickable {
+                    println("Click")
+                    if (Random.nextBoolean()) {
+                        headerState.expand()
+                    }
+                    else {
+                        headerState.collapse()
+                    }
+                },
+            collapsingHeader = { expandedProgress ->
+                Column {
+                    Text(
+                        "This should stay here",
+                        Modifier
+                            .colorize()
+                            .height(80.dp)
+                    )
+                    Box(
+                        Modifier
+                            .colorize()
+                            .height(300.dp * expandedProgress)
+                    ) {
+                        Text("This should collapse")
+                    }
+                }
+            },
+            lazyListContent = {
+                items(
+                    items = listItems,
+                ) { item ->
+                    Text(
+                        "$item",
+                        Modifier
+                            .padding(4.dp)
+                            .colorize()
+                    )
+                }
+            },
+            headerState = headerState,
+        )
     }
 }
