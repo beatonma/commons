@@ -33,7 +33,6 @@ import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.AmbientAnimationClock
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import org.beatonma.commons.compose.modifiers.colorize
 import org.beatonma.commons.core.extensions.inverted
 import org.beatonma.commons.core.extensions.reversed
 import org.beatonma.commons.core.extensions.withEasing
@@ -100,8 +99,7 @@ fun CollapsibleHeaderLayout(
         LazyColumn(
             state = lazyListState,
             modifier = Modifier
-                .fillMaxSize()
-                .colorize(),
+                .fillMaxSize(),
             content = resolvedListContent
         )
     }
@@ -288,12 +286,10 @@ private fun CollapsibleHeaderLayoutPreview() {
                     Text(
                         "This should stay here",
                         Modifier
-                            .colorize()
                             .height(80.dp)
                     )
                     Box(
                         Modifier
-                            .colorize()
                             .height(300.dp * expandedProgress)
                     ) {
                         Text("This should collapse")
@@ -308,7 +304,6 @@ private fun CollapsibleHeaderLayoutPreview() {
                         "$item",
                         Modifier
                             .padding(4.dp)
-                            .colorize()
                     )
                 }
             },
