@@ -68,16 +68,14 @@ fun MeasureScope.layout(
     placementBlock: Placeable.PlacementScope.() -> Unit,
 ): MeasureResult = layout(width.value, height.value, alignmentLines, placementBlock)
 
-@Composable
 val Dp.pxF: Float
-    get() = when (this) {
+    @Composable get() = when (this) {
         Dp.Hairline -> 1F
         else -> (value * AmbientContext.current.resources.displayMetrics.density)
     }
 
-@Composable
 val Dp.px: Int
-    get() = when (this) {
+    @Composable get() = when (this) {
         Dp.Hairline -> 1
         else -> (value * AmbientContext.current.resources.displayMetrics.density)
             .roundToInt()
