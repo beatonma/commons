@@ -13,7 +13,7 @@ import org.beatonma.commons.theme.compose.theme.CommonsTheme
 import org.beatonma.commons.theme.compose.theme.SystemBars
 import org.beatonma.commons.theme.compose.theme.systemui.withSystemUi
 
-fun Fragment.composeView(
+fun Fragment.composeScreen(
     content: @Composable () -> Unit,
 ) = ComposeView(requireContext()).apply {
     setContent {
@@ -21,7 +21,7 @@ fun Fragment.composeView(
             Providers(
                 AmbientContentColor provides colors.onBackground,
             ) {
-                withSystemUi {
+                WithSystemUi {
                     FeedbackLayout(content = content)
                 }
             }
@@ -30,7 +30,7 @@ fun Fragment.composeView(
 }
 
 @Composable
-fun Fragment.withSystemUi(
+private fun Fragment.WithSystemUi(
     systemBarColor: Color = MaterialTheme.colors.SystemBars,
     content: @Composable () -> Unit,
 ) = withSystemUi(
