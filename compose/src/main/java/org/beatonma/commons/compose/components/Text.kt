@@ -28,8 +28,9 @@ import org.beatonma.commons.compose.util.linkify
 import org.beatonma.commons.theme.compose.theme.CommonsSpanStyle
 
 @Composable
-fun Text(
+fun ResourceText(
     resId: Int,
+    vararg formatArgs: Any,
     modifier: Modifier = Modifier,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
@@ -47,7 +48,7 @@ fun Text(
     style: TextStyle = AmbientTextStyle.current,
 ) {
     Text(
-        stringResource(resId),
+        stringResource(resId, *formatArgs),
         modifier,
         color,
         fontSize,
