@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedFloatModel
 import androidx.compose.animation.asDisposableClock
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.InternalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -42,7 +41,6 @@ import org.beatonma.commons.theme.compose.Padding
 import org.beatonma.commons.theme.compose.Size
 import kotlin.math.roundToInt
 
-@OptIn(InternalLayoutApi::class)
 @Composable
 internal fun SocialIcons(
     modifier: Modifier = Modifier,
