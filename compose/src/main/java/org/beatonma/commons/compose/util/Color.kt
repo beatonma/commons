@@ -1,12 +1,15 @@
 package org.beatonma.commons.compose.util
 
 import androidx.annotation.VisibleForTesting
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
+import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.core.extensions.lerpTo
 import org.beatonma.commons.core.extensions.mapToByte
 import org.beatonma.commons.core.extensions.normalize
-import org.beatonma.commons.theme.compose.color.CommonsColor
+import org.beatonma.commons.theme.compose.theme.textPrimaryDark
+import org.beatonma.commons.theme.compose.theme.textPrimaryLight
 
 inline class HslColor(private val hsl: FloatArray = FloatArray(4)) {
     constructor(
@@ -157,14 +160,11 @@ fun HslColor.toColor(): Color {
     return Color(red, green, blue, alphaByte)
 }
 
+@Composable
 fun Color.contentColor(): Color {
     // Alternative to contentColorFor(Color) when the receiving color is not defined in the theme.
-    return if (luminance() > 0.5F) {
-        CommonsColor.Text.PrimaryDark
-    }
-    else {
-        CommonsColor.Text.PrimaryLight
-    }
+    return if (luminance() > 0.5F) colors.textPrimaryDark
+    else colors.textPrimaryLight
 }
 
 fun Color.brighten(factor: Float = 0.1F, hsl: HslColor = HslColor()): Color {

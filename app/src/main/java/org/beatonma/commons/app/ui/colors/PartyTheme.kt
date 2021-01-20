@@ -5,12 +5,14 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import org.beatonma.commons.BuildConfig.*
 import org.beatonma.commons.R
+import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.room.entities.member.Party
 import org.beatonma.commons.isNightMode
 import org.beatonma.commons.kotlin.data.Color
 import org.beatonma.commons.kotlin.extensions.colorCompat
-import org.beatonma.commons.theme.compose.color.CommonsColor
+import org.beatonma.commons.theme.compose.theme.textPrimaryDark
+import org.beatonma.commons.theme.compose.theme.textPrimaryLight
 import androidx.compose.ui.graphics.Color as ComposeColor
 
 @Deprecated("Unused in Compose")
@@ -230,11 +232,12 @@ private data class NaivePartyColors(
     fun resolve(context: Context) =
         PartyColors(context, primary, accent, primaryTextTheme, accentTextTheme)
 
+    @Composable
     fun resolve(): ComposePartyColors = ComposePartyColors(
         primary = ComposeColor(primary),
         accent = ComposeColor(accent),
-        onPrimary = if (primaryTextTheme == THEME_TEXT_DARK) CommonsColor.Text.PrimaryDark else CommonsColor.Text.PrimaryLight,
-        onAccent = if (accentTextTheme == THEME_TEXT_DARK) CommonsColor.Text.PrimaryDark else CommonsColor.Text.PrimaryLight,
+        onPrimary = if (primaryTextTheme == THEME_TEXT_DARK) colors.textPrimaryDark else colors.textPrimaryLight,
+        onAccent = if (accentTextTheme == THEME_TEXT_DARK) colors.textPrimaryDark else colors.textPrimaryLight,
     )
 }
 

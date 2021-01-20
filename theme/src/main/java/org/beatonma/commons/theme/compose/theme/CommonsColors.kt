@@ -7,17 +7,22 @@ import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import org.beatonma.commons.theme.compose.color.CommonsColor
+import org.beatonma.commons.theme.compose.color.PoliticalColor
+import org.beatonma.commons.theme.compose.color.resolveColor
 
+/**
+ * Standard color definitions for MaterialTheme.
+ */
 val CommonsLightThemeColors = lightColors(
-    primary = CommonsColor.Light.Primary,
-    primaryVariant = CommonsColor.Light.PrimaryVariant,
+    primary = CommonsColor.Primary.light,
+    primaryVariant = CommonsColor.PrimaryVariant.light,
     onPrimary = CommonsColor.Text.PrimaryLight,
 
-    secondary = CommonsColor.Light.Secondary,
-    secondaryVariant = CommonsColor.Light.SecondaryVariant,
+    secondary = CommonsColor.Secondary.light,
+    secondaryVariant = CommonsColor.SecondaryVariant.light,
     onSecondary = CommonsColor.Text.PrimaryLight,
 
-    background = CommonsColor.Light.Background,
+    background = CommonsColor.Background.light,
     onBackground = CommonsColor.Text.PrimaryDark,
 
     error = CommonsColor.Negative,
@@ -27,33 +32,70 @@ val CommonsLightThemeColors = lightColors(
     onSurface = CommonsColor.Text.PrimaryDark
 )
 
+/**
+ * Standard color definitions for MaterialTheme.
+ */
 val CommonsDarkThemeColors: Colors = darkColors(
-    primary = CommonsColor.Dark.Primary,
-    primaryVariant = CommonsColor.Dark.PrimaryVariant,
-    onPrimary = CommonsColor.Text.PrimaryLight,
+    primary = CommonsColor.Primary.dark,
+    primaryVariant = CommonsColor.PrimaryVariant.dark,
+    onPrimary = CommonsColor.Text.PrimaryDark,
 
-    secondary = CommonsColor.Dark.Secondary,
+    secondary = CommonsColor.Secondary.dark,
     onSecondary = CommonsColor.Text.SecondaryDark,
 
-    background = CommonsColor.Dark.Background,
+    background = CommonsColor.Background.dark,
     onBackground = CommonsColor.Text.PrimaryLight,
 
     error = CommonsColor.Negative,
     onError = CommonsColor.Text.PrimaryLight,
 
-    surface = CommonsColor.Dark.Surface,
+    surface = CommonsColor.Surface.dark,
     onSurface = CommonsColor.Text.PrimaryLight
 )
 
-val Colors.SystemBars get() = background.copy(alpha = 0.4f)
-val Colors.themed get() = if (isLight) CommonsColor.Light else CommonsColor.Dark
-val Colors.positive get() = CommonsColor.Positive
-val Colors.negative get() = CommonsColor.Negative
-val Colors.modalScrim get() = CommonsColor.ModalScrim
+/*
+ * Custom color accessor extensions.
+ */
 
-@Composable
+val Colors.SystemBars get() = background.copy(alpha = 0.4f)
+
+val Colors.searchBar get() = resolveColor(CommonsColor.SearchBar)
+val Colors.onSearchBar get() = resolveColor(CommonsColor.OnSearchBar)
+
+val Colors.positive get() = resolveColor(CommonsColor.Positive)
+val Colors.negative get() = resolveColor(CommonsColor.Negative)
+
+val Colors.warningSurface: Color
+    @Composable get() = resolveColor(CommonsColor.WarningSurface)
+
+val Colors.onWarningSurface: Color
+    @Composable get() = resolveColor(CommonsColor.OnWarningSurface)
+
+val Colors.politicalVotes get() = PoliticalColor.Vote
+val Colors.graphPrimaryColors get() = CommonsColor.Graph.Primary
+val Colors.graphSecondaryColors get() = CommonsColor.Graph.Secondary
+
+val Colors.modalScrim get() = resolveColor(CommonsColor.ModalScrim)
+
 val MaterialTheme.invertedColors
-    get() = when (colors.isLight) {
+    @Composable get() = when (colors.isLight) {
         true -> CommonsDarkThemeColors
         false -> CommonsLightThemeColors
     }
+
+val Colors.textPrimary: Color
+    @Composable get() = resolveColor(CommonsColor.TextPrimary)
+
+val Colors.textSecondary: Color
+    @Composable get() = resolveColor(CommonsColor.TextSecondary)
+
+val Colors.textTertiary: Color
+    @Composable get() = resolveColor(CommonsColor.TextTertiary)
+
+val Colors.textPrimaryLight: Color get() = resolveColor(CommonsColor.Text.PrimaryLight)
+val Colors.textSecondaryLight: Color get() = resolveColor(CommonsColor.Text.SecondaryLight)
+val Colors.textTertiaryLight: Color get() = resolveColor(CommonsColor.Text.TertiaryLight)
+
+val Colors.textPrimaryDark: Color get() = resolveColor(CommonsColor.Text.PrimaryDark)
+val Colors.textSecondaryDark: Color get() = resolveColor(CommonsColor.Text.SecondaryDark)
+val Colors.textTertiaryDark: Color get() = resolveColor(CommonsColor.Text.TertiaryDark)

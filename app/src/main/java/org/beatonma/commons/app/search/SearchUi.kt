@@ -41,6 +41,7 @@ import org.beatonma.commons.app.preview.ProvidePreviewAmbients
 import org.beatonma.commons.app.ui.compose.components.PartyDot
 import org.beatonma.commons.app.ui.compose.components.Todo
 import org.beatonma.commons.app.ui.compose.components.image.DEV_AVATAR
+import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.compose.animation.ExpandCollapseState
 import org.beatonma.commons.compose.animation.collapse
 import org.beatonma.commons.compose.animation.isExpanded
@@ -64,7 +65,8 @@ import org.beatonma.commons.snommoc.models.search.SearchResult
 import org.beatonma.commons.theme.compose.Elevation
 import org.beatonma.commons.theme.compose.Layer
 import org.beatonma.commons.theme.compose.Padding
-import org.beatonma.commons.theme.compose.color.CommonsColor
+import org.beatonma.commons.theme.compose.theme.onSearchBar
+import org.beatonma.commons.theme.compose.theme.searchBar
 import org.beatonma.commons.theme.compose.theme.systemui.statusBarsPadding
 
 private const val KeyframeIsOpaque = 0.2F
@@ -131,10 +133,10 @@ fun SearchUi(
                     .align(Alignment.End),
                 elevation = progress.lerpBetween(0.dp, Elevation.ModalSurface),
                 color = progress.progressIn(0F, KeyframeIsOpaque)
-                    .lerpBetween(Color.Transparent, CommonsColor.SearchBar),
+                    .lerpBetween(Color.Transparent, colors.searchBar),
                 shape = getSearchSurfaceShape(progress.progressIn(KeyframeIsOpaque, 1F)),
                 contentColor = progress.lerpBetween(AmbientContentColor.current,
-                    CommonsColor.OnSearchBar)
+                    colors.onSearchBar)
             ) {
                 Row(
                     Modifier
@@ -179,7 +181,7 @@ private fun SearchField(
         hint = R.string.search_members_hint,
         onQueryChange = onSubmit,
         modifier = modifier.focusRequester(focusRequester),
-        textStyle = AmbientTextStyle.current.copy(color = CommonsColor.OnSearchBar),
+        textStyle = AmbientTextStyle.current.copy(color = colors.onSearchBar),
     )
 }
 

@@ -4,19 +4,19 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Fill
 import org.beatonma.commons.svg.VectorGraphic
 import org.beatonma.commons.svg.vectorPath
-import org.beatonma.commons.theme.compose.color.CommonsColor
+import org.beatonma.commons.theme.compose.color.PoliticalColor
 
 class LibDemLogo : VectorGraphic(
     pathCount = 1,
     width = 271,
     height = 213,
-    primaryColor = CommonsColor.Political.Party.Primary.LibDem,
+    primaryColor = PoliticalColor.Party.Primary.LibDem,
 ) {
 
     override fun buildPaths() {
         paths[0] = vectorPath(
             path = getPath(),
-            color = CommonsColor.Political.Party.Primary.LibDem,
+            color = PoliticalColor.Party.Primary.LibDem,
             style = Fill,
         )
     }

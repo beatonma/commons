@@ -6,7 +6,7 @@ import org.beatonma.commons.svg.VectorGraphic
 import org.beatonma.commons.svg.VectorPath
 import org.beatonma.commons.svg.plotPath
 import org.beatonma.commons.svg.vectorPath
-import org.beatonma.commons.theme.compose.color.CommonsColor
+import org.beatonma.commons.theme.compose.color.PoliticalColor
 
 private const val RECTANGLE_WIDTH = 380f / 7F
 
@@ -14,7 +14,7 @@ class LabourCoopLogo : VectorGraphic(
     pathCount = 7,
     width = 380,
     height = 357,
-    primaryColor = CommonsColor.Political.Party.Primary.LabourCoop,
+    primaryColor = PoliticalColor.Party.Primary.LabourCoop,
 ) {
 
     override fun buildPaths() {

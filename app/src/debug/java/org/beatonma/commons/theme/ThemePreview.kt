@@ -29,7 +29,7 @@ import org.beatonma.commons.logos.PartyLogos
 import org.beatonma.commons.svg.ImageConfig
 import org.beatonma.commons.svg.ScaleType
 import org.beatonma.commons.svg.VectorGraphic
-import org.beatonma.commons.theme.compose.color.CommonsColor
+import org.beatonma.commons.theme.compose.color.PoliticalColor
 import org.beatonma.commons.theme.compose.theme.CommonsTheme
 import org.beatonma.compose.themepreview.CustomPreviewScreen
 import org.beatonma.compose.themepreview.ThemePreview
@@ -51,7 +51,7 @@ fun CommonsThemePreview() {
 @Composable
 private fun Colors() {
     val colors = remember {
-        CommonsColor.Political.Party.Primary.all()
+        PoliticalColor.Party.Primary.all()
             .shuffled()
     }
 

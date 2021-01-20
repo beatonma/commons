@@ -4,13 +4,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import org.beatonma.commons.svg.VectorGraphic
 import org.beatonma.commons.svg.vectorPath
-import org.beatonma.commons.theme.compose.color.CommonsColor
+import org.beatonma.commons.theme.compose.color.PoliticalColor
 
 class SnpLogo : VectorGraphic(
     pathCount = 1,
     width = 1261,
     height = 1427,
-    primaryColor = CommonsColor.Political.Party.Primary.Snp,
+    primaryColor = PoliticalColor.Party.Primary.Snp,
 ) {
 
     override fun buildPaths() {

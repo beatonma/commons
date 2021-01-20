@@ -1,16 +1,17 @@
 package org.beatonma.commons.logos
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import org.beatonma.commons.svg.VectorGraphic
 import org.beatonma.commons.svg.plotPath
 import org.beatonma.commons.svg.vectorPath
-import org.beatonma.commons.theme.compose.color.CommonsColor
+import org.beatonma.commons.theme.compose.color.PoliticalColor
 
 class GreenLogo : VectorGraphic(
     pathCount = 1,
     width = 1192,
     height = 1023,
-    primaryColor = CommonsColor.Political.Party.Primary.Green
+    primaryColor = PoliticalColor.Party.Primary.Green
 ) {
 
     override fun buildPaths() {
@@ -21,6 +22,13 @@ class GreenLogo : VectorGraphic(
     }
 
     private fun getPath() = plotPath {
+        plotPathChunkOne()
+        plotPathChunkTwo()
+        plotPathChunkThree()
+        plotPathChunkFour()
+    }
+
+    private fun Path.plotPathChunkOne() {
         moveTo(829.79f, 875.5f)
         cubicTo(851.79f, 895.5f, 862.79f, 917.5f, 877.79f, 934.5f)
         cubicTo(898.79f, 962.5f, 924.79f, 972.5f, 969.79f, 992.5f)
@@ -218,7 +226,10 @@ class GreenLogo : VectorGraphic(
         lineTo(753.79f, 611.5f)
         cubicTo(750.79f, 610.5f, 749.79f, 609.5f, 748.79f, 607.5f)
         close()
+    }
 
+
+    private fun Path.plotPathChunkTwo() {
         moveTo(721.79f, 539.5f)
         lineTo(723.79f, 537.5f)
         cubicTo(724.79f, 537.5f, 725.79f, 536.5f, 726.79f, 535.5f)
@@ -484,7 +495,9 @@ class GreenLogo : VectorGraphic(
         cubicTo(323.79f, 619.5f, 318.79f, 623.5f, 318.79f, 627.5f)
         cubicTo(322.79f, 654.5f, 330.79f, 680.5f, 341.79f, 706.5f)
         close()
+    }
 
+    private fun Path.plotPathChunkThree() {
         moveTo(540.79f, 681.5f)
         cubicTo(542.79f, 689.5f, 546.79f, 696.5f, 548.79f, 703.5f)
         cubicTo(553.79f, 703.5f, 558.79f, 704.5f, 563.79f, 705.5f)
@@ -784,7 +797,9 @@ class GreenLogo : VectorGraphic(
         cubicTo(628.79f, 459.5f, 630.79f, 457.5f, 632.79f, 456.5f)
         cubicTo(634.79f, 455.5f, 637.79f, 453.5f, 638.79f, 453.5f)
         close()
+    }
 
+    private fun Path.plotPathChunkFour() {
         moveTo(652.79f, 518.5f)
         cubicTo(651.79f, 519.5f, 650.79f, 521.5f, 650.79f, 523.5f)
         cubicTo(650.79f, 525.5f, 653.79f, 525.5f, 656.79f, 527.5f)

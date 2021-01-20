@@ -39,8 +39,8 @@ import org.beatonma.commons.compose.animation.toggle
 import org.beatonma.commons.compose.modifiers.wrapContentWidth
 import org.beatonma.commons.compose.util.withVectorResource
 import org.beatonma.commons.theme.compose.Size
-import org.beatonma.commons.theme.compose.color.CommonsColor
-import org.beatonma.commons.theme.compose.theme.themed
+import org.beatonma.commons.theme.compose.theme.negative
+import org.beatonma.commons.theme.compose.theme.textSecondary
 
 @Composable
 fun CollapsibleChip(
@@ -93,7 +93,7 @@ fun CollapsibleChip(
         }
     }
 
-    val tint = colors.themed.TextSecondary
+    val tint = colors.textSecondary
 
     Row(
         modifier
@@ -117,7 +117,7 @@ fun CollapsibleChip(
                     .padding(start = 16.dp, top = 8.dp, end = 8.dp, bottom = 8.dp)
                     .size(Size.IconSmall)
                     .alpha(progress),
-                tint = CommonsColor.Negative
+                tint = colors.negative
             )
         }
 
