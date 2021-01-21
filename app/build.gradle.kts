@@ -4,7 +4,14 @@ import org.beatonma.commons.buildsrc.Commons
 import org.beatonma.commons.buildsrc.Git
 import org.beatonma.commons.buildsrc.PartyColors
 import org.beatonma.commons.buildsrc.data.ParliamentDotUkPartyIDs
-import org.beatonma.commons.buildsrc.kts.extensions.*
+import org.beatonma.commons.buildsrc.kts.extensions.buildConfigInt
+import org.beatonma.commons.buildsrc.kts.extensions.debug
+import org.beatonma.commons.buildsrc.kts.extensions.injectInts
+import org.beatonma.commons.buildsrc.kts.extensions.injectStrings
+import org.beatonma.commons.buildsrc.kts.extensions.instrumentationTest
+import org.beatonma.commons.buildsrc.kts.extensions.main
+import org.beatonma.commons.buildsrc.kts.extensions.resColor
+import org.beatonma.commons.buildsrc.kts.extensions.unitTest
 import org.beatonma.commons.buildsrc.local.LocalConfig
 
 plugins {
@@ -135,10 +142,6 @@ dependencies {
     }
 
     main {
-        annotationProcessors(
-            Dependencies.Glide.COMPILER
-        )
-
         implementations(
             Dependencies.Kotlin.Coroutines.ANDROID,
             Dependencies.Kotlin.Coroutines.CORE,
@@ -171,7 +174,6 @@ dependencies {
 
             Dependencies.Retrofit.Converter.MOSHI,
 
-            Dependencies.Glide.CORE,
             Dependencies.Coil.COIL,
             Dependencies.Coil.ACCOMPANIST,
 
