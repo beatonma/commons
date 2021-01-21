@@ -1,4 +1,4 @@
-package org.beatonma.commons.app.division.compose
+package org.beatonma.commons.app.division
 
 import androidx.compose.foundation.InteractionState
 import androidx.compose.foundation.clickable
