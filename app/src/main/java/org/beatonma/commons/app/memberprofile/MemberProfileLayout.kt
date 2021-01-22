@@ -108,9 +108,9 @@ fun MemberProfileLayout(
     val memberData by viewmodel.getMemberData().collectAsState(IoLoading)
 
     ProvideSocial(
-        socialTarget = viewmodel.socialTarget,
-        socialViewModel = socialViewModel,
-        userAccountViewModel = userAccountViewModel,
+        viewmodel,
+        socialViewModel,
+        userAccountViewModel,
     ) {
         WithResultData(memberData) { data ->
             MemberProfileLayout(data)

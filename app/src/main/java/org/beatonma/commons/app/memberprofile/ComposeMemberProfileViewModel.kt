@@ -5,6 +5,7 @@ import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import org.beatonma.commons.app.ui.base.SocialTargetProvider
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.core.extensions.withNotNull
 import org.beatonma.commons.data.SavedStateKey
@@ -16,6 +17,8 @@ import org.beatonma.commons.data.core.room.entities.member.PartyAssociationWithP
 import org.beatonma.commons.data.get
 import org.beatonma.commons.data.set
 import org.beatonma.commons.repo.repository.MemberRepository
+import org.beatonma.commons.snommoc.models.social.SocialTarget
+import org.beatonma.commons.snommoc.models.social.SocialTargetType
 
 private val MemberIdKey = SavedStateKey("member_id")
 
@@ -23,12 +26,14 @@ class ComposeMemberProfileViewModel
 @ViewModelInject constructor(
     private val memberRepository: MemberRepository,
     @Assisted private val savedStateHandle: SavedStateHandle,
-) : ViewModel() {
+) : ViewModel(), SocialTargetProvider {
     var memberID: ParliamentID
         set(value) {
             savedStateHandle[MemberIdKey] = value
         }
         get() = savedStateHandle[MemberIdKey] ?: error("Member ID has not been set")
+
+    override val socialTarget: SocialTarget get() = SocialTarget(SocialTargetType.member, memberID)
 
     fun getMemberData() = memberRepository.getMember(memberID)
 
@@ -60,34 +65,34 @@ class ComposeMemberProfileViewModel
             sortBy { it.startOf() }
         }
     }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    suspend fun compressParties(parties: List<PartyAssociationWithParty>?) =
-        compressConsecutiveItems(
-            parties,
-            areItemsTheSame = { a, b -> a.party == b.party },
-            combineFunc = { a, b ->
-                a.copy(
-                    partyAssocation = a.partyAssocation.copy(
-                        end = b.end
-                    )
-                )
-            }
-        )
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    suspend fun compressConstituencies(constituencies: List<HistoricalConstituencyWithElection>?) =
-        compressConsecutiveItems(
-            constituencies,
-            areItemsTheSame = { a, b ->
-                a.constituency == b.constituency
-            },
-            combineFunc = { a, b ->
-                a.copy(
-                    historicalConstituency = a.historicalConstituency.copy(
-                        end = b.historicalConstituency.end
-                    )
-                )
-            }
-        )
 }
+
+@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+suspend fun compressParties(parties: List<PartyAssociationWithParty>?) =
+    compressConsecutiveItems(
+        parties,
+        areItemsTheSame = { a, b -> a.party == b.party },
+        combineFunc = { a, b ->
+            a.copy(
+                partyAssocation = a.partyAssocation.copy(
+                    end = b.end
+                )
+            )
+        }
+    )
+
+@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+suspend fun compressConstituencies(constituencies: List<HistoricalConstituencyWithElection>?) =
+    compressConsecutiveItems(
+        constituencies,
+        areItemsTheSame = { a, b ->
+            a.constituency == b.constituency
+        },
+        combineFunc = { a, b ->
+            a.copy(
+                historicalConstituency = a.historicalConstituency.copy(
+                    end = b.historicalConstituency.end
+                )
+            )
+        }
+    )

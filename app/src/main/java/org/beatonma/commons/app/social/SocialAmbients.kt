@@ -19,6 +19,7 @@ import org.beatonma.commons.BuildConfig
 import org.beatonma.commons.app.signin.AmbientUserToken
 import org.beatonma.commons.app.signin.NullUserToken
 import org.beatonma.commons.app.signin.UserAccountViewModel
+import org.beatonma.commons.app.ui.base.SocialTargetProvider
 import org.beatonma.commons.app.ui.colors.ComposePartyColors
 import org.beatonma.commons.compose.components.TextValidationRules
 import org.beatonma.commons.compose.util.update
@@ -44,6 +45,21 @@ val AmbientSocialCommentValidator: ProvidableAmbient<TextValidationRules> = stat
 
 @Composable
 fun ProvideSocial(
+    targetProvider: SocialTargetProvider,
+    socialViewModel: SocialViewModel,
+    userAccountViewModel: UserAccountViewModel,
+    vararg additionalProviders: ProvidedValue<*> = arrayOf(),
+    content: @Composable () -> Unit,
+) = ProvideSocial(
+    socialTarget = targetProvider.socialTarget,
+    socialViewModel = socialViewModel,
+    userAccountViewModel = userAccountViewModel,
+    content = content,
+    additionalProviders = additionalProviders,
+)
+
+@Composable
+private fun ProvideSocial(
     socialTarget: SocialTarget,
     socialViewModel: SocialViewModel,
     userAccountViewModel: UserAccountViewModel,
