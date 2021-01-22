@@ -54,6 +54,18 @@ fun Collection<Any?>.allNotNull(): Boolean {
 fun <T> firstNotNull(vararg args: T?): T? = args.firstOrNull { it != null }
 fun <T> Collection<T?>.firstNotNull() = firstOrNull { it != null }
 
+/**
+ * Return true if all provided [values] are equal, or no [values] are provided.
+ */
+fun <T> allEqual(vararg values: T?): Boolean =
+    values.toSet().size <= 1
+
+fun <T> Collection<T?>.allEqualTo(expected: T?, orNull: Boolean = false): Boolean {
+    if (isEmpty()) return false
+    if (orNull) return indexOfFirst { it != null && it != expected } == -1
+    return indexOfFirst { it != expected } == -1
+}
+
 fun <T> List<T>.safeGet(position: Int): T? {
     return when {
         this.size > position -> this[position]
