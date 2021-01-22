@@ -2,7 +2,6 @@ package org.beatonma.commons.app.division
 
 import androidx.compose.foundation.InteractionState
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayout
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -49,7 +48,6 @@ import org.beatonma.commons.app.ui.compose.components.charts.ChartItem
 import org.beatonma.commons.app.ui.compose.components.charts.ChartKeyItem
 import org.beatonma.commons.app.ui.compose.components.charts.HorizontalStackedBarChart
 import org.beatonma.commons.compose.ambient.colors
-import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.components.SearchTextField
 import org.beatonma.commons.compose.modifiers.wrapContentHeight
 import org.beatonma.commons.compose.util.dotted
@@ -75,17 +73,13 @@ import org.beatonma.commons.kotlin.extensions.withMainContext
 import org.beatonma.commons.repo.result.IoLoading
 import org.beatonma.commons.theme.compose.Padding
 import org.beatonma.commons.theme.compose.Size
+import org.beatonma.commons.theme.compose.components.Quote
+import org.beatonma.commons.theme.compose.components.ScreenTitle
 import org.beatonma.commons.theme.compose.theme.politicalVotes
-import org.beatonma.commons.theme.compose.theme.quote
-import org.beatonma.commons.theme.compose.theme.screenTitle
 import org.beatonma.commons.theme.compose.theme.systemui.statusBarsPadding
 
 internal val AmbientDivisionActions: ProvidableAmbient<DivisionActions> =
     ambientOf { DivisionActions() }
-
-class DivisionActions(
-    val onMemberClick: (ParliamentID) -> Unit = {},
-)
 
 @Composable
 fun DivisionDetailLayout(
@@ -178,26 +172,18 @@ private fun HeaderAboveSocial(
         )
     }
 
-    Box(
+    Column(
         modifier
             .padding(Padding.Screen)
             .statusBarsPadding()
+            .wrapContentHeight(expandProgress)
+            .alpha(expandProgress)
     ) {
-        Column(
-            Modifier
-                .wrapContentHeight(expandProgress)
-                .alpha(expandProgress)
-        ) {
-            Text(title, style = typography.screenTitle)
+        ScreenTitle(title)
 
-            Text(dotted(division.house.description(), division.date.formatted()))
+        Text(dotted(division.house.description(), division.date.formatted()))
 
-            Text(
-                description,
-                style = typography.quote,
-                modifier = Modifier.padding(Padding.Card)
-            )
-        }
+        Quote(description)
     }
 }
 
