@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayout
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -34,8 +33,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.beatonma.commons.R
@@ -64,6 +66,9 @@ import org.beatonma.commons.compose.util.withAnnotatedStyle
 import org.beatonma.commons.core.House
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.core.VoteType
+import org.beatonma.commons.core.extensions.allEqualTo
+import org.beatonma.commons.core.extensions.fastForEach
+import org.beatonma.commons.core.extensions.fastForEachIndexed
 import org.beatonma.commons.core.extensions.inProgress
 import org.beatonma.commons.data.core.room.entities.division.Division
 import org.beatonma.commons.data.core.room.entities.division.DivisionWithVotes
@@ -92,15 +97,15 @@ fun DivisionDetailLayout(
     socialViewModel: SocialViewModel,
     userAccountViewModel: UserAccountViewModel,
 ) {
-    val resultState = viewmodel.livedata.observeAsState(IoLoading)
+    val resultState by viewmodel.livedata.observeAsState(IoLoading)
 
-    WithResultData(resultState.value) {
+    WithResultData(resultState) { divisionData ->
         ProvideSocial(
-            socialTarget = viewmodel.socialTarget,
-            userAccountViewModel = userAccountViewModel,
-            socialViewModel = socialViewModel,
+            viewmodel,
+            socialViewModel,
+            userAccountViewModel
         ) {
-            DivisionDetailLayout(it)
+            DivisionDetailLayout(divisionData)
         }
     }
 }
@@ -305,40 +310,106 @@ private fun GraphKey(
     division: Division,
     onVoteTypeClick: (VoteType) -> Unit,
 ) {
+    if (division.isEmpty()) return
+
     val keyModifier = Modifier.padding(Padding.HorizontalListItem)
 
-    FlowRow {
-        GraphKeyItem(
-            VoteType.AyeVote,
-            division.ayes,
-            onClick = onVoteTypeClick,
-            modifier = keyModifier
-        )
-        GraphKeyItem(
-            VoteType.NoVote,
-            division.noes,
-            onClick = onVoteTypeClick,
-            modifier = keyModifier
-        )
-        GraphKeyItem(
-            VoteType.Abstains,
-            division.abstentions ?: 0,
-            onClick = onVoteTypeClick,
-            modifier = keyModifier
-        )
-        GraphKeyItem(
-            VoteType.DidNotVote,
-            division.didNotVote ?: 0,
-            onClick = onVoteTypeClick,
-            modifier = keyModifier
-        )
-        GraphKeyItem(
-            VoteType.SuspendedOrExpelledVote,
-            division.suspendedOrExpelled ?: 0,
-            onClick = onVoteTypeClick,
-            modifier = keyModifier
-        )
+    // Simple FlowRow
+    Layout(content = {
+        GraphKeyItems(division, onVoteTypeClick, keyModifier)
+    }) { measurables, constraints ->
+        val maxWidth = constraints.maxWidth
+
+        val rows = mutableListOf<List<Placeable>>()
+        val currentRow = mutableListOf<Placeable>()
+        val rowSizes = mutableListOf<IntSize>()
+        val rowStartY = mutableListOf(0)
+
+        val placeables = measurables.map { it.measure(constraints) }
+
+        var rowHeight = 0
+        var rowWidth = 0
+
+        fun storeRowAndReset() {
+            // Remember this row and start a new row
+            rows += currentRow.toList()
+            rowSizes += IntSize(rowWidth, rowHeight)
+            rowStartY += rowHeight
+            rowHeight = 0
+            rowWidth = 0
+            currentRow.clear()
+        }
+
+        placeables.fastForEach {
+            if (rowWidth + it.width > maxWidth) {
+                storeRowAndReset()
+            }
+
+            currentRow += it
+            rowHeight = maxOf(rowHeight, it.height)
+            rowWidth += it.width
+        }
+
+        if (currentRow.isNotEmpty()) {
+            storeRowAndReset()
+        }
+
+        val totalWidth = rowSizes.maxOf { it.width }
+        val totalHeight = rowSizes.sumBy { it.height }
+
+        check(rows.size < rowStartY.size)
+        check(currentRow.isEmpty())
+
+        layout(totalWidth, totalHeight) {
+            rows.fastForEachIndexed { rowIndex, rowItems ->
+                var left = 0
+                val top = rowStartY[rowIndex]
+
+                rowItems.fastForEach { item ->
+                    item.placeRelative(left, top)
+                    left += item.width
+                }
+            }
+        }
     }
+}
+
+@Composable
+private fun GraphKeyItems(
+    division: Division,
+    onVoteTypeClick: (VoteType) -> Unit,
+    modifier: Modifier,
+) {
+    GraphKeyItem(
+        VoteType.AyeVote,
+        division.ayes,
+        onClick = onVoteTypeClick,
+        modifier = modifier
+    )
+    GraphKeyItem(
+        VoteType.NoVote,
+        division.noes,
+        onClick = onVoteTypeClick,
+        modifier = modifier
+    )
+    GraphKeyItem(
+        VoteType.Abstains,
+        division.abstentions ?: 0,
+        onClick = onVoteTypeClick,
+        modifier = modifier
+    )
+    GraphKeyItem(
+        VoteType.DidNotVote,
+        division.didNotVote ?: 0,
+        onClick = onVoteTypeClick,
+        modifier = modifier
+    )
+    GraphKeyItem(
+        VoteType.SuspendedOrExpelledVote,
+        division.suspendedOrExpelled ?: 0,
+        onClick = onVoteTypeClick,
+        modifier = modifier
+    )
 }
 
 @Composable
@@ -419,3 +490,9 @@ private fun applyFilter(
         else -> division.votes.filter { it.vote.voteType in voteTypeFilters }
     }
         .filter { it.vote.memberName.contains(queryText, ignoreCase = true) }
+
+private fun Division.isEmpty() =
+    listOf(ayes, noes, didNotVote, abstentions, suspendedOrExpelled).allEqualTo(
+        expected = 0,
+        orNull = true
+    )
