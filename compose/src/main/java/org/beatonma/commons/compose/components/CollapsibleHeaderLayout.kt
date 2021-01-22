@@ -1,5 +1,6 @@
 package org.beatonma.commons.compose.components
 
+import androidx.annotation.FloatRange
 import androidx.compose.animation.AnimatedFloatModel
 import androidx.compose.animation.asDisposableClock
 import androidx.compose.animation.core.AnimationClockObservable
@@ -7,6 +8,8 @@ import androidx.compose.animation.core.Easing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.TargetAnimation
 import androidx.compose.animation.core.fling
+import androidx.compose.foundation.Interaction
+import androidx.compose.foundation.InteractionState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.rememberScrollableController
 import androidx.compose.foundation.gestures.scrollable
@@ -21,6 +24,8 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -43,9 +48,6 @@ import kotlin.math.absoluteValue
 import kotlin.random.Random
 
 
-/**
- * Directly tracks input
- */
 @Composable
 fun CollapsibleHeaderLayout(
     collapsingHeader: @Composable (collapseProgress: Float) -> Unit,
@@ -54,18 +56,34 @@ fun CollapsibleHeaderLayout(
     onScrollStarted: (startedPosition: Offset) -> Unit = {},
     onScrollStopped: (velocity: Float) -> Unit = {},
     headerScrollEasing: Easing = FastOutSlowInEasing,
-    headerState: CollapsibleHeaderState = collapsibleHeaderState(easing = headerScrollEasing),
-    lazyListState: LazyListState = rememberLazyListState(),
+    interactionState: InteractionState = remember(::InteractionState),
+    @FloatRange(from = 0.0, to = 1.0) snapToStateAt: Float? = null,
+    headerState: CollapsibleHeaderState =
+        collapsibleHeaderState(easing = headerScrollEasing, autoSnap = snapToStateAt),
+    lazyListState: LazyListState = rememberLazyListState(interactionState = interactionState),
     scrollEnabled: Boolean = true,
     appendEndOfContentSpacing: Boolean = true,
 ) {
+    val resolvedOnScrollStopped: (Float) -> Unit = when {
+        snapToStateAt != null -> {
+            { velocity ->
+                headerState.snap()
+                onScrollStopped(velocity)
+            }
+        }
+        else -> onScrollStopped
+    }
+
+    OnInteractionFinished(interactionState) { if (headerState.isSnappable) headerState.snap() }
+
     Column(
         modifier
             .fillMaxSize()
             .interceptScrolling(
                 headerState = headerState,
+                interactionState = interactionState,
                 onScrollStarted = onScrollStarted,
-                onScrollStopped = onScrollStopped,
+                onScrollStopped = resolvedOnScrollStopped,
                 scrollEnabled = scrollEnabled,
             ),
     ) {
@@ -106,15 +124,24 @@ fun CollapsibleHeaderLayout(
 }
 
 @Composable
+private fun OnInteractionFinished(interactionState: InteractionState, block: () -> Unit) {
+    val previousInteractionState: MutableState<Set<Interaction>> = remember { mutableStateOf(setOf()) }
+    if (interactionState.value.isEmpty() && previousInteractionState.value.isNotEmpty()) {
+        block()
+    }
+    previousInteractionState.value = interactionState.value
+}
+
+@Composable
 private fun Modifier.interceptScrolling(
     headerState: CollapsibleHeaderState,
-    onScrollStarted: (startedPosition: Offset) -> Unit = {},
-    onScrollStopped: (velocity: Float) -> Unit = {},
+    interactionState: InteractionState,
+    onScrollStarted: (startedPosition: Offset) -> Unit,
+    onScrollStopped: (velocity: Float) -> Unit,
     scrollEnabled: Boolean = true,
 ): Modifier {
-
     val scrollConnection = remember {
-        object: NestedScrollConnection {
+        object : NestedScrollConnection {
             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
                 val availableY = available.y
                 val isScrollTowardsTopOfList = availableY < 0F
@@ -136,13 +163,16 @@ private fun Modifier.interceptScrolling(
             ): Offset {
                 val unconsumed = headerState.scrollBy(available.y)
                 val consumedY = available.y - unconsumed
+
                 return available.copy(y = consumedY)
             }
         }
     }
 
+
+
     val dispatcher = remember(::NestedScrollDispatcher)
-    val controller = rememberScrollableController { 0F }
+    val controller = rememberScrollableController(interactionState = interactionState) { 0F }
 
     return this
         .nestedScroll(
@@ -164,11 +194,13 @@ fun collapsibleHeaderState(
     initial: Float = 0F,
     clock: AnimationClockObservable = AmbientAnimationClock.current.asDisposableClock(),
     easing: Easing = FastOutSlowInEasing,
+    autoSnap: Float? = null,
 ) = remember {
     CollapsibleHeaderState(
         initial,
         clock,
         easing = easing,
+        autoSnap = autoSnap,
     )
 }
 
@@ -176,7 +208,8 @@ class CollapsibleHeaderState internal constructor(
     initial: Float,
     clock: AnimationClockObservable,
     private val easing: (Float) -> Float = FastOutSlowInEasing,
-    private val reverseScrollDirection: Boolean = true
+    private val reverseScrollDirection: Boolean = true,
+    private val autoSnap: Float? = null,
 ) {
     val value = AnimatedFloatModel(
         initialValue = initial,
@@ -196,6 +229,7 @@ class CollapsibleHeaderState internal constructor(
 
     val isCollapsed: Boolean get() = expandProgress == 0F
     val isExpanded: Boolean get() = expandProgress == 1F
+    val isSnappable: Boolean get() = autoSnap != null
 
     fun expand() {
         value.animateTo(0F)
@@ -203,6 +237,17 @@ class CollapsibleHeaderState internal constructor(
 
     fun collapse() {
         value.animateTo(maxValue)
+    }
+
+    fun snap() {
+        check(autoSnap != null) { "Cannot snap(): CollapsibleHeaderState.autoSnap has not been set" }
+        if (value.isRunning) return
+
+        if (expandProgress > autoSnap) {
+            expand()
+        } else {
+            collapse()
+        }
     }
 
     fun expand(velocity: Float) {
@@ -276,8 +321,7 @@ private fun CollapsibleHeaderLayoutPreview() {
                     println("Click")
                     if (Random.nextBoolean()) {
                         headerState.expand()
-                    }
-                    else {
+                    } else {
                         headerState.collapse()
                     }
                 },

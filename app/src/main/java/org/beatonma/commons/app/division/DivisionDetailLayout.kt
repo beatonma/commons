@@ -25,10 +25,8 @@ import androidx.compose.runtime.ProvidableAmbient
 import androidx.compose.runtime.ambientOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
@@ -53,7 +51,6 @@ import org.beatonma.commons.app.ui.compose.components.charts.HorizontalStackedBa
 import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.components.SearchTextField
-import org.beatonma.commons.compose.components.collapsibleHeaderState
 import org.beatonma.commons.compose.modifiers.wrapContentHeight
 import org.beatonma.commons.compose.util.dotted
 import org.beatonma.commons.compose.util.mapUpdate
@@ -69,7 +66,6 @@ import org.beatonma.commons.core.VoteType
 import org.beatonma.commons.core.extensions.allEqualTo
 import org.beatonma.commons.core.extensions.fastForEach
 import org.beatonma.commons.core.extensions.fastForEachIndexed
-import org.beatonma.commons.core.extensions.inProgress
 import org.beatonma.commons.data.core.room.entities.division.Division
 import org.beatonma.commons.data.core.room.entities.division.DivisionWithVotes
 import org.beatonma.commons.data.core.room.entities.division.VoteWithParty
@@ -141,12 +137,8 @@ fun DivisionDetailLayout(
     }
     applyFilter("")
 
-    val headerState = collapsibleHeaderState()
-    var expansionProgress by mutableStateOf(1F)
-
     StickySocialScaffold(
         headerContentAboveSocial = { headerExpansion: Float, headerModifier: Modifier ->
-            expansionProgress = headerExpansion
             HeaderAboveSocial(
                 divisionWithVotes.division,
                 expandProgress = headerExpansion,
@@ -167,15 +159,6 @@ fun DivisionDetailLayout(
                 filteredVotes = filteredVotes.value,
                 isLoading = divisionWithVotes.votes.isEmpty()
             )
-        },
-        onScrollStopped = { velocity ->
-            if (expansionProgress.inProgress) {
-                if (expansionProgress > 0.3F) {
-                    headerState.expand(velocity)
-                } else {
-                    headerState.collapse(velocity)
-                }
-            }
         },
     )
 }

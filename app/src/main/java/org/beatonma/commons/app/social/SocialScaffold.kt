@@ -161,6 +161,7 @@ fun StickySocialScaffold(
             scrollEnabled = scaffoldScrollEnabled.value,
             onScrollStarted = onScrollStarted,
             onScrollStopped = onScrollStopped,
+            snapToStateAt = 0.3F
         )
     }
 }
