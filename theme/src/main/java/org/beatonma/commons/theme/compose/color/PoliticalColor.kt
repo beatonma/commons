@@ -21,7 +21,7 @@ object PoliticalColor {
             val Alliance = Color(0xff_F4_C7_2E)
             val ChangeUk = Color.White
             val Conservative = Color(0xff_11_43_7D)
-            val Dup = Color(0xff_43_06_7)
+            val Dup = Color(0xff_34_30_67)
             val Green = Color(0xff_53_8C_6B)
             val Independent = Default
             val Labour = Color(0xff_C4_12_30)
