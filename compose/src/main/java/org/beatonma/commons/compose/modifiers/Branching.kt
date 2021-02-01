@@ -35,6 +35,12 @@ inline fun Modifier.onlyWhen(condition: Boolean, crossinline content: ModifierBl
         else this
     }
 
+inline fun <T> Modifier.withNotNull(condition: T?, crossinline content: TypedModifierBlock<T>): Modifier =
+    composed {
+        if (condition != null) this.content(condition)
+        else this
+    }
+
 inline fun Modifier.either(
     condition: Boolean,
     crossinline whenTrue: ModifierBlock,
