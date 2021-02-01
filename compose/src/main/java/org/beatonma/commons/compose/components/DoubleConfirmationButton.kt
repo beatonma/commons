@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonColors
-import androidx.compose.material.ButtonConstants
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ButtonElevation
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
@@ -78,10 +78,10 @@ fun DoubleConfirmationButton(
     interactionState: InteractionState = remember { InteractionState() },
     elevation: ButtonElevation? = null,
     shape: Shape = shapes.small,
-    border: BorderStroke? = ButtonConstants.defaultOutlinedBorder,
+    border: BorderStroke? = ButtonDefaults.outlinedBorder,
     colors: DoubleConfirmationButtonColors = doubleConfirmationColors(),
     autoCollapse: Long = AutoCollapse.Default,
-    contentPadding: PaddingValues = ButtonConstants.DefaultContentPadding,
+    contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     safeContent: @Composable (progress: Float) -> Unit,
     awaitingConfirmationContent: @Composable (progress: Float) -> Unit,
     confirmedContent: @Composable (progress: Float) -> Unit,
