@@ -1,4 +1,4 @@
-package org.beatonma.commons.app
+package org.beatonma.commons.app.ui.base
 
 import android.content.Context
 import android.os.Bundle
