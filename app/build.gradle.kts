@@ -186,6 +186,7 @@ dependencies {
             project(":core"),
             project(":network-core"),
             project(":snommoc"),
+            project(":ukparliament"),
             project(":persistence"),
             project(":repo"),
             project(":theme"),
