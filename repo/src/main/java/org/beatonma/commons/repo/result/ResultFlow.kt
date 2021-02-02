@@ -1,8 +1,10 @@
 package org.beatonma.commons.repo.result
 
 import android.util.Log
+import androidx.annotation.VisibleForTesting
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -16,6 +18,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 import org.beatonma.commons.core.extensions.autotag
+import org.beatonma.commons.core.extensions.fastForEachIndexed
 import org.beatonma.commons.repo.ResultFlow
 
 /**
@@ -23,8 +26,6 @@ import org.beatonma.commons.repo.ResultFlow
  *
  * - If networkCall succeeds it will update the database cache via [saveCallResult] and the
  * [databaseQuery] will emit the new data.
- *
- * - Otherwise
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 fun <T, N> cachedResultFlow(
@@ -48,9 +49,11 @@ fun <T, N> cachedResultFlow(
                     /**
                      * Only emit null/empty [databaseQuery] results if the network call has completed.
                      */
-                    println("filtering [networkCallFinished=$networkCallFinished]: $result")
                     when {
-                        networkCallFinished -> true
+                        networkCallFinished -> {
+                            // Network is complete so we should emit whatever we have available
+                            true
+                        }
                         result is Collection<*> -> result.isNotEmpty()
                         else -> result != null
                     }
@@ -60,9 +63,54 @@ fun <T, N> cachedResultFlow(
         }
 
         networkCallFinished =
-            submitAndSaveNetworkResult(networkCall, saveCallResult, closeOnError = false)
+            makeNetworkCall(networkCall, saveCallResult, closeFlowOnError = false)
     }.catch { e ->
         emit(Failure(e, "cachedResultFlow error"))
+    }.flowOn(Dispatchers.IO)
+
+@OptIn(ExperimentalCoroutinesApi::class)
+fun <T> cachedResultFlow(
+    databaseQuery: () -> Flow<T>,
+    vararg calls: NetworkCall<*>,
+    distinctUntilChanged: Boolean = true,
+    callStrategy: NetworkCallStrategy = NetworkCallStrategy.Serial,
+    emitStrategy: DataEmissionStrategy = DataEmissionStrategy.AwaitComplete,
+) =
+    channelFlow<IoResult<T>> {
+        send(IoLoading)
+
+        val callCount = calls.size
+        var callsComplete = 0
+
+        // Run databaseQuery in separate coroutine and surface results to channelFlow
+        launch {
+            databaseQuery.invoke().apply {
+                if (distinctUntilChanged) {
+                    distinctUntilChanged()
+                }
+            }
+                .filter { result ->
+
+                    /**
+                     * Only emit null/empty [databaseQuery] results if the network call has completed.
+                     */
+                    when {
+                        emitStrategy == DataEmissionStrategy.Continuous -> true
+                        emitStrategy == DataEmissionStrategy.AwaitComplete -> {
+                            callsComplete == callCount
+                        }
+                        result is Collection<*> -> result.isNotEmpty()
+                        else -> result != null
+                    }
+                }
+                .mapLatest(::Success)
+                .collectLatest(::send)
+        }
+
+        makeNetworkCalls(*calls, strategy = callStrategy).collect { callsComplete = it }
+
+    }.catch { e ->
+        emit(Failure(e, "multiCallCachedResultFlow error"))
     }.flowOn(Dispatchers.IO)
 
 /**
@@ -80,10 +128,10 @@ fun <T, N> resultFlowLocalPreferred(
         databaseQuery.invoke()
             .collect { queryResult ->
                 when {
-                    queryResult == null -> submitAndSaveNetworkResult(networkCall, saveCallResult)
+                    queryResult == null -> makeNetworkCall(networkCall, saveCallResult)
 
                     queryResult is Collection<*> && queryResult.isEmpty() -> {
-                        submitAndSaveNetworkResult(networkCall, saveCallResult)
+                        makeNetworkCall(networkCall, saveCallResult)
                     }
 
                     else -> send(
@@ -120,16 +168,16 @@ fun <T> resultFlowNoCache(
  */
 @Suppress("REDUNDANT_INLINE_SUSPEND_FUNCTION_TYPE") // networkCall and saveCallResult require suspend keyword
 @OptIn(ExperimentalCoroutinesApi::class)
-private suspend inline fun <E, N> ProducerScope<IoResult<E>>.submitAndSaveNetworkResult(
+private suspend inline fun <E, N> ProducerScope<IoResult<E>>.makeNetworkCall(
     networkCall: suspend () -> IoResult<N>,
-    saveCallResult: suspend (N) -> Unit,
-    closeOnError: Boolean = true,
+    withResult: suspend (N) -> Unit,
+    closeFlowOnError: Boolean = true,
 ): Boolean {
     val response: IoResult<N> = networkCall.invoke()
 
     when (response) {
-        is Success -> saveCallResult(response.data)
-        is Failure -> sendError(response, response.error, closeOnError)
+        is Success -> withResult(response.data)
+        is Failure -> sendError(response, response.error, closeFlowOnError)
         is ErrorCode -> sendError(response)
     }
     return true
@@ -150,4 +198,73 @@ private suspend fun <E> ProducerScope<E>.sendError(
     if (closeFlow) {
         close(cause)
     }
+}
+
+/**
+ * Emits the number of calls that have completed.
+ */
+@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+suspend fun makeNetworkCalls(
+    vararg calls: NetworkCall<*>,
+    strategy: NetworkCallStrategy
+): Flow<Int> =
+    when (strategy) {
+        NetworkCallStrategy.Serial -> makeSerialNetworkCalls(calls)
+        NetworkCallStrategy.Parallel -> makeParallelNetworkCalls(calls)
+    }
+
+@OptIn(ExperimentalCoroutinesApi::class)
+private suspend fun makeSerialNetworkCalls(
+    calls: Array<out NetworkCall<*>>
+) =
+    flow<Int> {
+        calls.fastForEachIndexed { index, c ->
+            c.invoke()
+            emit(index + 1)
+        }
+    }
+
+@OptIn(ExperimentalCoroutinesApi::class)
+private suspend fun makeParallelNetworkCalls(
+    calls: Array<out NetworkCall<*>>
+) = channelFlow {
+    var complete = 0
+    calls
+        .map {
+            async { it.invoke() }
+        }
+        .map {
+            it.await()
+            send(++complete)
+        }
+}
+
+class NetworkCall<N>(
+    val call: suspend () -> IoResult<N>,
+    val handler: suspend (N) -> Unit,
+) {
+    suspend fun invoke() {
+        call.invoke().onSuccess { data ->
+            handler(data)
+        }
+    }
+}
+
+enum class NetworkCallStrategy {
+    Serial,
+    Parallel,
+    ;
+}
+
+enum class DataEmissionStrategy {
+    /**
+     * Emit new data as it becomes available.
+     */
+    Continuous,
+
+    /**
+     * Do not emit data until all network calls have completed.
+     */
+    AwaitComplete,
+    ;
 }

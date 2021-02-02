@@ -1,6 +1,8 @@
 package org.beatonma.commons.repo.result
 
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.runBlocking
 import org.beatonma.commons.core.ParliamentID
@@ -12,18 +14,21 @@ import org.beatonma.commons.repo.testdata.MEMBER_PUK_BORIS_JOHNSON
 import org.beatonma.commons.repo.testdata.MEMBER_PUK_KEIR_STARMER
 import org.beatonma.commons.snommoc.models.ApiMemberProfile
 import org.beatonma.commons.test.extensions.assertions.assertEach
+import org.beatonma.commons.test.extensions.assertions.assertInstanceOf
 import org.beatonma.commons.test.extensions.assertions.shouldBeInstanceOf
 import org.beatonma.commons.test.extensions.assertions.shouldbe
 import org.beatonma.commons.test.extensions.util.awaitValues
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Suite
+import java.util.concurrent.TimeoutException
 
 @RunWith(Suite::class)
 @Suite.SuiteClasses(
     CacheResultFlowTest::class,
     ResultFlowLocalPreferredTest::class,
     ResultFlowNoCacheTest::class,
+    NetworkCallsTest::class,
 )
 class ResultFlowTestSuite
 
@@ -219,6 +224,76 @@ class ResultFlowNoCacheTest: ResultFlowTest() {
                     { it shouldbe IoLoading },
                     { it shouldBeInstanceOf ErrorCode::class }
                 )
+        }
+    }
+}
+
+class NetworkCallsTest {
+    private val results = mutableListOf<Int>()
+    private val networkCalls = arrayOf(
+        NetworkCall(
+            {
+                delay(500)
+                Success(2)
+            }, { n ->
+                results += n
+            }
+        ),
+        NetworkCall(
+            {
+                delay(500)
+                Success(3)
+            }, { n ->
+                results += n
+            }
+        )
+    )
+
+    @Test
+    fun makeNetworkCalls_withParallelStrategy_runsInParallel() {
+        runBlocking {
+            makeNetworkCalls(
+                *networkCalls,
+                strategy = NetworkCallStrategy.Parallel
+            ).awaitValues(2, timeout = 550)
+                .collect {
+                    it.size shouldbe 2
+                    results.sum() shouldbe 5
+                }
+        }
+    }
+
+    @Test
+    fun makeNetworkCalls_withSerialStrategy_runsSuccessfully() {
+        // Just make sure the tasks run.
+        runBlocking {
+            makeNetworkCalls(
+                *networkCalls,
+                strategy = NetworkCallStrategy.Serial
+            ).awaitValues(2, timeout = 1100)
+                .collect {
+                    it.size shouldbe 2
+                    results.sum() shouldbe 5
+                }
+        }
+    }
+
+    @Test
+    fun makeNetworkCalls_withSerialStrategy_tasksRunSequentially() {
+        // awaitValues should time out when tasks run one after another
+        runBlocking {
+            makeNetworkCalls(
+                *networkCalls,
+                strategy = NetworkCallStrategy.Serial
+            ).awaitValues(2, timeout = 750)
+                .catch { e ->
+                    println("awaitValue throws: $e")
+                    e.assertInstanceOf(TimeoutException::class)
+                }
+                .collect {
+                    it.size shouldbe 1
+                    results.sum() shouldbe 2
+                }
         }
     }
 }
