@@ -11,7 +11,6 @@ import org.beatonma.commons.snommoc.models.ApiCompleteMember
 import org.beatonma.commons.snommoc.models.ApiConstituency
 import org.beatonma.commons.snommoc.models.ApiConstituencyElectionDetails
 import org.beatonma.commons.snommoc.models.ApiDivision
-import org.beatonma.commons.snommoc.models.ApiMemberProfile
 import org.beatonma.commons.snommoc.models.ApiMemberVote
 import org.beatonma.commons.snommoc.models.ApiZeitgeist
 import org.beatonma.commons.snommoc.models.MessageOfTheDay
@@ -32,6 +31,11 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
+/**
+ * Path parameter representing a ParliamentID.
+ */
+private const val ID = "{${Contract.PARLIAMENTDOTUK}}"
+
 private const val API_PATH = "/api"
 private const val MEMBER_API_PATH = "$API_PATH/member"
 private const val FEATURED_API_PATH = "$API_PATH/featured"
@@ -39,7 +43,7 @@ private const val BILL_API_PATH = "$API_PATH/bill"
 private const val DIVISION_API_PATH = "$API_PATH/division"
 private const val CONSTITUENCY_API_PATH = "$API_PATH/constituency"
 private const val SOCIAL_API_PATH = "/social"
-private const val SOCIAL_TARGET_PATH = "$SOCIAL_API_PATH/{target_type}/{parliamentdotuk}"
+private const val SOCIAL_TARGET_PATH = "$SOCIAL_API_PATH/{target_type}/$ID"
 
 
 
@@ -48,15 +52,15 @@ private object Endpoints {
     const val SEARCH = "$MEMBER_API_PATH/?page_size=5"
     const val MOTD = "$API_PATH/motd/"
 
-    const val MEMBER_PROFILE = "$MEMBER_API_PATH/profile/{${Contract.PARLIAMENTDOTUK}}/"
+    const val MEMBER_PROFILE = "$MEMBER_API_PATH/profile/$ID/"
     const val VOTES_BY_MEMBER =
-        "$MEMBER_API_PATH/votes/{${Contract.HOUSE}}/{${Contract.PARLIAMENTDOTUK}}/"
+        "$MEMBER_API_PATH/votes/{${Contract.HOUSE}}/$ID/"
 
-    const val BILL = "$BILL_API_PATH/{${Contract.PARLIAMENTDOTUK}}/"
+    const val BILL = "$BILL_API_PATH/$ID/"
 
-    const val DIVISION = "$DIVISION_API_PATH/{${Contract.HOUSE}}/{${Contract.PARLIAMENTDOTUK}}/"
+    const val DIVISION = "$DIVISION_API_PATH/{${Contract.HOUSE}}/$ID/"
 
-    const val CONSTITUENCY = "$CONSTITUENCY_API_PATH/{${Contract.PARLIAMENTDOTUK}}/"
+    const val CONSTITUENCY = "$CONSTITUENCY_API_PATH/$ID/"
     const val CONSTITUENCY_ELECTION_RESULTS =
         "$CONSTITUENCY_API_PATH/{${Contract.CONSTITUENCY_ID}}/election/{${Contract.ELECTION_ID}}/"
 
@@ -98,23 +102,6 @@ interface CommonsService: SnommocService, CommonsDataService, CommonsSocialServi
 interface SnommocService {
     @GET(Endpoints.PING)
     suspend fun ping(): Response<String>
-
-    @Deprecated("Use Zeitgeist")
-    @EnvelopePayload
-    @GET(Endpoints.FEATURED_MEMBERS)
-    suspend fun getFeaturedPeople(): ListResponse<ApiMemberProfile>
-
-    // Bills
-    @Deprecated("Use Zeitgeist")
-    @EnvelopePayload
-    @GET(Endpoints.FEATURED_BILLS)
-    suspend fun getFeaturedBills(): ListResponse<ApiBill>
-
-    // Divisions
-    @Deprecated("Use Zeitgeist")
-    @EnvelopePayload
-    @GET(Endpoints.FEATURED_DIVISIONS)
-    suspend fun getFeaturedDivisions(): ListResponse<ApiDivision>
 
     /**
      * Member search by name, constituency name, current post title.

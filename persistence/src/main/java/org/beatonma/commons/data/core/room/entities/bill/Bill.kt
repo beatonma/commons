@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey
 import androidx.room.Relation
 import org.beatonma.commons.core.PARLIAMENTDOTUK
 import org.beatonma.commons.core.ParliamentID
+import org.beatonma.commons.core.extensions.allNotNull
 import org.beatonma.commons.data.core.interfaces.Commentable
 import org.beatonma.commons.data.core.interfaces.Dated
 import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
@@ -60,10 +61,31 @@ data class BillWithSessionAndType(
 
 
 data class CompleteBill(
-    @Embedded var bill: Bill? = null,
-    @Ignore var session: ParliamentarySession? = null,
-    @Ignore var type: BillType? = null,
-    @Ignore var publications: List<BillPublication>? = null,
-    @Ignore var sponsors: List<BillSponsorWithParty>? = null,
-    @Ignore var stages: List<BillStageWithSittings>? = null,
+    @Embedded val bill: Bill,
+    @Ignore val session: ParliamentarySession,
+    @Ignore val type: BillType,
+    @Ignore val publications: List<BillPublication>,
+    @Ignore val sponsors: List<BillSponsorWithParty>,
+    @Ignore val stages: List<BillStageWithSittings>,
 )
+
+data class CompleteBillBuilder(
+    var bill: Bill? = null,
+    var session: ParliamentarySession? = null,
+    var type: BillType? = null,
+    var publications: List<BillPublication>? = null,
+    var sponsors: List<BillSponsorWithParty>? = null,
+    var stages: List<BillStageWithSittings>? = null,
+) {
+    val isComplete: Boolean
+        get() = allNotNull(bill, session, type, publications, sponsors, stages)
+
+    fun toCompleteBill() = CompleteBill(
+        bill!!,
+        session!!,
+        type!!,
+        publications!!,
+        sponsors!!,
+        stages!!,
+    )
+}

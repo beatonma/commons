@@ -2,30 +2,32 @@ package org.beatonma.commons.repo.repository
 
 import androidx.annotation.VisibleForTesting
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.launch
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.core.extensions.withNotNull
 import org.beatonma.commons.data.core.room.dao.BillDao
-import org.beatonma.commons.data.core.room.entities.bill.Bill
-import org.beatonma.commons.data.core.room.entities.bill.BillPublication
-import org.beatonma.commons.data.core.room.entities.bill.BillSponsorWithParty
-import org.beatonma.commons.data.core.room.entities.bill.BillStageWithSittings
-import org.beatonma.commons.data.core.room.entities.bill.BillType
 import org.beatonma.commons.data.core.room.entities.bill.CompleteBill
-import org.beatonma.commons.data.core.room.entities.bill.ParliamentarySession
-import org.beatonma.commons.repo.CommonsApi
+import org.beatonma.commons.data.core.room.entities.bill.CompleteBillBuilder
 import org.beatonma.commons.repo.ResultFlow
 import org.beatonma.commons.repo.converters.toBill
 import org.beatonma.commons.repo.converters.toBillPublication
+import org.beatonma.commons.repo.converters.toBillPublicationDetail
 import org.beatonma.commons.repo.converters.toBillSponsor
 import org.beatonma.commons.repo.converters.toBillStage
 import org.beatonma.commons.repo.converters.toBillStageSitting
 import org.beatonma.commons.repo.converters.toBillType
 import org.beatonma.commons.repo.converters.toParliamentarySession
+import org.beatonma.commons.repo.remotesource.api.CommonsApi
+import org.beatonma.commons.repo.remotesource.api.UkParliamentApi
+import org.beatonma.commons.repo.result.DataEmissionStrategy
+import org.beatonma.commons.repo.result.NetworkCall
+import org.beatonma.commons.repo.result.NetworkCallStrategy
 import org.beatonma.commons.repo.result.cachedResultFlow
 import org.beatonma.commons.snommoc.models.ApiBill
+import org.beatonma.commons.ukparliament.models.UkApiBillPublication
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -33,63 +35,68 @@ private const val TAG = "BillRepo"
 
 @Singleton
 class BillRepository @Inject constructor(
-    private val remoteSource: CommonsApi,
+    private val commonsApi: CommonsApi,
+    private val ukParliamentApi: UkParliamentApi,
     private val billDao: BillDao,
 ) {
-
-    fun getBill(parliamentdotuk: ParliamentID): ResultFlow<CompleteBill> = cachedResultFlow(
-        databaseQuery = { getCompleteBill(parliamentdotuk) },
-        networkCall = { remoteSource.getBill(parliamentdotuk) },
-        saveCallResult = { apiBill -> saveBill(billDao, parliamentdotuk, apiBill) },
-        distinctUntilChanged = false,
+    fun getBill(billId: ParliamentID): ResultFlow<CompleteBill> = cachedResultFlow(
+        databaseQuery = { getCompleteBill(billId) },
+        NetworkCall(
+            { commonsApi.getBill(billId) },
+            { apiBill -> saveBill(billDao, billId, apiBill) }
+        ),
+        NetworkCall(
+            { ukParliamentApi.getBillPublications(billId) },
+            { publications ->
+                saveBillPublicationsDetail(billDao, billId, publications)
+            }
+        ),
+        callStrategy = NetworkCallStrategy.Serial,
+        emitStrategy = DataEmissionStrategy.Continuous
     )
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun getCompleteBill(parliamentdotuk: ParliamentID) = channelFlow<CompleteBill> {
-        val builder = CompleteBill()
-        val dataSourceFunctions = listOf(
-            BillDao::getBill,
-            BillDao::getBillStages,
-            BillDao::getBillPublications,
-            BillDao::getBillSponsors,
-            BillDao::getBillSession,
-            BillDao::getBillType,
-        )
+    fun getCompleteBill(billId: ParliamentID) = channelFlow<CompleteBill> {
+        val builder = CompleteBillBuilder()
 
-        val mergedFlow = dataSourceFunctions.map { func ->
-            func.invoke(billDao, parliamentdotuk)
-        }.merge()
-
-        mergedFlow.collect { data: Any? ->
-            if (data is List<*>) {
-                val first = data.firstOrNull()
-
-                @Suppress("UNCHECKED_CAST")
-                when (first) {
-                    is BillPublication -> builder.publications = data as List<BillPublication>
-                    is BillStageWithSittings -> builder.stages = data as List<BillStageWithSittings>
-                    is BillSponsorWithParty -> builder.sponsors = data as List<BillSponsorWithParty>
-                    null -> Unit
-                    else -> error("All valid types must be handled: ${data.javaClass.canonicalName}")
-                }
+        suspend fun submitCompleteBill() {
+            if (builder.isComplete) {
+                send(builder.toCompleteBill())
             }
-            else {
-                when (data) {
-                    is Bill -> builder.bill = data
-                    is BillType -> builder.type = data
-                    is ParliamentarySession -> builder.session = data
-                    null -> Unit
-                    else -> error("All valid types must be handled: ${data.javaClass.canonicalName}")
-                }
-            }
-
-            send(builder)
         }
+
+        suspend fun <E, T: Collection<E>> fetchList(
+            func: BillDao.(ParliamentID) -> Flow<T>,
+            block: (T) -> Unit,
+        ) = launch {
+            billDao.func(billId).collect {
+                block(it)
+                submitCompleteBill()
+            }
+        }
+
+        suspend fun <T> fetchObject(
+            func: BillDao.(ParliamentID) -> Flow<T>,
+            block: (T?) -> Unit,
+        ) = launch {
+            billDao.func(billId).collect {
+                block(it)
+                submitCompleteBill()
+            }
+        }
+
+        fetchObject(BillDao::getBill) { builder.bill = it }
+        fetchList(BillDao::getBillStages) { builder.stages = it }
+        fetchList(BillDao::getBillPublications) {builder.publications = it }
+        fetchList(BillDao::getBillSponsors) { builder.sponsors = it }
+        fetchObject(BillDao::getBillSession) { builder.session = it }
+        fetchObject(BillDao::getBillType) { builder.type = it }
     }
 
+
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    suspend fun saveBill(dao: BillDao, parliamentdotuk: ParliamentID, apiBill: ApiBill) {
+    suspend fun saveBill(dao: BillDao, billId: ParliamentID, apiBill: ApiBill) {
         dao.run {
             withNotNull(apiBill.type) {
                 insertBillType(it.toBillType())
@@ -99,9 +106,7 @@ class BillRepository @Inject constructor(
             }
             insertBill(apiBill.toBill())
             insertBillStages(apiBill.stages.map { apiStage ->
-                apiStage.toBillStage(
-                    parliamentdotuk
-                )
+                apiStage.toBillStage(billId)
             })
             insertBillStageSittings(
                 apiBill.stages.map { stage ->
@@ -110,8 +115,23 @@ class BillRepository @Inject constructor(
                     }
                 }.flatten()
             )
-            insertBillSponsors(apiBill.sponsors.map { it.toBillSponsor(billId = parliamentdotuk) })
-            insertBillPublications(apiBill.publications.map { it.toBillPublication(billId = parliamentdotuk) })
+            insertBillSponsors(apiBill.sponsors.map { it.toBillSponsor(billId = billId) })
+            insertOrUpdateBillPublications(apiBill.publications.map { it.toBillPublication(billId = billId) })
+        }
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    suspend fun saveBillPublicationsDetail(
+        dao: BillDao,
+        billId: ParliamentID,
+        publications: List<UkApiBillPublication>
+    ) {
+        dao.run {
+            updateBillPublicationDetail(
+                publications.map {
+                    it.toBillPublicationDetail(billId)
+                }
+            )
         }
     }
 }

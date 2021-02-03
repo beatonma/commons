@@ -16,7 +16,6 @@ import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyEle
 import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyWithBoundary
 import org.beatonma.commons.data.core.room.entities.election.ConstituencyResultWithDetails
 import org.beatonma.commons.data.core.room.entities.election.Election
-import org.beatonma.commons.repo.CommonsApi
 import org.beatonma.commons.repo.ResultFlow
 import org.beatonma.commons.repo.converters.toConstituency
 import org.beatonma.commons.repo.converters.toConstituencyBoundary
@@ -25,6 +24,7 @@ import org.beatonma.commons.repo.converters.toConstituencyElectionDetails
 import org.beatonma.commons.repo.converters.toConstituencyResult
 import org.beatonma.commons.repo.converters.toElection
 import org.beatonma.commons.repo.converters.toMemberProfile
+import org.beatonma.commons.repo.remotesource.api.CommonsApi
 import org.beatonma.commons.repo.result.cachedResultFlow
 import org.beatonma.commons.snommoc.models.ApiConstituency
 import org.beatonma.commons.snommoc.models.ApiConstituencyElectionDetails

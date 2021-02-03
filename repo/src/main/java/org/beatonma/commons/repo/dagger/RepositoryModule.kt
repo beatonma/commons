@@ -11,7 +11,8 @@ import org.beatonma.commons.data.core.room.dao.ConstituencyDao
 import org.beatonma.commons.data.core.room.dao.DivisionDao
 import org.beatonma.commons.data.core.room.dao.MemberDao
 import org.beatonma.commons.data.core.room.dao.UserDao
-import org.beatonma.commons.repo.CommonsApi
+import org.beatonma.commons.repo.remotesource.api.CommonsApi
+import org.beatonma.commons.repo.remotesource.api.UkParliamentApi
 import org.beatonma.commons.repo.repository.BillRepository
 import org.beatonma.commons.repo.repository.ConstituencyRepository
 import org.beatonma.commons.repo.repository.DivisionRepository
@@ -57,9 +58,10 @@ class RepositoryModule {
     @Provides
     fun providesBillRepository(
         @ApplicationContext context: Context,
-        remoteSource: CommonsApi,
+        commonsApi: CommonsApi,
+        ukParliamentApi: UkParliamentApi,
         billDao: BillDao,
-    ): BillRepository = BillRepository(remoteSource, billDao)
+    ): BillRepository = BillRepository(commonsApi, ukParliamentApi, billDao)
 
     @Suppress("UNUSED_PARAMETER")  // context is used to retrieve DAO instances.
     @Singleton

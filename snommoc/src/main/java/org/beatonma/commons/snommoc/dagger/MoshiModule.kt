@@ -18,6 +18,7 @@ import javax.inject.Singleton
 class MoshiModule {
     @Singleton
     @Provides
+    @SnommocClient
     fun providesMoshi(): Moshi =
         Moshi.Builder()
             .add(DeEnvelopeFactory())

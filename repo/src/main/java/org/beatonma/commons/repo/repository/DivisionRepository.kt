@@ -6,10 +6,10 @@ import org.beatonma.commons.core.House
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.room.dao.DivisionDao
 import org.beatonma.commons.data.core.room.entities.division.DivisionWithVotes
-import org.beatonma.commons.repo.CommonsApi
 import org.beatonma.commons.repo.converters.toDivision
 import org.beatonma.commons.repo.converters.toParty
 import org.beatonma.commons.repo.converters.toVote
+import org.beatonma.commons.repo.remotesource.api.CommonsApi
 import org.beatonma.commons.repo.result.IoResult
 import org.beatonma.commons.repo.result.cachedResultFlow
 import org.beatonma.commons.snommoc.models.ApiDivision

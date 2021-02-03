@@ -1,6 +1,9 @@
 package org.beatonma.commons.ukparliament.api
 
 import org.beatonma.commons.core.ParliamentID
+import org.beatonma.commons.ukparliament.converters.NestedPayload
+import org.beatonma.commons.ukparliament.models.UkApiBillPublication
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 
@@ -25,9 +28,8 @@ interface UkParliamentService {
     
     // Sample: https://lda.data.parliament.uk/bills/393258/publications.json
     @GET(Endpoints.BILL_PUBLICATIONS)
+    @NestedPayload
     suspend fun getBillPublicationDetails(
         @Path(Contract.PARLIAMENTDOTUK) billId: ParliamentID
-    ): List<Any>
+    ): Response<List<UkApiBillPublication>>
 }
-
-

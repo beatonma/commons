@@ -15,7 +15,6 @@ import org.beatonma.commons.data.core.room.dao.MemberDao
 import org.beatonma.commons.data.core.room.entities.constituency.NoConstituency
 import org.beatonma.commons.data.core.room.entities.member.NoParty
 import org.beatonma.commons.data.core.room.entities.member.Post
-import org.beatonma.commons.repo.CommonsApi
 import org.beatonma.commons.repo.ResultFlow
 import org.beatonma.commons.repo.converters.toCommitteeChairship
 import org.beatonma.commons.repo.converters.toCommitteeMembership
@@ -32,6 +31,7 @@ import org.beatonma.commons.repo.converters.toPhysicalAddress
 import org.beatonma.commons.repo.converters.toPost
 import org.beatonma.commons.repo.converters.toTopicOfInterest
 import org.beatonma.commons.repo.converters.toWebAddress
+import org.beatonma.commons.repo.remotesource.api.CommonsApi
 import org.beatonma.commons.repo.result.cachedResultFlow
 import org.beatonma.commons.snommoc.models.ApiCompleteMember
 import javax.inject.Inject
@@ -78,7 +78,7 @@ class MemberRepositoryImpl @Inject constructor(
             }
         }
 
-        suspend fun <T> fetch(
+        suspend fun <E, T: Collection<E>> fetchList(
             func: MemberDao.(ParliamentID) -> Flow<T>,
             block: (T) -> Unit,
         ) = launch {
@@ -88,7 +88,7 @@ class MemberRepositoryImpl @Inject constructor(
             }
         }
 
-        suspend fun <T> fetchNullable(
+        suspend fun <T> fetchObject(
             func: MemberDao.(ParliamentID) -> Flow<T>,
             block: (T?) -> Unit,
         ) = launch {
@@ -101,40 +101,40 @@ class MemberRepositoryImpl @Inject constructor(
         suspendedFetch(MemberDao::getMemberProfileTimestampedFlow) {
             builder.profile = it
         }
-        fetch(MemberDao::getPhysicalAddresses) {
+        fetchList(MemberDao::getPhysicalAddresses) {
             builder.addresses = it
         }
-        fetch(MemberDao::getWebAddresses) {
+        fetchList(MemberDao::getWebAddresses) {
             builder.weblinks = it
         }
-        fetch(MemberDao::getPosts) {
+        fetchList(MemberDao::getPosts) {
             builder.posts = it
         }
-        fetch(MemberDao::getCommitteeMembershipWithChairship) {
+        fetchList(MemberDao::getCommitteeMembershipWithChairship) {
             builder.committees = it
         }
-        fetch(MemberDao::getHouseMemberships) {
+        fetchList(MemberDao::getHouseMemberships) {
             builder.houses = it
         }
-        fetch(MemberDao::getFinancialInterests) {
+        fetchList(MemberDao::getFinancialInterests) {
             builder.financialInterests = it
         }
-        fetch(MemberDao::getExperiences) {
+        fetchList(MemberDao::getExperiences) {
             builder.experiences = it
         }
-        fetch(MemberDao::getTopicsOfInterest) {
+        fetchList(MemberDao::getTopicsOfInterest) {
             builder.topicsOfInterest = it
         }
-        fetch(MemberDao::getHistoricalConstituencies) {
+        fetchList(MemberDao::getHistoricalConstituencies) {
             builder.historicConstituencies = it
         }
-        fetch(MemberDao::getPartyAssociations) {
+        fetchList(MemberDao::getPartyAssociations) {
             builder.parties = it
         }
-        fetchNullable(MemberDao::getParty) {
+        fetchObject(MemberDao::getParty) {
             builder.party = it ?: NoParty
         }
-        fetchNullable(MemberDao::getConstituency) {
+        fetchObject(MemberDao::getConstituency) {
             builder.constituency = it ?: NoConstituency
         }
     }

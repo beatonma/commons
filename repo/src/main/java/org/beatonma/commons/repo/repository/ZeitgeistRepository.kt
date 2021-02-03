@@ -11,12 +11,12 @@ import org.beatonma.commons.data.core.room.dao.MemberDao
 import org.beatonma.commons.data.core.room.entities.bill.ZeitgeistBill
 import org.beatonma.commons.data.core.room.entities.division.ZeitgeistDivision
 import org.beatonma.commons.data.core.room.entities.member.ZeitgeistMember
-import org.beatonma.commons.repo.CommonsApi
 import org.beatonma.commons.repo.ResultFlow
 import org.beatonma.commons.repo.converters.toBill
 import org.beatonma.commons.repo.converters.toDivision
 import org.beatonma.commons.repo.converters.toMemberProfile
 import org.beatonma.commons.repo.models.Zeitgeist
+import org.beatonma.commons.repo.remotesource.api.CommonsApi
 import org.beatonma.commons.repo.result.cachedResultFlow
 import org.beatonma.commons.snommoc.models.ApiZeitgeist
 import javax.inject.Inject

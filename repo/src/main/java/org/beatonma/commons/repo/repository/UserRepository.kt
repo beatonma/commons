@@ -2,9 +2,9 @@ package org.beatonma.commons.repo.repository
 
 import org.beatonma.commons.data.core.room.dao.UserDao
 import org.beatonma.commons.data.core.room.entities.user.UserToken
-import org.beatonma.commons.repo.CommonsApi
 import org.beatonma.commons.repo.ResultFlow
 import org.beatonma.commons.repo.converters.composeToUserToken
+import org.beatonma.commons.repo.remotesource.api.CommonsApi
 import org.beatonma.commons.repo.result.cachedResultFlow
 import org.beatonma.commons.repo.result.resultFlowLocalPreferred
 import org.beatonma.commons.repo.result.resultFlowNoCache

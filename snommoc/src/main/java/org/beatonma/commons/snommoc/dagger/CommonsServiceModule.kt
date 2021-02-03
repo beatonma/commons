@@ -36,7 +36,7 @@ class CommonsServiceModule {
     @Provides
     @SnommocClient
     fun provideCommonsRetrofit(
-        moshi: Moshi,
+        @SnommocClient moshi: Moshi,
         @SnommocClient httpClient: OkHttpClient,
     ): Retrofit =
         Retrofit.Builder()

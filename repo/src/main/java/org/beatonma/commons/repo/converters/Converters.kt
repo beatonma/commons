@@ -2,7 +2,8 @@ package org.beatonma.commons.repo.converters
 
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.room.entities.bill.Bill
-import org.beatonma.commons.data.core.room.entities.bill.BillPublication
+import org.beatonma.commons.data.core.room.entities.bill.BillPublicationBasic
+import org.beatonma.commons.data.core.room.entities.bill.BillPublicationDetail
 import org.beatonma.commons.data.core.room.entities.bill.BillSponsor
 import org.beatonma.commons.data.core.room.entities.bill.BillStage
 import org.beatonma.commons.data.core.room.entities.bill.BillStageSitting
@@ -64,6 +65,7 @@ import org.beatonma.commons.snommoc.models.ApiTown
 import org.beatonma.commons.snommoc.models.ApiVote
 import org.beatonma.commons.snommoc.models.ApiWebAddress
 import org.beatonma.commons.snommoc.models.social.ApiUserToken
+import org.beatonma.commons.ukparliament.models.UkApiBillPublication
 
 fun ApiUserToken.composeToUserToken(account: GoogleAccount) = UserToken(
     name = account.name,
@@ -206,10 +208,18 @@ fun ApiBillSponsor.toBillSponsor(billId: ParliamentID) = BillSponsor(
     partyId = party?.parliamentdotuk
 )
 
-fun ApiBillPublication.toBillPublication(billId: ParliamentID) = BillPublication(
+fun ApiBillPublication.toBillPublication(billId: ParliamentID) = BillPublicationBasic(
     parliamentdotuk = parliamentdotuk,
     title = title,
     billId = billId
+)
+
+fun UkApiBillPublication.toBillPublicationDetail(billId: ParliamentID) = BillPublicationDetail(
+    parliamentdotuk = parliamentdotuk,
+    billId = billId,
+    url = url,
+    contentType = contentType,
+    contentLength = contentLength,
 )
 
 fun ApiBillStageSitting.toBillStageSitting(billStageId: ParliamentID) = BillStageSitting(

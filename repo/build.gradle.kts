@@ -45,7 +45,8 @@ dependencies {
             project(":core"),
             project(":network-core"),
             project(":persistence"),
-            project(":snommoc")
+            project(":snommoc"),
+            project(":ukparliament")
         )
     }
 }
