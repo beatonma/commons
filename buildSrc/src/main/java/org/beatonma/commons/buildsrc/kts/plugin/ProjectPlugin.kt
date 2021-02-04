@@ -30,6 +30,7 @@ abstract class ProjectPlugin : Plugin<Project> {
 
 abstract class AndroidProjectPlugin<T : BaseExtension> : ProjectPlugin() {
 
+    @Suppress("UNCHECKED_CAST")
     open val Project.android: T
         get() = extensions.findByName("android") as? T
             ?: error("Not an Android module: $name")
@@ -53,6 +54,7 @@ abstract class AndroidProjectPlugin<T : BaseExtension> : ProjectPlugin() {
         }
     }
 
+    @Suppress("unused")
     protected fun T.kotlinOptions(project: Project, block: KotlinJvmOptions.() -> Unit) {
         project.tasks.withType(KotlinCompile::class.java).configureEach {
             kotlinOptions {
@@ -64,18 +66,22 @@ abstract class AndroidProjectPlugin<T : BaseExtension> : ProjectPlugin() {
 
 abstract class SimpleAndroidProjectPlugin : AndroidProjectPlugin<BaseExtension>()
 
+@Suppress("unused")
 internal fun DependencyHandlerScope.main(
     block: MainDependencyScope.() -> Unit
 ) = MainDependencyScope().block()
 
+@Suppress("unused")
 internal fun DependencyHandlerScope.debug(
     block: DebugDependencyScope.() -> Unit
 ) = DebugDependencyScope().block()
 
+@Suppress("unused")
 internal fun DependencyHandlerScope.unitTest(
     block: UnitTestDependencyScope.() -> Unit
 ) = UnitTestDependencyScope().block()
 
+@Suppress("unused")
 internal fun DependencyHandlerScope.instrumentationTest(
     block: InstrumentationTestDependencyScope.() -> Unit
 ) = InstrumentationTestDependencyScope().block()

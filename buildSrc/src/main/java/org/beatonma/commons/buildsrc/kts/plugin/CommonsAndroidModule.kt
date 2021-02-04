@@ -18,6 +18,7 @@ import java.util.*
 
 abstract class CommonsAndroidModule<T : BaseExtension> : AndroidProjectPlugin<T>() {
 
+    @Suppress("UNCHECKED_CAST")
     override val Project.android: T
         get() = extensions.findByName("android") as? T
             ?: error("Not an Android module: $name")
