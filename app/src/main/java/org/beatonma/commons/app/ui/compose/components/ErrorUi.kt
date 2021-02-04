@@ -8,18 +8,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.compose.ambient.typography
+import org.beatonma.commons.repo.result.ResponseCode
 import org.beatonma.commons.theme.compose.theme.systemui.systemBarsPadding
 
 @Composable
-fun Warning(
+fun ErrorUi(
     modifier: Modifier = Modifier,
     error: Throwable,
 ) {
-    Warning(modifier, "$error")
+    ErrorUi(modifier, "$error")
 }
 
 @Composable
-fun Warning(
+fun ErrorUi(
+    modifier: Modifier = Modifier,
+    error: ResponseCode,
+) {
+    ErrorUi(modifier, "$error")
+}
+
+
+@Composable
+fun ErrorUi(
     modifier: Modifier = Modifier,
     message: String? = "Error",
 ) {
