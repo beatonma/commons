@@ -75,18 +75,24 @@ fun Float.lerpTo(end: Float, progress: Float): Float =
 fun Float.lerpBetween(start: Float, end: Float): Float = start.lerpTo(end, progress = this)
 
 /**
+ * Needs a better name
  * lerp from 0..target and back again.
  */
 fun Float.triangle(progress: Float, inflectAt: Float = 0.5F): Float =
     this * (progress.progressIn(0F, inflectAt) - progress.progressIn(inflectAt, 1F))
 
+@FloatRange(from = 0.0, to = 1.0)
 fun Float.progressIn(min: Float = 0F, max: Float): Float = coerceIn(min, max).normalizeIn(min, max)
 
 /**
  * Reverse direction of a value between 0..1, useful for animations.
  */
-@FloatRange(from = 0.0, to = 1.0)
 fun Float.reversed() = 1F - this
+
+/**
+ * Flip the sign (+-) of the receiver.
+ */
+fun Float.inverted() = this * -1F
 
 typealias Easing = (fraction: Float) -> Float
 
