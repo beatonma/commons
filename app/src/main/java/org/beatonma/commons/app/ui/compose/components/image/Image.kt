@@ -8,8 +8,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.imageResource
 import dev.chrisbanes.accompanist.coil.CoilImage
 import dev.chrisbanes.accompanist.imageloading.ImageLoadState
-import org.beatonma.commons.app.ui.compose.components.Loading
-import org.beatonma.commons.app.ui.compose.components.Warning
+import org.beatonma.commons.app.ui.compose.components.ErrorUi
+import org.beatonma.commons.app.ui.compose.components.LoadingIcon
 
 const val DEV_AVATAR = "https://beatonma.org/static/images/profile2.jpg"
 
@@ -20,10 +20,9 @@ fun Avatar(
     fadeIn: Boolean = true,
     contentScale: ContentScale = ContentScale.Crop,
     alignment: Alignment = Alignment.Center,
-    loading: @Composable () -> Unit = { Loading() },
-    error: @Composable (ImageLoadState) -> Unit = { Warning() },
+    loading: @Composable () -> Unit = { LoadingIcon() },
+    error: @Composable (ImageLoadState) -> Unit = { ErrorUi() },
     @DrawableRes fallback: Int = 0,
-    @DrawableRes placeholder: Int = 0,
 ) {
     CoilImage(
         source ?: imageResource(fallback),
