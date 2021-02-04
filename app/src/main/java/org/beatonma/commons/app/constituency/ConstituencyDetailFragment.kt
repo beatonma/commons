@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.observe
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
@@ -31,11 +30,10 @@ import org.beatonma.commons.databinding.ItemWideTitleDescriptionBinding
 import org.beatonma.commons.kotlin.extensions.bindText
 import org.beatonma.commons.kotlin.extensions.context
 import org.beatonma.commons.kotlin.extensions.dimenCompat
-import org.beatonma.commons.kotlin.extensions.getParliamentID
 import org.beatonma.commons.kotlin.extensions.ifPermissionAvailable
 import org.beatonma.commons.kotlin.extensions.inflate
 import org.beatonma.commons.kotlin.extensions.load
-import org.beatonma.commons.kotlin.extensions.navigateTo
+import org.beatonma.commons.kotlin.extensions.parliamentID
 import org.beatonma.commons.kotlin.extensions.size
 
 private const val TAG = "ConstitDetailFragment"
@@ -55,7 +53,7 @@ class ConstituencyDetailFragment : CommonsFragment<FragmentConstituencyDetailBin
 
     private val isMapReady: Boolean get() = gMap != null && mapView?.size()?.isSet() == true
 
-    private fun getConstituencyFromBundle(): ParliamentID = arguments.getParliamentID()
+    private fun getConstituencyFromBundle(): ParliamentID = arguments.parliamentID
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -302,11 +300,11 @@ class ConstituencyDetailFragment : CommonsFragment<FragmentConstituencyDetailBin
 
 
 private fun View.navigateToElectionDetails(constituencyId: ParliamentID, electionId: ParliamentID) {
-    navigateTo(
-        R.id.action_constituencyDetailFragment_to_constituencyElectionResultsFragment,
-        bundleOf(
-            CONSTITUENCY_ID to constituencyId,
-            ELECTION_ID to electionId,
-        )
-    )
+//    navigateTo(
+//        R.id.action_constituencyDetailFragment_to_constituencyElectionResultsFragment,
+//        bundleOf(
+//            CONSTITUENCY_ID to constituencyId,
+//            ELECTION_ID to electionId,
+//        )
+//    )
 }

@@ -62,5 +62,5 @@ data class ResolvedZeitgeistBill(
         entityColumn = "bill_$PARLIAMENTDOTUK",
         entity = Bill::class
     )
-    val bill: MinimalBill,
+    val bill: Bill,
 )

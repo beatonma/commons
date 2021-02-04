@@ -3,82 +3,59 @@ package org.beatonma.commons.kotlin.extensions
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import androidx.annotation.IdRes
 import androidx.core.net.toUri
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
-import androidx.navigation.fragment.FragmentNavigator
 import org.beatonma.commons.app.division.DivisionDetailFragment.Companion.HOUSE
 import org.beatonma.commons.core.House
 import org.beatonma.commons.core.PARLIAMENTDOTUK
 import org.beatonma.commons.core.ParliamentID
-import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
-import org.beatonma.commons.data.core.room.entities.bill.BillSponsor
+import org.beatonma.commons.data.core.room.entities.bill.Bill
+import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import org.beatonma.commons.data.core.room.entities.division.Division
-import org.beatonma.commons.data.core.room.entities.division.Vote
+import org.beatonma.commons.data.core.room.entities.member.MemberProfile
+import org.beatonma.commons.snommoc.CommonsService
+import org.beatonma.commons.snommoc.models.search.SearchResult
 
-fun View.navigateTo(
-    @IdRes navigationAction: Int,
-    args: Bundle? = null,
-    navOptions: NavOptions? = null,
-    extras: FragmentNavigator.Extras? = null,
-) {
-    Navigation.findNavController(this)
-        .navigate(
-            navigationAction,
-            args,
-            navOptions,
-            extras)
-}
+fun Fragment.navigateTo(searchResult: SearchResult) = navigateTo(searchResult.toUri())
 
-fun View.navigateTo(url: String) {
-    Navigation.findNavController(this)
-        .navigate(url.toUri())
-}
+fun Fragment.navigateToMember(memberID: ParliamentID) =
+    navigateTo(CommonsService.getMemberUrl(memberID).toUri())
 
-fun View.navigateTo(url: Uri) {
-    Navigation.findNavController(this)
-        .navigate(url)
-}
+fun Fragment.navigateTo(memberProfile: MemberProfile) =
+    navigateToMember(memberProfile.parliamentdotuk)
 
-fun <T : Parliamentdotuk> Fragment.navigateTo(@IdRes navigationId: Int, target: T) =
-    requireView().navigateTo(navigationId, target.bundle())
+fun Fragment.navigateTo(constituency: Constituency) =
+    navigateTo(CommonsService.getConstituencyUrl(constituency.parliamentdotuk).toUri())
 
-fun Fragment.navigateTo(uri: Uri) =
-    requireView().navigateTo(uri)
+fun Fragment.navigateTo(division: Division) =
+    navigateTo(CommonsService.getDivisionUrl(division.house, division.parliamentdotuk).toUri())
 
-fun Division.divisionBundle() = bundleOf(
-    HOUSE to house,
-    PARLIAMENTDOTUK to parliamentdotuk,
-)
+fun Fragment.navigateTo(bill: Bill) =
+    navigateTo(CommonsService.getBillUrl(bill.parliamentdotuk).toUri())
+
+
+val Bundle?.parliamentID: ParliamentID
+    get() {
+        require(this != null)
+        return getInt(PARLIAMENTDOTUK)
+    }
 
 fun Bundle?.getDivision(): BundledDivision {
-    this
-        ?: throw NoSuchElementException("Unable to unpack Division from bundle: House and ParliamentID arguments are required!")
+    require(this != null)
     return BundledDivision(this)
 }
 
-fun parliamentIdBundle(parliamentdotuk: ParliamentID?) =
-    bundleOf(PARLIAMENTDOTUK to parliamentdotuk)
-
-fun Parliamentdotuk.bundle() = when (this) {
-    is Division -> divisionBundle()
-    else -> parliamentIdBundle(this.parliamentdotuk)
-}
-
-fun Vote.memberBundle() = parliamentIdBundle(this.memberId)
-fun BillSponsor.memberBundle() = parliamentIdBundle(this.parliamentdotuk)
-
-fun Bundle?.getParliamentID(): ParliamentID {
-    require(this != null)
-    return this.getInt(PARLIAMENTDOTUK)
-}
-
-class BundledDivision(val house: House, val parliamentdotuk: ParliamentID) {
+data class BundledDivision(val house: House, val parliamentdotuk: ParliamentID) {
     constructor(bundle: Bundle) : this(
         house = bundle.getSerializable(HOUSE) as House,
-        parliamentdotuk = bundle.getParliamentID()
+        parliamentdotuk = bundle.parliamentID
     )
+}
+
+private fun Fragment.navigateTo(uri: Uri) = requireView().navigateTo(uri)
+
+private fun View.navigateTo(url: Uri) {
+    Navigation.findNavController(this)
+        .navigate(url)
 }

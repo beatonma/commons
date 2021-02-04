@@ -88,10 +88,9 @@ interface CommonsService: SnommocService, CommonsDataService, CommonsSocialServi
 
         private fun getUrl(path: String) = "$BASE_URL$path"
         fun getMemberUrl(parliamentdotuk: ParliamentID) = getUrl("$MEMBER_API_PATH/profile/$parliamentdotuk/")
-        fun getDivisionUrl(parliamentdotuk: ParliamentID) = getUrl("$DIVISION_API_PATH/$parliamentdotuk/")
+        fun getDivisionUrl(house: House, parliamentdotuk: ParliamentID) = getUrl("$DIVISION_API_PATH/$house/$parliamentdotuk/")
         fun getBillUrl(parliamentdotuk: ParliamentID) = getUrl("$BILL_API_PATH/$parliamentdotuk/")
         fun getConstituencyUrl(parliamentdotuk: ParliamentID) = getUrl("$CONSTITUENCY_API_PATH/$parliamentdotuk/")
-//        fun getSocialUrl(target: SocialTarget) = getUrl("$SOCIAL_API_PATH/${target.targetType}/${target.parliamentdotuk}/all/")
     }
 }
 

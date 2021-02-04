@@ -9,14 +9,14 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.beatonma.commons.app.ui.base.SocialFragment
 import org.beatonma.commons.app.ui.compose.composeScreen
 import org.beatonma.commons.core.ParliamentID
-import org.beatonma.commons.kotlin.extensions.getParliamentID
 import org.beatonma.commons.kotlin.extensions.navigateToMember
+import org.beatonma.commons.kotlin.extensions.parliamentID
 
 @AndroidEntryPoint
 class BillDetailFragment: SocialFragment() {
     private val viewmodel: BillDetailViewModel by viewModels()
 
-    private fun getBillFromBundle(): ParliamentID = arguments.getParliamentID()
+    private fun getBillFromBundle(): ParliamentID = arguments.parliamentID
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

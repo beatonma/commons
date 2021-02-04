@@ -9,14 +9,14 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.beatonma.commons.app.ui.base.SocialFragment
 import org.beatonma.commons.app.ui.compose.composeScreen
 import org.beatonma.commons.core.ParliamentID
-import org.beatonma.commons.kotlin.extensions.getParliamentID
 import org.beatonma.commons.kotlin.extensions.navigateTo
+import org.beatonma.commons.kotlin.extensions.parliamentID
 
 @AndroidEntryPoint
 class MemberProfileFragment : SocialFragment() {
     private val viewmodel: ComposeMemberProfileViewModel by viewModels()
 
-    private fun getMemberIdFromBundle(): ParliamentID = arguments.getParliamentID()
+    private fun getMemberIdFromBundle(): ParliamentID = arguments.parliamentID
 
     override fun onCreateView(
         inflater: LayoutInflater,
