@@ -15,7 +15,10 @@
         android:supportsRtl="true"
         android:theme="@style/Commons.Theme.App">
 
-        <activity android:name=".app.MainActivity">
+        <activity
+            android:name=".app.MainActivity"
+            android:windowSoftInputMode="adjustNothing"
+            >
             <nav-graph android:value="@navigation/nav_graph" />
 
             <intent-filter>
