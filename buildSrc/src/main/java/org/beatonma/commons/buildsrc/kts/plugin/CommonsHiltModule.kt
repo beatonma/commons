@@ -3,6 +3,7 @@ package org.beatonma.commons.buildsrc.kts.plugin
 import Dependencies
 import org.gradle.api.plugins.PluginContainer
 import org.gradle.kotlin.dsl.DependencyHandlerScope
+import org.gradle.kotlin.dsl.project
 
 class CommonsHiltModule : ProjectPlugin() {
 
@@ -18,7 +19,20 @@ class CommonsHiltModule : ProjectPlugin() {
         with(dependencies) {
             unitTest {
                 implementations(
-                    Dependencies.Dagger.Hilt.TESTING
+                    Dependencies.Dagger.Hilt.TESTING,
+                    project(":testhilt")
+                )
+            }
+
+            instrumentationTest {
+                annotationProcessors(
+                    Dependencies.Dagger.COMPILER,
+                    Dependencies.Dagger.ANNOTATION_PROCESSOR
+                )
+
+                implementations(
+                    Dependencies.Dagger.Hilt.TESTING,
+                    project(":testhilt")
                 )
             }
 
