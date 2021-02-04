@@ -1,10 +1,8 @@
 package org.beatonma.commons.kotlin.extensions
 
-import android.content.Context
-import androidx.lifecycle.AndroidViewModel
-import androidx.recyclerview.widget.RecyclerView
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import org.beatonma.commons.R
-import org.beatonma.commons.context
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -58,7 +56,6 @@ sealed class CommonsDateFormat {
     }
 }
 
-
 fun LocalDate?.formatted(
     default: String = "",
     today: LocalDate = LocalDate.now(),
@@ -68,33 +65,20 @@ fun LocalDate?.formatted(
     else -> formatter?.format(this) ?: chooseDateFormatter(today = today).format(this)
 }
 
-fun Context?.dateRange(
+@Composable
+fun dateRange(
     start: LocalDate?,
     end: LocalDate?,
     formatter: CommonsDateFormat = CommonsDateFormat.Date
 ) = when {
     start == null -> null
-    end == null -> stringCompat(R.string.date_since, start.formatted(formatter = formatter))
-    else -> stringCompat(R.string.date_range,
+    end == null -> stringResource(R.string.date_since, start.formatted(formatter = formatter))
+    else -> stringResource(
+        R.string.date_range,
         start.formatted(formatter = formatter),
         end.formatted(formatter = formatter)
     )
 }
-
-fun RecyclerView.ViewHolder.dateRange(
-    start: LocalDate?,
-    end: LocalDate?,
-    formatter: CommonsDateFormat = CommonsDateFormat.Date
-) =
-    itemView.context.dateRange(start, end, formatter)
-
-fun AndroidViewModel.dateRange(
-    start: LocalDate?,
-    end: LocalDate?,
-    formatter: CommonsDateFormat = CommonsDateFormat.Date
-) =
-    context.dateRange(start, end, formatter)
-
 
 fun LocalDateTime?.formatted(
     default: String = "",
