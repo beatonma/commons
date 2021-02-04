@@ -4,8 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.runtime.Providers
-import androidx.compose.runtime.remember
 import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
 import org.beatonma.commons.app.ui.base.SocialFragment
@@ -32,20 +30,14 @@ class DivisionDetailFragment : SocialFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View = composeScreen {
-
-        val divisionActions = remember {
-            DivisionActions(
-                onMemberClick = { memberID ->
-                    navigateToMember(memberID)
+    ): View =
+        composeScreen(
+            AmbientDivisionActions provides DivisionActions(
+                onMemberClick = { vote ->
+                    navigateToMember(vote.memberId)
                 }
-            )
-        }
-
-        Providers(
-            AmbientDivisionActions provides divisionActions,
+            ),
         ) {
             DivisionDetailLayout(viewmodel, socialViewModel, userAccountViewModel)
         }
-    }
 }

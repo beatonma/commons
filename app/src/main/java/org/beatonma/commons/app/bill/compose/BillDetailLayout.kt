@@ -18,13 +18,12 @@ import org.beatonma.commons.app.social.ProvideSocial
 import org.beatonma.commons.app.social.SocialViewModel
 import org.beatonma.commons.app.social.StickySocialScaffold
 import org.beatonma.commons.app.ui.compose.WithResultData
-import org.beatonma.commons.app.ui.compose.components.LoadingIcon
-import org.beatonma.commons.app.ui.compose.components.Todo
+import org.beatonma.commons.compose.ambient.colors
+import org.beatonma.commons.compose.components.CollapsedColumn
 import org.beatonma.commons.compose.components.OptionalText
 import org.beatonma.commons.compose.components.ResourceText
 import org.beatonma.commons.compose.layout.optionalItem
 import org.beatonma.commons.compose.util.dotted
-import org.beatonma.commons.core.extensions.fastForEach
 import org.beatonma.commons.data.core.room.entities.bill.BillPublication
 import org.beatonma.commons.data.core.room.entities.bill.BillSponsorWithParty
 import org.beatonma.commons.data.core.room.entities.bill.CompleteBill
@@ -32,6 +31,7 @@ import org.beatonma.commons.repo.result.IoLoading
 import org.beatonma.commons.theme.compose.Padding
 import org.beatonma.commons.theme.compose.components.Quote
 import org.beatonma.commons.theme.compose.components.ScreenTitle
+import org.beatonma.commons.theme.compose.theme.positive
 import org.beatonma.commons.theme.compose.theme.systemui.statusBarsPadding
 
 internal val AmbientBillActions: ProvidableAmbient<BillActions> = ambientOf { BillActions() }
@@ -58,7 +58,7 @@ fun BillDetailLayout(
 @Composable
 fun BillDetailLayout(
     bill: CompleteBill,
-    onSponsorClick: (BillSponsorWithParty) -> Unit = AmbientBillActions.current.onSponsorClick,
+    onSponsorClick: SponsorAction = AmbientBillActions.current.onSponsorClick,
 ) {
     StickySocialScaffold(
         headerContentAboveSocial = { headerExpansion, modifier ->
@@ -74,12 +74,12 @@ fun BillDetailLayout(
 }
 
 @Composable
-private fun HeaderAboveSocial(completeBill: CompleteBill, expansionProgress: Float, modifier: Modifier) {
+private fun HeaderAboveSocial(
+    completeBill: CompleteBill,
+    expansionProgress: Float,
+    modifier: Modifier
+) {
     val bill = completeBill.bill
-    if (bill == null) {
-        LoadingIcon()
-        return
-    }
 
     Column(
         modifier
@@ -87,21 +87,21 @@ private fun HeaderAboveSocial(completeBill: CompleteBill, expansionProgress: Flo
             .statusBarsPadding()
     ) {
         ScreenTitle(bill.title)
-        Text(dotted(completeBill.type?.name, completeBill.session?.name))
+        Text(dotted(completeBill.type.name, completeBill.session.name))
         Quote(bill.description)
-        ResourceText(R.string.bill_publications_count, completeBill.publications?.size ?: 0)
-        Todo("publications")
-        Todo("stages")
-        Todo("sponsors")
+        ResourceText(R.string.bill_publications_count, completeBill.publications.size)
+//        Todo("publications")
+//        Todo("stages")
+//        Todo("sponsors")
     }
 }
 
 private fun LazyListScope.lazyContent(
     completeBill: CompleteBill,
-    onSponsorClick: (BillSponsorWithParty) -> Unit,
+    onSponsorClick: SponsorAction,
 ) {
     optionalItem(completeBill.publications) { publications ->
-        PublicationsDetail(publications)
+        Publications(publications)
     }
 
     optionalItem(completeBill.sponsors) { sponsors ->
@@ -110,10 +110,19 @@ private fun LazyListScope.lazyContent(
 }
 
 @Composable
-private fun PublicationsDetail(publications: List<BillPublication>) {
-    Column {
-        publications.fastForEach { publication ->
-            Text(publication.title)
+private fun Publications(publications: List<BillPublication>) {
+    CollapsedColumn(
+        publications,
+        headerBlock = CollapsedColumn.simpleHeader("Publications", "${ publications.size }"),
+        Modifier.padding(Padding.VerticalListItemLarge),
+    ) { publication, itemModifier ->
+        Column {
+            Text(
+                publication.title,
+                itemModifier
+                    .padding(Padding.HorizontalListItem),
+            )
+            Text("Type: ${publication.contentType}", color = colors.positive)
         }
     }
 }
@@ -121,7 +130,7 @@ private fun PublicationsDetail(publications: List<BillPublication>) {
 @Composable
 private fun Sponsors(
     sponsors: List<BillSponsorWithParty>,
-    onSponsorClick: (BillSponsorWithParty) -> Unit,
+    onSponsorClick: SponsorAction,
 ) {
     Column {
         ResourceText(R.string.bill_sponsors_count, sponsors.size)

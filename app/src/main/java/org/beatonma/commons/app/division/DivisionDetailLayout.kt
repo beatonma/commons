@@ -59,7 +59,6 @@ import org.beatonma.commons.compose.util.rememberText
 import org.beatonma.commons.compose.util.toggle
 import org.beatonma.commons.compose.util.withAnnotatedStyle
 import org.beatonma.commons.core.House
-import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.core.VoteType
 import org.beatonma.commons.core.extensions.allEqualTo
 import org.beatonma.commons.core.extensions.fastForEach
@@ -233,10 +232,10 @@ private fun LazyListScope.voteList(
 private fun Vote(
     voteWithParty: VoteWithParty,
     modifier: Modifier = Modifier,
-    onMemberClick: (ParliamentID) -> Unit = AmbientDivisionActions.current.onMemberClick,
+    onMemberClick: MemberVoteAction = AmbientDivisionActions.current.onMemberClick,
 ) {
     ListItem(
-        modifier = modifier.clickable(onClick = { onMemberClick(voteWithParty.vote.memberId) }),
+        modifier = modifier.clickable(onClick = { onMemberClick(voteWithParty.vote) }),
         icon = { VoteIcon(voteWithParty.vote.voteType) },
         text = { Text(voteWithParty.vote.memberName, maxLines = 2) },
         trailing = { Text(voteWithParty.party?.name ?: "") }

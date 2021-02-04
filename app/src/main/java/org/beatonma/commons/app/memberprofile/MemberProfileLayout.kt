@@ -7,6 +7,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.ScrollableRow
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ConstrainedLayoutReference
@@ -22,7 +23,9 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.ProvidableAmbient
 import androidx.compose.runtime.Providers
+import androidx.compose.runtime.ambientOf
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -59,13 +62,12 @@ import org.beatonma.commons.app.ui.compose.components.image.Avatar
 import org.beatonma.commons.app.ui.compose.components.partyWithTheme
 import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.compose.ambient.typography
-import org.beatonma.commons.compose.animation.ExpandCollapseState
-import org.beatonma.commons.compose.animation.rememberExpandCollapseState
 import org.beatonma.commons.compose.components.Card
 import org.beatonma.commons.compose.components.CardText
 import org.beatonma.commons.compose.components.HorizontalSeparator
 import org.beatonma.commons.compose.components.OptionalText
 import org.beatonma.commons.compose.modifiers.onlyWhen
+import org.beatonma.commons.compose.modifiers.withNotNull
 import org.beatonma.commons.compose.modifiers.wrapContentHeight
 import org.beatonma.commons.compose.modifiers.wrapContentOrFillHeight
 import org.beatonma.commons.compose.util.dotted
@@ -98,6 +100,9 @@ import org.beatonma.commons.theme.compose.theme.screenTitle
 import org.beatonma.commons.theme.compose.theme.systemui.navigationBarsPadding
 
 private const val AVATAR_ASPECT_RATIO = 3F / 2F
+
+internal val AmbientMemberProfileActions: ProvidableAmbient<MemberProfileActions> =
+    ambientOf { MemberProfileActions() }
 
 @Composable
 fun MemberProfileLayout(
@@ -212,6 +217,7 @@ private fun CurrentPosition(
     profile: MemberProfile,
     party: Party?,
     constituency: Constituency?,
+    onConstituencyClick: ConstituencyAction = AmbientMemberProfileActions.current.onConstituencyClick,
     modifier: Modifier = Modifier,
 ) {
     Card(modifier.fillMaxWidth(), shape = RectangleShape) {
@@ -233,14 +239,23 @@ private fun CurrentPosition(
 
                     OptionalText(
                         status.withAnnotatedStyle(),
-                        style = typography.h6
+                        style = typography.h6,
+                        maxLines = 3,
+                        modifier = Modifier.withNotNull(constituency) {
+                            clickable { onConstituencyClick(it) }
+                        }
                     )
                 }
                 else {
                     Text(stringResource(R.string.member_inactive))
                     if (constituency != null) {
-                        Text(stringResource(R.string.member_former_member_for_constituency,
-                            constituency.name).withAnnotatedStyle())
+                        Text(
+                            stringResource(
+                                R.string.member_former_member_for_constituency,
+                                constituency.name
+                            ).withAnnotatedStyle(),
+                            modifier = Modifier.clickable { onConstituencyClick(constituency) }
+                        )
                     }
                 }
             }
@@ -311,11 +326,6 @@ private fun FinancialInterests(interests: List<FinancialInterest>, modifier: Mod
             }
         }
     }
-}
-
-@Composable
-fun CollapsibleColumn(state: MutableState<ExpandCollapseState> = rememberExpandCollapseState()) {
-    TODO()
 }
 
 @Composable

@@ -4,8 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.runtime.Providers
-import androidx.compose.runtime.remember
 import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
 import org.beatonma.commons.app.ui.base.SocialFragment
@@ -29,25 +27,19 @@ class BillDetailFragment: SocialFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View = composeScreen {
-        val billActions = remember {
-            BillActions(
-                onSponsorClick = { sponsor ->
-                    val sponsorId = sponsor.sponsor.parliamentdotuk
-                    if (sponsorId == null) {
-                        TODO("This should show a message and/or initiate a search..?")
-                    }
-                    else {
-                        navigateToMember(sponsorId)
-                    }
+    ): View = composeScreen(
+        AmbientBillActions provides BillActions(
+            onSponsorClick = { sponsor ->
+                val sponsorId = sponsor.sponsor.parliamentdotuk
+                if (sponsorId == null) {
+                    TODO("This should show a message and/or initiate a search..?")
                 }
-            )
-        }
-
-        Providers(
-            AmbientBillActions provides billActions,
-        ) {
-            BillDetailLayout(viewmodel, socialViewModel, userAccountViewModel)
-        }
+                else {
+                    navigateToMember(sponsorId)
+                }
+            }
+        ),
+    ) {
+        BillDetailLayout(viewmodel, socialViewModel, userAccountViewModel)
     }
 }
