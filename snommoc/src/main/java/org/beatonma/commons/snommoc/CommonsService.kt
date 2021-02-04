@@ -38,7 +38,6 @@ private const val ID = "{${Contract.PARLIAMENTDOTUK}}"
 
 private const val API_PATH = "/api"
 private const val MEMBER_API_PATH = "$API_PATH/member"
-private const val FEATURED_API_PATH = "$API_PATH/featured"
 private const val BILL_API_PATH = "$API_PATH/bill"
 private const val DIVISION_API_PATH = "$API_PATH/division"
 private const val CONSTITUENCY_API_PATH = "$API_PATH/constituency"
@@ -63,10 +62,6 @@ private object Endpoints {
     const val CONSTITUENCY = "$CONSTITUENCY_API_PATH/$ID/"
     const val CONSTITUENCY_ELECTION_RESULTS =
         "$CONSTITUENCY_API_PATH/{${Contract.CONSTITUENCY_ID}}/election/{${Contract.ELECTION_ID}}/"
-
-    const val FEATURED_MEMBERS = "$FEATURED_API_PATH/members/"
-    const val FEATURED_BILLS = "$FEATURED_API_PATH/bills/"
-    const val FEATURED_DIVISIONS = "$FEATURED_API_PATH/divisions/"
 
     const val ZEITGEIST = "$API_PATH/zeitgeist/"
 
