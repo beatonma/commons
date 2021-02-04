@@ -1,31 +1,26 @@
 package org.beatonma.commons.data.resolution
 
 import android.content.Context
-import android.util.Log
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.AmbientContext
+import androidx.compose.ui.res.stringResource
 import org.beatonma.commons.R
 import org.beatonma.commons.core.House
+import org.beatonma.commons.core.extensions.dump
 import org.beatonma.commons.data.core.interfaces.Named
-import org.beatonma.commons.data.core.room.entities.member.*
-import org.beatonma.commons.kotlin.extensions.dump
+import org.beatonma.commons.data.core.room.entities.member.CommitteeMemberWithChairs
+import org.beatonma.commons.data.core.room.entities.member.Experience
+import org.beatonma.commons.data.core.room.entities.member.FinancialInterest
+import org.beatonma.commons.data.core.room.entities.member.HistoricalConstituencyWithElection
+import org.beatonma.commons.data.core.room.entities.member.HouseMembership
+import org.beatonma.commons.data.core.room.entities.member.PartyAssociationWithParty
+import org.beatonma.commons.data.core.room.entities.member.Post
 import org.beatonma.commons.kotlin.extensions.stringCompat
 
-/**
- * Helper for getting more verbose descriptions of various object types
- */
-fun <T: Any> Context.describe(obj: T?): String = when (obj) {
-    is Named -> obj.description(this)
-    is House -> obj.description(this)
-    null -> ""
-    else -> {
-        Log.d("ctx.describe", "Unable to provide description for object of class=${obj.javaClass.canonicalName}")
-        "ctx.describe"
-    }
-}
-
-
-fun House.description(context: Context) = when(this) {
-    House.commons -> context.stringCompat(R.string.house_of_commons)
-    House.lords -> context.stringCompat(R.string.house_of_lords)
+@Composable
+fun House.description(): String = when (this) {
+    House.commons -> stringResource(R.string.house_of_commons)
+    House.lords -> stringResource(R.string.house_of_lords)
 }
 
 
@@ -55,3 +50,6 @@ fun Named.description(context: Context): String = when (this) {
         name
     }
 }
+
+@Composable
+fun Named.description(): String = this.description(AmbientContext.current)
