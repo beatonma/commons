@@ -30,7 +30,7 @@ fun <T> Flow<T>.awaitValue(
         if (!this@channelFlow.isClosedForSend) {
             latest?.let { send(it) }
             if (timeoutThrows) {
-                throw TimeoutException("awaitValue did not complete (timeout=${timeoutMillis}ms)")
+                throw TimeoutException("awaitValue did not complete (timeout=${timeoutMillis}ms) [latches remaining: ${latch.count}]")
             }
             else {
                 close()
@@ -71,7 +71,7 @@ fun <T> Flow<T>.awaitValues(
         if (!this@channelFlow.isClosedForSend) {
             send(values)
             if (timeoutThrows) {
-                throw TimeoutException("awaitValue did not complete (timeout=${timeoutMillis}ms)")
+                throw TimeoutException("awaitValue did not complete (timeout=${timeoutMillis}ms) [latches remaining: ${latch.count}]")
             }
             else {
                 close()
