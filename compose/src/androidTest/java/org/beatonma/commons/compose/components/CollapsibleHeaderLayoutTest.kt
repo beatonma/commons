@@ -7,17 +7,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.test.assertHeightIsEqualTo
+import androidx.compose.ui.test.bottomCenter
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performGesture
-import androidx.compose.ui.test.swipeUp
+import androidx.compose.ui.test.swipe
+import androidx.compose.ui.test.topCenter
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.milliseconds
 import org.beatonma.commons.compose.util.pxF
 import org.beatonma.commons.test.extensions.assertions.assertFuzzyEquals
 import org.beatonma.commons.testcompose.actions.swipeUp
@@ -47,35 +49,35 @@ class CollapsibleHeaderLayoutTest: ComposeTest() {
             TestLayout()
         }
         perform {
-            onNodeWithTag("collapsing_header").run {
-                performGesture {
-                    swipeUp()
-                }.run {
-                    assertHeightIsEqualTo(10.dp)
-
-                    onNodeWithTag("static").assertHeightIsEqualTo(10.dp)
-                    onNodeWithTag("collapsible").assertHeightIsEqualTo(0.dp)
-                }
+            onNodeWithTag("collapsing_header").performGesture {
+                swipe(bottomCenter, topCenter, duration = 10.milliseconds)
+            }.run {
+                assertHeightIsEqualTo(10.dp)
+            }.run {
+                onNodeWithTag("static").assertHeightIsEqualTo(10.dp)
+                onNodeWithTag("collapsible").assertHeightIsEqualTo(0.dp)
             }
         }
     }
 
     @Test
     fun CollapsibleHeader_height_during_swipe_is_animated_is_correct() {
-        val headerState = CollapsibleHeaderState()
+        var headerState: CollapsibleHeaderState? = null
         var dp = 0F
         withContent {
-            TestLayout(headerState = headerState)
+            headerState = collapsibleHeaderState()
+            TestLayout(headerState = headerState!!)
             dp = 1.dp.pxF
         }
         perform {
             onNodeWithTag("collapsing_header").run {
                 performGesture {
-                    swipeUp(55F * dp, durationMillis = 10)
+                    swipeUp(55F * dp, durationMillis = 1)
                 }.run {
+                    waitForIdle()
                     assertHeightIsEqualTo(60.dp)
                     onNodeWithTag("static").assertHeightIsEqualTo(10.dp)
-                    headerState.expandProgress.assertFuzzyEquals(0.5F)
+                    headerState!!.expandProgress.assertFuzzyEquals(0.5F)
                 }
             }
         }
@@ -85,9 +87,9 @@ class CollapsibleHeaderLayoutTest: ComposeTest() {
 
 @Composable
 fun TestLayout(
-    headerState: CollapsibleHeaderState = remember { CollapsibleHeaderState() }
+    headerState: CollapsibleHeaderState = collapsibleHeaderState()
 ) {
-    LinearCollapsibleHeaderLayout(
+    CollapsibleHeaderLayout(
         collapsingHeader = { expandedness ->
             Column(
                 Modifier.semantics { testTag = "collapsing_header" }
@@ -115,7 +117,6 @@ fun TestLayout(
                 Text("$it")
             }
         },
-        touchInterceptModifier = Modifier.semantics { testTag = "layout" },
         headerState = headerState
     )
 }
