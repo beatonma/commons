@@ -10,7 +10,7 @@ plugins {
 
 android {
     defaultConfig {
-        testInstrumentationRunner = "org.beatonma.commons.repo.androidTest.HiltTestRunner"
+        testInstrumentationRunner = "org.beatonma.commons.testhilt.HiltTestRunner"
 
         buildConfigStrings(
             "APPLICATION_ID" to Commons.APPLICATION_ID
@@ -27,6 +27,7 @@ dependencies {
 
         implementations(
             project(":test"),
+            project(":testhilt"),
             Dependencies.Dagger.Hilt.TESTING,
             Dependencies.Room.RUNTIME,
             Dependencies.Test.AndroidX.LIVEDATA,
