@@ -1,10 +1,10 @@
 package org.beatonma.commons.app.constituency
 
 import android.content.Context
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
+import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.beatonma.commons.app
 import org.beatonma.commons.context
@@ -16,8 +16,10 @@ import org.beatonma.commons.data.resolution.PartyResolution
 import org.beatonma.commons.kotlin.extensions.formatPercent
 import org.beatonma.commons.repo.repository.ConstituencyRepository
 import org.beatonma.commons.repo.result.IoResult
+import javax.inject.Inject
 
-class ConstituencyElectionResultsViewModel @ViewModelInject constructor(
+@HiltViewModel
+class ConstituencyElectionResultsViewModel @Inject constructor(
     private val repository: ConstituencyRepository,
     @ApplicationContext context: Context,
 ) : AndroidViewModel(context.app) {

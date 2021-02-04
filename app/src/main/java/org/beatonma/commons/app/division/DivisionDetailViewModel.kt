@@ -1,9 +1,8 @@
 package org.beatonma.commons.app.division
 
-import androidx.hilt.Assisted
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -22,13 +21,15 @@ import org.beatonma.commons.repo.result.BaseResult
 import org.beatonma.commons.repo.result.map
 import org.beatonma.commons.snommoc.models.social.SocialTarget
 import org.beatonma.commons.snommoc.models.social.SocialTargetType
+import javax.inject.Inject
 
 private val HouseKey = SavedStateKey("house")
 private val DivisionKey = SavedStateKey("division_id")
 
-class DivisionDetailViewModel @ViewModelInject constructor(
+@HiltViewModel
+class DivisionDetailViewModel @Inject constructor(
     private val repository: DivisionRepository,
-    @Assisted private val savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
 ) : IoLiveDataViewModel<DivisionWithVotes>(), SocialTargetProvider {
 
     val house: House get() = savedStateHandle[HouseKey]!!

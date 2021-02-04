@@ -2,12 +2,11 @@ package org.beatonma.commons.app.social
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
-import androidx.hilt.Assisted
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -31,15 +30,17 @@ import org.beatonma.commons.snommoc.models.social.EmptySocialContent
 import org.beatonma.commons.snommoc.models.social.SocialContent
 import org.beatonma.commons.snommoc.models.social.SocialTarget
 import org.beatonma.commons.snommoc.models.social.SocialVoteType
+import javax.inject.Inject
 
 private const val TAG = "SocialViewModel"
 
 private val SavedSocialContent = SavedStateKey("social_content")
 private val SavedUiState = SavedStateKey("ui_state") // TODO
 
-class SocialViewModel @ViewModelInject constructor(
+@HiltViewModel
+class SocialViewModel @Inject constructor(
     private val socialRepository: SocialRepository,
-    @Assisted private val savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     val livedata: LiveData<SocialContent> =

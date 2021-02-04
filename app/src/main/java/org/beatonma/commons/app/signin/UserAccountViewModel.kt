@@ -3,8 +3,6 @@ package org.beatonma.commons.app.signin
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import androidx.hilt.Assisted
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
@@ -14,6 +12,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
+import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
@@ -21,8 +20,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.beatonma.commons.BuildConfig
 import org.beatonma.commons.app
-import org.beatonma.commons.app.signin.compose.NullUserToken
 import org.beatonma.commons.context
+import org.beatonma.commons.core.extensions.autotag
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.network.core.Http
 import org.beatonma.commons.repo.ResultFlow
@@ -31,16 +30,18 @@ import org.beatonma.commons.repo.repository.UserRepository
 import org.beatonma.commons.repo.result.isComplete
 import org.beatonma.commons.repo.result.onResponseCode
 import org.beatonma.commons.repo.result.onSuccess
+import javax.inject.Inject
 
 private const val TAG = "SignInViewModel"
 
 private const val SavedStateUserToken = "usertoken"
 
-class UserAccountViewModel @ViewModelInject constructor(
+@HiltViewModel
+class UserAccountViewModel @Inject constructor(
     private val repository: UserRepository,
     private val googleSignInClient: GoogleSignInClient,
     @ApplicationContext application: Context,
-    @Assisted private val savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
 ) : AndroidViewModel(application.app) {
 
     val userTokenLiveData: LiveData<UserToken> =
@@ -135,7 +136,7 @@ class UserAccountViewModel @ViewModelInject constructor(
         if (userAccount != null) {
             return block.invoke(userAccount)
         }
-        println("Unable to get user account")
+        Log.i(autotag, "Unable to get user account")
         return default
     }
 }

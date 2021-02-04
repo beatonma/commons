@@ -1,7 +1,6 @@
 package org.beatonma.commons.app.constituency
 
 import android.content.Context
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -10,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MapStyleOptions
+import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -35,10 +35,12 @@ import org.beatonma.commons.repo.ResultLiveData
 import org.beatonma.commons.repo.ResultObserver
 import org.beatonma.commons.repo.repository.ConstituencyRepository
 import org.beatonma.commons.repo.result.onSuccess
+import javax.inject.Inject
 
 private const val MAP_OUTLINE_WIDTH_DP = 2F
 
-class ConstituencyDetailViewModel @ViewModelInject constructor(
+@HiltViewModel
+class ConstituencyDetailViewModel @Inject constructor(
     private val repository: ConstituencyRepository,
     @ApplicationContext application: Context,
 ): AndroidViewModel(application.app) {

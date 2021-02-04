@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val gradleVersion = "7.0.0-alpha04"
+val gradleVersion = "7.0.0-alpha05"
 val kotlinVersion = "1.4.21"
 
 plugins {

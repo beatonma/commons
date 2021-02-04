@@ -3,12 +3,12 @@ import org.gradle.api.JavaVersion
 
 object Versions {
     // Build
-    const val GRADLE_PLUGIN = "4.2.0-alpha15"
+    const val GRADLE_PLUGIN = "7.0.0-alpha05"
     const val GRADLE_DEPENDENCY_UPDATES = "0.36.0"
 
     // Core
-    const val COROUTINES = "1.4.1"
-    const val KOTLIN = "1.4.21"
+    const val COROUTINES = "1.4.2"
+    const val KOTLIN = "1.4.30"
     const val KOTLIN_LANGUAGE_VERSION = "1.4"
     val JAVA = JavaVersion.VERSION_1_8
 
@@ -16,9 +16,9 @@ object Versions {
     const val ROOM = "2.3.0-alpha02"
 
     // Dependency injection
-    const val DAGGER = "2.29.1"
-    const val HILT = "2.28.3-alpha"
-    const val AX_HILT = "1.0.0-alpha02"
+    const val DAGGER = "2.31.2"
+    const val HILT = "2.31.2-alpha"
+    const val AX_HILT = "1.0.0-alpha03"
 
     // Google
     const val GP_AUTH = "18.1.0"
@@ -31,9 +31,9 @@ object Versions {
     const val AX_ACTIVITY = "1.2.0-beta01"
     const val AX_ANNOTATIONS = "1.2.0-alpha01"
     const val AX_APPCOMPAT = "1.3.0-alpha02"
-    const val AX_COMPOSE = "1.0.0-alpha09"
+    const val AX_COMPOSE = "1.0.0-alpha10"
     const val AX_CONSTRAINTLAYOUT = "2.0.4"
-    const val AX_CORE_KTX = "1.5.0-alpha02"
+    const val AX_CORE_KTX = "1.5.0-beta01"
     const val AX_FRAGMENT = "1.3.0-beta01"
     const val AX_LIFECYCLE = "2.3.0-alpha06"
     const val AX_NAVIGATION = "2.3.1"
@@ -43,7 +43,7 @@ object Versions {
     const val AX_VIEWBINDING = "4.1.0-alpha09"
 
     // Square
-    const val OKHTTP = "3.14.9"  // Version as used in Retrofit
+    const val OKHTTP = "3.14.9"  // Version as used in Retrofit. Check for changes: https://github.com/square/retrofit/blob/master/CHANGELOG.md
     const val MOSHI = "1.9.2"
     const val RETROFIT = "2.9.0"
     const val LEAK_CANARY = "2.4"
@@ -55,7 +55,7 @@ object Versions {
     const val CHRISBANES_ACCOMPANIST_COIL = "0.4.0"
 
     // Testing
-    const val AX_TEST_CORE = "1.3.0"
+    const val AX_TEST_CORE = "1.3.1-alpha03"
     const val AX_TEST_LIVEDATA = "2.1.0"
     const val ESPRESSO = "3.3.0"
     const val MOCKITO = "3.5.10"

@@ -1,10 +1,9 @@
 package org.beatonma.commons.app.memberprofile
 
 import androidx.annotation.VisibleForTesting
-import androidx.hilt.Assisted
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import org.beatonma.commons.app.ui.base.SocialTargetProvider
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.core.extensions.withNotNull
@@ -19,13 +18,14 @@ import org.beatonma.commons.data.set
 import org.beatonma.commons.repo.repository.MemberRepository
 import org.beatonma.commons.snommoc.models.social.SocialTarget
 import org.beatonma.commons.snommoc.models.social.SocialTargetType
+import javax.inject.Inject
 
 private val MemberIdKey = SavedStateKey("member_id")
 
-class ComposeMemberProfileViewModel
-@ViewModelInject constructor(
+@HiltViewModel
+class ComposeMemberProfileViewModel @Inject constructor(
     private val memberRepository: MemberRepository,
-    @Assisted private val savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel(), SocialTargetProvider {
     var memberID: ParliamentID
         set(value) {

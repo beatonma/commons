@@ -21,7 +21,7 @@ import androidx.compose.material.RadioButton
 import androidx.compose.material.ScrollableTabRow
 import androidx.compose.material.Slider
 import androidx.compose.material.Snackbar
-import androidx.compose.material.SnackbarConstants
+import androidx.compose.material.SnackbarDefaults
 import androidx.compose.material.Switch
 import androidx.compose.material.Tab
 import androidx.compose.material.Text
@@ -52,7 +52,7 @@ internal fun WidgetsPreview() {
         Snackbar(
             action = {
                 TextButton(onClick = DefaultOnClick) {
-                    Text("Action", color = SnackbarConstants.defaultActionPrimaryColor)
+                    Text("Action", color = SnackbarDefaults.primaryActionColor)
                 }
             }
         ) {
