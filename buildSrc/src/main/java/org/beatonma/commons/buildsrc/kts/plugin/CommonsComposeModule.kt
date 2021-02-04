@@ -55,7 +55,6 @@ class CommonsComposeModule : SimpleAndroidProjectPlugin() {
             }
 
             composeOptions {
-                kotlinCompilerVersion = Versions.KOTLIN
                 kotlinCompilerExtensionVersion = Versions.AX_COMPOSE
             }
         }
