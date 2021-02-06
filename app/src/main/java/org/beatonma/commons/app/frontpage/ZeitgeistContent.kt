@@ -10,23 +10,16 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidableAmbient
-import androidx.compose.runtime.Providers
 import androidx.compose.runtime.ambientOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.BuildConfig
 import org.beatonma.commons.R
-import org.beatonma.commons.app.ui.compose.components.AmbientImageConfig
-import org.beatonma.commons.app.ui.compose.components.AmbientPartyImageCache
-import org.beatonma.commons.app.ui.compose.components.rememberPartyImageCache
+import org.beatonma.commons.app.ui.compose.components.party.ProvidePartyImageConfig
 import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.components.OptionalText
 import org.beatonma.commons.compose.util.dotted
-import org.beatonma.commons.compose.util.withHsl
 import org.beatonma.commons.core.extensions.fastForEach
 import org.beatonma.commons.data.core.room.entities.bill.Bill
 import org.beatonma.commons.data.core.room.entities.bill.ResolvedZeitgeistBill
@@ -38,9 +31,6 @@ import org.beatonma.commons.data.resolution.description
 import org.beatonma.commons.kotlin.extensions.formatted
 import org.beatonma.commons.repo.models.Zeitgeist
 import org.beatonma.commons.snommoc.models.ZeitgeistReason
-import org.beatonma.commons.svg.ImageConfig
-import org.beatonma.commons.svg.PathConfig
-import org.beatonma.commons.svg.ScaleType
 import org.beatonma.commons.theme.compose.endOfContent
 import org.beatonma.commons.theme.compose.theme.CommonsTheme
 import org.beatonma.commons.theme.compose.theme.systemui.navigationBarsPadding
@@ -94,7 +84,7 @@ fun ZeitgeistContent(
                     style = MaterialTheme.typography.h1)
 
 
-                ProvideImageConfigs {
+                ProvidePartyImageConfig {
                     ScrollableMembersLayout {
                         zeitgeist.members.fastForEach {
                             Member(it.member, memberOnClick, it.reason())
@@ -152,27 +142,3 @@ private fun Bill(
     )
 }
 
-@Composable
-fun ProvideImageConfigs(content: @Composable () -> Unit) {
-    val backgroundPortraitConfig = remember {
-        ImageConfig(ScaleType.Max, Alignment.Center,
-            scaleMultiplier = 1.5F,
-            offset = Offset(0.5F, 0F),
-            pathConfig = PathConfig {
-                it.withHsl {
-                    if (saturation > 0.1F) {
-                        saturation = 1F
-                    }
-                    lightness = 0.5F
-                }
-            }
-        )
-    }
-    val partyImageCache = rememberPartyImageCache()
-
-    Providers(
-        AmbientImageConfig provides backgroundPortraitConfig,
-        AmbientPartyImageCache provides partyImageCache,
-        content = content
-    )
-}

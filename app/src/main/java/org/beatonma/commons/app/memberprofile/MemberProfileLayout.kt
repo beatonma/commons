@@ -53,13 +53,13 @@ import org.beatonma.commons.app.social.asSocialTheme
 import org.beatonma.commons.app.social.rememberSocialUiState
 import org.beatonma.commons.app.social.socialTransitionState
 import org.beatonma.commons.app.ui.compose.WithResultData
-import org.beatonma.commons.app.ui.compose.components.AmbientPartyTheme
-import org.beatonma.commons.app.ui.compose.components.PartyBackground
 import org.beatonma.commons.app.ui.compose.components.chips.EmailLink
 import org.beatonma.commons.app.ui.compose.components.chips.PhoneLink
 import org.beatonma.commons.app.ui.compose.components.chips.Weblink
 import org.beatonma.commons.app.ui.compose.components.image.Avatar
-import org.beatonma.commons.app.ui.compose.components.partyWithTheme
+import org.beatonma.commons.app.ui.compose.components.party.AmbientPartyTheme
+import org.beatonma.commons.app.ui.compose.components.party.PartyBackground
+import org.beatonma.commons.app.ui.compose.components.party.partyWithTheme
 import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.components.Card
@@ -88,7 +88,6 @@ import org.beatonma.commons.data.core.room.entities.member.Party
 import org.beatonma.commons.data.core.room.entities.member.PhysicalAddress
 import org.beatonma.commons.data.core.room.entities.member.WebAddress
 import org.beatonma.commons.kotlin.extensions.dateRange
-import org.beatonma.commons.logos.PartyLogos
 import org.beatonma.commons.repo.result.IoLoading
 import org.beatonma.commons.svg.ImageConfig
 import org.beatonma.commons.svg.ScaleType
@@ -168,20 +167,16 @@ fun MemberProfileImage(member: CompleteMember) {
         )
     }
     else {
-        val partyLogo = remember { PartyLogos.get(member.party.parliamentdotuk) }
         PartyBackground(
-            partyLogo,
-            AmbientPartyTheme.current.theme,
+            member.party,
+            imageModifier,
             ImageConfig(
                 ScaleType.Min,
-                scaleMultiplier = 0.5F,
+                scaleMultiplier = 0.5F
             ),
-            imageModifier,
-            content = {},
+            useCache = false,
         )
     }
-
-
 }
 
 @Composable

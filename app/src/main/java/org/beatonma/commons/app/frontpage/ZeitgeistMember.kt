@@ -19,10 +19,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.app.ui.colors.theme
-import org.beatonma.commons.app.ui.compose.components.AmbientPartyTheme
-import org.beatonma.commons.app.ui.compose.components.PartyBackground
-import org.beatonma.commons.app.ui.compose.components.PartyWithTheme
 import org.beatonma.commons.app.ui.compose.components.image.Avatar
+import org.beatonma.commons.app.ui.compose.components.party.AmbientPartyTheme
+import org.beatonma.commons.app.ui.compose.components.party.PartyBackground
+import org.beatonma.commons.app.ui.compose.components.party.PartyWithTheme
 import org.beatonma.commons.compose.ambient.invertedColors
 import org.beatonma.commons.compose.ambient.shapes
 import org.beatonma.commons.compose.ambient.typography
@@ -87,7 +87,8 @@ private fun MemberWithoutPortrait(
     height: Dp = AmbientMemberTextHeight.current,
 ) {
     PartyBackground(
-        modifier.clickable(onClick = { onClick(profile) })
+        modifier
+            .clickable(onClick = { onClick(profile) })
             .height(height)
     ) {
         MemberText(profile)
