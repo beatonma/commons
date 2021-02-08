@@ -8,12 +8,16 @@ import org.beatonma.commons.snommoc.Contract
 /**
  * Names are lowercase so they can be used with Navigation Components deepLink
  * as part of the URL path.
+ *
+ * These must be configured on the back-end.
  */
 enum class SocialTargetType {
     member,
     bill,
     division_commons,
     division_lords,
+    constituency,
+    constituency_result,
     ;
 }
 

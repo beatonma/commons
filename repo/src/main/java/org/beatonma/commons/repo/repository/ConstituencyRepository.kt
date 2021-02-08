@@ -5,17 +5,14 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.launch
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.room.dao.ConstituencyDao
 import org.beatonma.commons.data.core.room.dao.MemberDao
 import org.beatonma.commons.data.core.room.entities.constituency.CompleteConstituency
-import org.beatonma.commons.data.core.room.entities.constituency.Constituency
-import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyElectionDetailsWithCandidates
+import org.beatonma.commons.data.core.room.entities.constituency.CompleteConstituencyBuilder
+import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyElectionDetailsBuilder
 import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyElectionDetailsWithExtras
-import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyWithBoundary
-import org.beatonma.commons.data.core.room.entities.election.ConstituencyResultWithDetails
-import org.beatonma.commons.data.core.room.entities.election.Election
 import org.beatonma.commons.repo.ResultFlow
 import org.beatonma.commons.repo.converters.toConstituency
 import org.beatonma.commons.repo.converters.toConstituencyBoundary
@@ -37,17 +34,12 @@ class ConstituencyRepository @Inject constructor(
     private val constituencyDao: ConstituencyDao,
     private val memberDao: MemberDao,
 ) {
-    fun getConstituency(parliamentdotuk: ParliamentID): ResultFlow<CompleteConstituency> =
+    fun getConstituency(constituencyId: ParliamentID): ResultFlow<CompleteConstituency> =
         cachedResultFlow(
-            databaseQuery = { getCachedConstituencyDetails(parliamentdotuk) },
-            networkCall = { remoteSource.getConstituency(parliamentdotuk) },
-            saveCallResult = { apiConstituency ->
-                saveConstituency(constituencyDao,
-                    memberDao,
-                    parliamentdotuk,
-                    apiConstituency)
-            },
-            distinctUntilChanged = false,
+            databaseQuery = { getCompleteConstituency(constituencyId) },
+            networkCall = { remoteSource.getConstituency(constituencyId) },
+            saveCallResult = { saveConstituency(constituencyDao, memberDao, constituencyId, it) },
+            distinctUntilChanged = false
         )
 
     fun getConstituencyResultsForElection(
@@ -56,81 +48,109 @@ class ConstituencyRepository @Inject constructor(
     ): ResultFlow<ConstituencyElectionDetailsWithExtras> = cachedResultFlow(
         databaseQuery = { getCachedConstituencyElectionDetails(constituencyId, electionId) },
         networkCall = {
-            remoteSource.getConstituencyDetailsForElection(constituencyId,
-                electionId)
+            remoteSource.getConstituencyDetailsForElection(constituencyId, electionId)
         },
-        saveCallResult = { result -> saveRseults(constituencyDao, result) }
+        saveCallResult = { result -> saveResults(constituencyDao, result) }
     )
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private fun getCachedConstituencyDetails(parliamentdotuk: ParliamentID): Flow<CompleteConstituency> = channelFlow {
-        val builder = CompleteConstituency()
-        val dataSourceFunctions = listOf(
-            ConstituencyDao::getConstituencyWithBoundary,
-            ConstituencyDao::getElectionResults,
-        )
-        val mergedFlow = dataSourceFunctions.map {
-            it.invoke(constituencyDao, parliamentdotuk)
-        }.merge()
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun getCompleteConstituency(constituencyId: ParliamentID): Flow<CompleteConstituency> =
+        channelFlow {
+            val builder = CompleteConstituencyBuilder()
 
-        @Suppress("UNCHECKED_CAST")
-        mergedFlow.collect { data ->
-            if (data is List<*>) {
-                val first = data.firstOrNull()
-                when (first) {
-                    is ConstituencyResultWithDetails -> builder.electionResults = data as List<ConstituencyResultWithDetails>
-                    null -> Unit
-                    else -> error("All valid types must be handled: ${data.javaClass.canonicalName}")
+            suspend fun submitCompleteConstituency() {
+                if (builder.isComplete) {
+                    send(builder.toCompleteConstituency())
                 }
             }
-            else {
-                @Suppress("SENSELESS_NULL_IN_WHEN") // Room result can be null
-                when (data) {
-                    is ConstituencyWithBoundary -> {
-                        builder.constituency = data.constituency
-                        builder.boundary = data.boundary
-                    }
 
-                    null -> Unit
-                    else -> error("All valid types must be handled: ${data.javaClass.canonicalName}")
+            suspend fun <E, T: Collection<E>> fetchList(
+                func: ConstituencyDao.(ParliamentID) -> Flow<T>,
+                block: (T) -> Unit,
+            ) = launch {
+                constituencyDao.func(constituencyId).collect {
+                    block(it)
+                    submitCompleteConstituency()
                 }
             }
-            send(builder)
+
+            suspend fun <T> fetchObject(
+                func: ConstituencyDao.(ParliamentID) -> Flow<T?>,
+                block: (T?) -> Unit,
+            ) = launch {
+                constituencyDao.func(constituencyId).collect {
+                    block(it)
+                    submitCompleteConstituency()
+                }
+            }
+
+            fetchObject(ConstituencyDao::getConstituencyWithBoundary) {
+                builder.constituency = it?.constituency
+                builder.boundary = it?.boundary
+            }
+            fetchList(ConstituencyDao::getElectionResults) {
+                builder.member = it.firstOrNull()
+                builder.electionResults =
+                    if (it.size > 1) it.drop(1)
+                    else listOf()
+            }
         }
-    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private fun getCachedConstituencyElectionDetails(
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun getCachedConstituencyElectionDetails(
         constituencyId: ParliamentID,
         electionId: ParliamentID
-    ): Flow<ConstituencyElectionDetailsWithExtras> = channelFlow {
-        val builder = ConstituencyElectionDetailsWithExtras()
+    ): Flow<ConstituencyElectionDetailsWithExtras> =
+        channelFlow {
+            val builder = ConstituencyElectionDetailsBuilder()
 
-        val mergedFlow = merge(
-            constituencyDao.getConstituency(constituencyId),
-            constituencyDao.getElection(electionId),
-            constituencyDao.getDetailsAndCandidatesForElection(constituencyId, electionId)
-        )
-
-        mergedFlow.collect { data: Any? ->
-            when (data) {
-                is Constituency -> builder.constituency = data
-                is Election -> builder.election = data
-
-                is ConstituencyElectionDetailsWithCandidates -> {
-                    builder.candidates = data.candidates
-                    builder.details = data.details
+            suspend fun submitCompleteConstituency() {
+                if (builder.isComplete) {
+                    send(builder.toConstituencyElectionDetailsWithExtras())
                 }
-
-                null -> Unit
-                else -> error("All valid types must be handled: ${data.javaClass.canonicalName}")
+                else {
+                    println(builder)
+                }
             }
-            send(builder)
+
+            suspend fun <T> fetchObject(
+                func: ConstituencyDao.(ParliamentID, ParliamentID) -> Flow<T?>,
+                block: (T?) -> Unit,
+            ) = launch {
+                constituencyDao.func(constituencyId, electionId).collect {
+                    block(it)
+                    submitCompleteConstituency()
+                }
+            }
+
+            suspend fun <T> fetchObject(
+                func: ConstituencyDao.(ParliamentID) -> Flow<T?>,
+                targetId: ParliamentID,
+                block: (T?) -> Unit,
+            ) = launch {
+                constituencyDao.func(targetId).collect {
+                    block(it)
+                    submitCompleteConstituency()
+                }
+            }
+
+            fetchObject(ConstituencyDao::getElection, targetId = electionId) { builder.election = it }
+            fetchObject(ConstituencyDao::getConstituency, targetId = constituencyId) { builder.constituency = it }
+            fetchObject(ConstituencyDao::getDetailsAndCandidatesForElection) {
+                builder.details = it?.details
+                builder.candidates = it?.candidates
+            }
         }
-    }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    suspend fun saveConstituency(constituencyDao: ConstituencyDao, memberDao: MemberDao, parliamentdotuk: ParliamentID, apiConstituency: ApiConstituency) {
+    suspend fun saveConstituency(
+        constituencyDao: ConstituencyDao,
+        memberDao: MemberDao,
+        parliamentdotuk: ParliamentID,
+        apiConstituency: ApiConstituency,
+    ) {
         constituencyDao.insertConstituency(apiConstituency.toConstituency())
         memberDao.safeInsertProfile(apiConstituency.memberProfile?.toMemberProfile(), ifNotExists = true)
         apiConstituency.boundary?.also { boundary ->
@@ -145,7 +165,8 @@ class ConstituencyRepository @Inject constructor(
         })
     }
 
-    suspend fun saveRseults(dao: ConstituencyDao, result: ApiConstituencyElectionDetails) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    suspend fun saveResults(dao: ConstituencyDao, result: ApiConstituencyElectionDetails) {
         with (dao) {
             safeInsertConstituency(result.constituency.toConstituency(), ifNotExists = true)
             insertElection(result.election.toElection())

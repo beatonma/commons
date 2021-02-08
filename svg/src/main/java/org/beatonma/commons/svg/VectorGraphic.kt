@@ -49,6 +49,22 @@ val VectorGraphic.minDimension get() = width.coerceAtMost(height)
 
 fun VectorGraphic.render(
     scope: DrawScope,
+    imageConfig: ImageConfig,
+) {
+    render(
+        scope,
+        imageConfig.scaleType,
+        imageConfig.alignment,
+        imageConfig.offset,
+        imageConfig.scaleMultiplier,
+        imageConfig.matrix,
+        imageConfig.pathConfig
+    )
+}
+
+
+private fun VectorGraphic.render(
+    scope: DrawScope,
     scaleType: ScaleType,
     alignment: Alignment,
     offset: Offset,
@@ -67,19 +83,4 @@ fun VectorGraphic.render(
     }
 
     matrix.reset()
-}
-
-fun VectorGraphic.render(
-    scope: DrawScope,
-    imageConfig: ImageConfig,
-) {
-    render(
-        scope,
-        imageConfig.scaleType,
-        imageConfig.alignment,
-        imageConfig.offset,
-        imageConfig.scaleMultiplier,
-        imageConfig.matrix,
-        imageConfig.pathConfig
-    )
 }

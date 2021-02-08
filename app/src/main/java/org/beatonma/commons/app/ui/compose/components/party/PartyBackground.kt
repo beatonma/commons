@@ -12,6 +12,7 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.unit.Constraints
 import org.beatonma.commons.app.ui.colors.ComposePartyColors
+import org.beatonma.commons.app.ui.colors.partyTheme
 import org.beatonma.commons.app.ui.colors.theme
 import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.core.ParliamentID
@@ -31,6 +32,9 @@ internal val AmbientPartyImageCache: ProvidableAmbient<MutableMap<ParliamentID, 
 @Composable
 fun rememberPartyImageCache() = remember { mutableMapOf<ParliamentID, VectorGraphic>() }
 
+/**
+ * PartyBackground which uses the current AmbientPartyTheme.
+ */
 @Composable
 fun PartyBackground(
     modifier: Modifier = Modifier,
@@ -51,17 +55,17 @@ fun PartyBackground(
  */
 @Composable
 fun PartyBackground(
-    party: Party,
+    partyId: ParliamentID,
     modifier: Modifier = Modifier,
     imageConfig: ImageConfig = AmbientImageConfig.current,
-    theme: ComposePartyColors = party.theme(),
+    theme: ComposePartyColors = partyTheme(partyId),
     useCache: Boolean = true,
     content: @Composable () -> Unit = {},
 ) {
     val logo = if (useCache) {
-        getLogo(AmbientPartyImageCache.current, party)
+        getLogo(AmbientPartyImageCache.current, partyId)
     } else {
-        remember { PartyLogos.get(party.parliamentdotuk) }
+        remember { PartyLogos.get(partyId) }
     }
 
     PartyBackground(
@@ -72,6 +76,20 @@ fun PartyBackground(
         content = content,
     )
 }
+
+/**
+ * @param useCache Should be true if several PartyBackgrounds are being displayed together.
+ *                 Should be false if this is the only instance.
+ */
+@Composable
+fun PartyBackground(
+    party: Party,
+    modifier: Modifier = Modifier,
+    imageConfig: ImageConfig = AmbientImageConfig.current,
+    theme: ComposePartyColors = party.theme(),
+    useCache: Boolean = true,
+    content: @Composable () -> Unit = {},
+) = PartyBackground(party.parliamentdotuk, modifier, imageConfig, theme, useCache, content)
 
 @Composable
 private fun PartyBackground(
@@ -131,11 +149,9 @@ private fun PartyPortrait(
 
 private fun getLogo(
     cache: MutableMap<ParliamentID, VectorGraphic>,
-    party: Party,
-): VectorGraphic {
-    val partyId = party.parliamentdotuk
-
-    return when {
+    partyId: ParliamentID,
+): VectorGraphic =
+    when {
         cache.contains(partyId) -> cache[partyId]!!
 
         else -> {
@@ -144,4 +160,3 @@ private fun getLogo(
             graphic
         }
     }
-}

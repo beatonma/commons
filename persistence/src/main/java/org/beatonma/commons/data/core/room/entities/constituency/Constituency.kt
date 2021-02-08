@@ -7,11 +7,11 @@ import androidx.room.PrimaryKey
 import androidx.room.Relation
 import org.beatonma.commons.core.PARLIAMENTDOTUK
 import org.beatonma.commons.core.ParliamentID
+import org.beatonma.commons.core.extensions.allNotNull
 import org.beatonma.commons.data.core.interfaces.Named
 import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
 import org.beatonma.commons.data.core.interfaces.Periodic
 import org.beatonma.commons.data.core.room.entities.election.ConstituencyResultWithDetails
-import org.beatonma.commons.data.core.room.entities.member.BasicProfileWithParty
 import java.time.LocalDate
 
 @Entity(
@@ -36,10 +36,32 @@ data class ConstituencyWithBoundary(
 )
 
 data class CompleteConstituency(
+    val constituency: Constituency,
+    val member: ConstituencyResultWithDetails?,
+    val electionResults: List<ConstituencyResultWithDetails>,
+    val boundary: ConstituencyBoundary,
+)
+
+data class CompleteConstituencyBuilder(
     var constituency: Constituency? = null,
-    var member: BasicProfileWithParty? = null,
+    var member: ConstituencyResultWithDetails? = null,
     var electionResults: List<ConstituencyResultWithDetails>? = null,
     var boundary: ConstituencyBoundary? = null,
-)
+) {
+    val isComplete: Boolean
+        get() = allNotNull(
+            constituency,
+            electionResults,
+            boundary,
+        )
+
+    fun toCompleteConstituency() =
+        CompleteConstituency(
+            constituency!!,
+            member,
+            electionResults!!,
+            boundary!!,
+        )
+}
 
 val NoConstituency = Constituency(-1, "")

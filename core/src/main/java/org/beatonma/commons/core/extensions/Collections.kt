@@ -37,9 +37,21 @@ inline fun <T> Array<T>.fastForEachIndexed(action: (Int, T) -> Unit) {
 /**
  * Return false if any of the given values are null
  */
-fun allNotNull(vararg values: Any?): Boolean {
-    values.fastForEach { value ->
-        if (value == null) return false
+fun allNotNull(vararg values: Any?, verbose: Boolean = true): Boolean {
+    if (verbose) {
+        values.fastForEachIndexed { index, value ->
+            if (value == null) {
+                println("allNotNull: value at position $index is null")
+                return false
+            }
+        }
+    }
+    else {
+        values.fastForEach { value ->
+            if (value == null) {
+                return false
+            }
+        }
     }
     return true
 }

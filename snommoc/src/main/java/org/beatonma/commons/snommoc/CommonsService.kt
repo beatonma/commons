@@ -82,10 +82,21 @@ interface CommonsService: SnommocService, CommonsDataService, CommonsSocialServi
         const val SERVICE_NAME = "snommoc.org"
 
         private fun getUrl(path: String) = "$BASE_URL$path"
-        fun getMemberUrl(parliamentdotuk: ParliamentID) = getUrl("$MEMBER_API_PATH/profile/$parliamentdotuk/")
-        fun getDivisionUrl(house: House, parliamentdotuk: ParliamentID) = getUrl("$DIVISION_API_PATH/$house/$parliamentdotuk/")
-        fun getBillUrl(parliamentdotuk: ParliamentID) = getUrl("$BILL_API_PATH/$parliamentdotuk/")
-        fun getConstituencyUrl(parliamentdotuk: ParliamentID) = getUrl("$CONSTITUENCY_API_PATH/$parliamentdotuk/")
+
+        fun getMemberUrl(parliamentdotuk: ParliamentID) =
+            getUrl("$MEMBER_API_PATH/profile/$parliamentdotuk/")
+
+        fun getDivisionUrl(house: House, parliamentdotuk: ParliamentID) =
+            getUrl("$DIVISION_API_PATH/$house/$parliamentdotuk/")
+
+        fun getBillUrl(parliamentdotuk: ParliamentID) =
+            getUrl("$BILL_API_PATH/$parliamentdotuk/")
+
+        fun getConstituencyUrl(parliamentdotuk: ParliamentID) =
+            getUrl("$CONSTITUENCY_API_PATH/$parliamentdotuk/")
+
+        fun getConstituencyResultsUrl(constituencyId: ParliamentID, electionId: ParliamentID) =
+            getUrl("$CONSTITUENCY_API_PATH/$constituencyId/election/$electionId/")
     }
 }
 

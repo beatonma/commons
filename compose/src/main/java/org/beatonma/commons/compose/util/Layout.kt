@@ -1,5 +1,6 @@
 package org.beatonma.commons.compose.util
 
+import android.content.Context
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.layout.AlignmentLine
@@ -68,18 +69,24 @@ fun MeasureScope.layout(
     placementBlock: Placeable.PlacementScope.() -> Unit,
 ): MeasureResult = layout(width.value, height.value, alignmentLines, placementBlock)
 
-val Dp.pxF: Float
-    @Composable get() = when (this) {
+fun Dp.pxF(context: Context): Float =
+    when (this) {
         Dp.Hairline -> 1F
-        else -> (value * AmbientContext.current.resources.displayMetrics.density)
+        else -> (value * context.resources.displayMetrics.density)
+    }
+
+val Dp.pxF: Float
+    @Composable get() = pxF(AmbientContext.current)
+
+fun Dp.px(context: Context): Int =
+    when (this) {
+        Dp.Hairline -> 1
+        else -> (value * context.resources.displayMetrics.density)
+            .roundToInt()
     }
 
 val Dp.px: Int
-    @Composable get() = when (this) {
-        Dp.Hairline -> 1
-        else -> (value * AmbientContext.current.resources.displayMetrics.density)
-            .roundToInt()
-    }
+    @Composable get() = px(AmbientContext.current)
 
 fun Dp.lerp(other: Dp, progress: Float) = Dp(value.lerpTo(other.value, progress))
 

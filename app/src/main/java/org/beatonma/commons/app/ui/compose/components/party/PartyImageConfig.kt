@@ -38,9 +38,9 @@ fun ProvidePartyImageConfig(
 
 @Composable
 fun providePartyImageConfig(
-    scaleType: ScaleType = ScaleType.Max,
-    alignment: Alignment = Alignment.Center,
-    scaleMultiplier: Float = 1.5F,
+    scaleType: ScaleType = ScaleType.Min,
+    alignment: Alignment = Alignment.CenterEnd,
+    scaleMultiplier: Float = 2F,
     offset: Offset = Offset(0.5F, 0F),
     pathConfig: PathConfig = PathConfig {
         it.withHsl {

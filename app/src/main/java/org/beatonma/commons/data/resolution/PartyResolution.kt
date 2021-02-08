@@ -1,6 +1,8 @@
 package org.beatonma.commons.data.resolution
 
 import android.content.Context
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import org.beatonma.commons.BuildConfig.*
 import org.beatonma.commons.R
 import org.beatonma.commons.core.ParliamentID
@@ -125,7 +127,7 @@ private fun getFuzzyNames(partyId: ParliamentID): Array<String> = when(partyId) 
  * party it refers to.
  */
 object PartyResolution {
-    fun getPartyId(fuzzyName: String): ParliamentID? {
+    fun getPartyId(fuzzyName: String): ParliamentID {
         val lowerFuzzyName = fuzzyName.toLowerCase(Locale.ROOT)
         arrayOf(PARTY_ALLIANCE_PARLIAMENTDOTUK,
                 PARTY_THE_INDEPENDENT_GROUP_FOR_CHANGE_PARLIAMENTDOTUK,
@@ -149,9 +151,10 @@ object PartyResolution {
                 return party
             }
         }
-        return null
+        return -1
     }
 
+    @Deprecated("Compose")
     fun getPartyName(context: Context, fuzzyName: String): String = when(getPartyId(fuzzyName)) {
 //        PARTY_ALLIANCE_PARLIAMENTDOTUK -> context.getString(R.string.party_alliance)
         PARTY_THE_INDEPENDENT_GROUP_FOR_CHANGE_PARLIAMENTDOTUK -> context.stringCompat(R.string.party_change_uk)
@@ -170,6 +173,25 @@ object PartyResolution {
         PARTY_SPEAKER_PARLIAMENTDOTUK -> context.stringCompat(R.string.party_speaker)
         PARTY_UK_INDEPENDENCE_PARTY_PARLIAMENTDOTUK -> context.stringCompat(R.string.party_ukip)
         PARTY_ULSTER_UNIONIST_PARTY_PARLIAMENTDOTUK -> context.stringCompat(R.string.party_uup)
+        else -> fuzzyName
+    }
+
+    @Composable
+    fun getPartyName(fuzzyName: String): String = when(getPartyId(fuzzyName)) {
+        PARTY_THE_INDEPENDENT_GROUP_FOR_CHANGE_PARLIAMENTDOTUK -> stringResource(R.string.party_change_uk)
+        PARTY_CONSERVATIVE_PARLIAMENTDOTUK -> stringResource(R.string.party_conservative)
+        PARTY_DEMOCRATIC_UNIONIST_PARTY_PARLIAMENTDOTUK -> stringResource(R.string.party_dup)
+        PARTY_GREEN_PARTY_PARLIAMENTDOTUK -> stringResource(R.string.party_green)
+        PARTY_LABOUR_PARLIAMENTDOTUK -> stringResource(R.string.party_labour)
+        PARTY_LABOUR_COOP_PARLIAMENTDOTUK -> stringResource(R.string.party_labour_coop)
+        PARTY_LIBERAL_DEMOCRAT_PARLIAMENTDOTUK -> stringResource(R.string.party_lib_dem)
+        PARTY_PLAID_CYMRU_PARLIAMENTDOTUK -> stringResource(R.string.party_plaid_cymru)
+        PARTY_SOCIAL_DEMOCRATIC_LABOUR_PARTY_PARLIAMENTDOTUK -> stringResource(R.string.party_sdlp)
+        PARTY_SINN_FEIN_PARLIAMENTDOTUK -> stringResource(R.string.party_sinn_fein)
+        PARTY_SCOTTISH_NATIONAL_PARTY_PARLIAMENTDOTUK -> stringResource(R.string.party_snp)
+        PARTY_SPEAKER_PARLIAMENTDOTUK -> stringResource(R.string.party_speaker)
+        PARTY_UK_INDEPENDENCE_PARTY_PARLIAMENTDOTUK -> stringResource(R.string.party_ukip)
+        PARTY_ULSTER_UNIONIST_PARTY_PARLIAMENTDOTUK -> stringResource(R.string.party_uup)
         else -> fuzzyName
     }
 }

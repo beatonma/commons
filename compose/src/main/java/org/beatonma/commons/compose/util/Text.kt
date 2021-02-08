@@ -16,6 +16,9 @@ fun dotted(vararg components: String?) =
             separator = " $DOT "
         )
 
+@Composable
+infix fun String?.dot(other: String?): String = dotted(this, other)
+
 /**
  * Styles supported by [String.withAnnotatedStyle]
  */
