@@ -9,15 +9,15 @@ plugins {
 dependencies {
     instrumentationTest {
         implementations(
-            project(":testcompose")
+            project(Modules.TestCompose)
         )
     }
     
     main {
         implementations(
             Dependencies.AndroidX.CORE_KTX,
-            project(":core"),
-            project(":theme")
+            project(Modules.Core),
+            project(Modules.Theme)
         )
     }
 }

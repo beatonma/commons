@@ -71,7 +71,6 @@ android {
 
     buildTypes {
         debug {
-//            applicationIdSuffix = git.branch
             manifestPlaceholders.put(
                 "appname" to "DEV:${git.branch}/Commons"
             )
@@ -101,7 +100,7 @@ dependencies {
         )
 
         implementations(
-            project(":test"),
+            project(Modules.Test),
             Dependencies.Dagger.DAGGER,
             Dependencies.Kotlin.REFLECT,
             Dependencies.Kotlin.Coroutines.TEST,
@@ -120,7 +119,7 @@ dependencies {
         )
 
         implementations(
-            project(":test"),
+            project(Modules.Test),
             Dependencies.Dagger.Hilt.TESTING,
             Dependencies.Kotlin.Coroutines.TEST,
             Dependencies.Test.AndroidX.CORE,
@@ -137,7 +136,7 @@ dependencies {
     debug {
         implementations(
 //            Dependencies.Debug.LEAK_CANARY,
-            project(":themepreview")
+            project(Modules.ThemePreview)
         )
     }
 
@@ -180,18 +179,20 @@ dependencies {
             Dependencies.Google.MATERIAL,
             Dependencies.Google.Play.AUTH,
             Dependencies.Google.Play.LOCATION,
-            Dependencies.Google.Play.MAPS,
-            Dependencies.Google.Play.MAPS_UTIL,
+            Dependencies.Google.Maps.V3.MAPS,
+            Dependencies.Google.Maps.V3.MAPS_UTIL,
+            Dependencies.Google.Maps.V3.MAPS_KTX,
+            Dependencies.Google.Maps.V3.MAPS_UTIL_KTX,
 
-            project(":core"),
-            project(":network-core"),
-            project(":snommoc"),
-            project(":ukparliament"),
-            project(":persistence"),
-            project(":repo"),
-            project(":theme"),
-            project(":compose"),
-            project(":svg")
+            project(Modules.Core),
+            project(Modules.NetworkCore),
+            project(Modules.Snommoc),
+            project(Modules.UkParliament),
+            project(Modules.Persistence),
+            project(Modules.Repository),
+            project(Modules.Theme),
+            project(Modules.Compose),
+            project(Modules.Svg)
         )
     }
 }

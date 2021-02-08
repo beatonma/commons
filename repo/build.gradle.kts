@@ -26,14 +26,15 @@ dependencies {
         )
 
         implementations(
-            project(":test"),
-            project(":testhilt"),
+            project(Modules.Test),
+            project(Modules.TestHilt),
             Dependencies.Dagger.Hilt.TESTING,
             Dependencies.Room.RUNTIME,
             Dependencies.Test.AndroidX.LIVEDATA,
             Dependencies.Test.AndroidX.RUNNER
         )
     }
+
 
     main {
         implementations(
@@ -43,11 +44,11 @@ dependencies {
             Dependencies.Dagger.Hilt.LIFECYCLE_VIEWMODEL,
             Dependencies.Retrofit.Converter.MOSHI,
 
-            project(":core"),
-            project(":network-core"),
-            project(":persistence"),
-            project(":snommoc"),
-            project(":ukparliament")
+            project(Modules.Core),
+            project(Modules.NetworkCore),
+            project(Modules.Persistence),
+            project(Modules.Snommoc),
+            project(Modules.UkParliament)
         )
     }
 }

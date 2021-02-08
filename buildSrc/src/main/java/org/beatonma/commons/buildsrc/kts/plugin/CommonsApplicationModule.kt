@@ -71,10 +71,14 @@ class CommonsApplicationModule: CommonsAndroidModule<BaseAppModuleExtension>() {
                 doLast {
                     val outputDir = rootProject.file(targetDirectory)
 
-                    val success = file("build/outputs/mapping/release/").copyRecursively(outputDir)
+                    val success = file("build/outputs/mapping/release/")
+                        .copyRecursively(outputDir)
 
                     if (success) println("Mapping files copied to ${outputDir.absolutePath}")
-                    else error("$taskName failed! Mapping files could not be copied from build/outputs/mapping/release/ to ${outputDir.absolutePath}!")
+                    else error(
+                        "$taskName failed! Mapping files could not be copied from " +
+                                "build/outputs/mapping/release/ to ${outputDir.absolutePath}!"
+                    )
                 }
             }
 

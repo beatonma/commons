@@ -1,6 +1,7 @@
 package org.beatonma.commons.buildsrc.kts.plugin
 
 import Dependencies
+import Modules
 import Versions
 import com.android.build.gradle.BaseExtension
 import org.beatonma.commons.buildsrc.Commons
@@ -116,7 +117,7 @@ abstract class CommonsAndroidModule<T : BaseExtension> : AndroidProjectPlugin<T>
         with(dependencies) {
             unitTest {
                 implementations(
-                    project(":test"),
+                    project(Modules.Test.toString()),
                     Dependencies.Test.AndroidX.CORE,
                     Dependencies.Test.JUNIT
                 )
@@ -124,7 +125,7 @@ abstract class CommonsAndroidModule<T : BaseExtension> : AndroidProjectPlugin<T>
 
             instrumentationTest {
                 implementations(
-                    project(":test"),
+                    project(Modules.Test.toString()),
                     Dependencies.Test.AndroidX.CORE,
                     Dependencies.Test.JUNIT
                 )

@@ -35,8 +35,8 @@ dependencies {
             Dependencies.Retrofit.Converter.MOSHI,
             Dependencies.Retrofit.Converter.TEXT,
 
-            project(":core"),
-            project(":network-core")
+            project(Modules.Core),
+            project(Modules.NetworkCore)
         )
     }
 }

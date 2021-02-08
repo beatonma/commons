@@ -43,7 +43,7 @@ dependencies {
             Dependencies.Kotlin.Coroutines.CORE,
             Dependencies.AndroidX.CORE_KTX,
 
-            project(":core")
+            project(Modules.Core)
         )
     }
 }

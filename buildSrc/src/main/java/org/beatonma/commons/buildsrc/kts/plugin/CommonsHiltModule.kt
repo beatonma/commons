@@ -1,6 +1,7 @@
 package org.beatonma.commons.buildsrc.kts.plugin
 
 import Dependencies
+import Modules
 import org.gradle.api.plugins.PluginContainer
 import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.gradle.kotlin.dsl.project
@@ -20,7 +21,7 @@ class CommonsHiltModule : ProjectPlugin() {
             unitTest {
                 implementations(
                     Dependencies.Dagger.Hilt.TESTING,
-                    project(":testhilt")
+                    project(Modules.TestHilt.toString())
                 )
             }
 
@@ -32,7 +33,7 @@ class CommonsHiltModule : ProjectPlugin() {
 
                 implementations(
                     Dependencies.Dagger.Hilt.TESTING,
-                    project(":testhilt")
+                    project(Modules.TestHilt.toString())
                 )
             }
 
