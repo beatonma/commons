@@ -1,58 +1,67 @@
 <resources>
-    <string name="app_name">Commons</string>
+    <plurals name="bill_sittings">
+        <item quantity="one"></item> <!-- If only one sitting we just show the date it occurred -->
+        <item quantity="other">%d sittings</item>
+    </plurals>
 
     <!-- Commonly used, easily misspelled -->
+    <string name="app_name">Commons</string>
     <string name="parliamentdotuk" translatable="false">parliamentdotuk</string>
-    <string name="placeholder_title" translatable="true">Placeholder</string>
 
     <!-- Search -->
+    <string name="placeholder_title" translatable="true">Placeholder</string>
     <string name="search_members_hint" translatable="true">Search members</string>
     <string name="search_results_empty" translatable="true">No results found</string>
-    <string name="search_lookup_local_member" translatable="true">Tap to find your local MP</string>
 
     <!-- Member profile -->
+    <string name="search_lookup_local_member" translatable="true">Tap to find your local MP</string>
     <string name="member_inactive">No current positions in Parliament</string>
     <string name="member_house_of_lords">Member of the House of Lords</string>
-    <string name="member_former_member_for_constituency" translatable="true">Former MP for %s</string>
-    <string name="member_member_for_constituency" translatable="true"><![CDATA[MP for <b>%s</b>]]></string>
-    <string name="member_party_constituency">%s &#183; %s</string>
+    <string name="member_former_member_for_constituency" translatable="true">Former MP for **%s**</string>
+    <string name="member_member_for_constituency" translatable="true">MP for **%s**</string>
 
-    <string name="member_write_to" translatable="true">Contact</string>
+    <string name="member_party_constituency">%s &#183; %s</string>
+    <string name="member_contact_info" translatable="true">Contact</string>
+    <string name="member_contact_info_none" translatable="true">No registered addresses</string>
     <string name="member_financial_interests" translatable="true">Registered interests</string>
+    <string name="member_financial_interests_none" translatable="true">No registered interests</string>
     <string name="member_weblinks" translatable="true">Links</string>
     <string name="member_history_title" translatable="true">History</string>
-    <string name="member_current_title" translatable="true">Current</string>
 
     <!-- Constituency details -->
+    <string name="member_current_title" translatable="true">Current</string>
     <string name="constituency_current_member" translatable="true">Current MP:</string>
     <string name="constituency_previous_members" translatable="true">Previous MPs:</string>
     <string name="constituency_election_header" translatable="true">%s results</string>
-    <string name="constituency_election_turnout" translatable="true">Turnout: %s of %s - %s</string>
+    <string name="constituency_election_turnout" translatable="true">%s turnout (%s of %s)</string>
     <string name="constituency_candidate_votes" translatable="true">%s - %s</string>
-    <string name="constituency_candidate_deposit_info" translatable="true">Candidates who receive less than 5% of the total vote lose their deposit (currently £500)</string>
+    <string name="constituency_winner_majority" translatable="true">(+%s majority)</string>
+    <string name="constituency_result_gain" translatable="true">Gained</string>
+    <string name="constituency_result_hold" translatable="true">Held</string>
 
     <!-- House -->
+    <string name="constituency_candidate_deposit_info" translatable="true">Candidates who receive less than 5%% of the total vote lose their deposit (currently £500)</string>
+    <string name="constituency_candidate_deposit_lost" translatable="true">Deposit lost</string>
     <string name="house_of_generic">House of %s</string>
     <string name="house_of_lords">House of Lords</string>
-    <string name="house_of_commons">House of Commons</string>
 
     <!-- Divisions -->
+    <string name="house_of_commons">House of Commons</string>
     <string name="division_title" translatable="true">Division results</string>
-    <string name="division_ayes" translatable="true">%d ayes</string>
-    <string name="division_noes" translatable="true">%d noes</string>
-    <string name="division_did_not_vote" translatable="true">%d did not vote</string>
-    <string name="division_abstained" translatable="true">%d abstentions</string>
+    <string name="division_no_description" translatable="true">Description unavailable</string>
+
+    <string name="division_ayes" translatable="true">**%d** ayes</string>
+    <string name="division_noes" translatable="true">**%d** noes</string>
+    <string name="division_did_not_vote" translatable="true">**%d** did not vote</string>
+    <string name="division_suspended_or_expelled" translatable="true">**%d** were suspended</string>
+    <string name="division_abstained" translatable="true">**%d** abstentions</string>
+    <string name="division_search_member_hint" translatable="true">Find a member</string>
 
     <!-- Bills -->
     <string name="bill_publications_count" translatable="true">%d publications</string>
     <string name="bill_sponsors_count" translatable="true">%d sponsors</string>
     <string name="bill_stages_count" translatable="true">%d stages</string>
     <string name="bill_session" translatable="true">%s</string>
-    <plurals name="bill_sittings">
-        <item quantity="one"></item> <!-- If only one sitting we just show the date it occurred -->
-        <item quantity="other">%d sittings</item>
-    </plurals>
-
 
     <!-- Snippets -->
     <string name="snippet_birth_date" translatable="true">Born %s</string>
@@ -79,25 +88,30 @@
     <string name="error_network">Network error</string>
 
     <!-- User account sign-in -->
+    <string name="account_profile_title" translatable="true">Your account</string>
     <string name="account_sign_in" translatable="true">Sign in</string>
     <string name="account_sign_out" translatable="true">Sign out</string>
     <string name="account_sign_in_already_signed_in" translatable="true">You are signed in with account \'%s:%s\'</string>
-    <string name="account_sign_in_rationale" translatable="true">Sign in with your Google account to create an account on the Commons service. This is necessary if you want to vote or comment on any app content.\n\nPlease check our privacy policy for more details: <a href="https://snommoc.org/privacy">https://snommoc.org/privacy</a>
-    </string>
+    <string name="account_sign_in_rationale" translatable="true">Sign in with your Google account to create an account on the Commons service. This is necessary if you want to vote or comment on any app content.\n\nPlease check our privacy policy for more details: <a href="https://snommoc.org/privacy">https://snommoc.org/privacy</a></string>
+    <string name="account_profile_about" translatable="true">Your username may be visible to other users. Your name, email address and photo never leave your device.\n\nPlease check our privacy policy for more details: <a href="https://snommoc.org/privacy">https://snommoc.org/privacy</a>.</string>
     <string name="account_submit_new_username" translatable="true">Submit</string>
+    <string name="account_username_validation_too_short" translatable="true">Username must be at least %d characters.</string>
+    <string name="account_username_validation_too_long" translatable="true">Username must be no more than %d characters.</string>
+    <string name="account_username_validation_format_error" translatable="true">Username may use letters, digits, dashes, dots, underscores. Must start/end with a letter or digit.</string>
+    <string name="account_username_validation_try_again" translatable="true">That didn\'t work - please try again later</string>
+    <string name="account_username_validation_denied_by_server" translatable="true">That username is not available - please try something else</string>
 
+    <string name="account_delete_account_title" translatable="true">Delete account</string>
     <string name="account_delete_account_button" translatable="true">Delete account</string>
     <string name="account_delete_confirm_button" translatable="true">Confirm deletion</string>
     <string name="account_delete_confirm_twice_button" translatable="true">I\'m sure</string>
-    <string name="account_delete_explanation" translatable="true">
-        If you confirm deletion your account will be made inaccessible immediately and will be deleted
-        completely within the next 14 days. At that time, all of your votes and comments on the Commons
-        service will also be removed.
-    </string>
+    <string name="account_delete_explanation" translatable="true">If you confirm deletion your account will be made inaccessible immediately and will be deleted completely within the next 14 days. Any votes or comments you have made on the Commons service will also be deleted at that time.</string>
+    <string name="account_delete_cancel_button" translatable="true">@string/cancel</string>
 
     <!-- Social -->
-    <string name="social_new_comment" translatable="true">Comment</string>
+    <string name="social_new_comment" translatable="true">Add comment</string>
     <string name="social_compose_comment" translatable="true">Compose comment</string>
+    <string name="social_compose_comment_hint" translatable="true">Have your say!</string>
     <string name="social_comment_post" translatable="true">Send</string>
     <string name="social_comment_invalid_too_long" translatable="true">Comments are limited to %d characters</string>
     <string name="social_comment_no_comments" translatable="true">No comments here yet!</string>
@@ -107,13 +121,12 @@
     <string name="content_description_social_votes_count_for" translatable="true">Votes in favour: %d</string>
     <string name="content_description_social_votes_count_against" translatable="true">Votes against: %d</string>
 
+    <!-- Zeitgeist - what's happening now -->
+    <string name="zeitgeist_title">Trending</string>
+    <string name="zeitgeist_people">People</string>
+
     <!-- Deeplinks -->
     <string name="deeplink_unknown_target" translatable="true">Unable to handle link: %s</string>
-
-    <!-- Date and time -->
-    <string name="date_range" translatable="true">%s &#8594; %s</string>
-    <string name="date_since" translatable="true">Since %s</string>
-    <string name="date_present" translatable="true">Present</string>
 
     <!-- Generic -->
     <string name="dot" translatable="false">&#8226;</string>
@@ -122,6 +135,7 @@
     <string name="integer" translatable="false">%s</string>
     <string name="more" translatable="true">More</string>
     <string name="empty_list" translatable="true">None</string>
+    <string name="cancel" translatable="true">Cancel</string>
 
     <!-- Icon image content description -->
     <string name="content_description_expand_collapse" translatable="true">Expand or collapse</string>
