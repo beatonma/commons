@@ -13,20 +13,16 @@ import org.beatonma.commons.repo.result.onErrorCode
 import org.beatonma.commons.repo.result.onLoading
 import org.beatonma.commons.repo.result.onSuccess
 import org.beatonma.commons.repo.result.onSuccessCode
+import org.beatonma.commons.theme.compose.theme.systemui.statusBarsPadding
 
 private const val TAG = "Compose.Result"
+private typealias OnError = @Composable (error: Throwable?, code: ResponseCode?) -> Unit
 
 @Composable
 fun <T> WithResultData(
     result: IoResult<T>,
-    onLoading: @Composable () -> Unit = { LoadingIcon(Modifier.fillMaxWidth()) },
-    onError: @Composable (error: Throwable?, code: ResponseCode?) -> Unit =
-        { error, code ->
-            when {
-                error != null -> ErrorUi(error = error)
-                code != null -> ErrorUi(error = code)
-            }
-        },
+    onLoading: @Composable () -> Unit = defaultLoading,
+    onError: OnError = defaultOnError,
     onSuccess: @Composable (data: T) -> Unit,
 ) {
     result
@@ -45,14 +41,8 @@ fun <T> WithResultData(
 @Composable
 fun <T> WithResponseCode(
     result: IoResult<T>,
-    onLoading: @Composable () -> Unit = { LoadingIcon(Modifier.fillMaxWidth()) },
-    onError: @Composable (error: Throwable?, code: ResponseCode?) -> Unit =
-        { error, code ->
-            when {
-                error != null -> ErrorUi(error = error)
-                code != null -> ErrorUi(error = code)
-            }
-        },
+    onLoading: @Composable () -> Unit = defaultLoading,
+    onError: OnError = defaultOnError,
     onSuccess: @Composable (ResponseCode) -> Unit,
 ) {
     result
@@ -67,3 +57,24 @@ fun <T> WithResponseCode(
         .onLoading { onLoading() }
         .onSuccessCode { onSuccess(it) }
 }
+
+
+private val defaultOnError: OnError
+    get() = { error, code ->
+        val modifier = Modifier
+            .fillMaxWidth()
+            .statusBarsPadding()
+
+        when {
+            error != null -> ErrorUi(error = error, modifier = modifier)
+            code != null -> ErrorUi(error = code, modifier = modifier)
+        }
+    }
+
+private val defaultLoading: @Composable () -> Unit
+    get() = {
+        LoadingIcon(
+            Modifier
+                .fillMaxWidth()
+                .statusBarsPadding())
+    }
