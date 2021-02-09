@@ -1,4 +1,4 @@
-package org.beatonma.commons.app.constituency.compose.electionresults
+package org.beatonma.commons.app.constituency.electionresults
 
 import android.os.Bundle
 import android.view.LayoutInflater

@@ -1,4 +1,4 @@
-package org.beatonma.commons.app.constituency.compose.detail
+package org.beatonma.commons.app.constituency.detail
 
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import org.beatonma.commons.data.core.room.entities.election.ConstituencyResultWithDetails

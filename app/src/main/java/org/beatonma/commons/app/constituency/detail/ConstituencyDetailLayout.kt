@@ -1,4 +1,4 @@
-package org.beatonma.commons.app.constituency.compose.detail
+package org.beatonma.commons.app.constituency.detail
 
 import android.Manifest
 import android.annotation.SuppressLint

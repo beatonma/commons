@@ -1,4 +1,4 @@
-package org.beatonma.commons.app.constituency.compose.electionresults
+package org.beatonma.commons.app.constituency.electionresults
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
