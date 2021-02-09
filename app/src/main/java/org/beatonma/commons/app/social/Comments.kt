@@ -48,10 +48,10 @@ import org.beatonma.commons.core.extensions.lerpTo
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.core.extensions.withEasing
 import org.beatonma.commons.data.core.room.entities.user.UserToken
-import org.beatonma.commons.kotlin.extensions.formatted
 import org.beatonma.commons.snommoc.models.social.SocialComment
 import org.beatonma.commons.theme.compose.Padding
 import org.beatonma.commons.theme.compose.endOfContent
+import org.beatonma.commons.theme.compose.formatting.formatted
 import org.beatonma.commons.theme.compose.pdp
 import org.beatonma.commons.theme.compose.plus
 

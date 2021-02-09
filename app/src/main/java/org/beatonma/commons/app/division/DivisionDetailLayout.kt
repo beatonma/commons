@@ -67,13 +67,13 @@ import org.beatonma.commons.data.core.room.entities.division.Division
 import org.beatonma.commons.data.core.room.entities.division.DivisionWithVotes
 import org.beatonma.commons.data.core.room.entities.division.VoteWithParty
 import org.beatonma.commons.data.resolution.description
-import org.beatonma.commons.kotlin.extensions.formatted
 import org.beatonma.commons.kotlin.extensions.withMainContext
 import org.beatonma.commons.repo.result.IoLoading
 import org.beatonma.commons.theme.compose.Padding
 import org.beatonma.commons.theme.compose.Size
 import org.beatonma.commons.theme.compose.components.Quote
 import org.beatonma.commons.theme.compose.components.ScreenTitle
+import org.beatonma.commons.theme.compose.formatting.formatted
 import org.beatonma.commons.theme.compose.theme.politicalVotes
 import org.beatonma.commons.theme.compose.theme.systemui.statusBarsPadding
 

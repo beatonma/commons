@@ -1,4 +1,4 @@
-package org.beatonma.commons.kotlin.extensions
+package org.beatonma.commons.theme.compose.formatting
 
 import java.text.NumberFormat
 

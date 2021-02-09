@@ -28,10 +28,10 @@ import org.beatonma.commons.data.core.room.entities.division.ResolvedZeitgeistDi
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 import org.beatonma.commons.data.core.room.entities.member.ResolvedZeitgeistMember
 import org.beatonma.commons.data.resolution.description
-import org.beatonma.commons.kotlin.extensions.formatted
 import org.beatonma.commons.repo.models.Zeitgeist
 import org.beatonma.commons.snommoc.models.ZeitgeistReason
 import org.beatonma.commons.theme.compose.endOfContent
+import org.beatonma.commons.theme.compose.formatting.formatted
 import org.beatonma.commons.theme.compose.theme.CommonsTheme
 import org.beatonma.commons.theme.compose.theme.systemui.navigationBarsPadding
 

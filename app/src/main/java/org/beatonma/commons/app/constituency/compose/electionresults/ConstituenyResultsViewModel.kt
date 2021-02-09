@@ -15,9 +15,9 @@ import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyEle
 import org.beatonma.commons.data.get
 import org.beatonma.commons.data.set
 import org.beatonma.commons.kotlin.extensions.BundledConstituencyResult
-import org.beatonma.commons.kotlin.extensions.formatPercent
 import org.beatonma.commons.repo.repository.ConstituencyRepository
 import org.beatonma.commons.repo.result.map
+import org.beatonma.commons.theme.compose.formatting.formatPercent
 import javax.inject.Inject
 
 private val ConstituencyKey = SavedStateKey("constituency_id")

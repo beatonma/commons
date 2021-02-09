@@ -1,8 +1,8 @@
-package org.beatonma.commons.kotlin.extensions
+package org.beatonma.commons.theme.compose.formatting
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import org.beatonma.commons.R
+import org.beatonma.commons.theme.R
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter

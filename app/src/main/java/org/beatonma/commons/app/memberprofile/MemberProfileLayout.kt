@@ -87,13 +87,13 @@ import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 import org.beatonma.commons.data.core.room.entities.member.Party
 import org.beatonma.commons.data.core.room.entities.member.PhysicalAddress
 import org.beatonma.commons.data.core.room.entities.member.WebAddress
-import org.beatonma.commons.kotlin.extensions.dateRange
 import org.beatonma.commons.repo.result.IoLoading
 import org.beatonma.commons.svg.ImageConfig
 import org.beatonma.commons.svg.ScaleType
 import org.beatonma.commons.theme.compose.Layer
 import org.beatonma.commons.theme.compose.Padding
 import org.beatonma.commons.theme.compose.endOfContent
+import org.beatonma.commons.theme.compose.formatting.dateRange
 import org.beatonma.commons.theme.compose.pdp
 import org.beatonma.commons.theme.compose.theme.screenTitle
 import org.beatonma.commons.theme.compose.theme.systemui.navigationBarsPadding
