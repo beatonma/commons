@@ -7,12 +7,12 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import org.beatonma.commons.BuildConfig.GOOGLE_SIGNIN_CLIENT_ID
 import javax.inject.Singleton
 
-@Module @InstallIn(ApplicationComponent::class)
+@Module @InstallIn(SingletonComponent::class)
 class UserModule {
     @Singleton
     @Provides

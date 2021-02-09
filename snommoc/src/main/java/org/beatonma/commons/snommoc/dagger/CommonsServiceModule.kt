@@ -4,7 +4,7 @@ import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import org.beatonma.commons.network.core.Http
 import org.beatonma.commons.network.core.ktx.withDefaultHeaders
@@ -17,7 +17,7 @@ import javax.inject.Singleton
 
 @Module
 @Suppress("unused")
-@InstallIn(ApplicationComponent::class)
+@InstallIn(SingletonComponent::class)
 class CommonsServiceModule {
     @Singleton
     @Provides

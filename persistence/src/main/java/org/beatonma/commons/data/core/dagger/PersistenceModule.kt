@@ -5,8 +5,8 @@ import androidx.room.Room
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import org.beatonma.commons.data.core.room.COMMONS_DB_FILENAME
 import org.beatonma.commons.data.core.room.CommonsDatabase
 import org.beatonma.commons.data.core.room.dao.BillDao
@@ -17,7 +17,7 @@ import org.beatonma.commons.data.core.room.dao.MemberDao
 import org.beatonma.commons.data.core.room.dao.UserDao
 import javax.inject.Singleton
 
-@Module @InstallIn(ApplicationComponent::class)
+@Module @InstallIn(SingletonComponent::class)
 class PersistenceModule {
     @Singleton @Provides
     fun provideCommonsDatabase(@ApplicationContext context: Context): CommonsDatabase = Room.databaseBuilder(
