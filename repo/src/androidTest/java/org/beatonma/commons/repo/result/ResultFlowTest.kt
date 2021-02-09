@@ -30,7 +30,7 @@ import java.util.concurrent.TimeoutException
     ResultFlowNoCacheTest::class,
     NetworkCallsTest::class,
 )
-class ResultFlowTestSuite
+class ResultFlowSuite
 
 
 class CacheResultFlowTest: ResultFlowTest() {

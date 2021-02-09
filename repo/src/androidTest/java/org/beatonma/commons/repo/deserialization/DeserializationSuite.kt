@@ -9,4 +9,4 @@ import org.junit.runners.Suite
     DivisionDeserializeTest::class,
     LiveDeserializationTest::class,
 )
-class DeserializationTestSuite
+class DeserializationSuite

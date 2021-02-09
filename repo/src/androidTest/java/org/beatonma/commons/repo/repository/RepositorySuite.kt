@@ -7,5 +7,6 @@ import org.junit.runners.Suite
 @Suite.SuiteClasses(
     BillRepositoryTest::class,
     MemberRepositoryTest::class,
+    ConstituencyRepositoryTest::class,
 )
-class CommonsRepositoryTestSuite
+class RepositorySuite
