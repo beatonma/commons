@@ -14,7 +14,7 @@ import org.beatonma.commons.kotlin.extensions.parliamentID
 
 @AndroidEntryPoint
 class MemberProfileFragment : SocialFragment() {
-    private val viewmodel: ComposeMemberProfileViewModel by viewModels()
+    private val viewmodel: MemberProfileViewModel by viewModels()
 
     private fun getMemberIdFromBundle(): ParliamentID = arguments.parliamentID
 

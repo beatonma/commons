@@ -105,7 +105,7 @@ internal val AmbientMemberProfileActions: ProvidableAmbient<MemberProfileActions
 
 @Composable
 fun MemberProfileLayout(
-    viewmodel: ComposeMemberProfileViewModel,
+    viewmodel: MemberProfileViewModel,
     socialViewModel: SocialViewModel,
     userAccountViewModel: UserAccountViewModel,
 ) {

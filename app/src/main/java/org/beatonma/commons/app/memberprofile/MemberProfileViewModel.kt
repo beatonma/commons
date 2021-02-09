@@ -23,7 +23,7 @@ import javax.inject.Inject
 private val MemberIdKey = SavedStateKey("member_id")
 
 @HiltViewModel
-class ComposeMemberProfileViewModel @Inject constructor(
+class MemberProfileViewModel @Inject constructor(
     private val memberRepository: MemberRepository,
     private val savedStateHandle: SavedStateHandle,
 ) : ViewModel(), SocialTargetProvider {
