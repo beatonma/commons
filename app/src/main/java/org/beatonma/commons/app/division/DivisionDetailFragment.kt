@@ -13,10 +13,6 @@ import org.beatonma.commons.kotlin.extensions.navigateToMember
 
 @AndroidEntryPoint
 class DivisionDetailFragment : SocialFragment() {
-    companion object {
-        const val HOUSE = "house"
-    }
-
     private val viewmodel: DivisionDetailViewModel by viewModels()
 
     private fun getDivisionFromBundle() = arguments.getDivision()
