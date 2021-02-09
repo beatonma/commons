@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.preferredWidth
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -45,23 +44,24 @@ import org.beatonma.commons.compose.animation.progressKey
 import org.beatonma.commons.compose.animation.twoStateProgressTransition
 import org.beatonma.commons.compose.components.ConfirmationState
 import org.beatonma.commons.compose.components.DoubleConfirmationButton
-import org.beatonma.commons.compose.components.LinkedText
 import org.beatonma.commons.compose.components.ResourceText
 import org.beatonma.commons.compose.components.doubleConfirmationColors
 import org.beatonma.commons.compose.components.rememberConfirmationState
 import org.beatonma.commons.compose.modifiers.wrapContentHeight
 import org.beatonma.commons.compose.modifiers.wrapContentSize
 import org.beatonma.commons.compose.modifiers.wrapContentWidth
-import org.beatonma.commons.compose.util.dotted
 import org.beatonma.commons.compose.util.update
 import org.beatonma.commons.core.extensions.lerpBetween
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.core.extensions.reversed
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.theme.compose.Padding
+import org.beatonma.commons.theme.compose.components.Caption
+import org.beatonma.commons.theme.compose.components.LinkedText
 import org.beatonma.commons.theme.compose.theme.CommonsButtons
 import org.beatonma.commons.theme.compose.theme.onWarningSurface
 import org.beatonma.commons.theme.compose.theme.warningSurface
+import org.beatonma.commons.theme.compose.util.dotted
 
 /**
  * Chooses the appropriate user UI to display depending on whether they are
@@ -177,10 +177,9 @@ private fun ProfileSheetContent(
                         focusRequester = focusRequester)
 
                     if (usernameState.isReadOnly) {
-                        Text(
+                        Caption(
                             dotted(userToken.name, userToken.email),
-                            style = typography.caption,
-                            modifier = Modifier.padding(Padding.VerticalListItem)
+                            Modifier.padding(Padding.VerticalListItem)
                         )
                     }
                 }

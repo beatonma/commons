@@ -19,7 +19,6 @@ import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.compose.components.party.ProvidePartyImageConfig
 import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.components.OptionalText
-import org.beatonma.commons.compose.util.dotted
 import org.beatonma.commons.core.extensions.fastForEach
 import org.beatonma.commons.data.core.room.entities.bill.Bill
 import org.beatonma.commons.data.core.room.entities.bill.ResolvedZeitgeistBill
@@ -34,6 +33,7 @@ import org.beatonma.commons.theme.compose.endOfContent
 import org.beatonma.commons.theme.compose.formatting.formatted
 import org.beatonma.commons.theme.compose.theme.CommonsTheme
 import org.beatonma.commons.theme.compose.theme.systemui.navigationBarsPadding
+import org.beatonma.commons.theme.compose.util.dot
 
 private fun String?.reason(): ZeitgeistReason? = this?.let { ZeitgeistReason.valueOf(it) }
 private fun ResolvedZeitgeistMember.reason() = this.zeitgeistMember.reason.reason()
@@ -120,7 +120,7 @@ private fun Division(
     val division = item.division
     ListItem(
         modifier.clickable(onClick = { onClick(division) }),
-        overlineText = { Text(dotted(division.house.description(), division.date.formatted())) },
+        overlineText = { Text(division.house.description() dot division.date.formatted()) },
         trailing = { Text(division.passed.toString()) },
         text = { Text(division.description ?: division.title) },
     )

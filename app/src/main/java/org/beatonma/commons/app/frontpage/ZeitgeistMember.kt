@@ -26,12 +26,12 @@ import org.beatonma.commons.app.ui.compose.components.party.PartyWithTheme
 import org.beatonma.commons.compose.ambient.invertedColors
 import org.beatonma.commons.compose.ambient.shapes
 import org.beatonma.commons.compose.ambient.typography
-import org.beatonma.commons.compose.util.dotted
 import org.beatonma.commons.data.coerceCurrentPost
 import org.beatonma.commons.data.core.MinimalMember
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 import org.beatonma.commons.snommoc.models.ZeitgeistReason
 import org.beatonma.commons.theme.compose.theme.withSquareTop
+import org.beatonma.commons.theme.compose.util.dot
 
 private val PortraitWidth = 260.dp
 private val TextPadding = 16.dp
@@ -126,12 +126,14 @@ private fun MemberWithPortrait(
 private fun MemberText(
     profile: MemberProfile,
     modifier: Modifier = Modifier,
-) = MemberText(profile.name,
-    dotted(AmbientPartyTheme.current.party.name, profile.parliamentdotuk.toString()),
-    profile.coerceCurrentPost(),
-    AmbientPartyTheme.current.theme.onPrimary,
-    modifier
-)
+) =
+    MemberText(
+        profile.name,
+        AmbientPartyTheme.current.party.name dot profile.parliamentdotuk.toString(),
+        profile.coerceCurrentPost(),
+        AmbientPartyTheme.current.theme.onPrimary,
+        modifier
+    )
 
 @Composable
 private fun MemberText(

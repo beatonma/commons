@@ -36,7 +36,6 @@ import org.beatonma.commons.app.ui.compose.components.FabBottomSheetState
 import org.beatonma.commons.app.ui.compose.components.FabText
 import org.beatonma.commons.compose.ambient.WithContentAlpha
 import org.beatonma.commons.compose.ambient.typography
-import org.beatonma.commons.compose.components.Hint
 import org.beatonma.commons.compose.components.ResourceText
 import org.beatonma.commons.compose.components.TextValidationResult
 import org.beatonma.commons.compose.components.TextValidationRules
@@ -44,7 +43,6 @@ import org.beatonma.commons.compose.components.ValidatedTextField
 import org.beatonma.commons.compose.util.rememberBoolean
 import org.beatonma.commons.compose.util.rememberText
 import org.beatonma.commons.compose.util.update
-import org.beatonma.commons.compose.util.withAnnotatedStyle
 import org.beatonma.commons.core.extensions.lerpTo
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.core.extensions.withEasing
@@ -52,9 +50,11 @@ import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.snommoc.models.social.SocialComment
 import org.beatonma.commons.theme.compose.Padding
 import org.beatonma.commons.theme.compose.components.DateTime
+import org.beatonma.commons.theme.compose.components.Hint
 import org.beatonma.commons.theme.compose.endOfContent
 import org.beatonma.commons.theme.compose.pdp
 import org.beatonma.commons.theme.compose.plus
+import org.beatonma.commons.theme.compose.util.withAnnotatedStyle
 
 @Composable
 internal fun CommentList(

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ConstrainedLayoutReference
 import androidx.compose.foundation.layout.Dimension
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -66,14 +67,13 @@ import org.beatonma.commons.compose.components.Card
 import org.beatonma.commons.compose.components.CardText
 import org.beatonma.commons.compose.components.HorizontalSeparator
 import org.beatonma.commons.compose.components.OptionalText
+import org.beatonma.commons.compose.components.ResourceText
 import org.beatonma.commons.compose.modifiers.onlyWhen
 import org.beatonma.commons.compose.modifiers.withNotNull
 import org.beatonma.commons.compose.modifiers.wrapContentHeight
 import org.beatonma.commons.compose.modifiers.wrapContentOrFillHeight
-import org.beatonma.commons.compose.util.dotted
 import org.beatonma.commons.compose.util.lerp
 import org.beatonma.commons.compose.util.update
-import org.beatonma.commons.compose.util.withAnnotatedStyle
 import org.beatonma.commons.core.extensions.fastForEach
 import org.beatonma.commons.core.extensions.fastForEachIndexed
 import org.beatonma.commons.core.extensions.lerpTo
@@ -97,6 +97,8 @@ import org.beatonma.commons.theme.compose.formatting.dateRange
 import org.beatonma.commons.theme.compose.pdp
 import org.beatonma.commons.theme.compose.theme.screenTitle
 import org.beatonma.commons.theme.compose.theme.systemui.navigationBarsPadding
+import org.beatonma.commons.theme.compose.util.dot
+import org.beatonma.commons.theme.compose.util.withAnnotatedStyle
 
 private const val AVATAR_ASPECT_RATIO = 3F / 2F
 
@@ -222,14 +224,13 @@ private fun CurrentPosition(
                     OptionalText(profile.currentPost, style = typography.h6)
 
                     val status = if (profile.isMp == true && constituency != null) {
-                        stringResource(R.string.member_member_for_constituency,
-                            constituency.name)
+                        stringResource(R.string.member_member_for_constituency, constituency.name)
                     }
                     else if (profile.isLord == true) {
                         stringResource(R.string.member_house_of_lords)
                     }
                     else {
-                        dotted(party?.name, constituency?.name)
+                        party?.name dot constituency?.name
                     }
 
                     OptionalText(
@@ -242,13 +243,12 @@ private fun CurrentPosition(
                     )
                 }
                 else {
-                    Text(stringResource(R.string.member_inactive))
+                    ResourceText(R.string.member_inactive)
                     if (constituency != null) {
-                        Text(
-                            stringResource(
-                                R.string.member_former_member_for_constituency,
-                                constituency.name
-                            ).withAnnotatedStyle(),
+                        ResourceText(
+                            R.string.member_former_member_for_constituency,
+                            constituency.name,
+                            withAnnotatedStyle = true,
                             modifier = Modifier.clickable { onConstituencyClick(constituency) }
                         )
                     }
@@ -325,21 +325,17 @@ private fun FinancialInterests(interests: List<FinancialInterest>, modifier: Mod
 
 @Composable
 private fun EmptyMessage(resource: Int) {
-    EmptyMessage(stringResource(resource))
+    ResourceText(resource, style = typography.h6)
 }
 
-@Composable
-private fun EmptyMessage(text: String) {
-    Text(text, style = typography.h6)
-}
 
 @Composable
-private fun Links(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+private fun Links(modifier: Modifier = Modifier, content: @Composable RowScope.() -> Unit) {
     ScrollableRow(modifier
         .fillMaxWidth()
-        .padding(Padding.Links)) {
-        content()
-    }
+        .padding(Padding.Links),
+        content = content
+    )
 }
 
 @Composable

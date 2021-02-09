@@ -44,7 +44,6 @@ import org.beatonma.commons.app.ui.maps.MapConfig
 import org.beatonma.commons.app.ui.maps.moveCameraTo
 import org.beatonma.commons.app.ui.maps.rememberMapViewWithLifecycle
 import org.beatonma.commons.compose.components.OptionalText
-import org.beatonma.commons.compose.util.dotted
 import org.beatonma.commons.compose.util.rememberBoolean
 import org.beatonma.commons.data.core.room.entities.constituency.CompleteConstituency
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
@@ -56,6 +55,7 @@ import org.beatonma.commons.kotlin.extensions.hasPermission
 import org.beatonma.commons.repo.result.IoLoading
 import org.beatonma.commons.theme.compose.components.ComponentTitle
 import org.beatonma.commons.theme.compose.components.ScreenTitle
+import org.beatonma.commons.theme.compose.util.dot
 
 internal val AmbientConstituencyActions: ProvidableAmbient<ConstituencyDetailActions> =
     ambientOf { ConstituencyDetailActions() }
@@ -199,7 +199,9 @@ private fun LazyListScope.MPs(
         item {
             PartyBackground(party = currentMember.party) {
                 ListItem(
-                    text = { Text(dotted(currentMember.profile.name, currentMember.party.name)) },
+                    text = {
+                        Text(currentMember.profile.name dot currentMember.party.name)
+                    },
                     overlineText = { Text(currentMember.election.name) },
                     secondaryText = { OptionalText(text = currentMember.profile.currentPost) },
                     modifier = Modifier.clickable {
@@ -217,7 +219,7 @@ private fun LazyListScope.MPs(
 
         items(previousMembers) { formerMember ->
             ListItem(
-                text = { Text(dotted(formerMember.profile.name, formerMember.party.name)) },
+                text = { Text(formerMember.profile.name dot formerMember.party.name) },
                 overlineText = { Text(formerMember.election.name) },
                 secondaryText = { OptionalText(text = formerMember.profile.currentPost) },
                 modifier = Modifier.clickable {

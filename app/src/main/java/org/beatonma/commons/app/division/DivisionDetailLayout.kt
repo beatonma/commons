@@ -48,16 +48,15 @@ import org.beatonma.commons.app.ui.compose.components.charts.ChartItem
 import org.beatonma.commons.app.ui.compose.components.charts.ChartKeyItem
 import org.beatonma.commons.app.ui.compose.components.charts.HorizontalStackedBarChart
 import org.beatonma.commons.compose.ambient.colors
+import org.beatonma.commons.compose.components.ResourceText
 import org.beatonma.commons.compose.components.SearchTextField
 import org.beatonma.commons.compose.modifiers.wrapContentHeight
-import org.beatonma.commons.compose.util.dotted
 import org.beatonma.commons.compose.util.mapUpdate
 import org.beatonma.commons.compose.util.rememberBoolean
 import org.beatonma.commons.compose.util.rememberListOf
 import org.beatonma.commons.compose.util.rememberSetOf
 import org.beatonma.commons.compose.util.rememberText
 import org.beatonma.commons.compose.util.toggle
-import org.beatonma.commons.compose.util.withAnnotatedStyle
 import org.beatonma.commons.core.House
 import org.beatonma.commons.core.VoteType
 import org.beatonma.commons.core.extensions.allEqualTo
@@ -76,6 +75,7 @@ import org.beatonma.commons.theme.compose.components.ScreenTitle
 import org.beatonma.commons.theme.compose.formatting.formatted
 import org.beatonma.commons.theme.compose.theme.politicalVotes
 import org.beatonma.commons.theme.compose.theme.systemui.statusBarsPadding
+import org.beatonma.commons.theme.compose.util.dot
 
 internal val AmbientDivisionActions: ProvidableAmbient<DivisionActions> =
     ambientOf { DivisionActions() }
@@ -180,7 +180,7 @@ private fun HeaderAboveSocial(
     ) {
         ScreenTitle(title)
 
-        Text(dotted(division.house.description(), division.date.formatted()))
+        Text(division.house.description() dot division.date.formatted())
 
         Quote(description)
     }
@@ -393,7 +393,7 @@ private fun GraphKeyItem(
 
     ChartKeyItem(
         { VoteIcon(voteType.icon, voteType.color) },
-        { Text(stringResource(voteType.descriptionRes, voteCount).withAnnotatedStyle()) },
+        { ResourceText(voteType.descriptionRes, voteCount, withAnnotatedStyle = true) },
         modifier = modifier.selectable(
             selected = selected.value,
             onClick = {

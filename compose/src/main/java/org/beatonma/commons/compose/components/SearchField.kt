@@ -18,6 +18,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import org.beatonma.commons.compose.util.rememberText
 import org.beatonma.commons.compose.util.update
+import org.beatonma.commons.theme.compose.components.Hint
 
 @Composable
 fun SearchTextField(
