@@ -37,6 +37,7 @@ import org.beatonma.commons.app.ui.compose.components.FabText
 import org.beatonma.commons.compose.ambient.WithContentAlpha
 import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.components.Hint
+import org.beatonma.commons.compose.components.ResourceText
 import org.beatonma.commons.compose.components.TextValidationResult
 import org.beatonma.commons.compose.components.TextValidationRules
 import org.beatonma.commons.compose.components.ValidatedTextField
@@ -50,8 +51,8 @@ import org.beatonma.commons.core.extensions.withEasing
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.snommoc.models.social.SocialComment
 import org.beatonma.commons.theme.compose.Padding
+import org.beatonma.commons.theme.compose.components.DateTime
 import org.beatonma.commons.theme.compose.endOfContent
-import org.beatonma.commons.theme.compose.formatting.formatted
 import org.beatonma.commons.theme.compose.pdp
 import org.beatonma.commons.theme.compose.plus
 
@@ -90,8 +91,8 @@ internal fun CommentList(
 
 @Composable
 private fun NoComments(modifier: Modifier = Modifier) =
-    Text(
-        stringResource(R.string.social_comment_no_comments),
+    ResourceText(
+        R.string.social_comment_no_comments,
         modifier.fillMaxWidth(),
         style = typography.h6, textAlign = TextAlign.Center
     )
@@ -119,7 +120,7 @@ private fun Comment(
                     style = typography.caption,
                     modifier = Modifier.padding(Padding.HorizontalListItem)
                 )
-                Text(comment.created.formatted(), style = typography.caption)
+                DateTime(comment.created)
             }
         }
     }
@@ -182,8 +183,8 @@ private fun CreateCommentSheetContent(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    stringResource(R.string.social_compose_comment),
+                ResourceText(
+                    R.string.social_compose_comment,
                     style = typography.h6
                 )
 
@@ -193,7 +194,7 @@ private fun CreateCommentSheetContent(
             ValidatedTextField(
                 commentText, commentValidator,
                 placeholder = {
-                    Hint(stringResource(R.string.social_compose_comment_hint))
+                    Hint(R.string.social_compose_comment_hint)
                 },
                 onValueChange = { value, validationResult ->
                     commentText.update(value)
@@ -212,7 +213,7 @@ private fun CreateCommentSheetContent(
                 modifier = Modifier.align(Alignment.End).padding(Padding.CardButton),
                 enabled = commentIsValid.value,
             ) {
-                Text(stringResource(R.string.social_comment_post))
+                ResourceText(R.string.social_comment_post)
             }
         }
     }
