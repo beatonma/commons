@@ -9,6 +9,7 @@ import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.platform.AmbientContext
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.compose.animation.lerpBetween
@@ -21,7 +22,6 @@ import kotlin.math.roundToInt
  * and vice-versa.
  */
 interface DirectionalValue {
-
     val value: Int
 
     operator fun compareTo(other: Int) = value.compareTo(other)
@@ -58,6 +58,7 @@ fun Placeable.PlacementScope.placeRelative(
 }
 
 fun Placeable.dimensions() = Pair(HorizontalValue(width), VerticalValue(height))
+val Placeable.size get() = IntSize(width, height)
 
 fun Int.asHorizontal() = HorizontalValue(this)
 fun Int.asVertical() = VerticalValue(this)
