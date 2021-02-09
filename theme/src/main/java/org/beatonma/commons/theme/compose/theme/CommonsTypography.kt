@@ -24,9 +24,8 @@ object CommonsSpanStyle {
     val bold: SpanStyle = SpanStyle(fontWeight = FontWeight.Bold)
     val quote: SpanStyle = SpanStyle(fontFamily = FontFamily.Monospace)
 
-    @Composable
     val hyperlink: SpanStyle
-        get() =
+        @Composable get() =
             SpanStyle(color = MaterialTheme.colors.primary,
                 textDecoration = TextDecoration.Underline)
 
@@ -36,3 +35,7 @@ object CommonsSpanStyle {
         fontFamily = FontFamily.Monospace,
     )
 }
+
+val Typography.screenTitle get() = h4
+val Typography.componentTitle get() = h5
+val Typography.quote get() = body1
