@@ -1,50 +1,56 @@
 package org.beatonma.commons.theme.compose
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 
 object Padding {
-    val Zero = PaddingValues(0.dp)
-    val Card = PaddingValues(start = 12.dp, top = 12.dp, end = 12.dp, bottom = 16.dp)
+    val Zero = paddingValues(0.dp)
+    val Card = paddingValues(start = 12.dp, top = 12.dp, end = 12.dp, bottom = 16.dp)
 
     // Standard inset from screen edges
-    val ScreenHorizontal = PaddingValues(start = 12.dp, end = 12.dp)
-    val Screen = PaddingValues(16.dp)
+    val ScreenHorizontal = paddingValues(start = 12.dp, end = 12.dp)
+    val Screen = paddingValues(16.dp)
 
-    val VerticalListItem = PaddingValues(bottom = 8.dp)
-    val VerticalListItemLarge = PaddingValues(top = 8.dp, bottom = 8.dp)
-    val HorizontalListItem = PaddingValues(end = 12.dp)
+    val Spacer = paddingValues(bottom = 16.dp)
 
-    val HorizontalSeparator = PaddingValues(vertical = 8.dp)
-    val VerticalSeparator = PaddingValues(horizontal = 8.dp)
+    val VerticalListItem = paddingValues(bottom = 8.dp)
+    val VerticalListItemLarge = paddingValues(top = 8.dp, bottom = 8.dp)
+    val HorizontalListItem = paddingValues(end = 12.dp)
+    val GridListItem = VerticalListItem + HorizontalListItem
+
+    val HorizontalSeparator = paddingValues(vertical = 8.dp)
+    val VerticalSeparator = paddingValues(horizontal = 8.dp)
 
     // For rows of Weblink, EmailLink, PhoneLink
-    val LinkItem = PaddingValues(end = 4.dp)
-    val Links = PaddingValues(vertical = 8.dp)
+    val LinkItem = paddingValues(end = 4.dp)
+    val Links = paddingValues(vertical = 8.dp)
 
-    val IconSmall = PaddingValues(8.dp)
-    val IconLarge = PaddingValues(16.dp)
+    val IconSmall = paddingValues(8.dp)
+    val IconLarge = paddingValues(16.dp)
 
-    val Image = PaddingValues(8.dp)
+    val Tag = paddingValues(horizontal = 8.dp, vertical = 4.dp)
+
+    val Image = paddingValues(8.dp)
 
     val Fab = Screen
-    val FabContent = PaddingValues(16.dp)
-    val ExtendedFabContent = PaddingValues(horizontal = 20.dp, vertical = 16.dp)
+    val FabContent = paddingValues(16.dp)
+    val ExtendedFabContent = paddingValues(horizontal = 20.dp, vertical = 16.dp)
 
-    val Snackbar = PaddingValues(16.dp)
+    val Snackbar = paddingValues(16.dp)
 
-    val CardButton = PaddingValues(top = 24.dp)
-    val EndOfContent = PaddingValues(bottom = 160.dp)
+    val CardButton = paddingValues(top = 24.dp)
+    val EndOfContent = paddingValues(bottom = 160.dp)
 }
 
-fun Modifier.endOfContent() = padding(Padding.EndOfContent)
 
 @Suppress("NOTHING_TO_INLINE")
-private inline fun PaddingValues(
+private inline fun paddingValues(
     horizontal: Dp = 0.dp,
     vertical: Dp = 0.dp,
     start: Dp = horizontal,
@@ -79,3 +85,7 @@ val Float.pdp: Dp get() = this.coerceAtLeast(0F).dp
  * Replace .dp with .pdp (paddingDp) to ensure non-negative values. Useful for animating padding values.
  */
 val Int.pdp: Dp get() = this.coerceAtLeast(0).dp
+
+@Composable
+fun EndOfContent() = Spacer(Modifier.padding(Padding.EndOfContent))
+fun Modifier.endOfContent() = padding(Padding.EndOfContent)
