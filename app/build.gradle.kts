@@ -135,7 +135,9 @@ dependencies {
 
     debug {
         implementations(
+            Dependencies.Kotlin.REFLECT,
 //            Dependencies.Debug.LEAK_CANARY,
+            project(Modules.SampleData),
             project(Modules.ThemePreview)
         )
     }
