@@ -41,10 +41,13 @@ fun ScreenTitle(
     text: String,
     modifier: Modifier = Modifier,
     color: Color = Color.Unspecified,
+    autoPadding: Boolean = true,
 ) {
     Text(
         text,
-        modifier.padding(Padding.ScreenHorizontal),
+        modifier.apply {
+            if (autoPadding) padding(Padding.ScreenHorizontal)
+        },
         color,
         style = typography.screenTitle,
     )
@@ -55,10 +58,13 @@ fun ComponentTitle(
     text: String,
     modifier: Modifier = Modifier,
     color: Color = Color.Unspecified,
+    autoPadding: Boolean = true,
 ) {
     Text(
         text,
-        modifier.padding(Padding.ScreenHorizontal),
+        modifier.apply {
+            if (autoPadding) padding(Padding.ScreenHorizontal)
+        },
         color,
         style = typography.componentTitle,
     )
