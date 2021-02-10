@@ -18,6 +18,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -29,7 +30,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
-import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.animation.ExpandCollapseState
 import org.beatonma.commons.compose.animation.VisibilityState
 import org.beatonma.commons.compose.animation.hide
@@ -40,26 +40,29 @@ import org.beatonma.commons.compose.animation.show
 import org.beatonma.commons.compose.animation.toggle
 import org.beatonma.commons.compose.animation.twoStateProgressTransition
 import org.beatonma.commons.compose.modifiers.withNotNull
+import org.beatonma.commons.compose.modifiers.wrapContentHeight
 import org.beatonma.commons.compose.util.rememberListOf
 import org.beatonma.commons.core.extensions.fastForEach
+import org.beatonma.commons.core.extensions.reversed
 import org.beatonma.commons.core.extensions.withNotNull
 import org.beatonma.commons.theme.compose.Padding
 import org.beatonma.commons.theme.compose.Size
+import org.beatonma.commons.theme.compose.components.ComponentTitle
 import org.beatonma.commons.theme.compose.theme.CommonsFastSpring
 import org.beatonma.commons.theme.compose.theme.CommonsFastTween
 import org.beatonma.commons.theme.compose.theme.CommonsSpring
-import org.beatonma.commons.theme.compose.theme.componentTitle
 import kotlin.math.roundToInt
 
 private val itemVisibilityKey = FloatPropKey("Track item alpha")
+typealias CollapsedColumnHeaderBlock = @Composable (isCollapsible: Boolean, transitionState: TransitionState, clickAction: (() -> Unit)?) -> Unit
 
 object CollapsedColumn {
     fun simpleHeader(
         title: String,
         description: String? = null,
         modifier: Modifier = Modifier,
-    ) =
-        @Composable { isCollapsible: Boolean, transitionState: TransitionState, clickAction: (() -> Unit)? ->
+    ): CollapsedColumnHeaderBlock =
+        { isCollapsible, transitionState, clickAction ->
             Row(
                 modifier
                     .fillMaxWidth()
@@ -70,8 +73,8 @@ object CollapsedColumn {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                Column {
-                    Text(title, style = typography.componentTitle)
+                Column(Modifier.padding(Padding.ScreenHorizontal)) {
+                    ComponentTitle(title, autoPadding = false)
                     withNotNull(description) {
                         Text(it)
                     }
@@ -109,17 +112,24 @@ fun <T> CollapsedColumn(
 
     val itemTransitionDef = rememberItemTransition()
 
+    val toggleAction = { state.toggle() }
+
     BaseCollapsibleColumn(items, transition, collapsedItemCount) { displayItems ->
         Column(modifier) {
             headerBlock(
                 isCollapsible,
-                transition
-            ) { state.toggle() }
+                transition,
+                toggleAction
+            )
 
             displayItems.fastForEach { item ->
                 AnimatedItem(item = item,
                     itemTransitionDef = itemTransitionDef,
                     itemBlock = itemBlock)
+            }
+
+            if (isCollapsible) {
+                MoreContentIndication(transition, toggleAction)
             }
         }
     }
@@ -153,9 +163,11 @@ fun <T> LazyCollapsedColumn(
             }
 
             this.items(displayItems) { item ->
-                AnimatedItem(item = item,
+                AnimatedItem(
+                    item = item,
                     itemTransitionDef = itemTransitionDef,
-                    itemBlock = itemBlock)
+                    itemBlock = itemBlock,
+                )
             }
         }
     }
@@ -170,9 +182,10 @@ private fun <T> BaseCollapsibleColumn(
 ) {
     var displayItems by rememberListOf<T>()
 
-    val visibleItems = collapsedItemCount +
-            (transitionState[progressKey] * (items.size - collapsedItemCount))
-                .roundToInt()
+    val visibleItems = collapsedItemCount + (
+            transitionState[progressKey] * (items.size - collapsedItemCount)
+            ).roundToInt()
+
     displayItems = items.take(visibleItems)
 
     content(displayItems)
@@ -226,4 +239,28 @@ private fun rememberItemTransition() = remember {
         animSpec = CommonsFastTween(),
         key = itemVisibilityKey,
     )
+}
+
+/**
+ * A visual indication that there is more content available.
+ */
+@Composable
+private fun MoreContentIndication(transitionState: TransitionState, onClick: () -> Unit) {
+    val visibility = transitionState[progressKey].reversed()
+
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .alpha(visibility)
+            .wrapContentHeight(visibility)
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            Icons.Default.MoreVert, // MoreHoriz not available..?
+            Modifier
+                .padding(Padding.IconSmall)
+                .rotate(90F)
+        )
+    }
 }
