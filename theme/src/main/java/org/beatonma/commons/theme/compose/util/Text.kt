@@ -7,14 +7,20 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import org.beatonma.commons.theme.compose.theme.CommonsSpanStyle
 
-private const val DOT = '·'
+private const val DOT = '•'
+private const val SEPARATOR = " $DOT "
 
 @Composable
 fun dotted(vararg components: String?) =
     components.filterNot(String?::isNullOrEmpty)
         .joinToString(
-            separator = " $DOT "
+            separator = SEPARATOR
         )
+
+@Composable
+fun Collection<String?>.dotted(): String =
+    filterNot(String?::isNullOrEmpty)
+        .joinToString(separator = SEPARATOR)
 
 @Composable
 infix fun String?.dot(other: String?): String = dotted(this, other)
