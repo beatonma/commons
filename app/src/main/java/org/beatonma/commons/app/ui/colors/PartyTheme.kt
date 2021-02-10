@@ -1,27 +1,15 @@
 package org.beatonma.commons.app.ui.colors
 
-import android.content.Context
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import org.beatonma.commons.BuildConfig.*
-import org.beatonma.commons.R
 import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.room.entities.member.Party
-import org.beatonma.commons.isNightMode
 import org.beatonma.commons.kotlin.data.Color
-import org.beatonma.commons.kotlin.extensions.colorCompat
 import org.beatonma.commons.theme.compose.theme.textPrimaryDark
 import org.beatonma.commons.theme.compose.theme.textPrimaryLight
 import androidx.compose.ui.graphics.Color as ComposeColor
-
-@Deprecated("Unused in Compose")
-interface Themed {
-    var theme: PartyColors?
-}
-
-fun Context.getPartyTheme(partyID: ParliamentID?) = getPartyTheme(partyID, this)
-fun Party.getTheme(context: Context): PartyColors = getPartyTheme(parliamentdotuk, context)
 
 @Composable
 fun Party.theme(): ComposePartyColors = partyTheme(parliamentdotuk = parliamentdotuk)
@@ -42,20 +30,6 @@ fun partyTheme(parliamentdotuk: ParliamentID = -1): ComposePartyColors {
     else {
         naiveColors.resolve()
     }
-}
-
-private fun getPartyTheme(partyID: ParliamentID?, context: Context): PartyColors {
-    var naivePartyColors = getNaivePartyTheme(partyID)
-    if (context.isNightMode()) {
-        naivePartyColors = naivePartyColors.coerce(
-            minSaturation = .2F,
-            maxSaturation = .8F,
-            minLuminance = .2F,
-            maxLuminance = .8F
-        )
-    }
-
-    return naivePartyColors.resolve(context)
 }
 
 /**
@@ -229,9 +203,6 @@ private data class NaivePartyColors(
             accentTextTheme,
         )
 
-    fun resolve(context: Context) =
-        PartyColors(context, primary, accent, primaryTextTheme, accentTextTheme)
-
     @Composable
     fun resolve(): ComposePartyColors = ComposePartyColors(
         primary = ComposeColor(primary),
@@ -247,37 +218,6 @@ class ComposePartyColors(
     val onPrimary: ComposeColor,
     val onAccent: ComposeColor,
 )
-
-@Deprecated("Unused in Compose")
-class PartyColors(
-    context: Context,
-    val primary: Int,
-    val accent: Int,
-    primaryTextTheme: Int,
-    accentTextTheme: Int
-) {
-
-    val textPrimaryOnPrimary: Int = resolve(context, primaryTextTheme, true)
-    val textSecondaryOnPrimary: Int = resolve(context, primaryTextTheme, false)
-    val textPrimaryOnAccent: Int = resolve(context, accentTextTheme, true)
-    val textSecondaryOnAccent: Int = resolve(context, accentTextTheme, false)
-
-    private fun resolve(context: Context, themeInt: Int, isPrimary: Boolean): Int {
-        return when (themeInt) {
-            THEME_TEXT_DARK -> {
-                if (isPrimary) context.colorCompat(R.color.TextPrimaryDark)
-                else context.colorCompat(R.color.TextSecondaryDark)
-            }
-
-            THEME_TEXT_LIGHT -> {
-                if (isPrimary) context.colorCompat(R.color.TextPrimaryLight)
-                else context.colorCompat(R.color.TextSecondaryLight)
-            }
-
-            else -> 0
-        }
-    }
-}
 
 /**
  * Map small/historic/niche/relatively unestablished/loosely associated parties, or parties with that
