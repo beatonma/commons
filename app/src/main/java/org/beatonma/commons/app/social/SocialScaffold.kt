@@ -133,7 +133,7 @@ fun StickySocialScaffold(
     expandAction: ActionBlock = { uiState.update(SocialUiState.Expanded) },
     onScrollStarted: (Offset) -> Unit = {},
     onScrollStopped: (velocity: Float) -> Unit = {},
-    socialTheme: SocialTheme = socialTheme(),
+    socialTheme: SocialTheme = AmbientSocialTheme.current,
 ) {
     val scaffoldScrollEnabled = rememberBoolean(true)
     Providers(
@@ -227,7 +227,7 @@ private fun CollapsibleSocialHeader(
 }
 
 @Preview @Composable
-fun CollapsibleSocialPreview() {
+private fun CollapsibleSocialPreview() {
     val listItems = (1..100).toList()
     ProvidePreviewAmbients {
         StickySocialScaffold(

@@ -5,7 +5,6 @@ import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.ProvidableAmbient
-import androidx.compose.runtime.ProvidedValue
 import androidx.compose.runtime.Providers
 import androidx.compose.runtime.ambientOf
 import androidx.compose.runtime.getValue
@@ -30,7 +29,7 @@ import org.beatonma.commons.snommoc.models.social.SocialTarget
 import org.beatonma.commons.snommoc.models.social.SocialVoteType
 
 val AmbientSocialContent: ProvidableAmbient<SocialContent> = ambientOf { EmptySocialContent }
-val AmbientSocialTheme: ProvidableAmbient<SocialTheme> = ambientOf { SocialTheme() }
+val AmbientSocialTheme: ProvidableAmbient<SocialTheme> = ambientOf { error("SocialTheme has not been provided") }
 val AmbientSocialActions: ProvidableAmbient<SocialActions> = ambientOf { SocialActions() }
 val AmbientSocialUiState: ProvidableAmbient<MutableState<SocialUiState>> =
     ambientOf { mutableStateOf(SocialUiState.Collapsed) }
@@ -48,22 +47,24 @@ fun ProvideSocial(
     targetProvider: SocialTargetProvider,
     socialViewModel: SocialViewModel,
     userAccountViewModel: UserAccountViewModel,
-    vararg additionalProviders: ProvidedValue<*> = arrayOf(),
+    theme: SocialTheme = socialTheme(),
     content: @Composable () -> Unit,
-) = ProvideSocial(
-    socialTarget = targetProvider.socialTarget,
-    socialViewModel = socialViewModel,
-    userAccountViewModel = userAccountViewModel,
-    content = content,
-    additionalProviders = additionalProviders,
-)
+) {
+    SocialProviders(
+        socialTarget = targetProvider.socialTarget,
+        socialViewModel = socialViewModel,
+        userAccountViewModel = userAccountViewModel,
+        theme = theme,
+        content = content,
+    )
+}
 
 @Composable
-private fun ProvideSocial(
+private fun SocialProviders(
     socialTarget: SocialTarget,
     socialViewModel: SocialViewModel,
     userAccountViewModel: UserAccountViewModel,
-    vararg additionalProviders: ProvidedValue<*> = arrayOf(),
+    theme: SocialTheme,
     content: @Composable () -> Unit,
 ) {
     val activeUserToken by userAccountViewModel.userTokenLiveData.observeAsState(NullUserToken)
@@ -91,7 +92,7 @@ private fun ProvideSocial(
         AmbientSocialUiState provides socialViewModel.uiState,
         AmbientSocialContent provides socialContent,
         AmbientUserToken provides activeUserToken,
-        *additionalProviders,
+        AmbientSocialTheme provides theme,
         content = content,
     )
 }
