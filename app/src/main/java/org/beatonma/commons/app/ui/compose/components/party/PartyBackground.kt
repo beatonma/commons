@@ -2,9 +2,11 @@ package org.beatonma.commons.app.ui.compose.components.party
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.material.AmbientContentColor
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidableAmbient
+import androidx.compose.runtime.Providers
 import androidx.compose.runtime.ambientOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -99,42 +101,46 @@ private fun PartyBackground(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    Layout(
-        content = {
-            PartyPortrait(
-                logo,
-                config,
+    Providers(
+        AmbientContentColor provides theme.onPrimary,
+    ) {
+        Layout(
+            content = {
+                PartyPortrait(
+                    logo,
+                    config,
+                )
+
+                Surface(
+                    color = theme.primary.copy(alpha = .9F),
+                    content = content
+                )
+            },
+            modifier = modifier.background(colors.surface),
+        ) { measurables, constraints ->
+            require(measurables.size == 2)
+
+            // Use the size of content to determine size of PartyPortrait
+            // then draw the portrait behind content.
+
+            val contentPlaceable = measurables[1].measure(constraints)
+            val width: Int = contentPlaceable.width
+            val height: Int = contentPlaceable.height
+
+            val portraitPlaceable = measurables[0].measure(
+                Constraints.fixed(width, height)
             )
 
-            Surface(
-                color = theme.primary.copy(alpha = .9F),
-                content = content
-            )
-        },
-        modifier = modifier.background(colors.surface),
-    ) { measurables, constraints ->
-        require(measurables.size == 2)
-
-        // Use the size of content to determine size of PartyPortrait
-        // then draw the portrait behind content.
-
-        val contentPlaceable = measurables[1].measure(constraints)
-        val width: Int = contentPlaceable.width
-        val height: Int = contentPlaceable.height
-
-        val portraitPlaceable = measurables[0].measure(
-            Constraints.fixed(width, height)
-        )
-
-        layout(width, height) {
-            portraitPlaceable.placeRelative(0, 0)
-            contentPlaceable.placeRelative(0, 0)
+            layout(width, height) {
+                portraitPlaceable.placeRelative(0, 0)
+                contentPlaceable.placeRelative(0, 0)
+            }
         }
     }
 }
 
 @Composable
-private fun PartyPortrait(
+internal fun PartyPortrait(
     graphic: VectorGraphic,
     config: ImageConfig,
     modifier: Modifier = Modifier,
