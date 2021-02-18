@@ -49,30 +49,32 @@ fun <T, H> StickyHeaderRowAlt(
     val visibleItemsInfo = state.layoutInfo.visibleItemsInfo
     val coroutineScope = rememberCoroutineScope()
 
-    val metrics = metricsOf(items, visibleItemsInfo, headerForItem)
-
     val scrollController = rememberScrollableController { delta ->
         coroutineScope.launch { state.scroll { scrollBy(delta) } }
         delta
     }
+
+    val metrics = metricsOf(items, visibleItemsInfo, headerForItem)
+    val visibleHeaders = metrics.visibleHeaders
 
     StickyLayout(
         modifier
     ) {
         // Background content
         StickyBackground(
-            metrics.visibleHeaders,
+            metrics,
             visibleItemsInfo,
+            groupBackgroundOptions,
             Modifier,
         ) {
-            metrics.visibleHeaders.positions.forEach { index ->
-                groupBackground(metrics.visibleHeaders.visible[index])
+            visibleHeaders.positions.forEach { index ->
+                groupBackground(visibleHeaders.headers[index])
             }
         }
 
         // Header content
         StickyHeader(
-            metrics.visibleHeaders,
+            visibleHeaders,
             visibleItemsInfo,
             Modifier.scrollable(
                 orientation = Orientation.Horizontal,
@@ -80,8 +82,8 @@ fun <T, H> StickyHeaderRowAlt(
                 reverseDirection = true,
             ),
         ) {
-            metrics.visibleHeaders.positions.forEach { index ->
-                headerContent(metrics.visibleHeaders.visible[index])
+            visibleHeaders.positions.forEach { index ->
+                headerContent(visibleHeaders.headers[index])
             }
         }
 
@@ -90,7 +92,8 @@ fun <T, H> StickyHeaderRowAlt(
         ) {
             this.items(metrics.items) { annotated ->
                 itemContent(annotated.item, Modifier)
-                if (annotated.position == GroupPosition.End || annotated.position == GroupPosition.Only) {
+
+                if (annotated.position.isLast) {
                     Spacer(Modifier.width(groupBackgroundOptions.padding.end))
                 }
             }
@@ -134,7 +137,6 @@ private fun StickyLayout(
                 maxHeight = height
             )
         )
-        println("background: ${backgroundPlaceable.width}x${backgroundPlaceable.height}")
 
         layout(width, height) {
             backgroundPlaceable.placeRelative(0, 0)
@@ -145,9 +147,10 @@ private fun StickyLayout(
 }
 
 @Composable
-private fun <H> StickyBackground(
-    headers: Headers<H>,
+private fun <T, H> StickyBackground(
+    metrics: Metrics<T, H>,
     itemsInfo: List<LazyListItemInfo>,
+    options: GroupBackgroundOptions,
     modifier: Modifier,
     content: @Composable () -> Unit,
 ) {
@@ -155,11 +158,13 @@ private fun <H> StickyBackground(
         EmptyLayout
         return
     }
+    val headers = metrics.visibleHeaders
 
     Layout(
         content = content,
         modifier = modifier,
     ) { measurables, constraints ->
+        // Remember these are the backgrounds, not the items!
         val placeables = measurables.mapIndexed { index, measurable ->
             val headerIndex = headers.positions[index]
             val nextHeaderIndex = headers.positions.getOrNull(index + 1) ?: -1
@@ -170,12 +175,28 @@ private fun <H> StickyBackground(
             val x = info.offset
             val nextX = nextInfo?.offset
 
-            val width = when (nextX) {
-                null -> constraints.minWidth
-                else -> nextX - x
-            }
+            val width =
+                when (nextX) {
+                    null -> {
+                        // Use end coordinate of the last visible item.
+                        val lastInfo = itemsInfo.last()
+                        val lastItemPosition = metrics.items.getOrNull(lastInfo.index)?.position ?: GroupPosition.End
 
-            measurable.measure(constraints.copy(minWidth = width))
+                        val lastEndX = if (lastItemPosition.isLast) {
+                            lastInfo.offset + lastInfo.size - options.padding.end.toIntPx()
+                        }
+                        else {
+                            lastInfo.offset + lastInfo.size
+                        }
+                        lastEndX - x
+                    }
+                    else -> {
+                        // Use start coordinate of next header and offset with specified padding.
+                        nextX - x - options.padding.end.toIntPx()
+                    }
+                }
+
+            measurable.measure(constraints.copy(minWidth = width, maxWidth = width))
         }
 
         val width: Int = constraints.maxWidth
@@ -263,7 +284,7 @@ private data class AnnotatedItem<T>(
     val position: GroupPosition
 )
 private class Headers<H>(
-    val visible: List<H?>,
+    val headers: List<H?>,
     val positions: List<Int>
 )
 
@@ -273,6 +294,9 @@ private enum class GroupPosition {
     End,
     Only, // Only item in the group -> single item is both Start and End
     ;
+    val isFirst: Boolean get() = this == Start || this == Only
+    val isLast: Boolean get() = this == End || this == Only
+
 }
 
 private data class Metrics<T, H>(
@@ -310,7 +334,7 @@ private fun <T, H> metricsOf(
 
     return Metrics(
         annotatedItems,
-        visibleHeaders = Headers(visibleHeaders, visibleHeaderPositions)
+        visibleHeaders = Headers(visibleHeaders, visibleHeaderPositions),
     )
 }
 
