@@ -1,9 +1,7 @@
 package org.beatonma.commons.compose.components
 
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.foundation.gestures.rememberScrollableController
 import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyItemScope
@@ -21,14 +19,12 @@ import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.unit.Constraints
 import kotlinx.coroutines.launch
 import org.beatonma.commons.core.extensions.fastForEachIndexed
-import org.beatonma.commons.core.extensions.progressIn
-import org.beatonma.commons.core.extensions.withEasing
 import org.beatonma.commons.theme.compose.EndOfContent
-import org.beatonma.commons.theme.compose.Padding
+import org.beatonma.commons.theme.compose.HorizontalPadding
 
-class GroupBackgroundOptions(
+class GroupStyle(
     val shape: Shape = RectangleShape,
-    val padding: PaddingValues = Padding.Zero
+    val padding: HorizontalPadding = HorizontalPadding()
 )
 
 @Composable
@@ -39,7 +35,7 @@ fun <T, H> StickyHeaderRowAlt(
     groupBackground: @Composable (H?) -> Unit,
     itemContent: @Composable LazyItemScope.(T, Modifier) -> Unit,
     appendEndOfContentSpacing: Boolean = true,
-    groupBackgroundOptions: GroupBackgroundOptions = GroupBackgroundOptions(),
+    groupStyle: GroupStyle = GroupStyle(),
     modifier: Modifier = Modifier,
 ) {
     if (items.isEmpty()) return
@@ -60,11 +56,12 @@ fun <T, H> StickyHeaderRowAlt(
     StickyLayout(
         modifier
     ) {
+        // TODO StickyBackground and StickyHeader should probably be combined to avoid over-traversal.
         // Background content
         StickyBackground(
             metrics,
             visibleItemsInfo,
-            groupBackgroundOptions,
+            groupStyle,
             Modifier,
         ) {
             visibleHeaders.positions.forEach { index ->
@@ -74,8 +71,9 @@ fun <T, H> StickyHeaderRowAlt(
 
         // Header content
         StickyHeader(
-            visibleHeaders,
+            metrics,
             visibleItemsInfo,
+            groupStyle.padding,
             Modifier.scrollable(
                 orientation = Orientation.Horizontal,
                 controller = scrollController,
@@ -91,10 +89,14 @@ fun <T, H> StickyHeaderRowAlt(
             state = state,
         ) {
             this.items(metrics.items) { annotated ->
+                if (annotated.position.isFirst) {
+                    Spacer(Modifier.width(groupStyle.padding.start))
+                }
+
                 itemContent(annotated.item, Modifier)
 
                 if (annotated.position.isLast) {
-                    Spacer(Modifier.width(groupBackgroundOptions.padding.end))
+                    Spacer(Modifier.width(groupStyle.padding.end))
                 }
             }
 
@@ -150,7 +152,7 @@ private fun StickyLayout(
 private fun <T, H> StickyBackground(
     metrics: Metrics<T, H>,
     itemsInfo: List<LazyListItemInfo>,
-    options: GroupBackgroundOptions,
+    groupStyle: GroupStyle,
     modifier: Modifier,
     content: @Composable () -> Unit,
 ) {
@@ -159,12 +161,14 @@ private fun <T, H> StickyBackground(
         return
     }
     val headers = metrics.visibleHeaders
+    // TODO apply shape
 
     Layout(
         content = content,
         modifier = modifier,
     ) { measurables, constraints ->
         // Remember these are the backgrounds, not the items!
+        val xPositions = mutableListOf<Int>()
         val placeables = measurables.mapIndexed { index, measurable ->
             val headerIndex = headers.positions[index]
             val nextHeaderIndex = headers.positions.getOrNull(index + 1) ?: -1
@@ -172,8 +176,16 @@ private fun <T, H> StickyBackground(
             val info = itemsInfo[headerIndex]
             val nextInfo = itemsInfo.getOrNull(nextHeaderIndex)
 
-            val x = info.offset
+//            val x = info.offset + groupStyle.padding.start.toIntPx()
+            val itemPosition = metrics.items.getOrNull(info.index)?.position ?: GroupPosition.Middle
+            val x = if (itemPosition.isFirst) {
+                info.offset + groupStyle.padding.start.toIntPx()
+            }
+            else info.offset
+
             val nextX = nextInfo?.offset
+
+            xPositions.add(x)
 
             val width =
                 when (nextX) {
@@ -183,7 +195,7 @@ private fun <T, H> StickyBackground(
                         val lastItemPosition = metrics.items.getOrNull(lastInfo.index)?.position ?: GroupPosition.End
 
                         val lastEndX = if (lastItemPosition.isLast) {
-                            lastInfo.offset + lastInfo.size - options.padding.end.toIntPx()
+                            lastInfo.offset + lastInfo.size - groupStyle.padding.end.toIntPx()
                         }
                         else {
                             lastInfo.offset + lastInfo.size
@@ -192,7 +204,7 @@ private fun <T, H> StickyBackground(
                     }
                     else -> {
                         // Use start coordinate of next header and offset with specified padding.
-                        nextX - x - options.padding.end.toIntPx()
+                        nextX - x - groupStyle.padding.end.toIntPx()
                     }
                 }
 
@@ -204,10 +216,7 @@ private fun <T, H> StickyBackground(
 
         layout(width, height) {
             placeables.forEachIndexed { index, blockPlaceable ->
-                val headerIndex = headers.positions[index]
-
-                val info = itemsInfo[headerIndex]
-                val x = info.offset
+                val x = xPositions[index]
                 blockPlaceable.placeRelative(x, 0)
             }
         }
@@ -215,9 +224,10 @@ private fun <T, H> StickyBackground(
 }
 
 @Composable
-private fun <H> StickyHeader(
-    headers: Headers<H>,
+private fun <T, H> StickyHeader(
+    metrics: Metrics<T, H>,
     itemsInfo: List<LazyListItemInfo>,
+    padding: HorizontalPadding,
     modifier: Modifier,
     content: @Composable () -> Unit,
 ) {
@@ -225,6 +235,7 @@ private fun <H> StickyHeader(
         EmptyLayout
         return
     }
+    val headers = metrics.visibleHeaders
 
     Layout(
         content = content,
@@ -243,28 +254,21 @@ private fun <H> StickyHeader(
                 val info = itemsInfo[headerIndex]
                 val nextInfo = itemsInfo.getOrNull(nextHeaderIndex)
 
+                val itemPosition = metrics.items.getOrNull(info.index)?.position ?: GroupPosition.Middle
+
                 // Header 'wants' to sit at beginning of group, or the left/start of display area.
-                val preferredX = info.offset.coerceAtLeast(0)
+                val preferredX = when {
+                    itemPosition.isFirst -> info.offset + padding.start.toIntPx()
+                    else -> info.offset
+                }.coerceAtLeast(0)
 
                 val x = if (nextInfo == null) { preferredX }
                 else {
-                    val endX = preferredX + blockPlaceable.width
-                    val overlapsNext = endX > nextInfo.offset
+                    val endX = preferredX + blockPlaceable.width + padding.end.toIntPx()
+                    val overlapAmount = (endX - nextInfo.offset)
 
                     when {
-                        preferredX == 0 && overlapsNext -> {
-                            // Slide this header out of the way of the next one when they start to overlap
-                            // Only apply when this header is already the primary header at left/start of screen.
-                            nextInfo.offset - blockPlaceable.width
-                        }
-
-                        overlapsNext -> {
-                            // Gradually apply sliding motion as we reach the edge of the display.
-                            val overlapAmount = (endX - nextInfo.offset).toFloat()
-                            val targetX = (nextInfo.offset - blockPlaceable.width).toFloat()
-                            val progress = targetX.progressIn(0F, overlapAmount)
-                            (targetX + (progress * overlapAmount)).withEasing(FastOutSlowInEasing).toInt()
-                        }
+                        overlapAmount > 0 -> preferredX - overlapAmount
                         else -> preferredX
                     }
                 }
