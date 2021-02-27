@@ -12,8 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.gesture.scrollorientationlocking.Orientation
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.unit.Constraints
@@ -23,9 +21,12 @@ import org.beatonma.commons.theme.compose.EndOfContent
 import org.beatonma.commons.theme.compose.HorizontalPadding
 
 class GroupStyle(
-    val shape: Shape = RectangleShape,
-    val padding: HorizontalPadding = HorizontalPadding()
-)
+    val padding: HorizontalPadding = HorizontalPadding(),
+    val spaceBetween: HorizontalPadding = HorizontalPadding()
+) {
+    val totalStartPadding get() = padding.start + spaceBetween.start
+    val totalEndPadding get() = padding.end + spaceBetween.end
+}
 
 @Composable
 fun <T, H> StickyHeaderRowAlt(
@@ -33,7 +34,7 @@ fun <T, H> StickyHeaderRowAlt(
     headerForItem: (T?) -> H?,
     headerContent: @Composable (H?) -> Unit,
     groupBackground: @Composable (H?) -> Unit,
-    itemContent: @Composable LazyItemScope.(T, Modifier) -> Unit,
+    itemContent: @Composable LazyItemScope.(item: T, itemModifier: Modifier) -> Unit,
     appendEndOfContentSpacing: Boolean = true,
     groupStyle: GroupStyle = GroupStyle(),
     modifier: Modifier = Modifier,
@@ -73,7 +74,7 @@ fun <T, H> StickyHeaderRowAlt(
         StickyHeader(
             metrics,
             visibleItemsInfo,
-            groupStyle.padding,
+            groupStyle,
             Modifier.scrollable(
                 orientation = Orientation.Horizontal,
                 controller = scrollController,
@@ -90,13 +91,13 @@ fun <T, H> StickyHeaderRowAlt(
         ) {
             this.items(metrics.items) { annotated ->
                 if (annotated.position.isFirst) {
-                    Spacer(Modifier.width(groupStyle.padding.start))
+                    Spacer(Modifier.width(groupStyle.totalStartPadding))
                 }
 
                 itemContent(annotated.item, Modifier)
 
                 if (annotated.position.isLast) {
-                    Spacer(Modifier.width(groupStyle.padding.end))
+                    Spacer(Modifier.width(groupStyle.totalEndPadding))
                 }
             }
 
@@ -161,7 +162,6 @@ private fun <T, H> StickyBackground(
         return
     }
     val headers = metrics.visibleHeaders
-    // TODO apply shape
 
     Layout(
         content = content,
@@ -176,16 +176,14 @@ private fun <T, H> StickyBackground(
             val info = itemsInfo[headerIndex]
             val nextInfo = itemsInfo.getOrNull(nextHeaderIndex)
 
-//            val x = info.offset + groupStyle.padding.start.toIntPx()
-            val itemPosition = metrics.items.getOrNull(info.index)?.position ?: GroupPosition.Middle
-            val x = if (itemPosition.isFirst) {
-                info.offset + groupStyle.padding.start.toIntPx()
+            val positionInGroup = metrics.items.getOrNull(info.index)?.position ?: GroupPosition.Middle
+            val x = when {
+                positionInGroup.isFirst -> info.offset + groupStyle.spaceBetween.start.toIntPx()
+                else -> info.offset
             }
-            else info.offset
+            xPositions.add(x)
 
             val nextX = nextInfo?.offset
-
-            xPositions.add(x)
 
             val width =
                 when (nextX) {
@@ -195,7 +193,7 @@ private fun <T, H> StickyBackground(
                         val lastItemPosition = metrics.items.getOrNull(lastInfo.index)?.position ?: GroupPosition.End
 
                         val lastEndX = if (lastItemPosition.isLast) {
-                            lastInfo.offset + lastInfo.size - groupStyle.padding.end.toIntPx()
+                            lastInfo.offset + lastInfo.size - groupStyle.spaceBetween.end.toIntPx()
                         }
                         else {
                             lastInfo.offset + lastInfo.size
@@ -204,7 +202,7 @@ private fun <T, H> StickyBackground(
                     }
                     else -> {
                         // Use start coordinate of next header and offset with specified padding.
-                        nextX - x - groupStyle.padding.end.toIntPx()
+                        nextX - x - groupStyle.spaceBetween.end.toIntPx()
                     }
                 }
 
@@ -212,7 +210,7 @@ private fun <T, H> StickyBackground(
         }
 
         val width: Int = constraints.maxWidth
-        val height: Int = placeables.maxOf(Placeable::height)
+        val height: Int = placeables.maxOfOrNull { it.height } ?: 0
 
         layout(width, height) {
             placeables.forEachIndexed { index, blockPlaceable ->
@@ -227,7 +225,7 @@ private fun <T, H> StickyBackground(
 private fun <T, H> StickyHeader(
     metrics: Metrics<T, H>,
     itemsInfo: List<LazyListItemInfo>,
-    padding: HorizontalPadding,
+    groupStyle: GroupStyle,
     modifier: Modifier,
     content: @Composable () -> Unit,
 ) {
@@ -241,6 +239,9 @@ private fun <T, H> StickyHeader(
         content = content,
         modifier = modifier,
     ) { measurables, constraints ->
+        val groupStartPadding = (groupStyle.spaceBetween.start + groupStyle.padding.start).toIntPx()
+        val groupEndPadding = (groupStyle.spaceBetween.end + groupStyle.padding.end).toIntPx()
+
         val placeables = measurables.map { it.measure(constraints) }
 
         val width: Int = constraints.maxWidth
@@ -254,17 +255,17 @@ private fun <T, H> StickyHeader(
                 val info = itemsInfo[headerIndex]
                 val nextInfo = itemsInfo.getOrNull(nextHeaderIndex)
 
-                val itemPosition = metrics.items.getOrNull(info.index)?.position ?: GroupPosition.Middle
+                val positionInGroup = metrics.items.getOrNull(info.index)?.position ?: GroupPosition.Middle
 
                 // Header 'wants' to sit at beginning of group, or the left/start of display area.
                 val preferredX = when {
-                    itemPosition.isFirst -> info.offset + padding.start.toIntPx()
+                    positionInGroup.isFirst -> info.offset + groupStartPadding
                     else -> info.offset
                 }.coerceAtLeast(0)
 
                 val x = if (nextInfo == null) { preferredX }
                 else {
-                    val endX = preferredX + blockPlaceable.width + padding.end.toIntPx()
+                    val endX = preferredX + blockPlaceable.width + groupEndPadding
                     val overlapAmount = (endX - nextInfo.offset)
 
                     when {
@@ -279,8 +280,9 @@ private fun <T, H> StickyHeader(
     }
 }
 
-@Composable
-private val EmptyLayout get() = Layout(content = {}) { _, _ -> layout(0, 0) {} }
+
+private val EmptyLayout
+    @Composable get() = Layout(content = {}) { _, _ -> layout(0, 0) {} }
 
 
 private data class AnnotatedItem<T>(
