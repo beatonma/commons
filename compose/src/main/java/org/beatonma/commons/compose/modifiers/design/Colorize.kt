@@ -1,4 +1,4 @@
-package org.beatonma.commons.compose.modifiers
+package org.beatonma.commons.compose.modifiers.design
 
 import androidx.compose.foundation.background
 import androidx.compose.runtime.remember
