@@ -3,7 +3,7 @@ import org.gradle.api.JavaVersion
 
 object Versions {
     // Build
-    const val GRADLE_PLUGIN = "7.0.0-alpha05"
+    const val GRADLE_PLUGIN = "7.0.0-alpha08"
     const val GRADLE_DEPENDENCY_UPDATES = "0.36.0"
 
     // Core
