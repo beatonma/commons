@@ -216,5 +216,5 @@ fun OptionalText(
 }
 
 @Composable
-private fun pluralResource(@PluralsRes resId: Int, quantity: Int, vararg formatArgs: Array<out Any>) =
+private fun pluralResource(@PluralsRes resId: Int, quantity: Int, vararg formatArgs: Array<out Any>): String =
     AmbientContext.current.resources.getQuantityString(resId, quantity, formatArgs)
