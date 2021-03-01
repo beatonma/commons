@@ -72,6 +72,7 @@ val Colors.onWarningSurface: Color
     @Composable get() = resolveColor(CommonsColor.OnWarningSurface)
 
 val Colors.politicalVotes get() = PoliticalColor.Vote
+val Colors.house get() = PoliticalColor.House
 val Colors.graphPrimaryColors get() = CommonsColor.Graph.Primary
 val Colors.graphSecondaryColors get() = CommonsColor.Graph.Secondary
 
