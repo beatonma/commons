@@ -96,4 +96,4 @@ fun Float.inverted() = this * -1F
 
 typealias Easing = (fraction: Float) -> Float
 
-fun Float.withEasing(easing: Easing): Float = easing(this)
+inline fun Float.withEasing(easing: Easing): Float = easing(this)
