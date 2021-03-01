@@ -2,6 +2,8 @@ package org.beatonma.commons.compose.animation
 
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.FloatPropKey
+import androidx.compose.animation.core.Transition
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -50,3 +52,12 @@ enum class ExpandCollapseState : TwoState<ExpandCollapseState> {
     }
 }
 
+@Composable
+fun Transition<MutableState<ExpandCollapseState>>.currentExpansion(): Float = animateFloat(
+    transitionSpec = { CommonsSpring() },
+) { state ->
+    when {
+        state.isCollapsed -> 0F
+        else -> 1F
+    }
+}.value

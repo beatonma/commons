@@ -46,8 +46,8 @@ import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.compose.ambient.shapes
 import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.animation.ExpandCollapseState
+import org.beatonma.commons.compose.animation.currentExpansion
 import org.beatonma.commons.compose.animation.expand
-import org.beatonma.commons.compose.animation.expandedness
 import org.beatonma.commons.compose.animation.rememberExpandCollapseState
 import org.beatonma.commons.compose.animation.toggle
 import org.beatonma.commons.compose.components.CollapsibleHeaderLayout
@@ -235,7 +235,7 @@ private fun LosingCandidate(
 private fun DepositLostMarker() {
     val state = rememberExpandCollapseState(ExpandCollapseState.Collapsed)
     val transition = updateTransition(targetState = state)
-    val expandedness = transition.expandedness()
+    val expandedness = transition.currentExpansion()
 
     Box(
         Modifier
@@ -302,7 +302,7 @@ private fun CandidateVotesBar(
 ) {
     val state = rememberExpandCollapseState(ExpandCollapseState.Collapsed)
     val transition = updateTransition(targetState = state)
-    val expandedness = transition.expandedness()
+    val expandedness = transition.currentExpansion()
 
     rememberCoroutineScope().launch {
         delay(position * CandidateVoteBarDelay)
