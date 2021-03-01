@@ -10,6 +10,13 @@ import androidx.compose.runtime.remember
  */
 fun <T> MutableState<T>.update(newValue: T) { value = newValue }
 
+fun <T> MutableState<T>.updateIfNotEqual(newValue: T) {
+    if (value != newValue) {
+        println("UPDATE $newValue")
+        value = newValue
+    }
+}
+
 /**
  * Update the current value using the previous value.
  */
@@ -28,3 +35,15 @@ fun <T> rememberListOf(default: List<T> = listOf()) = remember { mutableStateOf(
 
 @Composable
 fun <T> rememberSetOf(default: Set<T> = setOf()) = remember { mutableStateOf(default) }
+
+/**
+ * Debug helper - print to log if the given value has changed since the previous recomposition.
+ */
+@Composable
+fun <T> detectChanges(value: T) {
+    val previous = remember { mutableStateOf(value) }
+    if (previous != value) {
+        println("UPDATE $value")
+        previous.value = value
+    }
+}
