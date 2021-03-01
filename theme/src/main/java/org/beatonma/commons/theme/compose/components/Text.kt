@@ -41,6 +41,7 @@ fun ScreenTitle(
     text: String,
     modifier: Modifier = Modifier,
     color: Color = Color.Unspecified,
+    maxLines: Int = 3,
     autoPadding: Boolean = true,
 ) {
     Text(
@@ -50,6 +51,7 @@ fun ScreenTitle(
         },
         color,
         style = typography.screenTitle,
+        maxLines = maxLines,
     )
 }
 
@@ -58,6 +60,7 @@ fun ComponentTitle(
     text: String,
     modifier: Modifier = Modifier,
     color: Color = Color.Unspecified,
+    maxLines: Int = 3,
     autoPadding: Boolean = true,
 ) {
     Text(
@@ -67,6 +70,7 @@ fun ComponentTitle(
         },
         color,
         style = typography.componentTitle,
+        maxLines = maxLines,
     )
 }
 
