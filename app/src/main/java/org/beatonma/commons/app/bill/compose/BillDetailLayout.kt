@@ -4,6 +4,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
@@ -37,8 +38,8 @@ import org.beatonma.commons.compose.components.CollapsedColumn
 import org.beatonma.commons.compose.components.OptionalText
 import org.beatonma.commons.compose.components.PluralText
 import org.beatonma.commons.compose.components.ResourceText
-import org.beatonma.commons.compose.components.StickyHeaderRow
 import org.beatonma.commons.compose.components.Tag
+import org.beatonma.commons.compose.components.stickyrow.StickyHeaderRow
 import org.beatonma.commons.compose.layout.optionalItem
 import org.beatonma.commons.core.House
 import org.beatonma.commons.data.core.room.entities.bill.BillPublication
@@ -52,6 +53,8 @@ import org.beatonma.commons.theme.compose.components.ComponentTitle
 import org.beatonma.commons.theme.compose.components.Quote
 import org.beatonma.commons.theme.compose.components.ScreenTitle
 import org.beatonma.commons.theme.compose.formatting.formatted
+import org.beatonma.commons.theme.compose.paddingValues
+import org.beatonma.commons.theme.compose.plus
 import org.beatonma.commons.theme.compose.theme.house
 import org.beatonma.commons.theme.compose.theme.systemui.statusBarsPadding
 import org.beatonma.commons.theme.compose.util.dot
@@ -190,15 +193,30 @@ private fun Stages(
     StickyHeaderRow(
         stages,
         modifier = modifier,
-        headerForItem = { it.category },
+        headerForItem = { it?.category },
+        groupBackground = { category ->
+            if (category != null) {
+                val theme = category.theme()
+                Spacer(
+                    Modifier
+                        .clip(shapes.small)
+                        .background(theme.surface)
+                )
+            }
+        },
         headerContent = { category ->
-            val theme = category.theme()
-            ComponentTitle(
-                category.description(),
-                Modifier.background(theme.surface),
-                color = theme.onSurface,
-                maxLines = 1,
-            )
+            if (category != null) {
+                val theme = category.theme()
+                ComponentTitle(
+                    category.description(),
+                    Modifier
+                        .padding(Padding.ScreenHorizontal + Padding.VerticalListItemLarge)
+                        .padding(end = 32.dp)
+                    ,
+                    color = theme.onSurface,
+                    maxLines = 1,
+                )
+            }
         },
         itemContent = { item ->
             val theme = item.category.theme()
@@ -208,16 +226,17 @@ private fun Stages(
             Providers(AmbientContentColor provides theme.onSurface) {
                 Column(
                     Modifier
-                        .background(theme.surface)
-                        .padding(horizontal = 8.dp, vertical = 6.dp)
+                        .padding(paddingValues(horizontal = 8.dp, top = 6.dp, bottom = 16.dp))
                         .clip(shapes.small)
                         .background(theme.onSurface.copy(alpha = .1F))
                         .padding(8.dp)
                 ) {
                     Text(stage.type)
+
                     if (sittings.size > 1) {
                         PluralText(R.plurals.bill_sittings, sittings.size, quantity = sittings.size)
                     }
+
                     Caption(
                         sittings
                             .sortedBy { it.date }
@@ -230,9 +249,6 @@ private fun Stages(
     )
 }
 
-
-private val ScreenPaddingModifier = Modifier.padding(Padding.ScreenHorizontal)
-
 @Composable
 private fun BillStageCategory.theme(): SurfaceTheme = when(this) {
     BillStageCategory.Commons -> House.commons.theme()
@@ -241,3 +257,4 @@ private fun BillStageCategory.theme(): SurfaceTheme = when(this) {
     BillStageCategory.RoyalAssent -> houseTheme(colors.house.Royal)
 }
 
+private val ScreenPaddingModifier = Modifier.padding(Padding.ScreenHorizontal)

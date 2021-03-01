@@ -1,5 +1,6 @@
 package org.beatonma.commons.app.bill.compose
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -7,11 +8,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.beatonma.commons.app.bill.compose.viewmodel.AnnotatedBillStage
+import org.beatonma.commons.app.bill.compose.viewmodel.BillStageProgress
+import org.beatonma.commons.app.bill.compose.viewmodel.classifyProgress
+import org.beatonma.commons.app.bill.compose.viewmodel.getCategory
 import org.beatonma.commons.app.ui.base.IoLiveDataViewModel
 import org.beatonma.commons.app.ui.base.SocialTargetProvider
+import org.beatonma.commons.core.House
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.SavedStateKey
+import org.beatonma.commons.data.core.room.entities.bill.BillStageWithSittings
 import org.beatonma.commons.data.core.room.entities.bill.CompleteBill
+import org.beatonma.commons.data.extensions.startedIn
 import org.beatonma.commons.data.get
 import org.beatonma.commons.data.set
 import org.beatonma.commons.repo.repository.BillRepository
@@ -50,5 +58,35 @@ class BillDetailViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             repository.getBill(billId).collectLatest { result -> postValue(result) }
         }
+    }
+}
+
+/**
+ * Resolve House and BillStageProgress data for each BillStage.
+ */
+internal fun CompleteBill.getAnnotatedBillStages(): List<AnnotatedBillStage> {
+    val originatingHouse = bill.startedIn()
+
+    return getAnnotatedStages(originatingHouse, stages)
+}
+
+
+@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+internal fun getAnnotatedStages(
+    originatingHouse: House,
+    stagesWithSittings: List<BillStageWithSittings>
+): List<AnnotatedBillStage> {
+    val orderedStages = stagesWithSittings.sortedBy { stage ->
+        stage.sittings.maxByOrNull { sitting -> sitting.date }?.date
+    }
+
+    var progress: BillStageProgress = BillStageProgress.FirstFirstReading
+    return orderedStages.map { stageWithSittings ->
+        val type = stageWithSittings.stage.type
+        progress = classifyProgress(type, previous = progress)
+        AnnotatedBillStage(
+            stageWithSittings,
+            progress.getCategory(originatingHouse),
+            progress)
     }
 }
