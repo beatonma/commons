@@ -8,7 +8,7 @@ object Versions {
 
     // Core
     const val COROUTINES = "1.4.2"
-    const val KOTLIN = "1.4.30"
+    const val KOTLIN = "1.4.31"
     const val KOTLIN_LANGUAGE_VERSION = "1.4"
     val JAVA = JavaVersion.VERSION_1_8
 
@@ -16,8 +16,8 @@ object Versions {
     const val ROOM = "2.3.0-alpha02"
 
     // Dependency injection
-    const val DAGGER = "2.31.2"
-    const val HILT = "2.31.2-alpha"
+    const val DAGGER = "2.33"
+    const val HILT = "2.33-beta"
     const val AX_HILT = "1.0.0-alpha03"
 
     // Google
@@ -30,12 +30,12 @@ object Versions {
     const val MATERIAL = "1.3.0-alpha02"
 
     // Android X
-    const val AX_ACTIVITY = "1.2.0-beta01"
+    const val AX_ACTIVITY = "1.3.0-alpha02"
     const val AX_ANNOTATIONS = "1.2.0-alpha01"
     const val AX_APPCOMPAT = "1.3.0-alpha02"
     const val AX_COMPOSE = "1.0.0-alpha10"
     const val AX_CONSTRAINTLAYOUT = "2.0.4"
-    const val AX_CORE_KTX = "1.5.0-beta01"
+    const val AX_CORE_KTX = "1.5.0-beta02"
     const val AX_FRAGMENT = "1.3.0-beta01"
     const val AX_LIFECYCLE = "2.3.0-alpha06"
     const val AX_NAVIGATION = "2.3.1"
@@ -57,7 +57,7 @@ object Versions {
     const val CHRISBANES_ACCOMPANIST_COIL = "0.4.0"
 
     // Testing
-    const val AX_TEST_CORE = "1.3.1-alpha03"
+    const val AX_TEST_CORE = "1.4.0-alpha04"
     const val AX_TEST_LIVEDATA = "2.1.0"
     const val ESPRESSO = "3.3.0"
     const val MOCKITO = "3.5.10"
