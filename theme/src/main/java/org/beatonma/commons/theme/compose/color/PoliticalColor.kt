@@ -13,11 +13,14 @@ object PoliticalColor {
         val CommonsDeep = Color(0xff_00_54_34)
 
         val Lords = Color(0xff_B5_09_38)
+
+        val Royal = PoliticalColor.Royal
+        val Parliament = PoliticalColor.Parliament
     }
 
     object Party {
         object Primary {
-            val Default = Parliament
+            val Default = House.Parliament
             val Alliance = Color(0xff_F4_C7_2E)
             val ChangeUk = Color.White
             val Conservative = Color(0xff_11_43_7D)
