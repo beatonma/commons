@@ -11,8 +11,6 @@ import dev.chrisbanes.accompanist.imageloading.ImageLoadState
 import org.beatonma.commons.app.ui.compose.components.ErrorUi
 import org.beatonma.commons.app.ui.compose.components.LoadingIcon
 
-const val DEV_AVATAR = "https://beatonma.org/static/images/profile2.jpg"
-
 @Composable
 fun Avatar(
     source: String?,

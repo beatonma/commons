@@ -28,7 +28,7 @@ import androidx.compose.ui.zIndex
 import org.beatonma.commons.ActionBlock
 import org.beatonma.commons.app.preview.ProvidePreviewAmbients
 import org.beatonma.commons.compose.components.CollapsibleHeaderLayout
-import org.beatonma.commons.compose.modifiers.colorize
+import org.beatonma.commons.compose.modifiers.design.colorize
 import org.beatonma.commons.compose.modifiers.wrapContentHeight
 import org.beatonma.commons.compose.modifiers.wrapContentOrFillHeight
 import org.beatonma.commons.compose.util.rememberBoolean

@@ -38,9 +38,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import org.beatonma.commons.R
 import org.beatonma.commons.app.preview.ProvidePreviewAmbients
-import org.beatonma.commons.app.ui.compose.components.PartyDot
 import org.beatonma.commons.app.ui.compose.components.Todo
-import org.beatonma.commons.app.ui.compose.components.image.DEV_AVATAR
+import org.beatonma.commons.app.ui.compose.components.party.PartyDot
 import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.compose.animation.ExpandCollapseState
 import org.beatonma.commons.compose.animation.collapse
@@ -58,9 +57,8 @@ import org.beatonma.commons.compose.modifiers.wrapContentOrFillWidth
 import org.beatonma.commons.core.extensions.lerpBetween
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.core.extensions.reversed
-import org.beatonma.commons.snommoc.models.search.ConstituencySearchResult
+import org.beatonma.commons.sampledata.SampleSearchResults
 import org.beatonma.commons.snommoc.models.search.MemberSearchResult
-import org.beatonma.commons.snommoc.models.search.PartySearchResult
 import org.beatonma.commons.snommoc.models.search.SearchResult
 import org.beatonma.commons.theme.compose.Elevation
 import org.beatonma.commons.theme.compose.Layer
@@ -83,25 +81,10 @@ private typealias SearchUiState = ExpandCollapseState
 @Composable
 @Preview
 fun SearchUiPreview() {
-    val results: MutableState<List<SearchResult>> = mutableStateOf(
-        listOf(
-            MemberSearchResult(
-                name = "Michael Beaton",
-                constituency = ConstituencySearchResult(
-                    10, "Highland"
-                ),
-                party = PartySearchResult(100001, "Independent"),
-                parliamentdotuk = 65,
-                currentPost = "Developer",
-                portraitUrl = DEV_AVATAR,
-            ),
-        )
-    )
+    val results: MutableState<List<SearchResult>> = mutableStateOf(SampleSearchResults)
 
     ProvidePreviewAmbients {
-        SearchUi(
-            results.value,
-        )
+        SearchUi(results.value)
     }
 }
 
@@ -208,7 +191,7 @@ fun SearchResults(
             items(items = results, itemContent = { item ->
                 when (item) {
                     is MemberSearchResult -> MemberSearchResult(item, actions.onClickMember)
-                    else -> Todo(message = "Unimplemented search result class: ${item.javaClass.canonicalName}")
+                    else -> Todo("Unimplemented search result class: ${item.javaClass.canonicalName}")
                 }
             })
         }
