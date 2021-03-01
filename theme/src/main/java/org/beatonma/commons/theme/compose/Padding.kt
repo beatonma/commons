@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.gesture.scrollorientationlocking.Orientation
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
@@ -46,11 +47,12 @@ object Padding {
 
     val CardButton = paddingValues(top = 24.dp)
     val EndOfContent = paddingValues(bottom = 160.dp)
+    val EndOfContentHorizontal = paddingValues(end = 220.dp)
 }
 
 
 @Suppress("NOTHING_TO_INLINE")
-private inline fun paddingValues(
+inline fun paddingValues(
     horizontal: Dp = 0.dp,
     vertical: Dp = 0.dp,
     start: Dp = horizontal,
@@ -87,5 +89,23 @@ val Float.pdp: Dp get() = this.coerceAtLeast(0F).dp
 val Int.pdp: Dp get() = this.coerceAtLeast(0).dp
 
 @Composable
-fun EndOfContent() = Spacer(Modifier.padding(Padding.EndOfContent))
-fun Modifier.endOfContent() = padding(Padding.EndOfContent)
+fun EndOfContent(orientation: Orientation = Orientation.Vertical) =
+    Spacer(
+        Modifier.endOfContent(orientation)
+    )
+
+fun Modifier.endOfContent(orientation: Orientation = Orientation.Vertical) = padding(
+    when (orientation) {
+        Orientation.Vertical -> Padding.EndOfContent
+        Orientation.Horizontal -> Padding.EndOfContentHorizontal
+    }
+)
+
+class HorizontalPadding(
+    value: Dp = 0.dp,
+    val start: Dp = value,
+    val end: Dp = value,
+)
+
+fun Modifier.padding(horizontalPadding: HorizontalPadding) =
+    padding(start = horizontalPadding.start, end = horizontalPadding.end)
