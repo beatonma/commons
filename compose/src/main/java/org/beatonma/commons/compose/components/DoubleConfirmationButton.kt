@@ -1,13 +1,12 @@
 package org.beatonma.commons.compose.components
 
-import androidx.compose.animation.ColorPropKey
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateColor
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.FloatPropKey
-import androidx.compose.animation.core.TransitionDefinition
-import androidx.compose.animation.core.transitionDefinition
-import androidx.compose.animation.transition
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.InteractionState
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.Button
@@ -15,22 +14,25 @@ import androidx.compose.material.ButtonColors
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ButtonElevation
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.tooling.preview.Preview
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.beatonma.commons.compose.ambient.shapes
 import org.beatonma.commons.compose.animation.AutoCollapse
-import org.beatonma.commons.compose.util.update
 import org.beatonma.commons.theme.compose.theme.CommonsButtons
-import org.beatonma.commons.theme.compose.theme.CommonsSpring
+import org.beatonma.commons.theme.compose.theme.CommonsTheme
 
 enum class ConfirmationState {
     /**
@@ -68,127 +70,147 @@ fun doubleConfirmationColors(
     confirmedColor: ButtonColors = CommonsButtons.outlineButtonColors(),
 ) = DoubleConfirmationButtonColors(safeColors, awaitingConfirmationColors, confirmedColor)
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DoubleConfirmationButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    confirmationState: MutableState<ConfirmationState> = remember { mutableStateOf(ConfirmationState.Safe) },
-    interactionState: InteractionState = remember { InteractionState() },
+    state: MutableState<ConfirmationState> = rememberConfirmationState(),
+    interactionSource: MutableInteractionSource = remember(::MutableInteractionSource),
     elevation: ButtonElevation? = null,
     shape: Shape = shapes.small,
     border: BorderStroke? = ButtonDefaults.outlinedBorder,
     colors: DoubleConfirmationButtonColors = doubleConfirmationColors(),
     autoCollapse: Long = AutoCollapse.Default,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    safeContent: @Composable (progress: Float) -> Unit,
-    awaitingConfirmationContent: @Composable (progress: Float) -> Unit,
-    confirmedContent: @Composable (progress: Float) -> Unit,
+    safeContent: @Composable () -> Unit,
+    awaitingConfirmationContent: @Composable () -> Unit,
+    confirmedContent: @Composable () -> Unit,
+    coroutineScope: CoroutineScope = rememberCoroutineScope(),
+) =
+    DoubleConfirmationButton(
+        onClick,
+        modifier,
+        enabled,
+        state = state.value,
+        onStateChange = { state.value = it },
+        interactionSource,
+        elevation,
+        shape,
+        border,
+        colors,
+        autoCollapse,
+        contentPadding,
+        safeContent,
+        awaitingConfirmationContent,
+        confirmedContent,
+        coroutineScope,
+    )
+
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+private fun DoubleConfirmationButton(
+    onClick: () -> Unit,
+    modifier: Modifier,
+    enabled: Boolean,
+    state: ConfirmationState,
+    onStateChange: (ConfirmationState) -> Unit,
+    interactionSource: MutableInteractionSource,
+    elevation: ButtonElevation?,
+    shape: Shape,
+    border: BorderStroke?,
+    colors: DoubleConfirmationButtonColors,
+    autoCollapse: Long,
+    contentPadding: PaddingValues,
+    safeContent: @Composable () -> Unit,
+    awaitingConfirmationContent: @Composable () -> Unit,
+    confirmedContent: @Composable () -> Unit,
+    coroutineScope: CoroutineScope,
 ) {
-    val transitionDef = rememberTransitionDefinition(colors)
-    val transition = transition(transitionDef, toState = confirmationState.value)
+    val transition = updateTransition(state)
 
-    val coroutineScope = rememberCoroutineScope()
+    val contentColor by transition.animateColor {
+        when (it) {
+            ConfirmationState.Safe -> colors.safeColors.contentColor(enabled)
+            ConfirmationState.AwaitingConfirmation -> colors.awaitingConfirmationColors.contentColor(enabled)
+            ConfirmationState.Confirmed -> colors.confirmedColor.contentColor(enabled)
+        }.value
+    }
 
-    Button(
-        onClick = {
-            when (confirmationState.value) {
-                ConfirmationState.Safe -> {
-                    confirmationState.update(ConfirmationState.AwaitingConfirmation)
-                    coroutineScope.launch {
-                        delay(autoCollapse)
-                        if (confirmationState.value == ConfirmationState.AwaitingConfirmation) {
-                            withContext(Dispatchers.Main) {
-                                confirmationState.update(ConfirmationState.Safe)
-                            }
+    val backgroundColor by transition.animateColor {
+        when (it) {
+            ConfirmationState.Safe -> colors.safeColors.backgroundColor(enabled)
+            ConfirmationState.AwaitingConfirmation -> colors.awaitingConfirmationColors.backgroundColor(enabled)
+            ConfirmationState.Confirmed -> colors.confirmedColor.backgroundColor(enabled)
+        }.value
+    }
+
+    val filteredOnClick: () -> Unit = {
+        when (state) {
+            ConfirmationState.Safe -> {
+                onStateChange(ConfirmationState.AwaitingConfirmation)
+                coroutineScope.launch {
+                    delay(autoCollapse)
+                    withContext(Dispatchers.Main) {
+                        if (state == ConfirmationState.AwaitingConfirmation) {
+                            onStateChange(ConfirmationState.Safe)
                         }
                     }
                 }
-
-                ConfirmationState.AwaitingConfirmation -> {
-                    confirmationState.update(ConfirmationState.Confirmed)
-                    onClick()
-                }
-
-                ConfirmationState.Confirmed -> Unit
             }
-        },
+
+            ConfirmationState.AwaitingConfirmation -> {
+                onStateChange(ConfirmationState.Confirmed)
+                onClick()
+            }
+
+            ConfirmationState.Confirmed -> Unit
+        }
+    }
+
+    Button(
+        onClick = filteredOnClick,
         modifier = modifier,
         enabled = enabled,
-        interactionState = interactionState,
+        interactionSource = interactionSource,
         elevation = elevation,
         shape = shape,
         border = border,
         colors = CommonsButtons.buttonColors(
-            contentColor = transition[contentColorKey],
-            backgroundColor = transition[backgroundColorKey]
+            contentColor = contentColor,
+            backgroundColor = backgroundColor,
         ),
         contentPadding = contentPadding,
         content = {
             Box(Modifier.animateContentSize()) {
-                when (confirmationState.value) {
-                    ConfirmationState.Safe -> {
-                        safeContent(transition[firstProgress])
-                    }
+                this@Button.AnimatedVisibility(state == ConfirmationState.Safe) {
+                    safeContent()
+                }
 
-                    ConfirmationState.AwaitingConfirmation -> {
-                        awaitingConfirmationContent(transition[firstProgress])
-                    }
+                this@Button.AnimatedVisibility(state == ConfirmationState.AwaitingConfirmation) {
+                    awaitingConfirmationContent()
+                }
 
-                    ConfirmationState.Confirmed -> {
-                        confirmedContent(transition[secondProgress])
-                    }
+                this@Button.AnimatedVisibility(state == ConfirmationState.Confirmed) {
+                    confirmedContent()
                 }
             }
         }
     )
 }
 
-private val backgroundColorKey = ColorPropKey()
-private val contentColorKey = ColorPropKey()
-private val firstProgress = FloatPropKey()
-private val secondProgress = FloatPropKey()
-
-@OptIn(ExperimentalMaterialApi::class)
+@Preview
 @Composable
-private fun rememberTransitionDefinition(
-    buttonColors: DoubleConfirmationButtonColors,
-): TransitionDefinition<ConfirmationState> {
-    return remember {
-        transitionDefinition {
-            state(ConfirmationState.Safe) {
-                this[firstProgress] = 0F
-                this[secondProgress] = 0F
-                this[backgroundColorKey] = buttonColors.safeColors.backgroundColor(true)
-                this[contentColorKey] = buttonColors.safeColors.contentColor(true)
-            }
+fun DoubleConfirmationButtonPreview() {
+    val state = rememberConfirmationState()
 
-            state(ConfirmationState.AwaitingConfirmation) {
-                this[firstProgress] = 1F
-                this[secondProgress] = 0F
-                this[backgroundColorKey] =
-                    buttonColors.awaitingConfirmationColors.backgroundColor(true)
-                this[contentColorKey] = buttonColors.awaitingConfirmationColors.contentColor(true)
-            }
-
-            state(ConfirmationState.Confirmed) {
-                this[firstProgress] = 1F
-                this[secondProgress] = 1F
-                this[backgroundColorKey] = buttonColors.confirmedColor.backgroundColor(true)
-                this[contentColorKey] = buttonColors.confirmedColor.contentColor(true)
-            }
-
-            transition(
-                ConfirmationState.Safe to ConfirmationState.AwaitingConfirmation,
-                ConfirmationState.AwaitingConfirmation to ConfirmationState.Safe,
-                ConfirmationState.AwaitingConfirmation to ConfirmationState.Confirmed,
-            ) {
-                firstProgress using CommonsSpring()
-                secondProgress using CommonsSpring()
-                backgroundColorKey using CommonsSpring()
-                contentColorKey using CommonsSpring()
-            }
-        }
+    CommonsTheme {
+        DoubleConfirmationButton(
+            onClick = { println("CLICKED") },
+            state = state,
+            safeContent = { Text("Safe!") },
+            awaitingConfirmationContent = { Text("Press again to confirm") },
+            confirmedContent = { Text("Confirmed!") },
+        )
     }
 }
