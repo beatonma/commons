@@ -1,7 +1,7 @@
 package org.beatonma.commons.compose.util
 
-import androidx.compose.ui.gesture.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.gesture.nestedscroll.nestedScroll
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import kotlin.math.absoluteValue
 
 /**

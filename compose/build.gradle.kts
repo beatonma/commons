@@ -16,6 +16,7 @@ dependencies {
     main {
         implementations(
             Dependencies.AndroidX.CORE_KTX,
+            Dependencies.AndroidX.CONSTRAINTLAYOUT_COMPOSE,
             project(Modules.Core),
             project(Modules.Theme)
         )
