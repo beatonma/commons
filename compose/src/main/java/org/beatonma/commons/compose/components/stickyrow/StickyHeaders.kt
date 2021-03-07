@@ -1,6 +1,5 @@
 package org.beatonma.commons.compose.components.stickyrow
 
-import androidx.compose.foundation.lazy.LazyListItemInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
@@ -8,14 +7,14 @@ import androidx.compose.ui.layout.Placeable
 import org.beatonma.commons.compose.layout.EmptyLayout
 
 @Composable
-internal fun <T, H> StickyHeader(
-    metrics: Metrics<T, H>,
-    itemsInfo: List<LazyListItemInfo>,
+internal fun <T, H> StickyHeaders(
+    headers: Headers<H>,
+    annotatedItems: List<AnnotatedItem<T>>,
+    itemsInfo: List<VisibleItem>,
     groupStyle: GroupStyle,
     modifier: Modifier,
     content: @Composable () -> Unit,
 ) {
-    println("StickyHeader")
     if (itemsInfo.isEmpty()) {
         EmptyLayout()
         return
@@ -25,16 +24,15 @@ internal fun <T, H> StickyHeader(
         content = content,
         modifier = modifier,
     ) { measurables, constraints ->
-        val headers = metrics.visibleHeaders
-        val groupStartPadding = (groupStyle.spaceBetween.start + groupStyle.padding.start).toIntPx()
-        val groupEndPadding = (groupStyle.spaceBetween.end + groupStyle.padding.end).toIntPx()
+        val groupStartPadding = (groupStyle.spaceBetween.start + groupStyle.padding.start).roundToPx()
+        val groupEndPadding = (groupStyle.spaceBetween.end + groupStyle.padding.end).roundToPx()
 
         val placeables = measurables.map { it.measure(constraints) }
 
-        val width: Int = constraints.maxWidth
-        val height: Int = placeables.maxOf(Placeable::height)
+        val layoutWidth: Int = constraints.maxWidth
+        val layoutHeight: Int = placeables.maxOf(Placeable::height)
 
-        layout(width, height) {
+        layout(layoutWidth, layoutHeight) {
             placeables.forEachIndexed { index, blockPlaceable ->
                 val headerIndex = headers.positions[index]
                 val nextHeaderIndex = headers.positions.getOrNull(index + 1) ?: -1
@@ -43,7 +41,7 @@ internal fun <T, H> StickyHeader(
                 val nextInfo = itemsInfo.getOrNull(nextHeaderIndex)
 
                 val positionInGroup =
-                    metrics.items.getOrNull(info.index)?.position ?: GroupPosition.Middle
+                    annotatedItems.getOrNull(info.index)?.position ?: GroupPosition.Middle
 
                 // Header 'wants' to sit at beginning of group, or the left/start of display area.
                 val preferredX = when {
@@ -51,12 +49,10 @@ internal fun <T, H> StickyHeader(
                     else -> info.offset
                 }.coerceAtLeast(0)
 
-                val x = if (nextInfo == null) {
-                    preferredX
-                }
+                val x = if (nextInfo == null) preferredX
                 else {
                     val endX = preferredX + blockPlaceable.width + groupEndPadding
-                    val overlapAmount = (endX - nextInfo.offset)
+                    val overlapAmount = endX - nextInfo.offset
 
                     when {
                         overlapAmount > 0 -> preferredX - overlapAmount

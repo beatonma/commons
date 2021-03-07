@@ -1,15 +1,15 @@
 package org.beatonma.commons.compose.components.stickyrow
 
-import androidx.compose.foundation.lazy.LazyListItemInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
 import org.beatonma.commons.compose.layout.EmptyLayout
 
 @Composable
-internal fun <T, H> StickyBackground(
-    metrics: Metrics<T, H>,
-    itemsInfo: List<LazyListItemInfo>,
+internal fun <T, H> StickyBackgrounds(
+    headers: Headers<H>,
+    annotatedItems: List<AnnotatedItem<T>>,
+    itemsInfo: List<VisibleItem>,
     groupStyle: GroupStyle,
     modifier: Modifier,
     content: @Composable () -> Unit,
@@ -23,8 +23,6 @@ internal fun <T, H> StickyBackground(
         content = content,
         modifier = modifier,
     ) { measurables, constraints ->
-        val headers = metrics.visibleHeaders
-        // Remember these are the backgrounds, not the items!
         val xPositions = mutableListOf<Int>()
         val placeables = measurables.mapIndexed { index, measurable ->
             val headerIndex = headers.positions[index]
@@ -33,9 +31,9 @@ internal fun <T, H> StickyBackground(
             val info = itemsInfo[headerIndex]
             val nextInfo = itemsInfo.getOrNull(nextHeaderIndex)
 
-            val positionInGroup = metrics.items.getOrNull(info.index)?.position ?: GroupPosition.Middle
+            val positionInGroup = annotatedItems.getOrNull(info.index)?.position ?: GroupPosition.Middle
             val x = when {
-                positionInGroup.isFirst -> info.offset + groupStyle.spaceBetween.start.toIntPx()
+                positionInGroup.isFirst -> info.offset + groupStyle.spaceBetween.start.roundToPx()
                 else -> info.offset
             }
             xPositions.add(x)
@@ -47,10 +45,10 @@ internal fun <T, H> StickyBackground(
                     null -> {
                         // Use end coordinate of the last visible item.
                         val lastInfo = itemsInfo.last()
-                        val lastItemPosition = metrics.items.getOrNull(lastInfo.index)?.position ?: GroupPosition.End
+                        val lastItemPosition = annotatedItems.getOrNull(lastInfo.index)?.position ?: GroupPosition.End
 
                         val lastEndX = if (lastItemPosition.isLast) {
-                            lastInfo.offset + lastInfo.size - groupStyle.spaceBetween.end.toIntPx()
+                            lastInfo.offset + lastInfo.size - groupStyle.spaceBetween.end.roundToPx()
                         }
                         else {
                             lastInfo.offset + lastInfo.size
@@ -59,7 +57,7 @@ internal fun <T, H> StickyBackground(
                     }
                     else -> {
                         // Use start coordinate of next header and offset with specified padding.
-                        nextX - x - groupStyle.spaceBetween.end.toIntPx()
+                        nextX - x - groupStyle.spaceBetween.end.roundToPx()
                     }
                 }
 

@@ -5,83 +5,78 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import org.beatonma.commons.compose.util.updateIfNotEqual
 import org.beatonma.commons.core.extensions.fastForEachIndexed
 
 @Composable
-internal fun <T, H> metricsOf(
+internal fun <T, H> getHeaders(
     items: List<T>,
-    visibleItemInfo: List<LazyListItemInfo>,
     headerForItem: (T?) -> H?,
-): Metrics<T, H> {
-    val metrics = remember { Metrics<T, H>() }
-    println("metricsOf")
-    metrics.update(items, visibleItemInfo, headerForItem)
-
-    return metrics
+): List<H?> {
+    val rememberedHeaders: MutableState<List<H?>> = remember { mutableStateOf(listOf()) }
+    rememberedHeaders.value = items.map(headerForItem)
+    return rememberedHeaders.value
 }
 
-internal class Metrics<T, H> {
-    private val _items: MutableState<List<AnnotatedItem<T>>> = mutableStateOf(listOf())
-    private val _visibleHeaders: MutableState<Headers<H>> = mutableStateOf(emptyHeadersOf())
+@Composable
+internal fun <T> annotateItems(
+    items: List<T>,
+    headerPositions: List<Int>
+): List<AnnotatedItem<T>> {
+    val annotated: MutableState<AnnotatedItems<T>> = remember { mutableStateOf(listOf()) }
 
-    val items: List<AnnotatedItem<T>> get() = _items.value
-    val visibleHeaders: Headers<H> get() = _visibleHeaders.value
-
-    @Composable
-    fun update(
-        items: List<T>,
-        visibleItemInfo: List<LazyListItemInfo>,
-        headerForItem: (T?) -> H?,
-    ) {
-        val headers: List<H?> = items.map(headerForItem)
-
-        annotateItems(items, headers)
-        updateHeaders(visibleItemInfo, headers)
-    }
-
-    @Composable
-    private fun annotateItems(
-        items: List<T>,
-        headers: List<H?>
-    ) {
-        val lastIndex = items.size - 1
-
-        val annotated = items.mapIndexed { index, item ->
+    val lastIndex = items.size - 1
+    annotated.value =
+        items.mapIndexed { index, item ->
             val nextIndex = index + 1
-
-            val headerPositions = getHeaderPositions(headers)
-
             val isFirstInGroup = index in headerPositions
             val isLastInGroup = nextIndex in headerPositions || nextIndex > lastIndex
-
             val position: GroupPosition = when {
                 isFirstInGroup && isLastInGroup -> GroupPosition.Only
                 isFirstInGroup -> GroupPosition.Start
                 isLastInGroup -> GroupPosition.End
                 else -> GroupPosition.Middle
             }
-
             AnnotatedItem(item, position)
         }
 
-        _items.updateIfNotEqual(annotated)
-    }
-
-    @Composable
-    private fun updateHeaders(
-        visibleItemInfo: List<LazyListItemInfo>,
-        headers: List<H?>
-    ) {
-        val visibleHeaders = visibleItemInfo.map { headers.getOrNull(it.index) }
-        val visibleHeaderPositions = getHeaderPositions(visibleHeaders)
-
-        _visibleHeaders.updateIfNotEqual(
-            Headers(visibleHeaders, visibleHeaderPositions)
-        )
-    }
+    return annotated.value
 }
 
+@Composable
+internal fun <H> updateHeaders(
+    visibleItemsInfo: List<LazyListItemInfo>,
+    headers: List<H?>,
+): Headers<H> {
+    val visibleHeadersState = remember { mutableStateOf(emptyHeadersOf<H>()) }
+    val visibleHeaders = visibleItemsInfo.map { headers.getOrNull(it.index) }
+    val visibleHeaderPositions = getHeaderPositions(visibleHeaders)
+
+    visibleHeadersState.value = Headers(visibleHeaders, visibleHeaderPositions)
+
+    return visibleHeadersState.value
+}
+
+/**
+ * Build list of positions where the header identifier changes.
+ */
+@Composable
+internal fun <H> getHeaderPositions(headers: List<H?>): List<Int> {
+    val positions: MutableState<List<Int>> = remember { mutableStateOf(listOf()) }
+
+    val headerPositions = mutableListOf<Int>()
+    var previousHeader: H? = null
+
+    headers.fastForEachIndexed { index, h ->
+        if (h != previousHeader) {
+            headerPositions += index
+            previousHeader = h
+        }
+    }
+    positions.value = headerPositions
+    return positions.value
+}
+
+internal typealias AnnotatedItems<T> = List<AnnotatedItem<T>>
 internal data class AnnotatedItem<T>(
     val item: T,
     val position: GroupPosition
@@ -103,19 +98,3 @@ internal enum class GroupPosition {
 
 }
 
-/**
- * Build list of positions where the header identifier changes.
- */
-@Composable
-private fun <H> getHeaderPositions(headers: List<H?>): List<Int> {
-//    println("getHeaderPositions")
-    val headerPositions = mutableListOf<Int>()
-    var previousHeader: H? = null
-    headers.fastForEachIndexed { index, h ->
-        if (h != previousHeader) {
-            headerPositions += index
-            previousHeader = h
-        }
-    }
-    return headerPositions
-}

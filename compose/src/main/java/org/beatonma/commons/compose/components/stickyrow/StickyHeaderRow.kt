@@ -1,20 +1,20 @@
 package org.beatonma.commons.compose.components.stickyrow
 
-import androidx.compose.foundation.gestures.ScrollableController
-import androidx.compose.foundation.gestures.rememberScrollableController
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.ScrollableState
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyItemScope
-import androidx.compose.foundation.lazy.LazyListItemInfo
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.gesture.scrollorientationlocking.Orientation
 import kotlinx.coroutines.launch
 import org.beatonma.commons.theme.compose.EndOfContent
 
@@ -25,28 +25,31 @@ fun <T, H> StickyHeaderRow(
     headerContent: @Composable (H?) -> Unit,
     groupBackground: @Composable (H?) -> Unit,
     itemContent: @Composable LazyItemScope.(item: T) -> Unit,
+    modifier: Modifier = Modifier,
     appendEndOfContentSpacing: Boolean = true,
     groupStyle: GroupStyle = rememberGroupStyle(),
     lazyListState: LazyListState = rememberLazyListState(),
-    modifier: Modifier = Modifier,
 ) {
     if (items.isEmpty()) return
-    val visibleItems by rememberVisibleState(state = lazyListState)
+    val visibleItems = rememberVisibleState()
 
-    println("PUBLIC | StickyHeaderRowAlt")
+    val headers = getHeaders(items, headerForItem)
+    val headerPositions = getHeaderPositions(headers)
+    val annotatedItems = annotateItems(items, headerPositions)
+    val visibleHeaders = updateHeaders(visibleItems.visibleItems.value, headers)
 
     val coroutineScope = rememberCoroutineScope()
 
-    val scrollController = rememberScrollableController { delta ->
-        coroutineScope.launch { lazyListState.scroll { scrollBy(delta) } }
+    val scrollState = rememberScrollableState { delta ->
+        coroutineScope.launch { lazyListState.scrollBy(delta) }
         delta
     }
-    val metrics = metricsOf(items, visibleItems, headerForItem)
 
     StickyHeaderRow(
-        metrics,
+        annotatedItems,
+        visibleHeaders,
         visibleItems,
-        scrollController,
+        scrollState,
         lazyListState,
         headerContent,
         groupBackground,
@@ -59,9 +62,10 @@ fun <T, H> StickyHeaderRow(
 
 @Composable
 private fun <T, H> StickyHeaderRow(
-    metrics: Metrics<T, H>,
-    visibleItems: List<LazyListItemInfo>,
-    scrollController: ScrollableController,
+    items: List<AnnotatedItem<T>>,
+    visibleHeaders: Headers<H>,
+    visibleItems: VisibleItems,
+    scrollState: ScrollableState,
     lazyListState: LazyListState,
     headerContent: @Composable (H?) -> Unit,
     groupBackground: @Composable (H?) -> Unit,
@@ -70,17 +74,13 @@ private fun <T, H> StickyHeaderRow(
     groupStyle: GroupStyle,
     modifier: Modifier,
 ) {
-    println("PRIVATE StickyHeaderRowAlt")
     StickyLayout(
         modifier
     ) {
-        val visibleHeaders = metrics.visibleHeaders
-        // TODO StickyBackground and StickyHeader should probably be combined to avoid over-traversal.
-
-        // Background content
-        StickyBackground(
-            metrics,
-            visibleItems,
+        StickyBackgrounds(
+            visibleHeaders,
+            items,
+            visibleItems.visibleItems.value,
             groupStyle,
             Modifier,
         ) {
@@ -89,14 +89,14 @@ private fun <T, H> StickyHeaderRow(
             }
         }
 
-        // Header content
-        StickyHeader(
-            metrics,
-            visibleItems,
+        StickyHeaders(
+            visibleHeaders,
+            items,
+            visibleItems.visibleItems.value,
             groupStyle,
             Modifier.scrollable(
+                state = scrollState,
                 orientation = Orientation.Horizontal,
-                controller = scrollController,
                 reverseDirection = true,
             ),
         ) {
@@ -105,10 +105,9 @@ private fun <T, H> StickyHeaderRow(
             }
         }
 
-        LazyRow(
-            state = lazyListState,
-        ) {
-            this.items(metrics.items) { annotated ->
+        LazyRow(state = lazyListState) {
+            items(items) { annotated ->
+                visibleItems.update(lazyListState)
                 if (annotated.position.isFirst) {
                     Spacer(Modifier.width(groupStyle.totalStartPadding))
                 }
@@ -128,4 +127,3 @@ private fun <T, H> StickyHeaderRow(
         }
     }
 }
-

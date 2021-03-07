@@ -10,7 +10,6 @@ internal fun StickyLayout(
     modifier: Modifier,
     content: @Composable () -> Unit,
 ) {
-    println("StickyLayout")
     Layout(
         modifier = modifier,
         content = content,
