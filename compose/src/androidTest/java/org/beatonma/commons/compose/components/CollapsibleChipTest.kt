@@ -20,10 +20,12 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
+import androidx.test.filters.MediumTest
 import org.beatonma.commons.testcompose.test.ComposeTest
 import org.beatonma.commons.theme.compose.Size
 import org.junit.Test
 
+@MediumTest
 class CollapsibleChipTest: ComposeTest() {
     override fun withContent(content: @Composable () -> Unit) =
         composeTestRule.apply { setContent(content) }
@@ -42,7 +44,6 @@ class CollapsibleChipTest: ComposeTest() {
         }
 
         perform {
-
             onNodeWithTag(chipTag)
                 .assertIsDisplayed()
                 .assertWidthIsEqualTo(expectedSizeCollapsed)

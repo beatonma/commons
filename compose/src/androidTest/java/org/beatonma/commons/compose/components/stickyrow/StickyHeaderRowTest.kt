@@ -21,12 +21,14 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performGesture
 import androidx.compose.ui.unit.dp
+import androidx.test.filters.MediumTest
 import org.beatonma.commons.compose.modifiers.design.gridOverlay
 import org.beatonma.commons.testcompose.actions.swipeLeft
 import org.beatonma.commons.testcompose.test.ComposeTest
 import org.beatonma.commons.theme.compose.HorizontalPadding
 import org.junit.Test
 
+@MediumTest
 class StickyHeaderRowTest : ComposeTest() {
     private val stickyLayoutTag = "sticky_row_layout"
     private val headerTag = "header"
