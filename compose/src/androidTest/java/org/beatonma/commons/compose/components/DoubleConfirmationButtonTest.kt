@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -13,16 +14,16 @@ import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.printToLog
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
+import androidx.test.filters.MediumTest
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.isActive
 import org.beatonma.commons.testcompose.test.ComposeTest
 import org.junit.Before
 import org.junit.Test
 
+@MediumTest
 class DoubleConfirmationButtonTest : ComposeTest() {
     private val buttonTag = "double_confirmation_button"
     private val safeContentText = "Nothing has happened yet"
@@ -51,56 +52,101 @@ class DoubleConfirmationButtonTest : ComposeTest() {
                 .assertIsDisplayed()
                 .assertHasClickAction()
 
-            onNodeWithText(safeContentText).assertIsDisplayed()
-            onNodeWithText(awaitingConfirmationText).assertDoesNotExist()
-            onNodeWithText(actionConfirmedText).assertDoesNotExist()
-            onNodeWithText("false").assertIsDisplayed()
+            onNodeWithText(safeContentText)
+                .assertIsDisplayed()
+            onNodeWithText(awaitingConfirmationText)
+                .assertDoesNotExist()
+            onNodeWithText(actionConfirmedText)
+                .assertDoesNotExist()
+            onNodeWithText("false")
+                .assertIsDisplayed()
         }
     }
 
     @Test
     fun state_afterOneClick_showsCorrectContent_and_hasNotTriggeredClickAction() {
+        val state = mutableStateOf(ConfirmationState.Safe)
         withContent {
-            TestLayout()
+            TestLayout(state)
         }
 
         perform {
             onNodeWithTag(buttonTag)
                 .performClick()
 
-            onNodeWithText(safeContentText).assertDoesNotExist()
-            onNodeWithText(awaitingConfirmationText).assertIsDisplayed()
-            onNodeWithText(actionConfirmedText).assertDoesNotExist()
+            onNodeWithText(safeContentText)
+                .assertDoesNotExist()
+            onNodeWithText(awaitingConfirmationText)
+                .assertIsDisplayed()
+            onNodeWithText(actionConfirmedText)
+                .assertDoesNotExist()
 
-            onNodeWithText("false").assertIsDisplayed()
+            onNodeWithText("false")
+                .assertIsDisplayed()
         }
     }
 
-    /**
-     * TODO Currently failing - not sure how to handle waiting for autoCollapse coroutine
-     *      to complete in this context
-     */
     @Test
     fun state_afterOneClick_afterAutoCollapseTimeout_revertsToSafeState() {
         val state = mutableStateOf(ConfirmationState.Safe)
 
         withContent {
-            TestLayout(state, autoCollapse = 400)
+            TestLayout(state, autoCollapse = 1500)
+        }
+
+        setUp {
+            onNodeWithTag(buttonTag)
+                .performClick()
+
+            onNodeWithText(safeContentText)
+                .assertDoesNotExist()
+            onNodeWithText(awaitingConfirmationText)
+                .assertIsDisplayed()
+            onNodeWithText(actionConfirmedText)
+                .assertDoesNotExist()
         }
 
         perform {
-            runBlocking {
-                onNodeWithTag(buttonTag)
-                    .performClick()
-
-                async { delay(1000) }.await()
-                mainClock.advanceTimeBy(1000)
-                waitUntil(1000) { state.value == ConfirmationState.Safe }
-
-                onNodeWithText(awaitingConfirmationText).assertIsDisplayed()
-
-                onNodeWithText(safeContentText).assertIsDisplayed()
+            waitUntil(2000) {
+                state.value == ConfirmationState.Safe
             }
+
+            onNodeWithText(safeContentText)
+                .assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun autoCollapseJob_isCancelled_whenStateIsComplete() {
+        val state = mutableStateOf(ConfirmationState.Safe)
+        val coroutineScope = CoroutineScope(Dispatchers.Default)
+
+        withContent {
+            TestLayout(state, autoCollapse = 2500, coroutineScope = coroutineScope)
+        }
+
+        setUp {
+            onNodeWithTag(buttonTag)
+                .performClick()
+
+            onNodeWithText(awaitingConfirmationText)
+                .assertIsDisplayed()
+
+        }
+
+        perform {
+            onNodeWithTag(buttonTag)
+                .performClick() // Confirm
+
+            onNodeWithText(actionConfirmedText)
+                .assertIsDisplayed()
+
+            onNodeWithText(actionConfirmedText)
+                .assertIsDisplayed()
+
+            // Scope should be cancelled when action is confirmed.
+            assert(!coroutineScope.isActive)
+            assert(state.value == ConfirmationState.Confirmed)
         }
     }
 
@@ -117,8 +163,10 @@ class DoubleConfirmationButtonTest : ComposeTest() {
                 .assertHasClickAction()
                 .performClick() // Confirm
 
-            onNodeWithText("true").assertIsDisplayed()
-            onNodeWithText(actionConfirmedText).assertIsDisplayed()
+            onNodeWithText("true")
+                .assertIsDisplayed()
+            onNodeWithText(actionConfirmedText)
+                .assertIsDisplayed()
         }
     }
 
@@ -134,10 +182,10 @@ class DoubleConfirmationButtonTest : ComposeTest() {
                 .performClick() // Initiate
                 .performClick() // Confirm
 
-            onRoot().printToLog("afterConfirmationClick")
-
-            onNodeWithText("true").assertExists()
-            onNodeWithText(actionConfirmedText).assertExists()
+            onNodeWithText("true")
+                .assertExists()
+            onNodeWithText(actionConfirmedText)
+                .assertExists()
         }
     }
 
@@ -145,6 +193,7 @@ class DoubleConfirmationButtonTest : ComposeTest() {
     private fun TestLayout(
         state: MutableState<ConfirmationState> = mutableStateOf(ConfirmationState.Safe),
         autoCollapse: Long = 2500L,
+        coroutineScope: CoroutineScope = rememberCoroutineScope(),
     ) {
         Column {
             DoubleConfirmationButton(
@@ -160,9 +209,10 @@ class DoubleConfirmationButtonTest : ComposeTest() {
                     Text(actionConfirmedText)
                 },
                 autoCollapse = autoCollapse,
+                coroutineScope = coroutineScope,
                 modifier = Modifier.testTag(buttonTag),
             )
-            Text(onClickHasBeenTriggered.toString(), Modifier.testTag("onclick_monitor"))
+            Text(onClickHasBeenTriggered.toString())
         }
     }
 }

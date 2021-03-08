@@ -25,10 +25,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.beatonma.commons.compose.ambient.shapes
 import org.beatonma.commons.compose.animation.AutoCollapse
 import org.beatonma.commons.theme.compose.theme.CommonsButtons
@@ -93,7 +92,9 @@ fun DoubleConfirmationButton(
         modifier,
         enabled,
         state = state.value,
-        onStateChange = { state.value = it },
+        onStateChange = { toState ->
+            state.value = toState
+        },
         interactionSource,
         elevation,
         shape,
@@ -127,6 +128,10 @@ private fun DoubleConfirmationButton(
     confirmedContent: @Composable () -> Unit,
     coroutineScope: CoroutineScope,
 ) {
+    if (state == ConfirmationState.Confirmed) {
+        coroutineScope.cancel()
+    }
+
     val transition = updateTransition(state)
 
     val contentColor by transition.animateColor {
@@ -151,11 +156,7 @@ private fun DoubleConfirmationButton(
                 onStateChange(ConfirmationState.AwaitingConfirmation)
                 coroutineScope.launch {
                     delay(autoCollapse)
-                    withContext(Dispatchers.Main) {
-                        if (state == ConfirmationState.AwaitingConfirmation) {
-                            onStateChange(ConfirmationState.Safe)
-                        }
-                    }
+                    onStateChange(ConfirmationState.Safe)
                 }
             }
 
@@ -202,12 +203,9 @@ private fun DoubleConfirmationButton(
 @Preview
 @Composable
 fun DoubleConfirmationButtonPreview() {
-    val state = rememberConfirmationState()
-
     CommonsTheme {
         DoubleConfirmationButton(
             onClick = { println("CLICKED") },
-            state = state,
             safeContent = { Text("Safe!") },
             awaitingConfirmationContent = { Text("Press again to confirm") },
             confirmedContent = { Text("Confirmed!") },
