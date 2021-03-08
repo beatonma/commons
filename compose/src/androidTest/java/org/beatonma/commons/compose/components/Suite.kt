@@ -7,9 +7,10 @@ import org.junit.runners.Suite
 
 @RunWith(Suite::class)
 @Suite.SuiteClasses(
-    CollapsibleHeaderLayoutTest::class,
-    StickyHeaderRowTest::class,
+    CollapsedColumnTest::class,
     CollapsibleChipTest::class,
+    CollapsibleHeaderLayoutTest::class,
     DoubleConfirmationButtonTest::class,
+    StickyHeaderRowTest::class,
 )
 class ComponentTestSuite
