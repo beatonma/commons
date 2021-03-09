@@ -2,21 +2,24 @@ package org.beatonma.commons.compose.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.preferredHeight
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.AmbientContentColor
-import androidx.compose.material.AmbientTextStyle
+import androidx.compose.material.LocalContentColor
+import androidx.compose.material.LocalTextStyle
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Providers
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.platform.AmbientLayoutDirection
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
@@ -25,14 +28,14 @@ import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.util.ComposableBlock
 import org.beatonma.commons.compose.util.size
 import org.beatonma.commons.theme.compose.Padding
-import org.beatonma.commons.theme.compose.plus
+import org.beatonma.commons.theme.compose.theme.CommonsTheme
 
 private const val ALPHA = 0.1F
 
 @Composable
 fun HorizontalSeparator(
     modifier: Modifier = Modifier,
-    color: Color = AmbientContentColor.current.copy(alpha = ALPHA),
+    color: Color = LocalContentColor.current.copy(alpha = ALPHA),
     text: ComposableBlock? = null,
 ) {
     if (text == null) {
@@ -44,7 +47,7 @@ fun HorizontalSeparator(
                 color = color,
                 modifier = Modifier
                     .padding(Padding.HorizontalSeparator)
-                    .preferredHeight(1.dp)
+                    .height(1.dp)
                     .fillMaxWidth(0.25F)
                     .then(modifier),
             )
@@ -58,7 +61,7 @@ fun HorizontalSeparator(
 @Composable
 fun VerticalSeparator(
     modifier: Modifier = Modifier,
-    color: Color = AmbientContentColor.current.copy(alpha = ALPHA),
+    color: Color = LocalContentColor.current.copy(alpha = ALPHA),
 ) {
     Box(
         Modifier.fillMaxHeight(),
@@ -84,17 +87,18 @@ private fun Separator(color: Color, modifier: Modifier) {
 private fun HorizontalSeparatorWithContent(
     color: Color,
     modifier: Modifier,
-    layoutDirection: LayoutDirection = AmbientLayoutDirection.current,
+    layoutDirection: LayoutDirection = LocalLayoutDirection.current,
     content: @Composable () -> Unit,
 ) {
     val alignment = Alignment.Center
     val lineModifier = Modifier
-        .padding(Padding.HorizontalSeparator + Padding.VerticalSeparator)
-        .preferredHeight(1.dp)
+        .padding(Padding.HorizontalSeparator)
+        .padding(Padding.VerticalSeparator)
+        .height(1.dp)
 
-    Providers(
-        AmbientTextStyle provides typography.caption,
-        AmbientContentColor provides color,
+    CompositionLocalProvider(
+        LocalTextStyle provides typography.caption,
+        LocalContentColor provides color,
     ) {
         Layout(
             modifier = modifier,
@@ -133,4 +137,24 @@ private fun HorizontalSeparatorWithContent(
             }
         }
     }
+}
+
+
+@Preview
+@Composable
+fun SeparatorPreview() {
+    CommonsTheme {
+        Column {
+            Spacer(Modifier.height(64.dp))
+
+            HorizontalSeparator()
+
+            Spacer(Modifier.height(64.dp))
+
+            HorizontalSeparator {
+                Text("Hello")
+            }
+        }
+    }
+
 }
