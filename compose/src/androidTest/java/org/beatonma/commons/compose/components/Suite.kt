@@ -11,6 +11,7 @@ import org.junit.runners.Suite
     CollapsibleChipTest::class,
     CollapsibleHeaderLayoutTest::class,
     DoubleConfirmationButtonTest::class,
+    SearchFieldTest::class,
     StickyHeaderRowTest::class,
 )
 class ComponentTestSuite
