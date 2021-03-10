@@ -1,9 +1,10 @@
 package org.beatonma.commons.compose.modifiers.design
 
 import androidx.annotation.FloatRange
-import androidx.compose.material.AmbientContentColor
+import androidx.compose.material.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.draw.DrawModifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
@@ -14,24 +15,25 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-@Composable
 fun Modifier.gridOverlay(
     spacing: Dp = 8.dp,
-    color: Color = AmbientContentColor.current,
+    color: Color? = null,
     @FloatRange(from = 0.0, to = 1.0) alpha: Float = .5F,
     strokeWidth: Dp = 0.dp,// Stroke.HairlineWidth,
     colorFilter: ColorFilter? = null,
     blendMode: BlendMode = DrawScope.DefaultBlendMode,
-) = this.then(
+) = composed {
+    this.then(
         GridOverlay(
             spacing,
-            color,
+            color ?: LocalContentColor.current,
             alpha = alpha,
             strokeWidth = strokeWidth,
             colorFilter,
             blendMode,
         )
     )
+}
 
 private class GridOverlay(
     private val spacing: Dp,
@@ -47,7 +49,7 @@ private class GridOverlay(
     }
 
     private fun ContentDrawScope.drawGrid() {
-        val step = spacing.toIntPx()
+        val step = spacing.roundToPx()
         val strokeWidth = strokeWidth.toPx()
 
         val width = size.width

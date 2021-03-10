@@ -1,13 +1,13 @@
 package org.beatonma.commons.compose.ambient
 
-import androidx.compose.material.AmbientContentAlpha
+import androidx.compose.material.LocalContentAlpha
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Providers
+import androidx.compose.runtime.CompositionLocalProvider
 
 @Composable
 fun WithContentAlpha(alpha: Float, content: @Composable () -> Unit) {
-    Providers(
-        AmbientContentAlpha provides alpha,
+    CompositionLocalProvider(
+        LocalContentAlpha provides alpha,
         content = content
     )
 }
