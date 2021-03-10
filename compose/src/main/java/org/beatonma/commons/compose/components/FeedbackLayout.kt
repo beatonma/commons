@@ -39,11 +39,29 @@ import org.beatonma.commons.theme.compose.theme.CommonsTheme
 import org.beatonma.commons.theme.compose.theme.systemui.imeOrNavigationBarsPadding
 import org.beatonma.commons.theme.compose.theme.systemui.statusBarsPadding
 
-val LocalFeedbackMessage: ProvidableCompositionLocal<MutableState<AnnotatedString>> =
-    compositionLocalOf { mutableStateOf(AnnotatedString("")) }
+typealias FeedbackProvider = MutableState<AnnotatedString?>
 
-fun MutableState<AnnotatedString>.clear() {
-    value = AnnotatedString("")
+@Composable
+fun rememberFeedbackProvider(default: AnnotatedString? = null) = remember { mutableStateOf(default) }
+
+val LocalFeedbackMessage: ProvidableCompositionLocal<MutableState<AnnotatedString?>> =
+    compositionLocalOf { mutableStateOf(null) }
+
+fun MutableState<AnnotatedString?>.clear() {
+    value = null
+}
+
+private val EmptyText = AnnotatedString("")
+
+@Composable
+fun ShowFeedback(message: AnnotatedString?) {
+    LocalFeedbackMessage.current.value = message
+}
+
+@Composable
+fun ShowFeedback(message: String?) {
+    if (message == null) LocalFeedbackMessage.current.clear()
+    else ShowFeedback(message = AnnotatedString(message))
 }
 
 /**
@@ -52,7 +70,7 @@ fun MutableState<AnnotatedString>.clear() {
 @Composable
 fun FeedbackLayout(
     alignment: Alignment = Alignment.TopCenter,
-    message: AnnotatedString = LocalFeedbackMessage.current.value,
+    message: AnnotatedString? = LocalFeedbackMessage.current.value,
     content: @Composable BoxScope.() -> Unit,
 ) {
     Box(Modifier.fillMaxSize()) {
@@ -71,11 +89,11 @@ fun FeedbackLayout(
 
 @Composable
 private fun FeedbackMessage(
-    message: AnnotatedString,
+    message: AnnotatedString?,
     alignment: Alignment,
     modifier: Modifier,
 ) {
-    val state = if (message.isBlank()) {
+    val state = if (message.isNullOrBlank()) {
         ExpandCollapseState.Collapsed
     } else {
         ExpandCollapseState.Expanded
@@ -91,7 +109,7 @@ private fun FeedbackMessage(
 
 @Composable
 private fun FeedbackMessageLayout(
-    message: AnnotatedString,
+    message: AnnotatedString?,
     state: ExpandCollapseState,
     alignment: Alignment,
     modifier: Modifier,
@@ -110,7 +128,7 @@ private fun FeedbackMessageLayout(
             elevation = Elevation.ModalSurface,
         ) {
             Text(
-                message,
+                message ?: EmptyText,
                 modifier = Modifier
                     .wrapContentHeight(sizeProgress)
                     .padding(Padding.Snackbar)
@@ -125,11 +143,6 @@ private fun FeedbackMessageLayout(
             )
         }
     }
-}
-
-@Composable
-fun ShowFeedback(message: String) {
-    LocalFeedbackMessage.current.value = AnnotatedString(message)
 }
 
 

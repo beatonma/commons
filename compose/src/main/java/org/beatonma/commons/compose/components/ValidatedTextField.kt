@@ -1,38 +1,45 @@
 package org.beatonma.commons.compose.components
 
-import androidx.compose.foundation.InteractionState
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.AmbientContentColor
-import androidx.compose.material.AmbientTextStyle
-import androidx.compose.material.ContainerAlpha
+import androidx.compose.material.LocalContentColor
+import androidx.compose.material.LocalTextStyle
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldColors
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.onDispose
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.text.SoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.compose.ambient.shapes
 import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.util.rememberText
-import org.beatonma.commons.compose.util.update
+import org.beatonma.commons.theme.compose.theme.CommonsTheme
 import org.beatonma.commons.theme.compose.theme.withSquareBottom
 
 enum class TextValidationResult {
@@ -49,10 +56,14 @@ enum class TextValidationResult {
 data class TextValidationRules(
     val minLength: Int = 0,
     val maxLength: Int = Integer.MAX_VALUE,
-    val pattern: Regex = ".*".toRegex(),
+    val regex: Regex = ".*".toRegex(),
 ) {
+    init {
+        require(maxLength >= minLength)
+    }
+
     fun validate(value: String): TextValidationResult = when {
-        !pattern.matches(value) -> TextValidationResult.FORMAT_ERROR
+        !regex.matches(value) -> TextValidationResult.FORMAT_ERROR
         value.length < minLength -> TextValidationResult.TOO_SHORT
         value.length > maxLength -> TextValidationResult.TOO_LONG
         else -> TextValidationResult.OK
@@ -60,67 +71,29 @@ data class TextValidationRules(
 }
 
 @Composable
-fun ValidatedTextField(
-    valueState: MutableState<String>,
-    validationRules: TextValidationRules,
-    onValueChange: (String, validationResult: TextValidationResult) -> Unit,
-    modifier: Modifier = Modifier,
-    validationResultMessage: MutableState<String> = rememberText(),
-    textStyle: TextStyle = AmbientTextStyle.current.copy(color = AmbientContentColor.current),
-    label: @Composable (() -> Unit)? = null,
-    placeholder: @Composable (() -> Unit)? = null,
-    leadingIcon: @Composable (() -> Unit)? = null,
-    trailingIcon: @Composable (() -> Unit)? = null,
-    isErrorValue: Boolean = false,
-    visualTransformation: VisualTransformation = VisualTransformation.None,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    maxLines: Int = Int.MAX_VALUE,
-    onImeActionPerformed: (ImeAction, SoftwareKeyboardController?) -> Unit = { _, _ -> },
-    onTextInputStarted: (SoftwareKeyboardController) -> Unit = {},
-    interactionState: InteractionState = remember { InteractionState() },
-    activeColor: Color = colors.primary,
-    inactiveColor: Color = colors.onSurface,
-    errorColor: Color = colors.error,
-    backgroundColor: Color = colors.onSurface.copy(alpha = ContainerAlpha),
-    shape: Shape = shapes.small.withSquareBottom(),
-) {
-    ValidatedTextField(
-        value = valueState.value,
-        validationRules = validationRules,
-        onValueChange = { value, validationResult ->
-            valueState.value = value
-            onValueChange(value, validationResult)
-        },
-        modifier,
-        validationResultMessage,
-        textStyle,
-        label,
-        placeholder,
-        leadingIcon,
-        trailingIcon,
-        isErrorValue,
-        visualTransformation,
-        keyboardOptions,
-        maxLines,
-        onImeActionPerformed,
-        onTextInputStarted,
-        interactionState,
-        activeColor,
-        inactiveColor,
-        errorColor,
-        backgroundColor,
-        shape,
-    )
-}
+fun rememberValidationRules(
+    minLength: Int = 0,
+    maxLength: Int = Integer.MAX_VALUE,
+    regex: Regex = ".*".toRegex(),
+) = remember { TextValidationRules(minLength, maxLength, regex) }
 
+/**
+ * @param onValueChange     Returns an AnnotatedString (suitable for display) which describes any
+ *                          validation issues and how to fix them.
+ *
+ * @param internalFeedback  If true, validation messages will be displayed as part of the widget.
+ *                          If false, validation messages should be displayed by some other means.
+ */
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ValidatedTextField(
     value: String,
     validationRules: TextValidationRules,
-    onValueChange: (String, valid: TextValidationResult) -> Unit,
+    onValueChange: (newValue: String, result: TextValidationResult) -> AnnotatedString?,
     modifier: Modifier = Modifier,
-    validationResultMessage: MutableState<String> = rememberText(),
-    textStyle: TextStyle = AmbientTextStyle.current.copy(color = AmbientContentColor.current),
+    enabled: Boolean = true,
+    readOnly: Boolean = false,
+    textStyle: TextStyle = LocalTextStyle.current.copy(color = LocalContentColor.current),
     label: @Composable (() -> Unit)? = null,
     placeholder: @Composable (() -> Unit)? = null,
     leadingIcon: @Composable (() -> Unit)? = null,
@@ -128,58 +101,150 @@ fun ValidatedTextField(
     isErrorValue: Boolean = false,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = remember { KeyboardActions() },
+    singleLine: Boolean = false,
     maxLines: Int = Int.MAX_VALUE,
-    onImeActionPerformed: (ImeAction, SoftwareKeyboardController?) -> Unit = { _, _ -> },
-    onTextInputStarted: (SoftwareKeyboardController) -> Unit = {},
-    interactionState: InteractionState = remember { InteractionState() },
-    activeColor: Color = colors.primary,
-    inactiveColor: Color = colors.onSurface,
-    errorColor: Color = colors.error,
-    backgroundColor: Color = colors.onSurface.copy(alpha = ContainerAlpha),
+    interactionSource: MutableInteractionSource = remember(::MutableInteractionSource),
     shape: Shape = shapes.small.withSquareBottom(),
-    feedbackProvider: MutableState<String> = AmbientFeedbackMessage.current,
+    colors: TextFieldColors = TextFieldDefaults.textFieldColors(),
+    internalFeedback: Boolean = true,
+    feedbackProvider: FeedbackProvider = if (internalFeedback) rememberFeedbackProvider() else LocalFeedbackMessage.current,
 ) {
     val validationResult = remember { mutableStateOf(TextValidationResult.OK) }
+    val validationResultMessage: MutableState<AnnotatedString?> = remember { mutableStateOf(null) }
 
+    ValidatedTextFieldLayout(
+        value = value,
+        onValueChange = { newValue, result ->
+            validationResultMessage.value = onValueChange(newValue, result)
+        },
+        validationResult = validationResult.value,
+        validationResultMessage = validationResultMessage.value,
+        validationRules = validationRules,
+        modifier = modifier,
+        enabled = enabled,
+        readOnly = readOnly,
+        textStyle = textStyle,
+        label = label,
+        placeholder = placeholder,
+        leadingIcon = leadingIcon,
+        trailingIcon = trailingIcon,
+        isErrorValue = isErrorValue,
+        visualTransformation = visualTransformation,
+        keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardActions,
+        singleLine = singleLine,
+        maxLines = maxLines,
+        interactionSource = interactionSource,
+        shape = shape,
+        colors = colors,
+        internalFeedback = internalFeedback,
+        feedbackProvider = feedbackProvider,
+    )
+}
+
+@Composable
+private fun ValidatedTextFieldLayout(
+    value: String,
+    onValueChange: (text: String, valid: TextValidationResult) -> Unit,
+    validationResult: TextValidationResult,
+    validationResultMessage: AnnotatedString?,
+    validationRules: TextValidationRules,
+    modifier: Modifier,
+    enabled: Boolean,
+    readOnly: Boolean,
+    textStyle: TextStyle,
+    label: @Composable (() -> Unit)?,
+    placeholder: @Composable (() -> Unit)?,
+    leadingIcon: @Composable (() -> Unit)?,
+    trailingIcon: @Composable (() -> Unit)?,
+    isErrorValue: Boolean,
+    visualTransformation: VisualTransformation,
+    keyboardOptions: KeyboardOptions,
+    keyboardActions: KeyboardActions,
+    singleLine: Boolean,
+    maxLines: Int,
+    interactionSource: MutableInteractionSource,
+    shape: Shape,
+    colors: TextFieldColors,
+    internalFeedback: Boolean,
+    feedbackProvider: FeedbackProvider,
+) {
     Column(modifier) {
         TextField(
             value = value,
             onValueChange = { value ->
                 val result = validationRules.validate(value)
-                validationResult.update(result)
                 onValueChange(value, result)
+
             },
-            modifier = Modifier.fillMaxWidth(),
+            enabled = enabled,
+            readOnly = readOnly,
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("validated_text"),
             textStyle = textStyle,
             label = label,
             placeholder = placeholder,
             leadingIcon = leadingIcon,
             trailingIcon = trailingIcon,
-            isErrorValue = isErrorValue || validationResult.value.isError,
+            isError = isErrorValue || validationResult.isError,
             visualTransformation = visualTransformation,
             keyboardOptions = keyboardOptions,
+            keyboardActions = keyboardActions,
+            singleLine = singleLine,
             maxLines = maxLines,
-            onImeActionPerformed = onImeActionPerformed,
-            onTextInputStarted = onTextInputStarted,
-            interactionState = interactionState,
-            activeColor = activeColor,
-            inactiveColor = inactiveColor,
-            errorColor = errorColor,
-            backgroundColor = backgroundColor,
+            interactionSource = interactionSource,
             shape = shape,
+            colors = colors,
         )
 
-        CounterText(
-            validationRules, value.length,
-            Modifier.align(Alignment.End).padding(top = 4.dp),
-            errorColor = errorColor
-        )
-
-        feedbackProvider.update(validationResultMessage.value)
-
-        onDispose {
-            feedbackProvider.update("")
+        val counterText: @Composable () -> Unit = {
+            CounterText(
+                validationRules, value.length,
+                Modifier
+                    .align(Alignment.End)
+                    .padding(top = 4.dp),
+                errorColor = colors.labelColor(
+                    enabled = enabled,
+                    error = true,
+                    interactionSource = interactionSource,
+                ).value
+            )
         }
+        if (internalFeedback) {
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                FeedbackText(message = validationResultMessage)
+                counterText()
+            }
+        }
+        else {
+            counterText()
+        }
+
+        ShowFeedback(validationResultMessage)
+
+        DisposableEffect(key1 = true) {
+            onDispose {
+                feedbackProvider.clear()
+            }
+        }
+    }
+}
+
+@Composable
+private fun FeedbackText(
+    message: AnnotatedString?,
+) {
+    if (message == null) {
+        Spacer(Modifier)
+    }
+    else {
+        Text(message, Modifier.testTag("feedback_text"), style = typography.caption)
     }
 }
 
@@ -194,7 +259,7 @@ private fun CounterText(
     val errorStyle = remember { SpanStyle(color = errorColor) }
     val defaultStyle = remember { SpanStyle() }
 
-    val counterText = mutableStateOf(
+    val counterText =
         buildAnnotatedString {
             val showWarning =
                 textLength < validationRules.minLength || textLength > validationRules.maxLength
@@ -207,11 +272,36 @@ private fun CounterText(
                 }
             }
         }
-    )
 
     Text(
-        counterText.value,
-        modifier,
+        counterText,
+        modifier.testTag("counter_text"),
         style = typography.caption,
     )
+}
+
+
+@Preview
+@Composable
+fun ValidatedTextFieldPreview() {
+    val text = rememberText()
+    val rules = rememberValidationRules(
+        minLength = 3,
+        maxLength = 10,
+        regex = "[a-z]+".toRegex()
+    )
+
+    CommonsTheme {
+        Surface {
+            ValidatedTextField(
+                value = text.value,
+                validationRules = rules,
+                onValueChange = { newValue, valid ->
+                    text.value = newValue
+                    return@ValidatedTextField AnnotatedString(valid.name)
+                },
+                modifier = Modifier.padding(16.dp),
+            )
+        }
+    }
 }

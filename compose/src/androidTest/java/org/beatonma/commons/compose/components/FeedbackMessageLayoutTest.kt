@@ -112,7 +112,7 @@ class FeedbackMessageLayoutTest: ComposeTest() {
     @Composable
     fun TestLayout(
         alignment: MutableState<Alignment> = mutableStateOf(Alignment.TopCenter),
-        feedbackProvider: MutableState<AnnotatedString> = mutableStateOf(AnnotatedString("")),
+        feedbackProvider: FeedbackProvider = mutableStateOf(null),
     ) {
         CompositionLocalProvider(
             LocalFeedbackMessage provides feedbackProvider,

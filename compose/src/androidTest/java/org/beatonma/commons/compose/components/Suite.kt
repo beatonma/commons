@@ -14,5 +14,6 @@ import org.junit.runners.Suite
     FeedbackMessageLayoutTest::class,
     SearchFieldTest::class,
     StickyHeaderRowTest::class,
+    ValidatedTextFieldTest::class,
 )
 class ComponentTestSuite
