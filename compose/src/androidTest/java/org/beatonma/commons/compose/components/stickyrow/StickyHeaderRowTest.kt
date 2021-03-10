@@ -25,7 +25,7 @@ import androidx.test.filters.MediumTest
 import org.beatonma.commons.compose.modifiers.design.gridOverlay
 import org.beatonma.commons.testcompose.actions.swipeLeft
 import org.beatonma.commons.testcompose.test.ComposeTest
-import org.beatonma.commons.theme.compose.HorizontalPadding
+import org.beatonma.commons.theme.compose.padding.HorizontalPadding
 import org.junit.Test
 
 @MediumTest

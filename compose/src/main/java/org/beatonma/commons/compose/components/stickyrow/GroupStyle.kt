@@ -3,7 +3,7 @@ package org.beatonma.commons.compose.components.stickyrow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.Dp
-import org.beatonma.commons.theme.compose.HorizontalPadding
+import org.beatonma.commons.theme.compose.padding.HorizontalPadding
 
 @Composable
 fun rememberGroupStyle(

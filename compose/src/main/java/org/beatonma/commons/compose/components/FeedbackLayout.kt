@@ -33,8 +33,8 @@ import org.beatonma.commons.compose.modifiers.wrapContentHeight
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.theme.compose.Elevation
 import org.beatonma.commons.theme.compose.Layer
-import org.beatonma.commons.theme.compose.Padding
-import org.beatonma.commons.theme.compose.padding
+import org.beatonma.commons.theme.compose.padding.Padding
+import org.beatonma.commons.theme.compose.padding.padding
 import org.beatonma.commons.theme.compose.theme.CommonsTheme
 import org.beatonma.commons.theme.compose.theme.systemui.imeOrNavigationBarsPadding
 import org.beatonma.commons.theme.compose.theme.systemui.statusBarsPadding

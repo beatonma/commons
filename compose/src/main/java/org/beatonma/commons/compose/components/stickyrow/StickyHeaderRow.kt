@@ -16,7 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import kotlinx.coroutines.launch
-import org.beatonma.commons.theme.compose.EndOfContent
+import org.beatonma.commons.theme.compose.padding.EndOfContent
 
 @Composable
 fun <T, H> StickyHeaderRow(

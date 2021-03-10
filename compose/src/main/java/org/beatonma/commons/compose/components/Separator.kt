@@ -27,7 +27,8 @@ import androidx.compose.ui.unit.dp
 import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.util.ComposableBlock
 import org.beatonma.commons.compose.util.size
-import org.beatonma.commons.theme.compose.Padding
+import org.beatonma.commons.theme.compose.padding.Padding
+import org.beatonma.commons.theme.compose.padding.padding
 import org.beatonma.commons.theme.compose.theme.CommonsTheme
 
 private const val ALPHA = 0.1F

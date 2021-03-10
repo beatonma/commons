@@ -36,7 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.compose.R
 import org.beatonma.commons.compose.animation.ExpandCollapseState
-import org.beatonma.commons.compose.animation.currentExpansion
+import org.beatonma.commons.compose.animation.animateExpansion
 import org.beatonma.commons.compose.animation.rememberExpandCollapseState
 import org.beatonma.commons.compose.animation.toggle
 import org.beatonma.commons.compose.modifiers.design.colorize
@@ -46,7 +46,8 @@ import org.beatonma.commons.compose.util.rememberListOf
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.core.extensions.reversed
 import org.beatonma.commons.core.extensions.withNotNull
-import org.beatonma.commons.theme.compose.Padding
+import org.beatonma.commons.theme.compose.padding.Padding
+import org.beatonma.commons.theme.compose.padding.padding
 import org.beatonma.commons.theme.compose.Size
 import org.beatonma.commons.theme.compose.components.ComponentTitle
 import org.beatonma.commons.theme.compose.theme.CommonsTheme
@@ -203,7 +204,7 @@ private fun MoreContentIndication(
     transition: Transition<ExpandCollapseState>,
     onClick: () -> Unit
 ) {
-    val visibility = transition.currentExpansion().value.reversed()
+    val visibility = transition.animateExpansion().value.reversed()
     val contentDescription = stringResource(R.string.content_description_show_more)
 
     Box(

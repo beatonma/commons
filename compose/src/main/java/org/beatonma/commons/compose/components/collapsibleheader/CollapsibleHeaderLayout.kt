@@ -36,7 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.beatonma.commons.compose.util.toggle
-import org.beatonma.commons.theme.compose.EndOfContent
+import org.beatonma.commons.theme.compose.padding.EndOfContent
 import org.beatonma.commons.theme.compose.theme.CommonsTheme
 
 @Composable
