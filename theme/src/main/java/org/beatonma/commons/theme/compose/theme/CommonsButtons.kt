@@ -1,6 +1,6 @@
 package org.beatonma.commons.theme.compose.theme
 
-import androidx.compose.material.AmbientContentColor
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.MaterialTheme
@@ -9,22 +9,28 @@ import androidx.compose.ui.graphics.Color
 
 object CommonsButtons {
     @Composable
-    fun outlineButtonColors(backgroundColor: Color = Color.Transparent) = buttonColors(
-        contentColor = MaterialTheme.colors.primary,
+    fun outlineButtonColors(
+        contentColor: Color = MaterialTheme.colors.primary,
+        backgroundColor: Color = Color.Transparent
+    ) = buttonColors(
+        contentColor = contentColor,
         backgroundColor = backgroundColor,
     )
 
     @Composable
-    fun warningButtonColors(backgroundColor: Color = Color.Transparent) =
+    fun warningButtonColors(
+        contentColor: Color = MaterialTheme.colors.onWarningSurface,
+        backgroundColor: Color = MaterialTheme.colors.warningSurface
+    ) =
         buttonColors(
-            contentColor = MaterialTheme.colors.negative,
+            contentColor = contentColor,
             backgroundColor = backgroundColor,
         )
 
     @Composable
     fun contentButtonColors(backgroundColor: Color = Color.Transparent) =
         buttonColors(
-            contentColor = AmbientContentColor.current,
+            contentColor = LocalContentColor.current,
             backgroundColor = backgroundColor,
         )
 

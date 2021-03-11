@@ -1,9 +1,8 @@
 package org.beatonma.commons.theme.compose.theme
 
 import androidx.compose.animation.core.CubicBezierEasing
-import androidx.compose.animation.core.ExponentialDecay
+import androidx.compose.animation.core.Easing
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.FloatDecayAnimationSpec
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.infiniteRepeatable
@@ -23,7 +22,7 @@ fun <T> CommonsFastSpring() = CommonsSpring<T>(stiffness = 2500F)
 
 fun <T> CommonsTween(
     duration: Int = DURATION_DEFAULT,
-    easing: CubicBezierEasing = FastOutSlowInEasing,
+    easing: Easing = FastOutSlowInEasing,
 ) = tween<T>(duration, easing = easing)
 
 fun <T> CommonsFastTween() = CommonsTween<T>(duration = DURATION_FAST)
@@ -31,7 +30,7 @@ fun <T> CommonsFastTween() = CommonsTween<T>(duration = DURATION_FAST)
 fun <T> CommonsRepeatable(
     iterations: Int = 0,
     duration: Int = DURATION_DEFAULT,
-    easing: CubicBezierEasing = FastOutSlowInEasing,
+    easing: Easing = FastOutSlowInEasing,
     repeatMode: RepeatMode = RepeatMode.Restart,
 ) =
     if (iterations <= 0) {
@@ -47,10 +46,6 @@ fun <T> CommonsRepeatable(
             repeatMode = repeatMode
         )
     }
-
-fun CommonsDecay(): FloatDecayAnimationSpec = ExponentialDecay(
-    frictionMultiplier = 3F,
-)
 
 fun cubicBezier(a: Number, b: Number, c: Number, d: Number) =
     CubicBezierEasing(a.toFloat(), b.toFloat(), c.toFloat(), d.toFloat())

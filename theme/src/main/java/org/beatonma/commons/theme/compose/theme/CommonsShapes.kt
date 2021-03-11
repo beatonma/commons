@@ -16,10 +16,10 @@ val CommonsShapes = Shapes(
     small = RoundedCornerShape(CORNER_SMALL.dp),
 )
 
-fun CornerBasedShape.withSquareTop() = copy(topLeft = ZeroCornerSize, topRight = ZeroCornerSize)
+fun CornerBasedShape.withSquareTop() = copy(topStart = ZeroCornerSize, topEnd = ZeroCornerSize)
 fun CornerBasedShape.withSquareBottom() =
-    copy(bottomLeft = ZeroCornerSize, bottomRight = ZeroCornerSize)
+    copy(bottomStart = ZeroCornerSize, bottomEnd = ZeroCornerSize)
 
-fun CornerBasedShape.withSquareLeft() = copy(bottomLeft = ZeroCornerSize, topLeft = ZeroCornerSize)
-fun CornerBasedShape.withSquareRight() =
-    copy(topRight = ZeroCornerSize, bottomRight = ZeroCornerSize)
+fun CornerBasedShape.withSquareStart() = copy(bottomStart = ZeroCornerSize, topStart = ZeroCornerSize)
+fun CornerBasedShape.withSquareEnd() =
+    copy(topEnd = ZeroCornerSize, bottomEnd = ZeroCornerSize)

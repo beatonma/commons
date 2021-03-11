@@ -1,6 +1,6 @@
 package org.beatonma.commons.theme.compose.theme
 
-import androidx.compose.material.AmbientContentColor
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Typography
 import androidx.compose.runtime.Composable
@@ -31,7 +31,7 @@ object CommonsSpanStyle {
 
     @Composable
     fun quote(): SpanStyle = SpanStyle(
-        background = AmbientContentColor.current.copy(alpha = 0.2F),
+        background = LocalContentColor.current.copy(alpha = 0.2F),
         fontFamily = FontFamily.Monospace,
     )
 }
