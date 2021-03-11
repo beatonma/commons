@@ -17,6 +17,7 @@ dependencies {
             Dependencies.AndroidX.APPCOMPAT,
             Dependencies.AndroidX.CORE_KTX,
             Dependencies.Kotlin.Coroutines.CORE,
+            Dependencies.Kotlin.Coroutines.TEST,
             Dependencies.Kotlin.REFLECT
         )
     }
