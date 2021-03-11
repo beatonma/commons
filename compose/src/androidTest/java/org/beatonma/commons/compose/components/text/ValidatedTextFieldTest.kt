@@ -1,4 +1,4 @@
-package org.beatonma.commons.compose.components
+package org.beatonma.commons.compose.components.text
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -11,6 +11,7 @@ import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.text.AnnotatedString
 import androidx.test.filters.MediumTest
+import org.beatonma.commons.compose.components.FeedbackProvider
 import org.beatonma.commons.compose.util.rememberText
 import org.beatonma.commons.testcompose.test.ComposeTest
 import org.junit.Test

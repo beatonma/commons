@@ -1,4 +1,4 @@
-package org.beatonma.commons.compose.components
+package org.beatonma.commons.compose.components.text
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState

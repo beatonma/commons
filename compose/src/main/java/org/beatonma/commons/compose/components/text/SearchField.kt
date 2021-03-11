@@ -1,4 +1,4 @@
-package org.beatonma.commons.compose.components
+package org.beatonma.commons.compose.components.text
 
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility

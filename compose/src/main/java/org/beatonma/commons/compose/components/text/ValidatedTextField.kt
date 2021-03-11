@@ -1,4 +1,4 @@
-package org.beatonma.commons.compose.components
+package org.beatonma.commons.compose.components.text
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +38,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.compose.ambient.shapes
 import org.beatonma.commons.compose.ambient.typography
+import org.beatonma.commons.compose.components.FeedbackProvider
+import org.beatonma.commons.compose.components.LocalFeedbackMessage
+import org.beatonma.commons.compose.components.ShowFeedback
+import org.beatonma.commons.compose.components.clear
+import org.beatonma.commons.compose.components.rememberFeedbackProvider
 import org.beatonma.commons.compose.util.rememberText
 import org.beatonma.commons.theme.compose.theme.CommonsTheme
 import org.beatonma.commons.theme.compose.theme.withSquareBottom

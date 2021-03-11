@@ -1,4 +1,4 @@
-package org.beatonma.commons.compose.components
+package org.beatonma.commons.compose.components.text
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Text
@@ -16,7 +16,6 @@ import androidx.compose.ui.test.percentOffset
 import androidx.compose.ui.test.performGesture
 import androidx.compose.ui.text.font.FontFamily
 import androidx.test.filters.MediumTest
-import org.beatonma.commons.compose.components.text.LinkedText
 import org.beatonma.commons.testcompose.test.ComposeTest
 import org.junit.Test
 
