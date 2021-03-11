@@ -1,7 +1,7 @@
 package org.beatonma.compose.themepreview
 
-import androidx.compose.animation.AnimatedFloatModel
 import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,15 +9,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.preferredHeight
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.BottomAppBar
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.onCommit
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -25,7 +24,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.platform.AmbientAnimationClock
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
@@ -35,30 +34,18 @@ private val BottomBarHeight = 56.dp
 internal fun BottomBar(
     selectedIndex: Int,
     itemCount: Int,
-    animSpec: AnimationSpec<Float>,
+    animationSpec: AnimationSpec<Float>,
     modifier: Modifier = Modifier,
-    content: @Composable (List<AnimatedFloatModel>) -> Unit,
+    content: @Composable (List<State<Float>>) -> Unit,
 ) {
-    val clock = AmbientAnimationClock.current
-    val selectionFractions = remember(itemCount) {
-        // 'selectedness' of each item.
-        List(itemCount) { i ->
-            AnimatedFloatModel(if (i == selectedIndex) 1F else 0F, clock)
-        }
-    }
-
-    onCommit(selectedIndex) {
-        selectionFractions.forEachIndexed { index, fraction ->
-            val target = if (index == selectedIndex) 1F else 0F
-            if (fraction.targetValue != target) {
-                fraction.animateTo(target, animSpec)
-            }
-        }
+    val selectionFractions: List<State<Float>> = List(itemCount) {
+        animateFloatAsState(targetValue = if (it == selectedIndex) 1F else 0F, animationSpec = animationSpec)
     }
 
     BottomAppBar(
-        Modifier.fillMaxWidth()
-            .preferredHeight(BottomBarHeight),
+        Modifier
+            .fillMaxWidth()
+            .height(BottomBarHeight),
         cutoutShape = MaterialTheme.shapes.small,
         backgroundColor = MaterialTheme.colors.surface,
     ) {
@@ -115,6 +102,7 @@ internal fun SectionIcon(
 ) {
     Row(
         Modifier
+            .semantics(mergeDescendants = true) {}
             .fillMaxWidth()
             .clickable { onSelected(screen) }
             .padding(16.dp)
@@ -128,6 +116,7 @@ internal fun SectionIcon(
         ) {
             Icon(
                 icon,
+                contentDescription = null,
                 tint = MaterialTheme.colors.onSurface.lerp(
                     MaterialTheme.colors.primary,
                     progress))

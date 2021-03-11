@@ -3,12 +3,12 @@ package org.beatonma.compose.themepreview
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.SpringSpec
 import androidx.compose.animation.core.TweenSpec
-import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.FabPosition
 import androidx.compose.material.FloatingActionButton
@@ -27,8 +27,9 @@ import androidx.compose.material.icons.filled.TextFields
 import androidx.compose.material.icons.filled.Widgets
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.savedinstancestate.savedInstanceState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -84,17 +85,17 @@ data class CustomPreviewScreen(
  */
 @Composable
 fun ThemePreview(
+    customScreen: CustomPreviewScreen? = null,
+
     theme: @Composable (
         isDark: Boolean,
         content: @Composable () -> Unit,
     ) -> Unit,
-
-    customScreen: CustomPreviewScreen? = null,
 ) {
     val initIsDark = isSystemInDarkTheme()
-    var isDark by savedInstanceState { initIsDark }
+    var isDark by rememberSaveable { mutableStateOf(initIsDark) }
     val crossfadeAnimSpec = remember { TweenSpec<Float>(durationMillis = 1000) }
-    val (currentScreen, onScreenChanged) = savedInstanceState { Screen.Custom }
+    val (currentScreen, onScreenChanged) = rememberSaveable { mutableStateOf(Screen.Custom) }
 
     val screenOverride =
         if (currentScreen == Screen.Custom && customScreen != null) {
@@ -102,7 +103,7 @@ fun ThemePreview(
         }
         else null
 
-    Crossfade(current = isDark, animation = crossfadeAnimSpec) {
+    Crossfade(isDark, animationSpec = crossfadeAnimSpec) {
         theme(isDark) {
             ThemePreview(currentScreen,
                 screenOverride,
@@ -119,7 +120,7 @@ private fun ThemePreview(
     onScreenChanged: (Screen) -> Unit,
     onToggleTheme: () -> Unit,
 ) {
-    val animSpec = remember {
+    val animationSpec = remember {
         SpringSpec<Float>(
             stiffness = 800f,
             dampingRatio = 0.8f,
@@ -127,16 +128,11 @@ private fun ThemePreview(
     }
 
     Scaffold(
-        bodyContent = {
-            BodyContent {
-                Section(screenOverride ?: currentScreen)
-            }
-        },
         bottomBar = {
             BottomBar(
                 selectedIndex = currentScreen.ordinal,
                 itemCount = Screen.values().size + 1, // Allow space for FAB
-                animSpec = animSpec,
+                animationSpec = animationSpec,
             ) { animProgress ->
                 Screen.values().forEach { screen ->
                     SectionIcon(
@@ -150,12 +146,16 @@ private fun ThemePreview(
         },
         floatingActionButton = {
             FloatingActionButton(onClick = onToggleTheme, shape = shapes.small) {
-                Icon(Icons.Default.InvertColors)
+                Icon(Icons.Default.InvertColors, contentDescription = "Toggle theme")
             }
         },
         floatingActionButtonPosition = FabPosition.End,
         isFloatingActionButtonDocked = true,
-    )
+    ) { paddingValues ->
+        BodyContent {
+            Section(screenOverride ?: currentScreen)
+        }
+    }
 }
 
 @Composable
@@ -168,15 +168,20 @@ private fun BodyContent(content: @Composable () -> Unit) {
 @Composable
 private fun Section(screen: BaseScreen) {
     val scrollState = rememberScrollState()
-    val scrollProgress = scrollState.value / scrollState.maxValue
+    val scrollProgress = scrollState.value.toFloat() / scrollState.maxValue.toFloat()
 
-    ScrollableColumn(
-        Modifier.fillMaxWidth(),
-        scrollState = scrollState,
-    ) {
-        SectionHeader(screen.title, scrollProgress)
-        screen.content()
-        Spacer(Modifier.height(160.dp))
+    LazyColumn {
+        item {
+            SectionHeader(screen.title, scrollProgress)
+        }
+
+        item {
+            screen.content()
+        }
+
+        item {
+            Spacer(Modifier.height(160.dp))
+        }
     }
 }
 
