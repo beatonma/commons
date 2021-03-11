@@ -20,7 +20,7 @@ val CommonsLightThemeColors = lightColors(
 
     secondary = CommonsColor.Secondary.light,
     secondaryVariant = CommonsColor.SecondaryVariant.light,
-    onSecondary = CommonsColor.Text.PrimaryLight,
+    onSecondary = CommonsColor.Text.PrimaryDark,
 
     background = CommonsColor.Background.light,
     onBackground = CommonsColor.Text.PrimaryDark,
@@ -29,7 +29,7 @@ val CommonsLightThemeColors = lightColors(
     onError = CommonsColor.Text.PrimaryLight,
 
     surface = Color.White,
-    onSurface = CommonsColor.Text.PrimaryDark
+    onSurface = CommonsColor.Text.PrimaryDark,
 )
 
 /**
@@ -41,7 +41,7 @@ val CommonsDarkThemeColors: Colors = darkColors(
     onPrimary = CommonsColor.Text.PrimaryDark,
 
     secondary = CommonsColor.Secondary.dark,
-    onSecondary = CommonsColor.Text.SecondaryDark,
+    onSecondary = CommonsColor.Text.SecondaryLight,
 
     background = CommonsColor.Background.dark,
     onBackground = CommonsColor.Text.PrimaryLight,
