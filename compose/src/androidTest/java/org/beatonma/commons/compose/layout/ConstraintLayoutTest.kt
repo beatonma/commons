@@ -1,6 +1,5 @@
 package org.beatonma.commons.compose.layout
 
-import androidx.compose.foundation.layout.ConstraintLayout
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -8,37 +7,40 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.testTag
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertHeightIsEqualTo
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertLeftPositionInRootIsEqualTo
 import androidx.compose.ui.test.assertTopPositionInRootIsEqualTo
-import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
 import org.beatonma.commons.testcompose.test.ComposeTest
 import org.junit.Test
 
 class ConstraintLayoutTest: ComposeTest() {
+
+    override fun withContent(content: @Composable () -> Unit) =
+        composeTestRule.apply { setContent(content) }
+
     @Test
     fun constraintLayoutScope_verticalChain_isCorrect() {
         withContent {
             ConstraintLayout(
                 Modifier
                     .wrapContentHeight()
-                    .semantics { testTag = "cl" }
+                    .testTag("cl")
             ) {
                 verticalChain(
                     {
                         Spacer(it
-                            .semantics { testTag = "first" }
+                            .testTag("first")
                             .height(30.dp)
                             .fillMaxWidth())
                     },
                     {
                         Spacer(it
-                            .semantics { testTag = "second" }
+                            .testTag("second")
                             .height(70.dp)
                             .fillMaxWidth())
                     },
@@ -74,19 +76,19 @@ class ConstraintLayoutTest: ComposeTest() {
                 Modifier
                     .height(200.dp)
                     .width(300.dp)
-                    .semantics { testTag = "cl" }
+                    .testTag("cl")
             ) {
                 verticalChain(
                     {
                         Spacer(it
-                            .semantics { testTag = "first" }
+                            .testTag("first")
                             .height(31.dp)
                             .width(29.dp)
                         )
                     },
                     {
                         Spacer(it
-                            .semantics { testTag = "second" }
+                            .testTag("second")
                             .height(71.dp)
                             .width(92.dp)
                         )
@@ -128,7 +130,4 @@ class ConstraintLayoutTest: ComposeTest() {
             }
         }
     }
-
-    override fun withContent(content: @Composable () -> Unit): ComposeTestRule =
-        composeTestRule.apply { setContent(content) }
 }

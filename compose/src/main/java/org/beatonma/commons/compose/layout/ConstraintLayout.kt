@@ -1,14 +1,14 @@
 package org.beatonma.commons.compose.layout
 
 import androidx.annotation.FloatRange
-import androidx.compose.foundation.layout.ConstrainScope
-import androidx.compose.foundation.layout.ConstrainedLayoutReference
-import androidx.compose.foundation.layout.ConstraintLayoutBaseScope
-import androidx.compose.foundation.layout.ConstraintLayoutScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstrainScope
+import androidx.constraintlayout.compose.ConstrainedLayoutReference
+import androidx.constraintlayout.compose.ConstraintLayoutBaseScope
+import androidx.constraintlayout.compose.ConstraintLayoutScope
 import org.beatonma.commons.core.extensions.fastForEachIndexed
 
 /**
