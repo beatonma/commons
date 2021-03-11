@@ -69,10 +69,7 @@ fun Float.normalize(max: Float): Float = normalizeIn(0F, max)
  */
 fun Float.mapToByte(): Int = mapTo(0, 255)
 
-fun Float.lerpTo(end: Float, progress: Float): Float =
-    this + ((end - this) * progress)
-
-fun Float.lerpBetween(start: Float, end: Float): Float = start.lerpTo(end, progress = this)
+fun Float.lerpBetween(start: Float, end: Float): Float = start + ((end - start) * this)
 
 /**
  * Needs a better name
@@ -94,6 +91,4 @@ fun Float.reversed() = 1F - this
  */
 fun Float.inverted() = this * -1F
 
-typealias Easing = (fraction: Float) -> Float
-
-inline fun Float.withEasing(easing: Easing): Float = easing(this)
+inline fun Float.withEasing(easing: (Float) -> Float): Float = easing(this)
