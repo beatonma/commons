@@ -140,16 +140,16 @@ private fun TextFields() {
     LazyRow {
         SampleItem("TextField") {
             TextField(
-                TextFieldValue(textFieldValue.value),
-                onValueChange = { value -> textFieldValue.value = value.text },
+                textFieldValue.value,
+                onValueChange = { value -> textFieldValue.value = value },
                 label = { Text("TextField") },
             )
         }
 
         SampleItem("OutlinedTextField") {
             OutlinedTextField(
-                TextFieldValue(textFieldValue.value),
-                onValueChange = { value -> textFieldValue.value = value.text },
+                textFieldValue.value,
+                onValueChange = { value -> textFieldValue.value = value },
                 label = { Text("OutlineTextField") })
         }
     }
