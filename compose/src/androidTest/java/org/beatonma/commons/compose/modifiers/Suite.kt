@@ -5,6 +5,11 @@ import org.junit.runners.Suite
 
 @RunWith(Suite::class)
 @Suite.SuiteClasses(
-    SizeModifierTestSuite::class
+    WrapContentHeightTest::class,
+    WrapContentWidthTest::class,
+    WrapContentSizeTest::class,
+    WrapContentOrFillWidthTest::class,
+    WrapContentOrFillHeightTest::class,
+    WrapContentOrFillSizeTest::class,
 )
 class ModifierTestSuite
