@@ -209,10 +209,3 @@ fun Float.positiveMod(mod: Float): Float {
         else -> x
     }.coerceAtMost(mod)
 }
-
-fun Color.lerp(other: Color, progress: Float) = Color(
-    alpha = alpha.lerpTo(other.alpha, progress),
-    red = red.lerpTo(other.red, progress),
-    green = green.lerpTo(other.green, progress),
-    blue = blue.lerpTo(other.blue, progress),
-)

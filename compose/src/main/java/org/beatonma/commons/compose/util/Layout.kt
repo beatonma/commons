@@ -84,5 +84,3 @@ fun Dp.px(context: Context): Int =
 
 val Dp.px: Int
     @Composable get() = px(LocalContext.current)
-
-fun Dp.lerp(other: Dp, progress: Float) = Dp(value.lerpTo(other.value, progress))
