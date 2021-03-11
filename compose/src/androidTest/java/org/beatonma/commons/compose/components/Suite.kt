@@ -12,6 +12,7 @@ import org.junit.runners.Suite
     CollapsibleHeaderLayoutTest::class,
     DoubleConfirmationButtonTest::class,
     FeedbackMessageLayoutTest::class,
+    LinkedTextTest::class,
     SearchFieldTest::class,
     StickyHeaderRowTest::class,
     ValidatedTextFieldTest::class,

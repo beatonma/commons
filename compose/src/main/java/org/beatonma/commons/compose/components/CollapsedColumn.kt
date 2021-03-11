@@ -49,7 +49,7 @@ import org.beatonma.commons.core.extensions.withNotNull
 import org.beatonma.commons.theme.compose.padding.Padding
 import org.beatonma.commons.theme.compose.padding.padding
 import org.beatonma.commons.theme.compose.Size
-import org.beatonma.commons.theme.compose.components.ComponentTitle
+import org.beatonma.commons.compose.components.text.ComponentTitle
 import org.beatonma.commons.theme.compose.theme.CommonsTheme
 import kotlin.math.roundToInt
 

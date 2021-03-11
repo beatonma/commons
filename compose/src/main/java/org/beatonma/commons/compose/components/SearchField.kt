@@ -35,7 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.compose.R
 import org.beatonma.commons.compose.util.rememberText
-import org.beatonma.commons.theme.compose.components.Hint
+import org.beatonma.commons.compose.components.text.Hint
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable

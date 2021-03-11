@@ -1,4 +1,4 @@
-package org.beatonma.commons.theme.compose.util
+package org.beatonma.commons.compose.util
 
 import android.util.Patterns
 import androidx.compose.runtime.Composable
@@ -6,9 +6,11 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import org.beatonma.commons.theme.compose.theme.CommonsSpanStyle
+import java.util.regex.Pattern
 
 private const val DOT = '•'
 private const val SEPARATOR = " $DOT "
+internal const val URL_TAG = "url"
 
 @Composable
 fun dotted(vararg components: String?) =
@@ -161,15 +163,19 @@ fun String.withAnnotatedStyle(
 @Composable
 fun String.linkify(
     style: SpanStyle = CommonsSpanStyle.hyperlink,
-    tag: String = "url",
-) = buildAnnotatedString {
-    append(this@linkify)
+) = withAnnotatedUrls(style)
 
-    Patterns.WEB_URL.toRegex().findAll(this@linkify).forEach { result ->
+internal fun String.withAnnotatedUrls(
+    style: SpanStyle,
+    pattern: Pattern = Patterns.WEB_URL
+) = buildAnnotatedString {
+    append(this@withAnnotatedUrls)
+
+    pattern.toRegex().findAll(this@withAnnotatedUrls).forEach { result ->
         val first = result.range.first
         val last = result.range.last
 
         addStyle(style, first, last + 1)
-        addStringAnnotation(tag, result.value, first, last)
+        addStringAnnotation(URL_TAG, result.value, first, last)
     }
 }
