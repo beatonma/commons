@@ -29,6 +29,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
+import androidx.core.view.WindowCompat
+import dev.chrisbanes.accompanist.insets.ExperimentalAnimatedInsets
+import dev.chrisbanes.accompanist.insets.ProvideWindowInsets
 import org.beatonma.commons.theme.compose.theme.SystemBars
 
 /**
@@ -135,17 +138,20 @@ private val BlackScrimmed: (Color) -> Color = { original ->
     BlackScrim.compositeOver(original)
 }
 
+@OptIn(ExperimentalAnimatedInsets::class)
 @Composable
-fun withSystemUi(
+fun ProvideSystemUi(
     window: Window,
     systemBarColor: Color = MaterialTheme.colors.SystemBars,
     content: @Composable () -> Unit,
 ) {
-    val systemUiController = remember { SystemUiController(window) }
+    WindowCompat.setDecorFitsSystemWindows(window, false)
 
-    ProvideDisplayInsets {
+    val systemUiController = remember { SystemUiController(window) }
+    systemUiController.setSystemBarsColor(systemBarColor)
+
+    ProvideWindowInsets(windowInsetsAnimationsEnabled = true) {
         CompositionLocalProvider(LocalSystemUiController provides systemUiController) {
-            LocalSystemUiController.current.setSystemBarsColor(systemBarColor)
             content()
         }
     }
