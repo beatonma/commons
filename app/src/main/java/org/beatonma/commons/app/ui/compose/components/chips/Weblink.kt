@@ -1,16 +1,18 @@
 package org.beatonma.commons.app.ui.compose.components.chips
 
 import android.net.Uri
-import androidx.compose.foundation.ScrollableRow
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.AmbientContext
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -80,8 +82,14 @@ private fun Weblink(
     modifier: Modifier = Modifier,
     autoCollapse: Long = 2500,
 ) {
-    val context = AmbientContext.current
-    CollapsibleChip(displayText, drawableId, R.drawable.ic_close, modifier, autoCollapse) {
+    val context = LocalContext.current
+    CollapsibleChip(
+        text = displayText,
+        contentDescription = stringResource(R.string.action_open_url, url),
+        drawableId = drawableId,
+        modifier = modifier,
+        autoCollapse = autoCollapse
+    ) {
         context.openUrl(url)
     }
 }
@@ -117,8 +125,10 @@ fun WeblinkPreview() {
             Column {
                 Weblink(weblink, Modifier.padding(16.dp))
 
-                ScrollableRow {
-                    links.forEach { Weblink(it, Modifier.padding(16.dp)) }
+                LazyRow {
+                    items(links) {
+                        Weblink(it, Modifier.padding(16.dp))
+                    }
                 }
             }
         }

@@ -2,7 +2,7 @@ package org.beatonma.commons.app.ui.compose.components.chips
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.AmbientContext
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import org.beatonma.commons.R
@@ -17,14 +17,14 @@ fun PhoneLink(
     autoCollapse: Long = AutoCollapse.Default,
 ) {
     val displayText = AnnotatedString(stringResource(R.string.action_dial_phonenumber, phoneNumber))
-    val context = AmbientContext.current
+    val context = LocalContext.current
 
     CollapsibleChip(
         displayText,
-        R.drawable.ic_phone_call,
-        R.drawable.ic_close,
-        modifier,
-        autoCollapse
+        contentDescription = displayText.text,
+        drawableId = R.drawable.ic_phone_call,
+        modifier = modifier,
+        autoCollapse = autoCollapse
     ) {
         context.dial(phoneNumber)
     }

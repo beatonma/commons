@@ -1,8 +1,8 @@
 package org.beatonma.commons.app.ui.compose.components.party
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ProvidedValue
-import androidx.compose.runtime.Providers
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.geometry.Offset
@@ -27,7 +27,7 @@ fun ProvidePartyImageConfig(
     },
     content: @Composable () -> Unit
 ) {
-    Providers(
+    CompositionLocalProvider(
         *providePartyImageConfig(
             scaleType, alignment, scaleMultiplier, offset, pathConfig
         ),
@@ -61,7 +61,7 @@ fun providePartyImageConfig(
     val partyImageCache = rememberPartyImageCache()
 
     return arrayOf(
-        AmbientImageConfig provides backgroundPortraitConfig,
-        AmbientPartyImageCache provides partyImageCache,
+        LocalImageConfig provides backgroundPortraitConfig,
+        LocalPartyImageCache provides partyImageCache,
     )
 }

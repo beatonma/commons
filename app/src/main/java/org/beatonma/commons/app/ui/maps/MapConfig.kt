@@ -1,8 +1,8 @@
 package org.beatonma.commons.app.ui.maps
 
 import android.content.Context
-import androidx.compose.runtime.ProvidableAmbient
-import androidx.compose.runtime.ambientOf
+import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.google.android.libraries.maps.model.LatLng
@@ -12,7 +12,7 @@ import org.beatonma.commons.R
 import org.beatonma.commons.compose.util.px
 import org.beatonma.commons.compose.util.pxF
 
-val AmbientMapConfig: ProvidableAmbient<MapConfig> = ambientOf {
+val LocalMapConfig: ProvidableCompositionLocal<MapConfig> = compositionLocalOf {
     error("AmbientMapStyle Not set")
 }
 

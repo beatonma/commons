@@ -2,12 +2,12 @@ package org.beatonma.commons.app.ui.compose.components.party
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.material.AmbientContentColor
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ProvidableAmbient
-import androidx.compose.runtime.Providers
-import androidx.compose.runtime.ambientOf
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -25,9 +25,9 @@ import org.beatonma.commons.svg.VectorGraphic
 import org.beatonma.commons.svg.render
 
 
-val AmbientImageConfig = ambientOf { ImageConfig() }
-internal val AmbientPartyImageCache: ProvidableAmbient<MutableMap<ParliamentID, VectorGraphic>> =
-    ambientOf {
+val LocalImageConfig = compositionLocalOf { ImageConfig() }
+internal val LocalPartyImageCache: ProvidableCompositionLocal<MutableMap<ParliamentID, VectorGraphic>> =
+    compositionLocalOf {
         error("No image cache")
     }
 
@@ -40,7 +40,7 @@ fun rememberPartyImageCache() = remember { mutableMapOf<ParliamentID, VectorGrap
 @Composable
 fun PartyBackground(
     modifier: Modifier = Modifier,
-    partyWithTheme: PartyWithTheme = AmbientPartyTheme.current,
+    partyWithTheme: PartyWithTheme = LocalPartyTheme.current,
     content: @Composable () -> Unit,
 ) {
     PartyBackground(
@@ -59,13 +59,13 @@ fun PartyBackground(
 fun PartyBackground(
     partyId: ParliamentID,
     modifier: Modifier = Modifier,
-    imageConfig: ImageConfig = AmbientImageConfig.current,
+    imageConfig: ImageConfig = LocalImageConfig.current,
     theme: ComposePartyColors = partyTheme(partyId),
     useCache: Boolean = true,
     content: @Composable () -> Unit = {},
 ) {
     val logo = if (useCache) {
-        getLogo(AmbientPartyImageCache.current, partyId)
+        getLogo(LocalPartyImageCache.current, partyId)
     } else {
         remember { PartyLogos.get(partyId) }
     }
@@ -87,7 +87,7 @@ fun PartyBackground(
 fun PartyBackground(
     party: Party,
     modifier: Modifier = Modifier,
-    imageConfig: ImageConfig = AmbientImageConfig.current,
+    imageConfig: ImageConfig = LocalImageConfig.current,
     theme: ComposePartyColors = party.theme(),
     useCache: Boolean = true,
     content: @Composable () -> Unit = {},
@@ -101,8 +101,8 @@ private fun PartyBackground(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    Providers(
-        AmbientContentColor provides theme.onPrimary,
+    CompositionLocalProvider(
+        LocalContentColor provides theme.onPrimary,
     ) {
         Layout(
             content = {

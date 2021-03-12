@@ -1,7 +1,7 @@
 package org.beatonma.commons.app.ui.compose.components
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.InteractionState
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.Button
@@ -22,7 +22,7 @@ fun CommonsOutlinedButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    interactionState: InteractionState = remember(::InteractionState),
+    interactionSource: MutableInteractionSource = remember(::MutableInteractionSource),
     elevation: ButtonElevation? = null,
     shape: Shape = shapes.small,
     border: BorderStroke? = ButtonDefaults.outlinedBorder,
@@ -33,7 +33,7 @@ fun CommonsOutlinedButton(
     onClick = onClick,
     modifier = modifier,
     enabled = enabled,
-    interactionState = interactionState,
+    interactionSource = interactionSource,
     elevation = elevation,
     shape = shape,
     border = border,
@@ -48,7 +48,7 @@ fun WarningButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    interactionState: InteractionState = remember(::InteractionState),
+    interactionSource: MutableInteractionSource = remember(::MutableInteractionSource),
     elevation: ButtonElevation? = null,
     shape: Shape = shapes.small,
     border: BorderStroke? = ButtonDefaults.outlinedBorder,
@@ -60,7 +60,7 @@ fun WarningButton(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
-        interactionState = interactionState,
+        interactionSource = interactionSource,
         elevation = elevation,
         shape = shape,
         border = border,
