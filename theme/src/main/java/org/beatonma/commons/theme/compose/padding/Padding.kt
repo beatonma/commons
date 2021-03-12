@@ -8,11 +8,10 @@ import androidx.compose.ui.unit.dp
 import java.util.*
 
 
-fun paddingValues(all: Dp) = Padding(all, all, all, all)
-
 fun paddingValues(
-    horizontal: Dp = 0.dp,
-    vertical: Dp = 0.dp,
+    all: Dp = 0.dp,
+    horizontal: Dp = all,
+    vertical: Dp = all,
     start: Dp = horizontal,
     top: Dp = vertical,
     end: Dp = horizontal,
@@ -32,6 +31,8 @@ class Padding(
         // Standard inset from screen edges
         val ScreenHorizontal = paddingValues(start = 12.dp, end = 12.dp)
         val Screen = paddingValues(16.dp)
+
+        val SearchBar = Screen
 
         val Spacer = paddingValues(bottom = 16.dp)
 
@@ -63,6 +64,13 @@ class Padding(
         val EndOfContent = paddingValues(bottom = 160.dp)
         val EndOfContentHorizontal = paddingValues(end = 220.dp)
     }
+
+    operator fun plus(other: Padding) = Padding(
+        start = start + other.start,
+        top = top + other.top,
+        end = end + other.end,
+        bottom = bottom + other.bottom
+    )
 
     fun asPaddingValues() = PaddingValues(start, top, end, bottom)
 
