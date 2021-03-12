@@ -1,8 +1,5 @@
 package org.beatonma.commons.app.search
 
-import androidx.compose.animation.core.TransitionDefinition
-import androidx.compose.animation.core.TransitionState
-import androidx.compose.animation.transition
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,19 +8,25 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.AmbientContentColor
-import androidx.compose.material.AmbientTextStyle
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.ListItem
+import androidx.compose.material.LocalContentColor
+import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,28 +35,29 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import dev.chrisbanes.accompanist.insets.ProvideWindowInsets
 import org.beatonma.commons.R
-import org.beatonma.commons.app.preview.ProvidePreviewAmbients
 import org.beatonma.commons.app.ui.compose.components.Todo
 import org.beatonma.commons.app.ui.compose.components.party.PartyDot
 import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.compose.animation.ExpandCollapseState
+import org.beatonma.commons.compose.animation.animateExpansionAsState
 import org.beatonma.commons.compose.animation.collapse
-import org.beatonma.commons.compose.animation.isExpanded
 import org.beatonma.commons.compose.animation.lerpBetween
-import org.beatonma.commons.compose.animation.progressKey
 import org.beatonma.commons.compose.animation.rememberExpandCollapseState
-import org.beatonma.commons.compose.animation.rememberExpandCollapseTransition
 import org.beatonma.commons.compose.animation.toggle
 import org.beatonma.commons.compose.components.ModalScrim
 import org.beatonma.commons.compose.components.OptionalText
-import org.beatonma.commons.compose.components.SearchTextField
 import org.beatonma.commons.compose.modifiers.wrapContentHeight
 import org.beatonma.commons.compose.modifiers.wrapContentOrFillWidth
+import org.beatonma.commons.compose.util.rememberListOf
 import org.beatonma.commons.core.extensions.lerpBetween
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.core.extensions.reversed
@@ -62,93 +66,125 @@ import org.beatonma.commons.snommoc.models.search.MemberSearchResult
 import org.beatonma.commons.snommoc.models.search.SearchResult
 import org.beatonma.commons.theme.compose.Elevation
 import org.beatonma.commons.theme.compose.Layer
-import org.beatonma.commons.theme.compose.Padding
+import org.beatonma.commons.theme.compose.padding.Padding
+import org.beatonma.commons.theme.compose.padding.padding
+import org.beatonma.commons.theme.compose.theme.CommonsTheme
 import org.beatonma.commons.theme.compose.theme.onSearchBar
 import org.beatonma.commons.theme.compose.theme.searchBar
 import org.beatonma.commons.theme.compose.theme.systemui.statusBarsPadding
 
-private const val KeyframeIsOpaque = 0.2F
-private const val KeyframeFillWidth = 0.4F
-private const val KeyframeFillStatusBar = 0.6F
+internal typealias SearchUiState = ExpandCollapseState
 
 class SearchActions(
     val onSubmit: (query: String) -> Unit,
     val onClickMember: (MemberSearchResult) -> Unit,
 )
 
-private typealias SearchUiState = ExpandCollapseState
-
-@Composable
-@Preview
-fun SearchUiPreview() {
-    val results: MutableState<List<SearchResult>> = mutableStateOf(SampleSearchResults)
-
-    ProvidePreviewAmbients {
-        SearchUi(results.value)
-    }
-}
+val LocalSearchActions: ProvidableCompositionLocal<SearchActions> =
+    compositionLocalOf { error("SearchActions have not been registered") }
 
 @Composable
 fun SearchUi(
     results: List<SearchResult>,
     modifier: Modifier = Modifier,
     state: MutableState<SearchUiState> = rememberExpandCollapseState(),
-    transition: TransitionDefinition<SearchUiState> = rememberExpandCollapseTransition(),
-    transitionState: TransitionState = transition(transition, toState = state.value),
     focusRequester: FocusRequester = remember(::FocusRequester),
 ) {
-    val progress = transitionState[progressKey]
+    val expansionProgress by state.value.animateExpansionAsState()
 
+    SearchLayout(
+        state = state.value,
+        toggleState = { state.toggle() },
+        results = results,
+        modifier = modifier,
+        focusRequester = focusRequester,
+        onBackgroundClick = state::collapse,
+        expansionProgress = expansionProgress
+    )
+}
+
+@Composable
+private fun SearchLayout(
+    state: SearchUiState,
+    toggleState: () -> Unit,
+    results: List<SearchResult>,
+    modifier: Modifier,
+    focusRequester: FocusRequester,
+    onBackgroundClick: () -> Unit,
+    expansionProgress: Float,
+) {
     ModalScrim(
-        alpha = progress,
-        onClickAction = state::collapse,
+        alpha = expansionProgress,
+        onClickAction = onBackgroundClick,
+        modifier = Modifier.testTag("modal_scrim")
     ) {
         Column(
             modifier
                 .zIndex(Layer.AlwaysOnTopSurface),
         ) {
-            val statusBarProgress = progress.progressIn(KeyframeFillStatusBar, 1F)
+            val animation = searchBarAnimation(expansionProgress = expansionProgress)
 
-            Surface(
-                Modifier
-                    .wrapContentOrFillWidth(progress.progressIn(0.1F, KeyframeFillWidth))
-                    .statusBarsPadding(statusBarProgress.reversed())
-                    .align(Alignment.End),
-                elevation = progress.lerpBetween(0.dp, Elevation.ModalSurface),
-                color = progress.progressIn(0F, KeyframeIsOpaque)
-                    .lerpBetween(Color.Transparent, colors.searchBar),
-                shape = getSearchSurfaceShape(progress.progressIn(KeyframeIsOpaque, 1F)),
-                contentColor = progress.lerpBetween(AmbientContentColor.current,
-                    colors.onSearchBar)
-            ) {
-                Row(
-                    Modifier
-                        .statusBarsPadding(statusBarProgress)
-                        .padding(Padding.Screen),
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    if (progress > KeyframeFillWidth) {
-                        SearchField(
-                            focusRequester = focusRequester,
-                            modifier = Modifier.weight(10F)
-                        )
+            SearchBar(
+                state = state,
+                animation = animation,
+                modifier = Modifier.align(Alignment.End),
+                focusRequester = focusRequester,
+                toggleState = toggleState
+            )
 
-                        if (progress == 1F && state.isExpanded) {
-                            focusRequester.requestFocus()
-                        }
-                    }
-                    SearchIcon(state, Modifier.padding(start = 16.dp))
-                }
-            }
-
-            if (progress > 0F) {
+            if (expansionProgress > 0F) {
                 SearchResults(
                     results,
                     modifier = Modifier
-                        .alpha(progress.progressIn(KeyframeFillStatusBar, 1F))
-                        .wrapContentHeight(progress.progressIn(KeyframeFillWidth, 1F))
+                        .alpha(animation.resultsAlpha)
+                        .wrapContentHeight(animation.resultsHeightProgress)
                 )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SearchBar(
+    state: SearchUiState,
+    animation: SearchBarAnimation,
+    modifier: Modifier,
+    focusRequester: FocusRequester,
+    toggleState: () -> Unit,
+) {
+    Surface(
+        modifier
+            .wrapContentOrFillWidth(animation.widthProgress)
+            .statusBarsPadding(animation.statusBarProgress.reversed())
+            .testTag("search_bar"),
+        elevation = animation.elevation,
+        color = animation.surfaceColor,
+        shape = animation.shape,
+        contentColor = animation.contentColor
+    ) {
+        Row(
+            Modifier
+                .padding(Padding.SearchBar)
+                .statusBarsPadding(animation.statusBarProgress),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (animation.showSearchField) {
+                SearchField(
+                    focusRequester = focusRequester,
+                    modifier = Modifier.weight(10F)
+                )
+            }
+
+            SearchIcon(
+                onClick = toggleState,
+                modifier = Modifier.padding(start = 16.dp)
+            )
+
+            LaunchedEffect(animation.expansionProgress == 1F) {
+                if (animation.expansionProgress == 1F && state.isExpanded) {
+                    focusRequester.requestFocus()
+                }
             }
         }
     }
@@ -158,83 +194,153 @@ fun SearchUi(
 private fun SearchField(
     focusRequester: FocusRequester,
     modifier: Modifier = Modifier,
-    onSubmit: (String) -> Unit = AmbientSearchActions.current.onSubmit,
+    onSubmit: (String) -> Unit = LocalSearchActions.current.onSubmit,
 ) {
-    SearchTextField(
-        hint = R.string.search_members_hint,
+    org.beatonma.commons.compose.components.text.SearchField(
+        hint = R.string.search_hint,
         onQueryChange = onSubmit,
-        modifier = modifier.focusRequester(focusRequester),
-        textStyle = AmbientTextStyle.current.copy(color = colors.onSearchBar),
+        modifier = modifier
+            .focusRequester(focusRequester)
+            .testTag("search_field"),
+        textStyle = LocalTextStyle.current.copy(color = colors.onSearchBar),
     )
 }
 
 @Composable
 private fun SearchIcon(
-    state: MutableState<SearchUiState>,
-    modifier: Modifier = Modifier,
+    modifier: Modifier,
+    onClick: () -> Unit,
 ) {
-    IconButton(onClick = { state.toggle() }, modifier = modifier) {
-        Icon(Icons.Default.Search)
+    val contentDescription = stringResource(R.string.search_hint)
+
+    IconButton(
+        onClick = onClick,
+        modifier = modifier.testTag("search_icon")
+    ) {
+        Icon(
+            Icons.Default.Search,
+            contentDescription = contentDescription,
+        )
     }
 }
 
 @Composable
 fun SearchResults(
     results: List<SearchResult>,
-    modifier: Modifier = Modifier,
-    actions: SearchActions = AmbientSearchActions.current,
+    modifier: Modifier,
+    actions: SearchActions = LocalSearchActions.current,
 ) {
     Surface(
         modifier.zIndex(Layer.AlwaysOnTopSurface)
     ) {
         LazyColumn {
-            items(items = results, itemContent = { item ->
+            items(results) { item ->
                 when (item) {
                     is MemberSearchResult -> MemberSearchResult(item, actions.onClickMember)
                     else -> Todo("Unimplemented search result class: ${item.javaClass.canonicalName}")
                 }
-            })
+            }
         }
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun MemberSearchResult(
     result: MemberSearchResult,
     onClickMember: (MemberSearchResult) -> Unit,
 ) {
-    Row(
-        Modifier
+    ListItem(
+        text = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                PartyDot(
+                    result.party?.parliamentdotuk ?: -1,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+                Text(result.name)
+            }
+        },
+        trailing = {
+            OptionalText(
+                result.currentPost ?: result.constituency?.name ?: result.party?.name,
+                textAlign = TextAlign.End,
+                maxLines = 2,
+                modifier = Modifier.width(120.dp)
+            )
+        },
+        modifier = Modifier
             .fillMaxWidth()
             .clickable { onClickMember(result) }
-            .padding(Padding.VerticalListItemLarge),
-        horizontalArrangement = Arrangement.Start,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        ListItem(
-            text = {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    PartyDot(
-                        result.party?.parliamentdotuk ?: -1,
-                        modifier = Modifier.padding(end = 8.dp)
-                    )
+            .padding(Padding.VerticalListItemLarge)
+            .testTag("search_result"),
 
-                    Text(result.name)
-                }
-            },
-            trailing = {
-                OptionalText(
-                    result.currentPost ?: result.constituency?.name ?: result.party?.name,
-                    textAlign = TextAlign.End,
-                    maxLines = 2,
-                    modifier = Modifier.width(120.dp)
-                )
-            }
         )
-    }
 }
+
+@Composable
+private fun searchBarAnimation(expansionProgress: Float) =
+    SearchBarAnimation(
+        expansionProgress,
+        statusBarProgress = expansionProgress.progressIn(KeyframeFillStatusBar, 1F),
+        widthProgress = expansionProgress.progressIn(0.1F, KeyframeFillWidth),
+        elevation = expansionProgress.lerpBetween(0.dp, Elevation.ModalSurface),
+        surfaceColor = expansionProgress
+            .progressIn(0F, KeyframeIsOpaque)
+            .lerpBetween(Color.Transparent, colors.searchBar),
+        contentColor = expansionProgress.lerpBetween(LocalContentColor.current, colors.onSearchBar),
+        shape = getSearchSurfaceShape(expansionProgress.progressIn(KeyframeIsOpaque, 1F)),
+        resultsAlpha = expansionProgress.progressIn(KeyframeFillStatusBar, 1F),
+        resultsHeightProgress = expansionProgress.progressIn(KeyframeFillWidth, 1F),
+    )
+
+private class SearchBarAnimation(
+    val expansionProgress: Float,
+    val statusBarProgress: Float,
+    val widthProgress: Float,
+    val elevation: Dp,
+    val surfaceColor: Color,
+    val contentColor: Color,
+    val shape: Shape,
+    val resultsAlpha: Float,
+    val resultsHeightProgress: Float,
+) {
+    val showSearchField: Boolean = expansionProgress > KeyframeFillWidth
+}
+
+private const val KeyframeIsOpaque = 0.2F
+private const val KeyframeFillWidth = 0.4F
+private const val KeyframeFillStatusBar = 0.6F
 
 private fun getSearchSurfaceShape(progress: Float): Shape {
     val cornerSize = progress.lerpBetween(48, 0).dp
     return RoundedCornerShape(cornerSize)
+}
+
+@Preview
+@Composable
+fun SearchTestLayout() {
+    val state: MutableState<SearchUiState> = rememberExpandCollapseState()
+    val results: MutableState<List<SearchResult>> = rememberListOf(SampleSearchResults)
+    val onSubmit: (String) -> Unit = {}
+    val onClickMember: (MemberSearchResult) -> Unit = {}
+
+    val searchActions = remember {
+        SearchActions(
+            onSubmit = onSubmit,
+            onClickMember = onClickMember,
+        )
+    }
+
+    CommonsTheme {
+        CompositionLocalProvider(
+            LocalSearchActions provides searchActions,
+        ) {
+            ProvideWindowInsets {
+                SearchUi(
+                    results = results.value,
+                    state = state,
+                )
+            }
+        }
+    }
 }
