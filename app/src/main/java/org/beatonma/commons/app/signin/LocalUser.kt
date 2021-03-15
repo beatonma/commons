@@ -1,11 +1,11 @@
 package org.beatonma.commons.app.signin
 
-import androidx.compose.runtime.ProvidableAmbient
-import androidx.compose.runtime.ambientOf
+import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.compositionLocalOf
 import org.beatonma.commons.ActionBlock
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 
-val AmbientUserToken: ProvidableAmbient<UserToken> = ambientOf { NullUserToken }
+val LocalUserToken: ProvidableCompositionLocal<UserToken> = compositionLocalOf { NullUserToken }
 
 // Represents a user who has not signed in.
 val NullUserToken = UserToken(

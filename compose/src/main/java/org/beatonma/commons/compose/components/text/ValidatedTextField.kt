@@ -18,9 +18,10 @@ import androidx.compose.material.TextFieldColors
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -29,9 +30,11 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,7 +43,6 @@ import org.beatonma.commons.compose.ambient.shapes
 import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.components.FeedbackProvider
 import org.beatonma.commons.compose.components.LocalFeedbackMessage
-import org.beatonma.commons.compose.components.ShowFeedback
 import org.beatonma.commons.compose.components.clear
 import org.beatonma.commons.compose.components.rememberFeedbackProvider
 import org.beatonma.commons.compose.util.rememberText
@@ -56,6 +58,20 @@ enum class TextValidationResult {
 
     val isOk get() = this == OK
     val isError get() = this != OK
+}
+
+data class TextValidationFeedback(
+    val ok: AnnotatedString?,
+    val tooShort: AnnotatedString?,
+    val tooLong: AnnotatedString?,
+    val formatError: AnnotatedString?,
+) {
+    fun getFeedback(result: TextValidationResult): AnnotatedString? = when (result) {
+        TextValidationResult.OK -> ok
+        TextValidationResult.TOO_SHORT -> tooShort
+        TextValidationResult.TOO_LONG -> tooLong
+        TextValidationResult.FORMAT_ERROR -> formatError
+    }
 }
 
 data class TextValidationRules(
@@ -116,15 +132,13 @@ fun ValidatedTextField(
     feedbackProvider: FeedbackProvider = if (internalFeedback) rememberFeedbackProvider() else LocalFeedbackMessage.current,
 ) {
     val validationResult = remember { mutableStateOf(TextValidationResult.OK) }
-    val validationResultMessage: MutableState<AnnotatedString?> = remember { mutableStateOf(null) }
 
     ValidatedTextFieldLayout(
         value = value,
         onValueChange = { newValue, result ->
-            validationResultMessage.value = onValueChange(newValue, result)
+            feedbackProvider.value = onValueChange(newValue, result)
         },
         validationResult = validationResult.value,
-        validationResultMessage = validationResultMessage.value,
         validationRules = validationRules,
         modifier = modifier,
         enabled = enabled,
@@ -153,7 +167,6 @@ private fun ValidatedTextFieldLayout(
     value: String,
     onValueChange: (text: String, valid: TextValidationResult) -> Unit,
     validationResult: TextValidationResult,
-    validationResultMessage: AnnotatedString?,
     validationRules: TextValidationRules,
     modifier: Modifier,
     enabled: Boolean,
@@ -176,12 +189,16 @@ private fun ValidatedTextFieldLayout(
     feedbackProvider: FeedbackProvider,
 ) {
     Column(modifier) {
-        TextField(
-            value = value,
-            onValueChange = { value ->
-                val result = validationRules.validate(value)
-                onValueChange(value, result)
+        var textFieldValue by remember {
+            mutableStateOf(TextFieldValue(text = value, selection = TextRange(value.length)))
+        }
 
+        TextField(
+            value = textFieldValue.copy(text = value),
+            onValueChange = { value ->
+                textFieldValue = value
+                val result = validationRules.validate(value.text)
+                onValueChange(value.text, result)
             },
             enabled = enabled,
             readOnly = readOnly,
@@ -217,21 +234,20 @@ private fun ValidatedTextFieldLayout(
                 ).value
             )
         }
+
         if (internalFeedback) {
             Row(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                FeedbackText(message = validationResultMessage)
+                FeedbackText(feedbackProvider.value)
                 counterText()
             }
         }
         else {
             counterText()
         }
-
-        ShowFeedback(validationResultMessage)
 
         DisposableEffect(key1 = true) {
             onDispose {
@@ -246,7 +262,7 @@ private fun FeedbackText(
     message: AnnotatedString?,
 ) {
     if (message == null) {
-        Spacer(Modifier)
+        Spacer(Modifier.testTag("feedback_text__null_message"))
     }
     else {
         Text(message, Modifier.testTag("feedback_text"), style = typography.caption)

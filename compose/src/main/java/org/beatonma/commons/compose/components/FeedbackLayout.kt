@@ -12,7 +12,6 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.CompositionLocal
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
@@ -69,11 +68,12 @@ fun ShowFeedback(message: String?) {
  */
 @Composable
 fun FeedbackLayout(
+    modifier: Modifier = Modifier,
     alignment: Alignment = Alignment.TopCenter,
     message: AnnotatedString? = LocalFeedbackMessage.current.value,
     content: @Composable BoxScope.() -> Unit,
 ) {
-    Box(Modifier.fillMaxSize()) {
+    Box(modifier.fillMaxSize()) {
         content()
 
         FeedbackMessage(

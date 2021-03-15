@@ -10,6 +10,7 @@ dependencies {
         implementations(
             Dependencies.AndroidX.CORE_KTX,
             Dependencies.AndroidX.CONSTRAINTLAYOUT_COMPOSE,
+            Dependencies.Accompanist.INSETS,
             project(Modules.Core),
             project(Modules.Theme)
         )

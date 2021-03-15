@@ -5,12 +5,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.runtime.ProvidableAmbient
+import androidx.compose.runtime.CompositionLocal
 
 /**
  * Initiate value in the activity from which you are calling [UserProfileActions.registerSignInLauncher]
  */
-lateinit var AmbientUserProfileActions: ProvidableAmbient<UserProfileActions>
+lateinit var LocalUserProfileActions: CompositionLocal<UserProfileActions>
 
 interface UserProfileActions {
     val signInLauncher: ActivityResultLauncher<Intent>
@@ -24,15 +24,18 @@ interface UserProfileActions {
         }
 
     fun registerSignInLauncher(host: ComponentActivity) =
-        host.registerForActivityResult(ActivityResultContracts.StartActivityForResult(),
-            resultHandler)
+        host.registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult(),
+            resultHandler
+        )
 
-    fun defaultSignInActions(viewmodel: UserAccountViewModel) = UserAccountActions(
-        signIn = { googleSignIn(viewmodel.signInIntent) },
-        signOut = viewmodel::signOut,
-        renameAccount = viewmodel::requestRename,
-        deleteAccount = viewmodel::deleteAccount,
-    )
+    fun defaultSignInActions(viewmodel: UserAccountViewModel) =
+        UserAccountActions(
+            signIn = { googleSignIn(viewmodel.signInIntent) },
+            signOut = viewmodel::signOut,
+            renameAccount = viewmodel::requestRename,
+            deleteAccount = viewmodel::deleteAccount,
+        )
 
     private fun googleSignIn(intent: Intent) {
         signInLauncher.launch(intent)

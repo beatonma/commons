@@ -1,6 +1,5 @@
 package org.beatonma.commons.compose.components
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.material.Button
@@ -21,6 +20,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.test.filters.MediumTest
+import dev.chrisbanes.accompanist.insets.ProvideWindowInsets
 import org.beatonma.commons.test.extensions.assertions.assertEquals
 import org.beatonma.commons.testcompose.test.ComposeTest
 import org.junit.Test
@@ -117,10 +117,9 @@ class FeedbackMessageLayoutTest: ComposeTest() {
         CompositionLocalProvider(
             LocalFeedbackMessage provides feedbackProvider,
         ) {
-            Box(
-                Modifier.requiredHeight(displayHeight)
-            ) {
+            ProvideWindowInsets {
                 FeedbackLayout(
+                    Modifier.requiredHeight(displayHeight),
                     alignment = alignment.value,
                 ) {
                     Column {

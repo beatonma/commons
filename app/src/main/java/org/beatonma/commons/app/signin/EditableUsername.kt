@@ -1,38 +1,41 @@
 package org.beatonma.commons.app.signin
 
-import androidx.compose.animation.core.AnimationSpec
-import androidx.compose.animation.core.FloatPropKey
-import androidx.compose.animation.core.TransitionDefinition
-import androidx.compose.animation.core.TransitionState
-import androidx.compose.animation.core.transitionDefinition
-import androidx.compose.animation.transition
-import androidx.compose.foundation.clickable
+import android.content.Intent
+import androidx.activity.result.ActivityResultLauncher
+import androidx.annotation.VisibleForTesting
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.AmbientContentColor
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Undo
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.ProvidableAmbient
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.InternalCoroutinesApi
@@ -41,18 +44,20 @@ import kotlinx.coroutines.withContext
 import org.beatonma.commons.BuildConfig
 import org.beatonma.commons.R
 import org.beatonma.commons.app.social.Username
+import org.beatonma.commons.app.ui.compose.InAppPreview
 import org.beatonma.commons.app.ui.compose.components.LoadingIcon
+import org.beatonma.commons.app.ui.compose.components.image.ClickableIcon
 import org.beatonma.commons.compose.ambient.typography
-import org.beatonma.commons.compose.animation.progressKey
-import org.beatonma.commons.compose.components.AmbientFeedbackMessage
-import org.beatonma.commons.compose.components.Hint
-import org.beatonma.commons.compose.components.TextValidationResult
-import org.beatonma.commons.compose.components.TextValidationRules
-import org.beatonma.commons.compose.components.ValidatedTextField
+import org.beatonma.commons.compose.components.FeedbackProvider
+import org.beatonma.commons.compose.components.rememberFeedbackProvider
+import org.beatonma.commons.compose.components.text.Hint
+import org.beatonma.commons.compose.components.text.TextValidationResult
+import org.beatonma.commons.compose.components.text.TextValidationRules
+import org.beatonma.commons.compose.components.text.ValidatedTextField
 import org.beatonma.commons.compose.util.rememberText
-import org.beatonma.commons.compose.util.update
+import org.beatonma.commons.compose.util.testTag
 import org.beatonma.commons.data.core.room.entities.user.UserToken
-import org.beatonma.commons.theme.compose.theme.CommonsSpring
+import org.beatonma.commons.sampledata.SampleUserToken
 
 internal enum class EditableState {
     ReadOnly,
@@ -61,96 +66,110 @@ internal enum class EditableState {
     ;
 }
 
-internal val readOnlyVisibility = FloatPropKey()
-internal val editableVisibility = FloatPropKey()
-internal val awaitingResultVisibility = FloatPropKey()
-
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 internal fun EditableUsername(
     userToken: UserToken,
     state: MutableState<EditableState> = remember { mutableStateOf(EditableState.ReadOnly) },
-    transitionDef: TransitionDefinition<EditableState> = rememberEditableStateTransition(),
-    transition: TransitionState = transition(transitionDef, state.value),
+    validationMessages: ValidationMessages = rememberValidationMessages(),
+    userAccountActions: UserAccountActions = LocalUserProfileActions.current.userAccountActions,
     focusRequester: FocusRequester = remember(::FocusRequester),
+    coroutineScope: CoroutineScope = rememberCoroutineScope()
 ) {
-    val coroutineScope = rememberCoroutineScope()
     when (state.value) {
-        EditableState.ReadOnly -> ReadOnlyUsernameLayout(userToken,
-            state,
-            Modifier.alpha(transition[readOnlyVisibility]))
+        EditableState.ReadOnly ->
+            ReadOnlyUsernameLayout(
+                userToken,
+                makeEditable = { state.value = EditableState.Editable },
+            )
 
-        EditableState.Editable -> EditableUsernameLayout(
-            userToken,
-            state,
-            coroutineScope = coroutineScope,
-            modifier = Modifier.alpha(transition[editableVisibility]),
-            focusRequester = focusRequester,
-        )
+        EditableState.Editable ->
+            EditableUsernameLayout(
+                userToken,
+                onStateChange = { value -> state.value = value },
+                validationMessages = validationMessages,
+                coroutineScope = coroutineScope,
+                focusRequester = focusRequester,
+                submitAction = userAccountActions.renameAccount,
+            )
 
-        EditableState.AwaitingResult -> AwaitingResultLayout(userToken,
-            Modifier.alpha(transition[awaitingResultVisibility]))
+        EditableState.AwaitingResult ->
+            AwaitingResultLayout(
+                userToken,
+            )
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun ReadOnlyUsernameLayout(
     userToken: UserToken,
-    state: MutableState<EditableState>,
+    makeEditable: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val makeEditable = { state.update(EditableState.Editable) }
+    val contentDescription = stringResource(R.string.content_description_edit_username)
+    AnimatedVisibility(visible = true, initiallyVisible = false, enter = fadeIn()) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = modifier.testTag(EditableState.ReadOnly)
+            ,
+        ) {
+            Username(userToken.username, style = typography.h4,
+                modifier = Modifier.testTag("readonly_username"))
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.clickable(onClick = makeEditable),
-    ) {
-        Username(userToken.username, style = typography.h4)
-
-        IconButton(onClick = makeEditable) {
-            Icon(Icons.Default.Edit)
+            ClickableIcon(
+                Icons.Default.Edit,
+                contentDescription = contentDescription,
+                onClick = makeEditable,
+                tag = "action_make_editable"
+            )
         }
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun AwaitingResultLayout(
     userToken: UserToken,
     modifier: Modifier = Modifier,
 ) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Username(userToken.username, style = typography.h4,
-            modifier = Modifier.alpha(ContentAlpha.disabled)
-        )
+    AnimatedVisibility(visible = true, initiallyVisible = false, enter = fadeIn()) {
+        Row(
+            modifier = modifier.testTag(EditableState.AwaitingResult),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Username(
+                userToken.username, style = typography.h4,
+                modifier = Modifier.alpha(ContentAlpha.disabled)
+            )
 
-        LoadingIcon()
+            LoadingIcon()
+        }
     }
 }
 
-@OptIn(InternalCoroutinesApi::class)
+@OptIn(InternalCoroutinesApi::class, ExperimentalAnimationApi::class)
 @Composable
 private fun EditableUsernameLayout(
     userToken: UserToken,
-    state: MutableState<EditableState>,
+    onStateChange: (EditableState) -> Unit,
     coroutineScope: CoroutineScope,
     modifier: Modifier = Modifier,
-    validationMessages: ValidationMessages = rememberValidationMessages(),
-    submitAction: suspend (UserToken, String) -> RenameResult = AmbientUserProfileActions.current.userAccountActions.renameAccount,
-    focusRequester: FocusRequester = remember(::FocusRequester),
+    validationMessages: ValidationMessages,
+    submitAction: suspend (UserToken, String) -> RenameResult,
+    focusRequester: FocusRequester,
 ) {
-    val text = rememberText(userToken.username)
+    var text by rememberText(userToken.username)
     val keyboardOptions = remember { KeyboardOptions(keyboardType = KeyboardType.Text) }
     val validationRules = rememberUsernameValidator()
-    val validationResultMessage = AmbientFeedbackMessage.current
+    val renameResultFeedback = rememberFeedbackProvider()
 
     fun renameAction() {
-        state.update(EditableState.AwaitingResult)
+        onStateChange(EditableState.AwaitingResult)
 
         coroutineScope.launch {
-            val result = submitAction(userToken, text.value)
-            val pendingState = when (result) {
+            val result = submitAction(userToken, text)
+            val resultState = when (result) {
                 RenameResult.ACCEPTED,
                 RenameResult.NO_CHANGE,
                 -> EditableState.ReadOnly
@@ -158,76 +177,85 @@ private fun EditableUsernameLayout(
                 else -> EditableState.Editable
             }
 
-            val message = validationMessages.getMessage(result)
-
             withContext(Dispatchers.Main) {
-                state.update(pendingState)
-                validationResultMessage.update(message)
+                renameResultFeedback.value = AnnotatedString(validationMessages.getMessage(result))
+                onStateChange(resultState)
+                println("onStateChange($resultState) ${renameResultFeedback.value}")
             }
         }
     }
 
-    EditableUsernameLayout(
-        text,
-        validationRules,
-        validationResultMessage,
-        validationMessages,
-        modifier,
-        focusRequester,
-        keyboardOptions,
-        AmbientContentColor,
-        state,
-        ::renameAction)
+    AnimatedVisibility(visible = true, initiallyVisible = false, enter = fadeIn()) {
+        EditableUsernameLayout(
+            text = text,
+            onTextChange = { text = it },
+            validationRules = validationRules,
+            validationMessages = validationMessages,
+            modifier = modifier,
+            focusRequester = focusRequester,
+            keyboardOptions = keyboardOptions,
+            feedbackProvider = renameResultFeedback,
+            onStateChange = onStateChange,
+            onSubmitName = ::renameAction
+        )
+    }
 }
 
 @Composable
 private fun EditableUsernameLayout(
-    text: MutableState<String>,
+    text: String,
+    onTextChange: (String) -> Unit,
     validationRules: TextValidationRules,
-    validationResultMessage: MutableState<String>,
     validationMessages: ValidationMessages,
     modifier: Modifier,
     focusRequester: FocusRequester,
     keyboardOptions: KeyboardOptions,
-    AmbientContentColor: ProvidableAmbient<Color>,
-    state: MutableState<EditableState>,
+    feedbackProvider: FeedbackProvider,
+    onStateChange: (EditableState) -> Unit,
     onSubmitName: () -> Unit,
 ) {
     Row(
-        modifier = modifier,
+        modifier = modifier.testTag(EditableState.Editable),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.End,
     ) {
         ValidatedTextField(
-            text, validationRules,
-            onValueChange = { _, validationResult ->
-                validationResultMessage.update(
-                    validationMessages.getMessage(validationResult)
-                )
+            text,
+            validationRules,
+            onValueChange = { value, validationResult ->
+                onTextChange(value)
+                AnnotatedString(validationMessages.getMessage(validationResult))
             },
-            validationResultMessage = validationResultMessage,
             placeholder = {
-                Hint(stringResource(
+                Hint(
                     R.string.account_username_validation_too_short,
-                    BuildConfig.ACCOUNT_USERNAME_MIN_LENGTH))
+                    BuildConfig.ACCOUNT_USERNAME_MIN_LENGTH
+                )
             },
             maxLines = 1,
             modifier = Modifier
                 .weight(10F)
+                .focusModifier()
                 .focusRequester(focusRequester),
             keyboardOptions = keyboardOptions,
-            textStyle = TextStyle(color = AmbientContentColor.current),
+            textStyle = TextStyle(color = LocalContentColor.current),
+            feedbackProvider = feedbackProvider,
         )
 
-        IconButton(onClick = onSubmitName) {
-            Icon(Icons.Default.Done)
-        }
+        ClickableIcon(
+            Icons.Default.Done,
+            contentDescription = stringResource(R.string.account_submit_new_username),
+            onClick = onSubmitName,
+            tag = "action_request_rename"
+        )
 
-        IconButton(onClick = { state.update(EditableState.ReadOnly) }) {
-            Icon(Icons.Default.Undo)
-        }
+        ClickableIcon(
+            Icons.Default.Undo,
+            contentDescription = stringResource(R.string.content_description_edit_username),
+            tag = "action_cancel_rename"
+        ) { onStateChange(EditableState.ReadOnly) }
 
-        if (state.value == EditableState.Editable) {
+        LaunchedEffect(true) {
             focusRequester.requestFocus()
         }
     }
@@ -244,12 +272,13 @@ private fun rememberUsernameValidator() = remember {
     TextValidationRules(
         minLength = BuildConfig.ACCOUNT_USERNAME_MIN_LENGTH,
         maxLength = BuildConfig.ACCOUNT_USERNAME_MAX_LENGTH,
-        pattern = BuildConfig.ACCOUNT_USERNAME_PATTERN.toRegex(),
+        regex = BuildConfig.ACCOUNT_USERNAME_PATTERN.toRegex(),
     )
 }
 
+@VisibleForTesting
 @Composable
-private fun rememberValidationMessages(): ValidationMessages {
+internal fun rememberValidationMessages(): ValidationMessages {
     val tooLong = stringResource(
         R.string.account_username_validation_too_long,
         BuildConfig.ACCOUNT_USERNAME_MAX_LENGTH
@@ -283,7 +312,8 @@ private fun rememberValidationMessages(): ValidationMessages {
  *
  * @param error             Server error or network error - trying again may work.
  */
-private class ValidationMessages(
+@VisibleForTesting
+internal class ValidationMessages(
     val tooLong: String,
     val tooShort: String,
     val formatError: String,
@@ -315,38 +345,22 @@ private class ValidationMessages(
     }
 }
 
-@Composable
-internal fun rememberEditableStateTransition(
-    animSpec: AnimationSpec<Float> = CommonsSpring(),
-): TransitionDefinition<EditableState> =
-    remember {
-        transitionDefinition {
-            state(EditableState.ReadOnly) {
-                this[readOnlyVisibility] = 1F
-                this[editableVisibility] = 0F
-                this[awaitingResultVisibility] = 0F
-            }
-            state(EditableState.Editable) {
-                this[readOnlyVisibility] = 0F
-                this[editableVisibility] = 1F
-                this[awaitingResultVisibility] = 0F
-            }
-            state(EditableState.AwaitingResult) {
-                this[readOnlyVisibility] = 0F
-                this[editableVisibility] = 0F
-                this[awaitingResultVisibility] = 1F
-            }
+@Composable @Preview
+fun EditableUsernamePreview() {
+    LocalUserProfileActions = staticCompositionLocalOf {
+        object: UserProfileActions {
+            override val signInLauncher: ActivityResultLauncher<Intent>
+                get() = TODO("Not yet implemented")
+            override val userAccountActions: UserAccountActions
+                get() = UserAccountActions()
 
-            transition(
-                EditableState.ReadOnly to EditableState.Editable,
+            override fun handleSignInResult(data: Intent?) {}
 
-                EditableState.Editable to EditableState.ReadOnly,
-                EditableState.Editable to EditableState.AwaitingResult,
-
-                EditableState.AwaitingResult to EditableState.Editable,
-                EditableState.AwaitingResult to EditableState.ReadOnly,
-            ) {
-                progressKey using animSpec
-            }
         }
     }
+    InAppPreview {
+        EditableUsername(
+            SampleUserToken,
+        )
+    }
+}
