@@ -15,7 +15,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.ListItem
 import androidx.compose.material.LocalContentColor
-import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -71,6 +70,7 @@ import org.beatonma.commons.theme.compose.padding.padding
 import org.beatonma.commons.theme.compose.theme.CommonsTheme
 import org.beatonma.commons.theme.compose.theme.onSearchBar
 import org.beatonma.commons.theme.compose.theme.searchBar
+import org.beatonma.commons.theme.compose.theme.searchBarColors
 import org.beatonma.commons.theme.compose.theme.systemui.statusBarsPadding
 
 internal typealias SearchUiState = ExpandCollapseState
@@ -202,7 +202,7 @@ private fun SearchField(
         modifier = modifier
             .focusRequester(focusRequester)
             .testTag("search_field"),
-        textStyle = LocalTextStyle.current.copy(color = colors.onSearchBar),
+        colors = colors.searchBarColors,
     )
 }
 
@@ -273,7 +273,6 @@ private fun MemberSearchResult(
             .clickable { onClickMember(result) }
             .padding(Padding.VerticalListItemLarge)
             .testTag("search_result"),
-
         )
 }
 

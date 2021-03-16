@@ -1,7 +1,9 @@
 package org.beatonma.commons.theme.compose.theme
 
 import androidx.compose.material.Colors
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
@@ -100,3 +102,12 @@ val Colors.textTertiaryLight: Color get() = resolveColor(CommonsColor.Text.Terti
 val Colors.textPrimaryDark: Color get() = resolveColor(CommonsColor.Text.PrimaryDark)
 val Colors.textSecondaryDark: Color get() = resolveColor(CommonsColor.Text.SecondaryDark)
 val Colors.textTertiaryDark: Color get() = resolveColor(CommonsColor.Text.TertiaryDark)
+
+val Colors.searchBarColors @Composable get() =
+    TextFieldDefaults.textFieldColors(
+        textColor = onSearchBar,
+        placeholderColor = onSearchBar.copy(ContentAlpha.medium),
+        cursorColor = secondary,
+        focusedIndicatorColor = secondary,
+        trailingIconColor = onSearchBar,
+    )
