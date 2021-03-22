@@ -22,12 +22,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import org.beatonma.commons.theme.compose.theme.CommonsSpring
+import org.beatonma.commons.theme.compose.theme.LocalAnimationSpec
 
 @Composable
 fun animatePaddingAsState(
     targetValue: Padding,
-    animationSpec: AnimationSpec<Padding> = CommonsSpring(),
+    animationSpec: AnimationSpec<Padding> = LocalAnimationSpec.current.spec(),
     finishedListener: ((Padding) -> Unit)? = null
 ) = animateValueAsState(
     targetValue = targetValue,
@@ -39,7 +39,7 @@ fun animatePaddingAsState(
 @Composable
 fun <S> Transition<S>.animatePadding(
     transitionSpec: @Composable Transition.Segment<S>.() -> FiniteAnimationSpec<Padding> = {
-        CommonsSpring()
+        LocalAnimationSpec.current.spec()
     },
     label: String = "PaddingAnimation",
     targetValueByState: @Composable (state: S) -> Padding,

@@ -5,6 +5,9 @@ import org.junit.runners.Suite
 
 @RunWith(Suite::class)
 @Suite.SuiteClasses(
-    EditableUsernameTest::class
+    DeleteAccountUiTest::class,
+    EditableUsernameTest::class,
+    SignInUiTest::class,
+    UserAccountUiTest::class,
 )
-class SigninTestSuite
+class UserAccountTestSuite

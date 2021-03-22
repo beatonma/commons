@@ -8,11 +8,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.CompositionLocal
 
 /**
- * Initiate value in the activity from which you are calling [UserProfileActions.registerSignInLauncher]
+ * Initiate value in the activity from which you are calling [PlatformUserAccountActions.registerSignInLauncher]
  */
-lateinit var LocalUserProfileActions: CompositionLocal<UserProfileActions>
+lateinit var LocalPlatformUserAccountActions: CompositionLocal<PlatformUserAccountActions>
 
-interface UserProfileActions {
+/**
+ * Handle platform interactions required for [UserAccountActions].
+ */
+interface PlatformUserAccountActions {
     val signInLauncher: ActivityResultLauncher<Intent>
     val userAccountActions: UserAccountActions
 
@@ -45,7 +48,7 @@ interface UserProfileActions {
 fun UserProfileActions(
     activity: ComponentActivity,
     viewmodel: UserAccountViewModel,
-) = object : UserProfileActions {
+) = object : PlatformUserAccountActions {
     override val signInLauncher: ActivityResultLauncher<Intent> = registerSignInLauncher(activity)
     override val userAccountActions: UserAccountActions = defaultSignInActions(viewmodel)
 

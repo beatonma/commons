@@ -10,7 +10,10 @@ import org.beatonma.commons.theme.compose.color.anyMaterialColor
 /**
  * Set a random background color - useful for figuring out animations.
  */
-fun Modifier.colorize(tag: String? = null, alpha: Float = 0.6F): Modifier = composed {
+fun Modifier.colorize(
+    tag: String? = null,
+    alpha: Float = 0.6F
+): Modifier = composed {
     val color = remember { anyMaterialColor.copy(alpha = alpha) }
     if (tag != null) {
         println("$tag: ${color.toPrettyHexString()}")

@@ -2,10 +2,7 @@ package org.beatonma.commons.compose.components
 
 import org.beatonma.commons.compose.components.collapsibleheader.CollapsibleHeaderLayoutTest
 import org.beatonma.commons.compose.components.stickyrow.StickyHeaderRowTest
-import org.beatonma.commons.compose.components.text.LinkedTextTest
-import org.beatonma.commons.compose.components.text.SearchFieldTest
 import org.beatonma.commons.compose.components.text.TextTestSuite
-import org.beatonma.commons.compose.components.text.ValidatedTextFieldTest
 import org.junit.runner.RunWith
 import org.junit.runners.Suite
 
@@ -16,6 +13,7 @@ import org.junit.runners.Suite
     CollapsibleHeaderLayoutTest::class,
     DoubleConfirmationButtonTest::class,
     FeedbackMessageLayoutTest::class,
+    ModalTest::class,
     StickyHeaderRowTest::class,
     TextTestSuite::class,
 )

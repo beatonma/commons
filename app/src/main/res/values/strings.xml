@@ -1,6 +1,6 @@
 <resources>
     <plurals name="bill_sittings">
-        <item quantity="one"></item> <!-- If only one sitting we just show the date it occurred -->
+        <item quantity="one">%d sitting</item>
         <item quantity="other">%d sittings</item>
     </plurals>
 
@@ -10,6 +10,7 @@
 
     <!-- Search -->
     <string name="placeholder_title" translatable="true">Placeholder</string>
+    <string name="search_hint" translatable="true">Search for members, etc.</string>
     <string name="search_members_hint" translatable="true">Search members</string>
     <string name="search_results_empty" translatable="true">No results found</string>
 
@@ -33,7 +34,7 @@
     <string name="constituency_current_member" translatable="true">Current MP:</string>
     <string name="constituency_previous_members" translatable="true">Previous MPs:</string>
     <string name="constituency_election_header" translatable="true">%s results</string>
-    <string name="constituency_election_turnout" translatable="true">%s turnout (%s of %s)</string>
+    <string name="constituency_election_turnout" translatable="true">**%s turnout** (%s of %s)</string>
     <string name="constituency_candidate_votes" translatable="true">%s - %s</string>
     <string name="constituency_winner_majority" translatable="true">(+%s majority)</string>
     <string name="constituency_result_gain" translatable="true">Gained</string>
@@ -57,11 +58,22 @@
     <string name="division_abstained" translatable="true">**%d** abstentions</string>
     <string name="division_search_member_hint" translatable="true">Find a member</string>
 
+    <string name="division_votetype_aye">Aye vote</string>
+    <string name="division_votetype_no">No vote</string>
+    <string name="division_votetype_did_not_vote">Did not vote</string>
+    <string name="division_votetype_suspended_or_expelled">Member suspended or expelled</string>
+    <string name="division_votetype_abstain">Abstained from voting</string>
+
+
     <!-- Bills -->
+    <string name="bill_publications" translatable="true">Publications</string>
     <string name="bill_publications_count" translatable="true">%d publications</string>
     <string name="bill_sponsors_count" translatable="true">%d sponsors</string>
     <string name="bill_stages_count" translatable="true">%d stages</string>
     <string name="bill_session" translatable="true">%s</string>
+
+    <string name="bill_category_consideration" translatable="true">Consideration</string>
+    <string name="bill_category_royal_assent" translatable="true">Royal assent</string>
 
     <!-- Snippets -->
     <string name="snippet_birth_date" translatable="true">Born %s</string>
@@ -79,7 +91,8 @@
     <string name="snippet_experience" translatable="true">%s @ %s</string>
 
     <!-- Actions -->
-    <string name="action_open_url" translatable="true">Open</string>
+    <string name="action_open" translatable="true">Open</string>
+    <string name="action_open_url" translatable="true">Open %s</string>
     <string name="action_open_wifi_settings" translatable="true">Open wifi settings</string>
     <string name="action_dial_phonenumber" translatable="true">Dial %s</string>
     <string name="action_write_email" translatable="true">Write to %s</string>
@@ -94,7 +107,8 @@
     <string name="account_sign_in_already_signed_in" translatable="true">You are signed in with account \'%s:%s\'</string>
     <string name="account_sign_in_rationale" translatable="true">Sign in with your Google account to create an account on the Commons service. This is necessary if you want to vote or comment on any app content.\n\nPlease check our privacy policy for more details: <a href="https://snommoc.org/privacy">https://snommoc.org/privacy</a></string>
     <string name="account_profile_about" translatable="true">Your username may be visible to other users. Your name, email address and photo never leave your device.\n\nPlease check our privacy policy for more details: <a href="https://snommoc.org/privacy">https://snommoc.org/privacy</a>.</string>
-    <string name="account_submit_new_username" translatable="true">Submit</string>
+    <string name="account_submit_new_username" translatable="true">Submit new username</string>
+    <string name="account_username_hint" translatable="true">Choose a username</string>
     <string name="account_username_validation_too_short" translatable="true">Username must be at least %d characters.</string>
     <string name="account_username_validation_too_long" translatable="true">Username must be no more than %d characters.</string>
     <string name="account_username_validation_format_error" translatable="true">Username may use letters, digits, dashes, dots, underscores. Must start/end with a letter or digit.</string>
@@ -113,13 +127,10 @@
     <string name="social_compose_comment" translatable="true">Compose comment</string>
     <string name="social_compose_comment_hint" translatable="true">Have your say!</string>
     <string name="social_comment_post" translatable="true">Send</string>
-    <string name="social_comment_invalid_too_long" translatable="true">Comments are limited to %d characters</string>
+    <string name="social_comment_invalid_length" translatable="true">%d - %d characters</string>
     <string name="social_comment_no_comments" translatable="true">No comments here yet!</string>
     <string name="social_comment_count_nodata" translatable="false">-</string>
 
-    <string name="content_description_social_comment_count" translatable="true">Comments: %d</string>
-    <string name="content_description_social_votes_count_for" translatable="true">Votes in favour: %d</string>
-    <string name="content_description_social_votes_count_against" translatable="true">Votes against: %d</string>
 
     <!-- Zeitgeist - what's happening now -->
     <string name="zeitgeist_title">Trending</string>
@@ -136,11 +147,6 @@
     <string name="more" translatable="true">More</string>
     <string name="empty_list" translatable="true">None</string>
     <string name="cancel" translatable="true">Cancel</string>
-
-    <!-- Icon image content description -->
-    <string name="content_description_expand_collapse" translatable="true">Expand or collapse</string>
-    <string name="content_description_open_account_management" translatable="true">View account manager</string>
-    <string name="content_description_edit_username" translatable="true">Edit username</string>
 
     <!-- Fragment tags -->
     <string name="fragment_social">fragment_social</string>

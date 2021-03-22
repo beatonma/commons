@@ -2,7 +2,9 @@ package org.beatonma.commons.testcompose.test
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
+import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import org.junit.Rule
 
 
@@ -32,4 +34,7 @@ abstract class ComposeTest {
     infix fun perform(actions: ComposeContentTestRule.() -> Unit) {
         composeTestRule.actions()
     }
+
+    fun <E, T: Enum<E>> ComposeTestRule.onNodeWithTag(enum: T, useUnmergedTree: Boolean = false) =
+        onNodeWithTag(enum.name, useUnmergedTree = useUnmergedTree)
 }

@@ -150,7 +150,7 @@ fun ProvideSystemUi(
     val systemUiController = remember { SystemUiController(window) }
     systemUiController.setSystemBarsColor(systemBarColor)
 
-    ProvideWindowInsets(windowInsetsAnimationsEnabled = true) {
+    ProvideWindowInsets(windowInsetsAnimationsEnabled = true, consumeWindowInsets = false) {
         CompositionLocalProvider(LocalSystemUiController provides systemUiController) {
             content()
         }

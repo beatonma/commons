@@ -13,6 +13,9 @@ val NullUserToken = UserToken(
     snommocToken = "null", googleId = "null", username = "NoUser"
 )
 
+/**
+ * Actions that involve and affect the service account of the user.
+ */
 class UserAccountActions(
     val signIn: ActionBlock = {},
     val signOut: ActionBlock = {},

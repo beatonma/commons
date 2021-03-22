@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.offset
 import dev.chrisbanes.accompanist.insets.Insets
 import dev.chrisbanes.accompanist.insets.LocalWindowInsets
+import dev.chrisbanes.accompanist.insets.imePadding
 
 /**
  * Selectively apply additional space which matches the width/height of any system bars present
@@ -36,14 +37,13 @@ import dev.chrisbanes.accompanist.insets.LocalWindowInsets
  * @param enabled Whether to apply padding using the system bars dimensions on the respective edges.
  * Defaults to `true`.
  */
-fun Modifier.systemBarsPadding(enabled: Boolean = true, scale: Float = 1.0F) = composed {
-    insetsPadding(
-        insets = LocalWindowInsets.current.systemBars,
-        left = enabled,
-        top = enabled,
-        right = enabled,
-        bottom = enabled,
-        scale = scale,
+fun Modifier.systemBarsPadding(enabled: Boolean = true, scale: Float = 1F) = composed {
+    InsetsPaddingModifier(
+        insets = LocalWindowInsets.current.systemBars * scale,
+        applyLeft = enabled,
+        applyTop = enabled,
+        applyRight = enabled,
+        applyBottom = enabled,
     )
 }
 
@@ -51,8 +51,11 @@ fun Modifier.systemBarsPadding(enabled: Boolean = true, scale: Float = 1.0F) = c
  * Apply additional space which matches the height of the status bars height along the top edge
  * of the content.
  */
-fun Modifier.statusBarsPadding(scale: Float = 1.0F) = composed {
-    insetsPadding(insets = LocalWindowInsets.current.statusBars, top = true, scale = scale)
+fun Modifier.statusBarsPadding(scale: Float = 1F) = composed {
+    InsetsPaddingModifier(
+        insets = LocalWindowInsets.current.statusBars * scale,
+        applyTop = true,
+    )
 }
 
 /**
@@ -71,35 +74,50 @@ fun Modifier.navigationBarsPadding(
     bottom: Boolean = true,
     left: Boolean = true,
     right: Boolean = true,
-    scale: Float = 1.0F,
+    scale: Float = 1F,
 ) = composed {
-    insetsPadding(
-        insets = LocalWindowInsets.current.navigationBars,
-        left = left,
-        right = right,
-        bottom = bottom,
-        scale = scale,
+    InsetsPaddingModifier(
+        insets = LocalWindowInsets.current.navigationBars * scale,
+        applyLeft = left,
+        applyRight = right,
+        applyBottom = bottom,
     )
 }
 
-fun Modifier.imePadding(scale: Float = 1.0F) = composed {
-    insetsPadding(insets = LocalWindowInsets.current.ime, bottom = true, scale = scale)
-}
+//fun Modifier.imePadding(scale: Float = 1F) = composed {
+//    InsetsPaddingModifier(
+//        insets = LocalWindowInsets.current.ime * scale,
+//        applyBottom = true,
+//    )
+//}
 
+///**
+// * Scaling is applied only to navigationBars padding.
+// */
+//fun Modifier.imeOrNavigationBarsPadding(
+//    bottom: Boolean = true,
+//    left: Boolean = true,
+//    right: Boolean = true,
+//    scale: Float = 1F,
+//) = composed {
+//    println("IME ${LocalWindowInsets.current.ime.toPaddingValues()}")
+//    val insets = LocalWindowInsets.current.ime
+//        .coerceAtLeast(LocalWindowInsets.current.navigationBars * scale)
+//
+//    InsetsPaddingModifier(
+//        insets,
+//        applyLeft = left,
+//        applyRight = right,
+//        applyBottom = bottom,
+//    )
+//}
 fun Modifier.imeOrNavigationBarsPadding(
     bottom: Boolean = true,
     left: Boolean = true,
     right: Boolean = true,
-    scale: Float = 1.0F,
-) = composed {
-    val insets = LocalWindowInsets.current.ime.coerceAtLeast(LocalWindowInsets.current.navigationBars)
-
-    insetsPadding(
-        insets,
-        left = left, right = right, bottom = bottom,
-        scale = scale
-    )
-}
+    scale: Float = 1F
+) = navigationBarsPadding(bottom, left, right, scale)
+    .imePadding()
 
 fun Insets.coerceAtLeast(
     other: Insets,
@@ -116,17 +134,15 @@ fun Insets.coerceAtLeast(
     )
 }
 
-/**
- * Allows conditional setting of [insets] on each dimension.
- */
-private inline fun Modifier.insetsPadding(
-    insets: Insets,
-    left: Boolean = false,
-    top: Boolean = false,
-    right: Boolean = false,
-    bottom: Boolean = false,
-    scale: Float = 1.0F,  // For animation
-) = this.then(InsetsPaddingModifier(insets, left, top, right, bottom, scale))
+operator fun Insets.times(scale: Float): Insets {
+    if (scale == 1F) return this
+    return this.copy(
+        left = (left.toFloat() * scale).toInt(),
+        top = (top.toFloat() * scale).toInt(),
+        right = (right.toFloat() * scale).toInt(),
+        bottom = (bottom.toFloat() * scale).toInt(),
+    )
+}
 
 private data class InsetsPaddingModifier(
     private val insets: Insets,
@@ -134,19 +150,20 @@ private data class InsetsPaddingModifier(
     private val applyTop: Boolean = false,
     private val applyRight: Boolean = false,
     private val applyBottom: Boolean = false,
-    private val scale: Float = 1.0F,
 ) : LayoutModifier {
-
     override fun MeasureScope.measure(
         measurable: Measurable,
         constraints: Constraints,
     ): MeasureResult {
-        val left = if (applyLeft) (insets.left * scale).toInt() else 0
-        val top = if (applyTop) (insets.top * scale).toInt() else 0
-        val right = if (applyRight) (insets.right * scale).toInt() else 0
-        val bottom = if (applyBottom) (insets.bottom * scale).toInt() else 0
+
+        val left = if (applyLeft) insets.left else 0
+        val top = if (applyTop) insets.top else 0
+        val right = if (applyRight) insets.right else 0
+        val bottom = if (applyBottom) insets.bottom else 0
         val horizontal = left + right
         val vertical = top + bottom
+
+        println("bottom $bottom")
 
         val placeable = measurable.measure(constraints.offset(-horizontal, -vertical))
 
@@ -154,6 +171,7 @@ private data class InsetsPaddingModifier(
             .coerceIn(constraints.minWidth, constraints.maxWidth)
         val height = (placeable.height + vertical)
             .coerceIn(constraints.minHeight, constraints.maxHeight)
+
         return layout(width, height) {
             placeable.place(left, top)
         }

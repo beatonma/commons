@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.assertTextEquals
@@ -21,6 +22,7 @@ import androidx.test.filters.MediumTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.runBlockingTest
+import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.sampledata.SampleUserToken
 import org.beatonma.commons.testcompose.test.ComposeTest
 import org.junit.Test
@@ -34,6 +36,12 @@ class EditableUsernameTest: ComposeTest() {
     private val actionRequestRenameTag = "action_request_rename"
     private val actionCancelRenameTag = "action_cancel_rename"
     private val feedbackTextTag = "feedback_text"
+
+    private val username = SampleUserToken.username
+
+    init {
+        check(username.isNotBlank())
+    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val dispatcher = TestCoroutineDispatcher()
@@ -87,6 +95,14 @@ class EditableUsernameTest: ComposeTest() {
             onNodeWithText(SampleUserToken.username)
                 .assertIsDisplayed()
                 .assertIsFocused()
+
+            onNodeWithTag(actionRequestRenameTag)
+                .assertIsDisplayed()
+                .assertHasClickAction()
+
+            onNodeWithTag(actionCancelRenameTag)
+                .assertIsDisplayed()
+                .assertHasClickAction()
         }
     }
 
@@ -101,7 +117,7 @@ class EditableUsernameTest: ComposeTest() {
         perform {
             onNodeWithTag(editableFieldTag).run {
                 performTextInput("_3")
-                assertTextEquals("PREVIEW_3")
+                assertTextEquals("${username}_3")
             }
         }
     }
@@ -224,13 +240,9 @@ class EditableUsernameTest: ComposeTest() {
         }
     ) {
         var renameSuccessful by remember { mutableStateOf(false) }
-        val userAccountActions = remember {
-            UserAccountActions(
-                renameAccount = { _, _ ->
-                    if (renameResult == RenameResult.ACCEPTED) renameSuccessful = true
-                    renameResult
-                }
-            )
+        val onSubmitRename: suspend (UserToken, String) -> RenameResult = { _, _ ->
+            if (renameResult == RenameResult.ACCEPTED) renameSuccessful = true
+            renameResult
         }
 
         Column {
@@ -238,7 +250,7 @@ class EditableUsernameTest: ComposeTest() {
                 userToken = SampleUserToken,
                 state = state,
                 validationMessages = validationMessages,
-                userAccountActions = userAccountActions
+                onSubmitRename = onSubmitRename,
             )
 
             Text("$renameSuccessful", Modifier.testTag(testRenameSuccessfulTag))

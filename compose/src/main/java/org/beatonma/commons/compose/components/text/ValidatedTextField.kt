@@ -1,9 +1,9 @@
 package org.beatonma.commons.compose.components.text
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -27,6 +27,8 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.MeasurePolicy
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -39,6 +41,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import org.beatonma.commons.compose.ambient.animation
 import org.beatonma.commons.compose.ambient.shapes
 import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.components.FeedbackProvider
@@ -224,9 +227,7 @@ private fun ValidatedTextFieldLayout(
         val counterText: @Composable () -> Unit = {
             CounterText(
                 validationRules, value.length,
-                Modifier
-                    .align(Alignment.End)
-                    .padding(top = 4.dp),
+                Modifier,
                 errorColor = colors.labelColor(
                     enabled = enabled,
                     error = true,
@@ -236,16 +237,18 @@ private fun ValidatedTextFieldLayout(
         }
 
         if (internalFeedback) {
-            Row(
-                Modifier.fillMaxWidth(),
+            FeedbackCounterLayout(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp)
+                    .animateContentSize(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.Top,
             ) {
                 FeedbackText(feedbackProvider.value)
                 counterText()
             }
-        }
-        else {
+        } else {
             counterText()
         }
 
@@ -263,9 +266,14 @@ private fun FeedbackText(
 ) {
     if (message == null) {
         Spacer(Modifier.testTag("feedback_text__null_message"))
-    }
-    else {
-        Text(message, Modifier.testTag("feedback_text"), style = typography.caption)
+    } else {
+        animation.Crossfade(message) {
+            Text(
+                message,
+                Modifier.testTag("feedback_text"),
+                style = typography.caption
+            )
+        }
     }
 }
 
@@ -273,7 +281,7 @@ private fun FeedbackText(
 private fun CounterText(
     validationRules: TextValidationRules,
     textLength: Int,
-    modifier: Modifier = Modifier,
+    modifier: Modifier,
     errorColor: Color,
 ) {
     val warningStyle = remember { SpanStyle(fontWeight = FontWeight.Bold) }
@@ -297,6 +305,7 @@ private fun CounterText(
     Text(
         counterText,
         modifier.testTag("counter_text"),
+        maxLines = 1,
         style = typography.caption,
     )
 }
@@ -325,4 +334,65 @@ fun ValidatedTextFieldPreview() {
             )
         }
     }
+}
+
+
+/**
+ * A row for 2 items which prioritises the second one. e.g. An icon at the
+ * end of the row will take whatever space it requires, and text before it
+ * can use whatever space is left.
+ */
+@Composable
+private fun FeedbackCounterLayout(
+    modifier: Modifier = Modifier,
+    horizontalArrangement: Arrangement.Horizontal,
+    verticalAlignment: Alignment.Vertical,
+    content: @Composable () -> Unit,
+) {
+    Layout(
+        modifier = modifier,
+        content = content,
+        measurePolicy = @Suppress("RedundantSamConstructor") MeasurePolicy { measurables, constraints ->
+            check(measurables.size == 2)
+
+            val lastWidth = measurables[1].maxIntrinsicWidth(0)
+            val lastPlaceable = measurables[1].measure(
+                constraints.copy(
+                    minWidth = lastWidth,
+                    maxWidth = lastWidth
+                )
+            )
+
+            val firstWidth = constraints.maxWidth - lastPlaceable.width
+            val firstConstraints = constraints.copy(
+                minWidth = firstWidth,
+                maxWidth = firstWidth
+            )
+            val firstPlaceable = measurables[0].measure(firstConstraints)
+
+            val width: Int = constraints.maxWidth
+            val height: Int = maxOf(lastPlaceable.height, firstPlaceable.height)
+
+            val xPositions = IntArray(2) { 0 }
+            with(horizontalArrangement) {
+                this@MeasurePolicy.arrange(
+                    width,
+                    intArrayOf(firstPlaceable.width, lastPlaceable.width),
+                    layoutDirection,
+                    xPositions
+                )
+            }
+
+            layout(width, height) {
+                firstPlaceable.placeRelative(
+                    xPositions[0],
+                    verticalAlignment.align(firstPlaceable.height, height)
+                )
+                lastPlaceable.placeRelative(
+                    xPositions[1],
+                    verticalAlignment.align(lastPlaceable.height, height)
+                )
+            }
+        },
+    )
 }

@@ -6,7 +6,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ContentAlpha
@@ -30,6 +30,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -47,9 +48,11 @@ import org.beatonma.commons.app.social.Username
 import org.beatonma.commons.app.ui.compose.InAppPreview
 import org.beatonma.commons.app.ui.compose.components.LoadingIcon
 import org.beatonma.commons.app.ui.compose.components.image.ClickableIcon
+import org.beatonma.commons.compose.ambient.animation
 import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.components.FeedbackProvider
 import org.beatonma.commons.compose.components.rememberFeedbackProvider
+import org.beatonma.commons.compose.components.text.ComponentTitle
 import org.beatonma.commons.compose.components.text.Hint
 import org.beatonma.commons.compose.components.text.TextValidationResult
 import org.beatonma.commons.compose.components.text.TextValidationRules
@@ -58,6 +61,8 @@ import org.beatonma.commons.compose.util.rememberText
 import org.beatonma.commons.compose.util.testTag
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.sampledata.SampleUserToken
+import org.beatonma.commons.theme.compose.padding.Padding
+import org.beatonma.commons.theme.compose.padding.padding
 
 internal enum class EditableState {
     ReadOnly,
@@ -70,33 +75,39 @@ internal enum class EditableState {
 @Composable
 internal fun EditableUsername(
     userToken: UserToken,
+    onSubmitRename: suspend (UserToken, String) -> RenameResult,
+    modifier: Modifier = Modifier,
     state: MutableState<EditableState> = remember { mutableStateOf(EditableState.ReadOnly) },
     validationMessages: ValidationMessages = rememberValidationMessages(),
-    userAccountActions: UserAccountActions = LocalUserProfileActions.current.userAccountActions,
     focusRequester: FocusRequester = remember(::FocusRequester),
     coroutineScope: CoroutineScope = rememberCoroutineScope()
 ) {
-    when (state.value) {
-        EditableState.ReadOnly ->
-            ReadOnlyUsernameLayout(
-                userToken,
-                makeEditable = { state.value = EditableState.Editable },
-            )
+    animation.Crossfade(targetState = state.value) {
+        when (state.value) {
+            EditableState.ReadOnly ->
+                ReadOnlyUsernameLayout(
+                    userToken = userToken,
+                    makeEditable = { state.value = EditableState.Editable },
+                    modifier = modifier,
+                )
 
-        EditableState.Editable ->
-            EditableUsernameLayout(
-                userToken,
-                onStateChange = { value -> state.value = value },
-                validationMessages = validationMessages,
-                coroutineScope = coroutineScope,
-                focusRequester = focusRequester,
-                submitAction = userAccountActions.renameAccount,
-            )
+            EditableState.Editable ->
+                EditableUsernameLayout(
+                    userToken,
+                    onStateChange = { value -> state.value = value },
+                    validationMessages = validationMessages,
+                    coroutineScope = coroutineScope,
+                    modifier = modifier,
+                    focusRequester = focusRequester,
+                    submitAction = onSubmitRename,
+                )
 
-        EditableState.AwaitingResult ->
-            AwaitingResultLayout(
-                userToken,
-            )
+            EditableState.AwaitingResult ->
+                AwaitingResultLayout(
+                    userToken = userToken,
+                    modifier = modifier
+                )
+        }
     }
 }
 
@@ -109,20 +120,43 @@ private fun ReadOnlyUsernameLayout(
 ) {
     val contentDescription = stringResource(R.string.content_description_edit_username)
     AnimatedVisibility(visible = true, initiallyVisible = false, enter = fadeIn()) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = modifier.testTag(EditableState.ReadOnly)
-            ,
-        ) {
-            Username(userToken.username, style = typography.h4,
-                modifier = Modifier.testTag("readonly_username"))
+        val content: @Composable () -> Unit = {
+            Username(
+                userToken.username,
+                style = typography.h4,
+                modifier = Modifier
+                    .testTag("readonly_username")
+            )
 
             ClickableIcon(
                 Icons.Default.Edit,
                 contentDescription = contentDescription,
                 onClick = makeEditable,
-                tag = "action_make_editable"
+                testTag = "action_make_editable",
             )
+        }
+
+        // A row that measures the icon first, then constrains the text to whatever space is left.
+        Layout(
+            modifier = modifier.testTag(EditableState.ReadOnly),
+            content = content
+        ) { measurables, constraints ->
+            check(measurables.size == 2)
+
+            val iconPlaceable = measurables[1].measure(constraints)
+
+            val textConstraints = constraints.copy(
+                maxWidth = constraints.maxWidth - iconPlaceable.width
+            )
+            val textPlaceable = measurables[0].measure(textConstraints)
+
+            val width: Int = iconPlaceable.width + textPlaceable.width
+            val height: Int = maxOf(iconPlaceable.height, textPlaceable.height)
+
+            layout(width, height) {
+                textPlaceable.placeRelative(0, 0)
+                iconPlaceable.placeRelative(textPlaceable.width, 0)
+            }
         }
     }
 }
@@ -180,7 +214,6 @@ private fun EditableUsernameLayout(
             withContext(Dispatchers.Main) {
                 renameResultFeedback.value = AnnotatedString(validationMessages.getMessage(result))
                 onStateChange(resultState)
-                println("onStateChange($resultState) ${renameResultFeedback.value}")
             }
         }
     }
@@ -214,11 +247,17 @@ private fun EditableUsernameLayout(
     onStateChange: (EditableState) -> Unit,
     onSubmitName: () -> Unit,
 ) {
-    Row(
-        modifier = modifier.testTag(EditableState.Editable),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.End,
+    Column(
+        modifier = modifier
+            .testTag(EditableState.Editable),
+
     ) {
+        ComponentTitle(
+            stringResource(R.string.account_username_hint),
+            Modifier.padding(Padding.VerticalListItem),
+            autoPadding = false,
+        )
+
         ValidatedTextField(
             text,
             validationRules,
@@ -226,34 +265,33 @@ private fun EditableUsernameLayout(
                 onTextChange(value)
                 AnnotatedString(validationMessages.getMessage(validationResult))
             },
-            placeholder = {
-                Hint(
-                    R.string.account_username_validation_too_short,
-                    BuildConfig.ACCOUNT_USERNAME_MIN_LENGTH
-                )
-            },
+            placeholder = { Hint(R.string.account_username_hint) },
             maxLines = 1,
+            singleLine = true,
             modifier = Modifier
-                .weight(10F)
+//                .weight(10F)
                 .focusModifier()
                 .focusRequester(focusRequester),
             keyboardOptions = keyboardOptions,
             textStyle = TextStyle(color = LocalContentColor.current),
             feedbackProvider = feedbackProvider,
-        )
+            trailingIcon = {
+                Row {
+                    ClickableIcon(
+                        Icons.Default.Done,
+                        contentDescription = stringResource(R.string.account_submit_new_username),
+                        onClick = onSubmitName,
+                        testTag = "action_request_rename"
+                    )
 
-        ClickableIcon(
-            Icons.Default.Done,
-            contentDescription = stringResource(R.string.account_submit_new_username),
-            onClick = onSubmitName,
-            tag = "action_request_rename"
+                    ClickableIcon(
+                        Icons.Default.Undo,
+                        contentDescription = stringResource(R.string.content_description_edit_username),
+                        testTag = "action_cancel_rename"
+                    ) { onStateChange(EditableState.ReadOnly) }
+                }
+            }
         )
-
-        ClickableIcon(
-            Icons.Default.Undo,
-            contentDescription = stringResource(R.string.content_description_edit_username),
-            tag = "action_cancel_rename"
-        ) { onStateChange(EditableState.ReadOnly) }
 
         LaunchedEffect(true) {
             focusRequester.requestFocus()
@@ -347,8 +385,8 @@ internal class ValidationMessages(
 
 @Composable @Preview
 fun EditableUsernamePreview() {
-    LocalUserProfileActions = staticCompositionLocalOf {
-        object: UserProfileActions {
+    LocalPlatformUserAccountActions = staticCompositionLocalOf {
+        object: PlatformUserAccountActions {
             override val signInLauncher: ActivityResultLauncher<Intent>
                 get() = TODO("Not yet implemented")
             override val userAccountActions: UserAccountActions
@@ -361,6 +399,7 @@ fun EditableUsernamePreview() {
     InAppPreview {
         EditableUsername(
             SampleUserToken,
+            onSubmitRename = UserAccountActions().renameAccount
         )
     }
 }

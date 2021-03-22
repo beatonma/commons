@@ -12,10 +12,10 @@ fun ClickableIcon(
     icon: ImageVector,
     contentDescription: String?,
     modifier: Modifier = Modifier,
-    tag: String? = null,
+    testTag: String? = null,
     onClick: () -> Unit,
 ) {
-    val tagModifier = if (tag != null) Modifier.testTag(tag) else Modifier
+    val tagModifier = if (testTag != null) Modifier.testTag(testTag) else Modifier
     IconButton(
         onClick = onClick,
         modifier = tagModifier

@@ -5,4 +5,5 @@
 
     <string name="content_description_show_more" translatable="true">Show more</string>
     <string name="content_description_show_less" translatable="true">Show less</string>
+    <string name="content_description_close_overlay" translatable="true">Close overlay</string>
 </resources>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Generic -->
+    <string name="content_description_expand_collapse" translatable="true">Expand or collapse</string>
+    <string name="content_description_loading" translatable="true">Loading</string>
+
+    <!-- App navigation -->
+    <string name="content_description_open_member_profile_for" translatable="true">Open member profile for %s</string>
+
+    <!-- Search -->
+    <string name="content_description_close_search_overlay" translatable="true">Close search overlay</string>
+
+    <!-- Social -->
+    <string name="content_description_social_comment_count" translatable="true">Comments: %d</string>
+    <string name="content_description_social_votes_count_for" translatable="true">Votes in favour: %d</string>
+    <string name="content_description_social_votes_count_against" translatable="true">Votes against: %d</string>
+
+    <!-- User account -->
+    <string name="content_description_open_account_management" translatable="true">Manage your account</string>
+    <string name="content_description_edit_username" translatable="true">Edit username</string>
+    <string name="content_description_edit_username_cancel" translatable="true">Cancel username edit</string>
+    <string name="content_description_account_sign_in" translatable="true">Sign in with Google</string>
+</resources>

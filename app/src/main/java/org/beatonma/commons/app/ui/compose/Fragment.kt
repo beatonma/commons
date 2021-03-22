@@ -21,11 +21,11 @@ fun Fragment.composeScreen(
 ) = ComposeView(requireContext()).apply {
     setContent {
         CommonsTheme {
-            CompositionLocalProvider(
-                *providers,
-                LocalContentColor provides colors.onBackground,
-            ) {
-                WithSystemUi {
+            WithSystemUi {
+                CompositionLocalProvider(
+                    *providers,
+                    LocalContentColor provides colors.onBackground,
+                ) {
                     FeedbackLayout(content = content)
                 }
             }

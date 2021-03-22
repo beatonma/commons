@@ -6,11 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 
 /**
- * Set a new value.
- */
-fun <T> MutableState<T>.update(newValue: T) { value = newValue }
-
-/**
  * Update the current value using the previous value.
  */
 inline fun <T> MutableState<T>.mapUpdate(map: (T) -> T) { value = map(value) }

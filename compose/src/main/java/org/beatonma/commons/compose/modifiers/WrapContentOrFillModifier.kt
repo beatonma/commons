@@ -92,12 +92,15 @@ private class WrapContentOrFillModifier(
         val intrinsicWidth = measurable.minIntrinsicWidth(0)
         val intrinsicHeight = measurable.minIntrinsicHeight(0)
 
+        val wrappedWidth = if (affectWidth) intrinsicWidth else constraints.minWidth
+        val wrappedHeight = if (affectHeight) intrinsicHeight else constraints.minHeight
+
         // Wrap content
         val wrappedConstraints = Constraints(
-            minWidth = if (affectWidth) intrinsicWidth else constraints.minWidth,
-            minHeight = if (affectHeight) intrinsicHeight else constraints.minHeight,
-            maxWidth = constraints.maxWidth,
-            maxHeight = constraints.maxHeight
+            minWidth = wrappedWidth,
+            minHeight = wrappedHeight,
+            maxWidth = constraints.maxWidth.coerceAtLeast(wrappedWidth),
+            maxHeight = constraints.maxHeight.coerceAtLeast(wrappedHeight)
         )
 
         // Fill space

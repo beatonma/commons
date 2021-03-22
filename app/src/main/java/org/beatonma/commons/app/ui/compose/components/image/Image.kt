@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import dev.chrisbanes.accompanist.coil.CoilImage
 import dev.chrisbanes.accompanist.imageloading.ImageLoadState
 import org.beatonma.commons.app.ui.compose.components.ErrorUi
@@ -28,7 +29,7 @@ fun Avatar(
     CoilImage(
         data = source ?: fallback,
         contentDescription = contentDescription,
-        modifier = modifier,
+        modifier = modifier.testTag("avatar"),
         fadeIn = fadeIn,
         contentScale = contentScale,
         alignment = alignment,
