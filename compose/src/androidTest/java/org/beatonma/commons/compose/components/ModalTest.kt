@@ -12,14 +12,13 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.filters.MediumTest
+import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.test.extensions.assertions.shouldbe
 import org.beatonma.commons.testcompose.test.ComposeTest
 import org.junit.Test
 
 @MediumTest
 class ModalTest: ComposeTest() {
-    private val scrimTag = "modal_scrim"
-
     override fun withContent(content: @Composable () -> Unit) =
         composeTestRule.apply { setContent(content) }
 
@@ -30,7 +29,7 @@ class ModalTest: ComposeTest() {
         }
 
         perform {
-            onNodeWithTag(scrimTag)
+            onNodeWithTag(TestTag.ModalScrim)
                 .assertExists()
                 .assertHasClickAction()
 
@@ -47,7 +46,7 @@ class ModalTest: ComposeTest() {
         }
 
         perform {
-            onNodeWithTag(scrimTag)
+            onNodeWithTag(TestTag.ModalScrim)
                 .assertDoesNotExist()
         }
     }
@@ -64,7 +63,7 @@ class ModalTest: ComposeTest() {
         }
 
         perform {
-            onNodeWithTag(scrimTag)
+            onNodeWithTag(TestTag.ModalScrim)
                 .performClick()
 
             backgroundClickCount.value shouldbe 1

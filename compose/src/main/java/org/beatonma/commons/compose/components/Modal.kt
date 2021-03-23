@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.compose.ambient.animation
 import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.compose.animation.AnimatedVisibility
@@ -51,18 +52,19 @@ fun ModalScrim(
         ) {
             Spacer(
                 modifier
-                    .fillMaxSize()
-                    .background(backgroundColor)
                     .clickable(
                         interactionSource = interactionSource,
                         indication = null,
                         enabled = visible,
                         onClick = onClickAction,
-                        onClickLabel = onClickLabel
+                        onClickLabel = onClickLabel,
                     )
-                    .testTag("modal_scrim")
+                    .fillMaxSize()
+                    .background(backgroundColor)
+                    .testTag(TestTag.ModalScrim)
             )
         }
+
         content()
     }
 }

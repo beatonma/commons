@@ -5,6 +5,8 @@ import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.printToLog
 import org.junit.Rule
 
 
@@ -37,4 +39,17 @@ abstract class ComposeTest {
 
     fun <E, T: Enum<E>> ComposeTestRule.onNodeWithTag(enum: T, useUnmergedTree: Boolean = false) =
         onNodeWithTag(enum.name, useUnmergedTree = useUnmergedTree)
+
+    /**
+     * Print UI state to log in both unmerged and merged forms to help identify
+     * unexpected merge points.
+     */
+    fun dump(label: String = "dump") {
+        println("[printToLog] Unmerged tree:")
+        composeTestRule.onRoot(useUnmergedTree = true).printToLog(label)
+        println("[printToLog] -")
+        println("[printToLog] Merged tree:")
+        composeTestRule.onRoot(useUnmergedTree = false).printToLog(label)
+        println("[printToLog] =======")
+    }
 }
