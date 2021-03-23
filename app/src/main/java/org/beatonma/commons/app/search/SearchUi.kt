@@ -114,8 +114,9 @@ private fun SearchLayout(
     expansionProgress: Float,
 ) {
     ModalScrim(
-        alpha = expansionProgress,
+        visible = expansionProgress > 0F,
         onClickAction = onBackgroundClick,
+        onClickLabel = stringResource(R.string.content_description_close_overlay),
         modifier = Modifier.testTag("modal_scrim")
     ) {
         Column(
