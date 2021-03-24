@@ -26,10 +26,10 @@ class Padding(
 ) {
     companion object {
         val Zero = paddingValues(0.dp)
-        val Card = paddingValues(start = 12.dp, top = 12.dp, end = 12.dp, bottom = 16.dp)
+        val Card = paddingValues(all = 12.dp, bottom = 16.dp)
 
         // Standard inset from screen edges
-        val ScreenHorizontal = paddingValues(start = 12.dp, end = 12.dp)
+        val ScreenHorizontal = paddingValues(horizontal = 12.dp)
         val Screen = paddingValues(16.dp)
 
         val SearchBar = Screen
