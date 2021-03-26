@@ -1,11 +1,15 @@
 package org.beatonma.commons.theme.compose.formatting
 
+import androidx.annotation.PluralsRes
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import org.beatonma.commons.theme.R
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.Period
 import java.time.format.DateTimeFormatter
+import kotlin.math.roundToInt
 
 private const val TIME_PATTERN = "HH:mm"
 private const val DAY_PATTERN = "dd"
@@ -80,6 +84,26 @@ fun dateRange(
     )
 }
 
+@Composable
+fun formattedPeriod(
+    start: LocalDate?,
+    end: LocalDate?,
+) = when (start) {
+    null -> null
+    else -> {
+        val resolvedEnd = end ?: LocalDate.now()
+        val period = Period.between(start, resolvedEnd)
+        val totalMonths = period.toTotalMonths().toInt()
+
+        if (totalMonths == 12 || totalMonths > 23) {
+            val years = (totalMonths.toFloat() / 12F).roundToInt()
+            pluralResource(R.plurals.date_period_years, years)
+        } else {
+            pluralResource(R.plurals.date_period_months, totalMonths)
+        }
+    }
+}
+
 fun LocalDateTime?.formatted(
     default: String = "",
     today: LocalDate = LocalDate.now(),
@@ -106,3 +130,7 @@ private fun LocalDate.chooseDateFormatter(today: LocalDate = LocalDate.now()): C
         else -> CommonsDateFormat.Date
     }
 }
+
+@Composable
+fun pluralResource(@PluralsRes resId: Int, quantity: Int, vararg formatArgs: Any = arrayOf(quantity)): String =
+    LocalContext.current.resources.getQuantityString(resId, quantity, *formatArgs)
