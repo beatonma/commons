@@ -39,9 +39,10 @@ fun Weblink(
 
         else -> {
             Weblink(
-                AnnotatedString(getGenericDisplayUrl(uri)),
-                weblink.url,
-                R.drawable.ic_link,
+                displayText = AnnotatedString(getGenericDisplayUrl(uri)),
+                url = weblink.url,
+                contentDescription = stringResource(R.string.action_open_url, weblink.url),
+                drawableId = R.drawable.ic_link,
                 modifier = modifier,
             )
         }
@@ -54,9 +55,10 @@ private fun FacebookWeblink(
     modifier: Modifier,
 ) {
     Weblink(
-        AnnotatedString(username),
-        "https://facebook.com/$username/",
-        R.drawable.ic_facebook,
+        displayText = AnnotatedString(username),
+        url = "https://facebook.com/$username/",
+        contentDescription = stringResource(R.string.action_open_facebook_user, username),
+        drawableId = R.drawable.ic_facebook,
         modifier = modifier
     )
 }
@@ -67,9 +69,10 @@ private fun TwitterWeblink(
     modifier: Modifier,
 ) {
     Weblink(
-        AnnotatedString("@$username"),
-        "https://twitter.com/$username/",
-        R.drawable.ic_twitter,
+        displayText = AnnotatedString("@$username"),
+        url = "https://twitter.com/$username/",
+        contentDescription = stringResource(R.string.action_open_twitter_user, username),
+        drawableId = R.drawable.ic_twitter,
         modifier = modifier
     )
 }
@@ -78,6 +81,7 @@ private fun TwitterWeblink(
 private fun Weblink(
     displayText: AnnotatedString,
     url: String,
+    contentDescription: String,
     drawableId: Int,
     modifier: Modifier = Modifier,
     autoCollapse: Long = 2500,
@@ -85,7 +89,7 @@ private fun Weblink(
     val context = LocalContext.current
     CollapsibleChip(
         text = displayText,
-        contentDescription = stringResource(R.string.action_open_url, url),
+        contentDescription = contentDescription,
         drawableId = drawableId,
         modifier = modifier,
         autoCollapse = autoCollapse

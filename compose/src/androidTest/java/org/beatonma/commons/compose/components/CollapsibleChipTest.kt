@@ -5,14 +5,14 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertHeightIsEqualTo
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.assertWidthIsAtLeast
 import androidx.compose.ui.test.assertWidthIsEqualTo
 import androidx.compose.ui.test.onNodeWithTag
@@ -21,6 +21,8 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.test.filters.MediumTest
+import org.beatonma.commons.compose.TestTag
+import org.beatonma.commons.compose.ambient.LocalAccessibility
 import org.beatonma.commons.testcompose.test.ComposeTest
 import org.beatonma.commons.theme.compose.Size
 import org.junit.Test
@@ -89,7 +91,7 @@ class CollapsibleChipTest: ComposeTest() {
             onNodeWithTag(chipTag)
                 .performClick()
 
-            onNodeWithTag("clickable_cancel")
+            onNodeWithTag(TestTag.Cancel)
                 .performClick()
 
             onNodeWithTag(chipTag)
@@ -99,7 +101,6 @@ class CollapsibleChipTest: ComposeTest() {
 
     @Test
     fun clickingMainArea_whenExpanded_shouldTriggerAction() {
-
         withContent {
             TestLayout()
         }
@@ -108,10 +109,30 @@ class CollapsibleChipTest: ComposeTest() {
             onNodeWithTag(chipTag)
                 .performClick()
 
-            onNodeWithTag("clickable_confirm")
+            onNodeWithTag(TestTag.Confirm)
                 .performClick()
 
             onNodeWithText("1").assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun withAccessibility_isCorrect() {
+        withContent {
+            CompositionLocalProvider(LocalAccessibility provides true) {
+                TestLayout()
+            }
+        }
+
+        perform {
+            onNodeWithTag(TestTag.Confirm)
+                .assertExists()
+                .assertTextEquals(chipText)
+                .assertIsDisplayed()
+                .performClick()
+
+            onNodeWithText("1")
+                .assertIsDisplayed()
         }
     }
 
@@ -124,7 +145,6 @@ class CollapsibleChipTest: ComposeTest() {
                 text = AnnotatedString(chipText),
                 contentDescription = contentDescription,
                 icon = Icons.Default.Email,
-                modifier = Modifier.testTag(chipTag)
             ) {
                 counter += 1
             }
