@@ -28,7 +28,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Placeable
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.text
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.app.ui.compose.components.Dot
@@ -53,6 +57,7 @@ import org.beatonma.commons.data.resolution.description
 import org.beatonma.commons.kotlin.extensions.roundDown
 import org.beatonma.commons.kotlin.extensions.roundUp
 import org.beatonma.commons.theme.compose.formatting.dateRange
+import org.beatonma.commons.theme.compose.formatting.formatted
 import org.beatonma.commons.theme.compose.formatting.formattedPeriod
 import org.beatonma.commons.theme.compose.theme.graphPrimaryColors
 import org.beatonma.commons.theme.compose.theme.graphSecondaryColors
@@ -164,17 +169,22 @@ private fun TimelineBackground(
     labelStyle: TextStyle = typography.caption,
     foreground: @Composable () -> Unit
 ) {
+    val clearSemanticsModifier = Modifier.clearAndSetSemantics {
+        /* Screen readers should ignore background markers */
+    }
+
     Layout(
         content = {
             decades.fastForEach { decade ->
-                Text("${decade.year}", style = labelStyle)
+                // Year markers along top and bottom, connected with vertical line.
+                Text("${decade.year}", clearSemanticsModifier, style = labelStyle)
                 Spacer(
                     Modifier
                         .fillMaxHeight()
                         .background(colors.lines)
                         .width(2.dp)
                 )
-                Text("${decade.year}", style = labelStyle)
+                Text("${decade.year}", clearSemanticsModifier, style = labelStyle)
             }
 
             foreground()
@@ -233,23 +243,49 @@ private fun GroupLayout(
     val state = rememberExpandCollapseState()
     val expansion by state.value.animateExpansionAsState()
 
+    val dates = group.items.mapNotNull {
+        if (it.durationMonths == 0) {
+            it.start.formatted()
+        }
+        else {
+            dateRange(it.start, it.end)
+        }
+    }
+    val durations = group.items.mapNotNull {
+        if (it.durationMonths > 0) {
+            formattedPeriod(it.start, it.end)
+        }
+        else {
+            ""
+        }
+    }
+
+    val allDatesText = dates
+        .zip(durations)
+        .joinToString("\n") { (dateRange, duration) ->
+            "$dateRange ($duration)"
+        }
+
     Column(
         Modifier
             .padding(end = MonthsPadding.dp)
             .padding(vertical = 8.dp * expansion)
+            .clearAndSetSemantics {
+                text = AnnotatedString("${group.label}: $allDatesText")
+            }
             .clickable { state.toggle() }
             .animateContentSize(animation.spec())
             .then(modifier),
         horizontalAlignment = Alignment.Start,
     ) {
-        if (group.start == group.end) {
+        if (group.durationMonths < 12) {
             Instant(visibility, color)
         }
         else {
             Bar(group, visibility, colors, color)
         }
 
-        GroupLabel(group, state.value, colors)
+        GroupLabel(group.label, allDatesText, state.value, colors)
     }
 }
 
@@ -302,31 +338,24 @@ private fun Instant(visibility: Float, color: Color) {
 
 @Composable
 private fun GroupLabel(
-    group: Group,
+    label: String,
+    expandedText: String,
     state: ExpandCollapseState,
     colors: TimelineColors,
 ) {
     Column {
         Text(
-            group.label,
-            Modifier.background(colors.overlay),
-            maxLines = 2,
+            label,
+            Modifier.background(colors.overlay)
+                .width(256.dp),
+            maxLines = if (state.isExpanded) 10 else 1,
             style = typography.caption,
+            overflow = TextOverflow.Ellipsis,
         )
 
         animation.AnimatedVisibility(visible = state.isExpanded, horizontal = false) {
-            println(state.isExpanded)
-            val dates = group.items.mapNotNull { dateRange(it.start, it.end) }
-            val durations = group.items.mapNotNull { formattedPeriod(it.start, it.end) }
-
-            val text = dates
-                .zip(durations)
-                .joinToString("\n") { (dateRange, duration) ->
-                    "$dateRange ($duration)"
-                }
-
             Text(
-                text,
+                expandedText,
                 Modifier.background(colors.overlay),
                 style = typography.caption,
             )
