@@ -488,7 +488,6 @@ internal fun decadesBetween(start: LocalDate, end: LocalDate): List<Decade> {
 
     val decadeYears = firstDecade.year..lastDecade.year step 10
 
-    println("decadesBetween($start, $end) -> $decadeYears")
     return decadeYears.map { year ->
         val date = LocalDate.of(year, 1, 1)
         Decade(year, Period.between(start, date).toTotalMonths().toInt())
