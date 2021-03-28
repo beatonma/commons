@@ -10,6 +10,7 @@ import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.platform.InspectorValueInfo
 import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.IntSize
 import org.beatonma.commons.core.extensions.lerpTo
 
 /**
@@ -89,8 +90,7 @@ private class WrapContentOrFillModifier(
         measurable: Measurable,
         constraints: Constraints,
     ): MeasureResult {
-        val intrinsicWidth = measurable.minIntrinsicWidth(0)
-        val intrinsicHeight = measurable.minIntrinsicHeight(0)
+        val (intrinsicWidth, intrinsicHeight) = safeIntrinsicSizeOf(measurable)
 
         val wrappedWidth = if (affectWidth) intrinsicWidth else constraints.minWidth
         val wrappedHeight = if (affectHeight) intrinsicHeight else constraints.minHeight
@@ -113,9 +113,11 @@ private class WrapContentOrFillModifier(
 
         val constrainedHorizontalProgress = horizontalProgress.coerceAtLeast(0F)
         val constrainedVerticalProgress = verticalProgress.coerceAtLeast(0F)
-        val interpolatedConstraints = wrappedConstraints.lerpTo(fillConstraints,
+        val interpolatedConstraints = wrappedConstraints.lerpTo(
+            fillConstraints,
             constrainedHorizontalProgress,
-            constrainedVerticalProgress)
+            constrainedVerticalProgress
+        )
 
         val placeable = measurable.measure(interpolatedConstraints)
 
@@ -124,6 +126,17 @@ private class WrapContentOrFillModifier(
         }
     }
 }
+
+/**
+ * SubcomposeLayout does not support intrinsic measurements, causing errors whenever LazyColumn(etc)
+ * is used within a block marked with this modifier. Return zero size when this happens.
+ */
+private fun safeIntrinsicSizeOf(measurable: Measurable): IntSize = try {
+        IntSize(measurable.minIntrinsicWidth(0), measurable.minIntrinsicHeight(0))
+    }
+    catch (e: Exception) {
+        IntSize.Zero
+    }
 
 private fun Constraints.lerpTo(
     other: Constraints,
