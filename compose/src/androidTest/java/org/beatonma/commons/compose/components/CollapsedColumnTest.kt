@@ -143,6 +143,7 @@ class CollapsedColumnTest: ComposeTest() {
         CollapsedColumn(
             items = items,
             collapsedItemCount = collapsedItemCount,
+            scrollable = true,
             headerBlock = CollapsedColumn.simpleHeader(headerText)
         ) { int ->
             Text("$int")

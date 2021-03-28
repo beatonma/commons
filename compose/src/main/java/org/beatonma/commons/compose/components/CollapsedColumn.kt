@@ -1,6 +1,5 @@
 package org.beatonma.commons.compose.components
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.animateFloat
@@ -32,72 +31,81 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.compose.R
+import org.beatonma.commons.compose.ambient.animation
+import org.beatonma.commons.compose.animation.AnimatedItemVisibility
 import org.beatonma.commons.compose.animation.ExpandCollapseState
 import org.beatonma.commons.compose.animation.animateExpansion
 import org.beatonma.commons.compose.animation.rememberExpandCollapseState
 import org.beatonma.commons.compose.animation.toggle
+import org.beatonma.commons.compose.components.text.ComponentTitle
+import org.beatonma.commons.compose.components.text.OptionalText
 import org.beatonma.commons.compose.modifiers.design.colorize
-import org.beatonma.commons.compose.modifiers.withNotNull
+import org.beatonma.commons.compose.modifiers.onlyWhen
 import org.beatonma.commons.compose.modifiers.wrapContentHeight
 import org.beatonma.commons.compose.util.rememberListOf
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.core.extensions.reversed
-import org.beatonma.commons.core.extensions.withNotNull
+import org.beatonma.commons.theme.compose.Size
 import org.beatonma.commons.theme.compose.padding.Padding
 import org.beatonma.commons.theme.compose.padding.padding
-import org.beatonma.commons.theme.compose.Size
-import org.beatonma.commons.compose.components.text.ComponentTitle
 import org.beatonma.commons.theme.compose.theme.CommonsTheme
 import kotlin.math.roundToInt
 
 private typealias HeaderBlock = @Composable (
     isCollapsible: Boolean,
     transition: Transition<ExpandCollapseState>,
-    clickAction: (() -> Unit)?
+    onClick: () -> Unit,
 ) -> Unit
 
 private typealias ItemBlock<T> = @Composable (T) -> Unit
-
 
 object CollapsedColumn {
     fun simpleHeader(
         title: String,
         description: String? = null,
+        autoPadding: Boolean = true,
         modifier: Modifier = Modifier,
     ): HeaderBlock =
         { isCollapsible, transition, clickAction ->
-            val contentDescription = stringResource(
-                when (transition.currentState) {
-                    ExpandCollapseState.Expanded -> R.string.content_description_show_less
-                    ExpandCollapseState.Collapsed -> R.string.content_description_show_more
+            val contentDescription: String? =
+                when {
+                    !isCollapsible -> null
+                    transition.currentState.isExpanded -> stringResource(R.string.content_description_show_less)
+                    transition.currentState.isCollapsed -> stringResource(R.string.content_description_show_more)
+                    else -> null
                 }
-            )
 
             Row(
                 modifier
                     .fillMaxWidth()
-                    .padding(Padding.VerticalListItemLarge)
-                    .withNotNull(clickAction) {
-                        clickable(onClick = it, onClickLabel = contentDescription)
+                    .padding(Padding.VerticalListItem)
+                    .semantics(mergeDescendants = true) {
+                        this.contentDescription = if (contentDescription == null) {
+                            title
+                        } else {
+                            "$title: $contentDescription"
+                        }
+                    }
+                    .onlyWhen(isCollapsible) {
+                        clickable(onClick = clickAction, onClickLabel = contentDescription)
                     },
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Column(
-                    Modifier
-                        .padding(Padding.ScreenHorizontal)
+                    Modifier.onlyWhen(autoPadding) { padding(Padding.ScreenHorizontal) }
                 ) {
                     ComponentTitle(title, autoPadding = false)
-                    withNotNull(description) {
-                        Text(it)
-                    }
+                    OptionalText(description)
                 }
 
                 if (isCollapsible) {
-                    val iconRotation by transition.animateFloat {
+                    val iconRotation by animation.animateFloat(transition) {
                         when (it) {
                             ExpandCollapseState.Collapsed -> 0F
                             ExpandCollapseState.Expanded -> 180F
@@ -105,7 +113,7 @@ object CollapsedColumn {
                     }
                     Box(
                         Modifier.size(Size.IconButton),
-                        contentAlignment = Alignment.Center
+                        contentAlignment = Alignment.Center,
                     ) {
                         Icon(
                             Icons.Default.ArrowDropDown,
@@ -123,78 +131,114 @@ object CollapsedColumn {
 fun <T> CollapsedColumn(
     items: List<T>,
     headerBlock: HeaderBlock,
+    scrollable: Boolean,
     modifier: Modifier = Modifier,
     collapsedItemCount: Int = 3,
     state: MutableState<ExpandCollapseState> = rememberExpandCollapseState(ExpandCollapseState.Collapsed),
     itemBlock: ItemBlock<T>,
 ) {
-    val isCollapsible = items.size > collapsedItemCount
-    val transition = updateTransition(state.value)
-
-    val toggleAction = { state.toggle() }
-
-    var displayItems by rememberListOf<T>()
-    val progress by transition.animateFloat {
-        when (it) {
-            ExpandCollapseState.Expanded -> 1F
-            ExpandCollapseState.Collapsed -> 0F
+    WithDisplayItems(items, collapsedItemCount, state) { displayItems, transition, isCollapsible, toggleAction ->
+        val header: @Composable () -> Unit = {
+            headerBlock(isCollapsible, transition, toggleAction)
         }
-    }
-    val displayItemCount = collapsedItemCount + (
-            progress * (items.size - collapsedItemCount)
-            ).roundToInt()
-    displayItems = items.take(displayItemCount)
 
-    CollapsibleColumnLayout(
-        displayItems,
-        modifier,
-        headerBlock = {
-            headerBlock(
-                isCollapsible,
-                transition,
-                toggleAction
-            )
-        },
-        moreContentIndication = {
+        val item: @Composable (Int, T) -> Unit = { index, item ->
+            animation.AnimatedItemVisibility(
+                visible = true,
+                initiallyVisible = index < collapsedItemCount,
+                position = index
+            ) {
+                itemBlock(item)
+            }
+        }
+
+        val moreContent: @Composable () -> Unit = {
             if (isCollapsible) {
                 MoreContentIndication(transition, toggleAction)
             }
         }
-    ) { item, index ->
-        AnimatedVisibility(
-            visible = true,
-            initiallyVisible = index < collapsedItemCount
-        ) {
-            itemBlock(item)
+
+        if (scrollable) {
+            LazyContent(
+                headerBlock = header,
+                itemBlock = item,
+                moreContent = moreContent,
+                displayItems = displayItems,
+                modifier = modifier,
+            )
+        } else {
+            EagerContent(
+                headerBlock = header,
+                itemBlock = item,
+                moreContent = moreContent,
+                displayItems = displayItems,
+                modifier = modifier,
+            )
+        }
+    }
+}
+
+/**
+ * A CollapsedColumn wrapper for a custom content block.
+ */
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+fun <T> CollapsedColumn(
+    items: List<T>,
+    headerBlock: HeaderBlock,
+    modifier: Modifier = Modifier,
+    collapsedItemCount: Int = 3,
+    state: MutableState<ExpandCollapseState> = rememberExpandCollapseState(ExpandCollapseState.Collapsed),
+    contentBlock: @Composable (List<T>) -> Unit,
+) {
+    WithDisplayItems(items, collapsedItemCount, state) { displayItems, transition, isCollapsible, toggleAction ->
+        Column(modifier) {
+            headerBlock(isCollapsible, transition, toggleAction)
+
+            contentBlock(displayItems)
+
+            if (isCollapsible) {
+                MoreContentIndication(transition, toggleAction)
+            }
         }
     }
 }
 
 @Composable
-private fun <T> CollapsibleColumnLayout(
+private fun <T> LazyContent(
+    headerBlock: @Composable () -> Unit,
+    itemBlock: @Composable (Int, T) -> Unit,
+    moreContent: @Composable () -> Unit,
     displayItems: List<T>,
     modifier: Modifier,
-    headerBlock: @Composable () -> Unit,
-    moreContentIndication: @Composable () -> Unit,
-    itemBlock: @Composable (T, Int) -> Unit
 ) {
     LazyColumn(
         modifier,
     ) {
-        item {
-            headerBlock()
-        }
+        item { headerBlock() }
 
-        itemsIndexed(displayItems) { index, item ->
-            itemBlock(item, index)
-        }
+        itemsIndexed(displayItems) { index, item -> itemBlock(index, item) }
 
-        item {
-            moreContentIndication()
-        }
+        item { moreContent() }
     }
 }
 
+@Composable
+private fun <T> EagerContent(
+    headerBlock: @Composable () -> Unit,
+    itemBlock: @Composable (Int, T) -> Unit,
+    moreContent: @Composable () -> Unit,
+    displayItems: List<T>,
+    modifier: Modifier,
+) {
+    Column(modifier) {
+        headerBlock()
+
+        displayItems.forEachIndexed { index, item -> itemBlock(index, item) }
+
+        moreContent()
+    }
+}
 
 /**
  * A visual indication that there is more content available.
@@ -230,6 +274,39 @@ private fun MoreContentIndication(
     }
 }
 
+@Composable
+private inline fun <T> WithDisplayItems(
+    items: List<T>,
+    collapsedItemCount: Int,
+    state: MutableState<ExpandCollapseState>,
+    block: @Composable (
+        displayItems: List<T>,
+        transition: Transition<ExpandCollapseState>,
+        isCollapsible: Boolean,
+        toggleAction: () -> Unit
+    ) -> Unit,
+) {
+    val isCollapsible = items.size > collapsedItemCount
+    val transition = updateTransition(state.value)
+
+    val toggleAction = { state.toggle() }
+
+    val progress by transition.animateFloat {
+        when (it) {
+            ExpandCollapseState.Expanded -> 1F
+            ExpandCollapseState.Collapsed -> 0F
+        }
+    }
+    val displayItemCount = collapsedItemCount + (
+        progress * (items.size - collapsedItemCount)
+        ).roundToInt()
+
+    var displayItems by rememberListOf<T>()
+    displayItems = items.take(displayItemCount)
+
+    block(displayItems, transition, isCollapsible, toggleAction)
+}
+
 @Preview
 @Composable
 fun CollapsedColumnPreview() {
@@ -237,7 +314,8 @@ fun CollapsedColumnPreview() {
         CollapsedColumn(
             items = remember { (1..10).toList() },
             headerBlock = CollapsedColumn.simpleHeader("A wonderful group of integers"),
-            collapsedItemCount = 3
+            scrollable = true,
+            collapsedItemCount = 3,
         ) { integer ->
             Text(
                 "$integer",
