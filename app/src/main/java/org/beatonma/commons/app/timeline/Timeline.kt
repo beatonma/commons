@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidthIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
@@ -214,18 +215,21 @@ private fun TimelineBackground(
         check(measurables.size == decadeMeasurables.size + 1)
 
         layout(width, height) {
-            decades.zip(textPlaceables.pairs())
-                .fastForEach { (decade, pair) ->
-                    val (top, bottom) = pair
+            val labels = textPlaceables.pairs()
 
-                    top.placeRelative(decade.startDp.roundToPx() - (top.width / 2), 0)
-                    bottom.placeRelative(decade.startDp.roundToPx() - (bottom.width / 2), height - bottom.height)
-                }
+            decades.forEachIndexed { index, decade ->
+                val center = decade.startDp.roundToPx()
+                fun centered(placeable: Placeable) = (center - (placeable.width / 2)).coerceAtLeast(0)
 
-            decades.zip(linePlaceables)
-                .fastForEach { (decade, placeable) ->
-                    placeable.placeRelative(decade.startDp.roundToPx() - (placeable.width / 2), textHeight)
+                if (center > 0) {
+                    val (top, bottom) = labels[index]
+                    top.placeRelative(centered(top), 0)
+                    bottom.placeRelative(centered(bottom), height - bottom.height)
+
+                    val line = linePlaceables[index]
+                    line.placeRelative(centered(line), textHeight)
                 }
+            }
 
             foregroundPlaceable.placeRelative(0, textHeight)
         }
@@ -262,14 +266,15 @@ private fun GroupLayout(
 
     val allDatesText = dates
         .zip(durations)
-        .joinToString("\n") { (dateRange, duration) ->
-            "$dateRange ($duration)"
+        .joinToString("\n") { (date, duration) ->
+            if (duration.isEmpty()) date
+            else "$date ($duration)"
         }
 
     Column(
         Modifier
             .padding(end = MonthsPadding.dp)
-            .padding(vertical = 8.dp * expansion)
+            .padding(vertical = 12.dp * expansion)
             .clearAndSetSemantics {
                 text = AnnotatedString("${group.label}: $allDatesText")
             }
@@ -343,11 +348,11 @@ private fun GroupLabel(
     state: ExpandCollapseState,
     colors: TimelineColors,
 ) {
-    Column {
+    Column(Modifier.padding(top = 2.dp)) {
         Text(
             label,
             Modifier.background(colors.overlay)
-                .width(256.dp),
+                .requiredWidthIn(0.dp, 256.dp),
             maxLines = if (state.isExpanded) 10 else 1,
             style = typography.caption,
             overflow = TextOverflow.Ellipsis,
