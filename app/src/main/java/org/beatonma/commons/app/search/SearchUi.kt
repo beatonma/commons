@@ -21,7 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
@@ -53,9 +52,10 @@ import org.beatonma.commons.compose.animation.lerpBetween
 import org.beatonma.commons.compose.animation.rememberExpandCollapseState
 import org.beatonma.commons.compose.animation.toggle
 import org.beatonma.commons.compose.components.ModalScrim
-import org.beatonma.commons.compose.components.OptionalText
+import org.beatonma.commons.compose.components.text.OptionalText
 import org.beatonma.commons.compose.modifiers.wrapContentHeight
 import org.beatonma.commons.compose.modifiers.wrapContentOrFillWidth
+import org.beatonma.commons.compose.util.RequestFocusWhen
 import org.beatonma.commons.compose.util.rememberListOf
 import org.beatonma.commons.core.extensions.lerpBetween
 import org.beatonma.commons.core.extensions.progressIn
@@ -182,11 +182,7 @@ private fun SearchBar(
                 modifier = Modifier.padding(start = 16.dp)
             )
 
-            LaunchedEffect(animation.expansionProgress == 1F) {
-                if (animation.expansionProgress == 1F && state.isExpanded) {
-                    focusRequester.requestFocus()
-                }
-            }
+            RequestFocusWhen(focusRequester, animation.expansionProgress == 1F)
         }
     }
 }
