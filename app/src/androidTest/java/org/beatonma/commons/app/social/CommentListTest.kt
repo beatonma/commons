@@ -84,7 +84,6 @@ class CommentListTest : ComposeTest() {
         }
 
         perform {
-            dump()
             onNodeWithText("username2", useUnmergedTree = true)
                 .assertExists()
                 .assertIsDisplayed()
