@@ -16,8 +16,9 @@ import org.beatonma.commons.theme.compose.theme.DefaultAnimation
 
 @Composable
 fun DefaultAnimation.AnimatedVisibility(
-    visible: Boolean,
     modifier: Modifier = Modifier,
+    visible: Boolean = true,
+    initiallyVisible: Boolean = false,
     fade: Boolean = true,
     expand: Boolean = true,
     vertical: Boolean = expand,
@@ -25,23 +26,86 @@ fun DefaultAnimation.AnimatedVisibility(
     easing: Easing = FastOutLinearInEasing,
     content: @Composable BoxScope.() -> Unit
 ) {
-    val visibility by animateFloatAsState(if (visible) 1F else 0F)
+    val visibility by animateFloatAsState(
+        if (visible) 1F else 0F,
+        initialValue = if (initiallyVisible) 1F else 0F,
+        delay = 1,
+    )
 
     if (visibility > 0F) {
         Box(
             Modifier
                 .onlyWhen(horizontal) {
-                    wrapContentWidth(visibility.progressIn(0F, .4F).withEasing(easing))
+                    wrapContentWidth(
+                        visibility
+                            .progressIn(0F, .4F)
+                            .withEasing(easing)
+                    )
                 }
                 .onlyWhen(vertical) {
-                    wrapContentHeight(visibility.progressIn(.2F, .75F).withEasing(easing))
+                    wrapContentHeight(
+                        visibility
+                            .progressIn(.2F, .75F)
+                            .withEasing(easing)
+                    )
                 }
                 .onlyWhen(fade) {
-                    alpha(visibility.progressIn(.5F, 1F).withEasing(easing))
+                    alpha(
+                        visibility
+                            .progressIn(.5F, 1F)
+                            .withEasing(easing)
+                    )
                 }
-                .then(modifier)
-            ,
+                .then(modifier),
             content = content,
         )
+    }
+}
+
+
+@Composable
+fun DefaultAnimation.AnimatedItemVisibility(
+    position: Int,
+    modifier: Modifier = Modifier,
+    visible: Boolean = true,
+    initiallyVisible: Boolean = false,
+    fade: Boolean = true,
+    vertical: Boolean = false,
+    horizontal: Boolean = false,
+    easing: Easing = FastOutLinearInEasing,
+    content: @Composable BoxScope.(visibility: Float) -> Unit
+) {
+    val visibility by animateFloatAsState(
+        if (visible) 1F else 0F,
+        initialValue = if (initiallyVisible) 1F else 0F,
+        position = position
+    )
+
+    Box(
+        Modifier
+            .onlyWhen(horizontal) {
+                wrapContentWidth(
+                    visibility
+                        .progressIn(0F, .4F)
+                        .withEasing(easing)
+                )
+            }
+            .onlyWhen(vertical) {
+                wrapContentHeight(
+                    visibility
+                        .progressIn(.2F, .75F)
+                        .withEasing(easing)
+                )
+            }
+            .onlyWhen(fade) {
+                alpha(
+                    visibility
+                        .progressIn(0F, .4F)
+                        .withEasing(easing)
+                )
+            }
+            .then(modifier)
+    ) {
+        content(visibility)
     }
 }
