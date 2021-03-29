@@ -1,11 +1,7 @@
 package org.beatonma.commons.app.signin
 
-import android.content.Intent
-import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.VisibleForTesting
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.text.KeyboardOptions
@@ -16,7 +12,6 @@ import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Undo
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,6 +45,7 @@ import org.beatonma.commons.app.ui.compose.components.LoadingIcon
 import org.beatonma.commons.app.ui.compose.components.image.ClickableIcon
 import org.beatonma.commons.compose.ambient.animation
 import org.beatonma.commons.compose.ambient.typography
+import org.beatonma.commons.compose.animation.AnimatedVisibility
 import org.beatonma.commons.compose.components.FeedbackProvider
 import org.beatonma.commons.compose.components.rememberFeedbackProvider
 import org.beatonma.commons.compose.components.text.ComponentTitle
@@ -57,6 +53,7 @@ import org.beatonma.commons.compose.components.text.Hint
 import org.beatonma.commons.compose.components.text.TextValidationResult
 import org.beatonma.commons.compose.components.text.TextValidationRules
 import org.beatonma.commons.compose.components.text.ValidatedTextField
+import org.beatonma.commons.compose.util.RequestFocusWhen
 import org.beatonma.commons.compose.util.rememberText
 import org.beatonma.commons.compose.util.testTag
 import org.beatonma.commons.data.core.room.entities.user.UserToken
@@ -119,7 +116,7 @@ private fun ReadOnlyUsernameLayout(
     modifier: Modifier = Modifier,
 ) {
     val contentDescription = stringResource(R.string.content_description_edit_username)
-    AnimatedVisibility(visible = true, initiallyVisible = false, enter = fadeIn()) {
+    animation.AnimatedVisibility(visible = true, initiallyVisible = false, expand = false) {
         val content: @Composable () -> Unit = {
             Username(
                 userToken.username,
@@ -167,7 +164,7 @@ private fun AwaitingResultLayout(
     userToken: UserToken,
     modifier: Modifier = Modifier,
 ) {
-    AnimatedVisibility(visible = true, initiallyVisible = false, enter = fadeIn()) {
+    animation.AnimatedVisibility(visible = true, initiallyVisible = false, expand = false) {
         Row(
             modifier = modifier.testTag(EditableState.AwaitingResult),
             verticalAlignment = Alignment.CenterVertically,
@@ -218,7 +215,7 @@ private fun EditableUsernameLayout(
         }
     }
 
-    AnimatedVisibility(visible = true, initiallyVisible = false, enter = fadeIn()) {
+    animation.AnimatedVisibility(visible = true, initiallyVisible = false, expand = false) {
         EditableUsernameLayout(
             text = text,
             onTextChange = { text = it },
@@ -269,7 +266,6 @@ private fun EditableUsernameLayout(
             maxLines = 1,
             singleLine = true,
             modifier = Modifier
-//                .weight(10F)
                 .focusModifier()
                 .focusRequester(focusRequester),
             keyboardOptions = keyboardOptions,
@@ -293,9 +289,7 @@ private fun EditableUsernameLayout(
             }
         )
 
-        LaunchedEffect(true) {
-            focusRequester.requestFocus()
-        }
+        RequestFocusWhen(focusRequester, true)
     }
 }
 
@@ -385,17 +379,8 @@ internal class ValidationMessages(
 
 @Composable @Preview
 fun EditableUsernamePreview() {
-    LocalPlatformUserAccountActions = staticCompositionLocalOf {
-        object: PlatformUserAccountActions {
-            override val signInLauncher: ActivityResultLauncher<Intent>
-                get() = TODO("Not yet implemented")
-            override val userAccountActions: UserAccountActions
-                get() = UserAccountActions()
+    LocalUserAccountActions = staticCompositionLocalOf { UserAccountActions() }
 
-            override fun handleSignInResult(data: Intent?) {}
-
-        }
-    }
     InAppPreview {
         EditableUsername(
             SampleUserToken,

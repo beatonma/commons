@@ -19,7 +19,7 @@ import org.beatonma.commons.core.extensions.progressIn
 
 @Composable
 fun SignInFabUi(
-    accountActions: UserAccountActions = LocalPlatformUserAccountActions.current.userAccountActions
+    accountActions: UserAccountActions = LocalUserAccountActions.current,
 ) {
     SignInFabUi(onSignIn = accountActions.signIn)
 }
@@ -84,48 +84,3 @@ private fun SignInButton(
         modifier.testTag("google_signin_button"),
     )
 }
-
-//
-//@Composable
-//fun InsetsPreview() {
-////    ProvideWindowInsets() {
-//        Box(
-//            Modifier.fillMaxSize(),
-//            contentAlignment = Alignment.BottomCenter
-//        ) {
-//            Column(
-//                Modifier
-//                    .imeOrNavigationBarsPadding()
-//            ) {
-//                Row {
-//                    Spacer(
-//                        Modifier
-//                            .height(200.dp)
-//                            .fillMaxWidth(.333F)
-//                            .background(Color.Green)
-//                    )
-//                    Spacer(
-//                        Modifier
-//                            .height(200.dp)
-//                            .fillMaxWidth(.5F)
-//                            .background(Color.Red)
-//                    )
-//                    Spacer(
-//                        Modifier
-//                            .height(200.dp)
-//                            .fillMaxWidth()
-//                            .background(Color.Blue)
-//                    )
-//                }
-//
-//                var text by rememberText()
-//                TextField(
-//                    value = text,
-//                    onValueChange = { text = it },
-//                    Modifier
-//                        .background(Color.Magenta)
-//                )
-//            }
-//        }
-////    }
-//}

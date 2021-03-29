@@ -51,7 +51,7 @@ import org.beatonma.commons.theme.compose.theme.warningSurface
 @Composable
 fun UserAccountFabUi(
     userToken: UserToken = LocalUserToken.current,
-    accountActions: UserAccountActions = LocalPlatformUserAccountActions.current.userAccountActions
+    accountActions: UserAccountActions = LocalUserAccountActions.current,
 ) =
     when (userToken) {
         NullUserToken -> SignInFabUi(accountActions)
@@ -118,14 +118,10 @@ private fun ProfileSheetContent(
 ) {
     val usernameState = remember { mutableStateOf(EditableState.ReadOnly) }
     val isReadOnly = usernameState.value == EditableState.ReadOnly
-    val readOnlyVisibility by animation.animateFloatAsState(
-        if (isReadOnly) 1F else 0F
-    )
 
     ProfileSheetContent(
         userToken = userToken,
         progress = progress,
-        readOnlyVisibility = readOnlyVisibility,
         usernameState = usernameState,
         isReadOnly = isReadOnly,
         onProfileStateChange = { profileState.value = it },
@@ -138,7 +134,6 @@ private fun ProfileSheetContent(
 private fun ProfileSheetContent(
     userToken: UserToken,
     progress: Float,
-    readOnlyVisibility: Float,
     usernameState: MutableState<EditableState>,
     isReadOnly: Boolean,
     onProfileStateChange: (ProfileState) -> Unit,
@@ -158,7 +153,7 @@ private fun ProfileSheetContent(
                 verticalAlignment = Alignment.Top,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                animation.AnimatedVisibility(isReadOnly) {
+                animation.AnimatedVisibility(visible = isReadOnly) {
                     Avatar(
                         userToken.photoUrl,
                         Modifier
@@ -175,7 +170,7 @@ private fun ProfileSheetContent(
                         userAccountActions.renameAccount
                     )
 
-                    animation.AnimatedVisibility(isReadOnly, horizontal = false) {
+                    animation.AnimatedVisibility(visible = isReadOnly, horizontal = false) {
                         Caption(
                             dotted(userToken.name, userToken.email),
                             Modifier.padding(Padding.VerticalListItem)
@@ -184,7 +179,7 @@ private fun ProfileSheetContent(
                 }
             }
 
-            animation.AnimatedVisibility(isReadOnly, horizontal = false) {
+            animation.AnimatedVisibility(visible = isReadOnly, horizontal = false) {
                 Row(
                     Modifier
                         .fillMaxWidth()
