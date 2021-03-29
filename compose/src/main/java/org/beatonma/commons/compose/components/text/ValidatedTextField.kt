@@ -41,6 +41,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.compose.ambient.animation
 import org.beatonma.commons.compose.ambient.shapes
 import org.beatonma.commons.compose.ambient.typography
@@ -207,7 +208,7 @@ private fun ValidatedTextFieldLayout(
             readOnly = readOnly,
             modifier = Modifier
                 .fillMaxWidth()
-                .testTag("validated_text"),
+                .testTag(TestTag.ValidatedText),
             textStyle = textStyle,
             label = label,
             placeholder = placeholder,
