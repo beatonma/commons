@@ -1,41 +1,37 @@
 package org.beatonma.commons.app.social
 
-import androidx.compose.animation.core.TransitionState
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.ProvidableAmbient
-import androidx.compose.runtime.Providers
-import androidx.compose.runtime.ambientOf
+import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.staticAmbientOf
 import androidx.compose.ui.graphics.Color
-import org.beatonma.commons.ActionBlock
 import org.beatonma.commons.BuildConfig
-import org.beatonma.commons.app.signin.AmbientUserToken
+import org.beatonma.commons.app.signin.LocalUserToken
 import org.beatonma.commons.app.signin.NullUserToken
 import org.beatonma.commons.app.signin.UserAccountViewModel
 import org.beatonma.commons.app.ui.base.SocialTargetProvider
 import org.beatonma.commons.app.ui.colors.ComposePartyColors
-import org.beatonma.commons.compose.components.TextValidationRules
-import org.beatonma.commons.compose.util.update
+import org.beatonma.commons.compose.animation.lerpBetween
+import org.beatonma.commons.compose.components.text.TextValidationRules
+import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.snommoc.models.social.EmptySocialContent
 import org.beatonma.commons.snommoc.models.social.SocialComment
 import org.beatonma.commons.snommoc.models.social.SocialContent
 import org.beatonma.commons.snommoc.models.social.SocialTarget
 import org.beatonma.commons.snommoc.models.social.SocialVoteType
 
-val AmbientSocialContent: ProvidableAmbient<SocialContent> = ambientOf { EmptySocialContent }
-val AmbientSocialTheme: ProvidableAmbient<SocialTheme> = ambientOf { error("SocialTheme has not been provided") }
-val AmbientSocialActions: ProvidableAmbient<SocialActions> = ambientOf { SocialActions() }
-val AmbientSocialUiState: ProvidableAmbient<MutableState<SocialUiState>> =
-    ambientOf { mutableStateOf(SocialUiState.Collapsed) }
-val AmbientSocialUiTransition: ProvidableAmbient<TransitionState> =
-    ambientOf { error("TransitionState has not been set") }
-val AmbientSocialCommentValidator: ProvidableAmbient<TextValidationRules> = staticAmbientOf {
+val LocalSocialContent: ProvidableCompositionLocal<SocialContent> = compositionLocalOf { EmptySocialContent }
+val LocalSocialTheme: ProvidableCompositionLocal<SocialTheme> = compositionLocalOf { error("SocialTheme has not been provided") }
+val LocalSocialActions: ProvidableCompositionLocal<SocialActions> = compositionLocalOf { SocialActions() }
+val LocalSocialUiState: ProvidableCompositionLocal<MutableState<SocialUiState>> =
+    compositionLocalOf { mutableStateOf(SocialUiState.Collapsed) }
+val LocalSocialCommentValidator: ProvidableCompositionLocal<TextValidationRules> = compositionLocalOf {
     TextValidationRules(
         minLength = BuildConfig.SOCIAL_COMMENT_MIN_LENGTH,
         maxLength = BuildConfig.SOCIAL_COMMENT_MAX_LENGTH,
@@ -50,7 +46,7 @@ fun ProvideSocial(
     theme: SocialTheme = socialTheme(),
     content: @Composable () -> Unit,
 ) {
-    SocialProviders(
+    SocialCompositionLocalProvider(
         socialTarget = targetProvider.socialTarget,
         socialViewModel = socialViewModel,
         userAccountViewModel = userAccountViewModel,
@@ -60,7 +56,7 @@ fun ProvideSocial(
 }
 
 @Composable
-private fun SocialProviders(
+private fun SocialCompositionLocalProvider(
     socialTarget: SocialTarget,
     socialViewModel: SocialViewModel,
     userAccountViewModel: UserAccountViewModel,
@@ -76,36 +72,34 @@ private fun SocialProviders(
         SocialActions(
             onVoteUpClick = { socialViewModel.updateVote(SocialVoteType.aye, activeUserToken) },
             onVoteDownClick = { socialViewModel.updateVote(SocialVoteType.no, activeUserToken) },
-            onExpandedCommentIconClick = { },
             onCommentClick = { comment ->
                 println("Clicked comment $comment")
             },
-            onCreateCommentClick = { socialViewModel.uiState.update(SocialUiState.ComposeComment) },
             onCommentSubmitClick = { commentText ->
                 socialViewModel.postComment(commentText, activeUserToken)
             }
         )
     }
 
-    Providers(
-        AmbientSocialActions provides socialActions,
-        AmbientSocialUiState provides socialViewModel.uiState,
-        AmbientSocialContent provides socialContent,
-        AmbientUserToken provides activeUserToken,
-        AmbientSocialTheme provides theme,
+    CompositionLocalProvider(
+        LocalSocialActions provides socialActions,
+        LocalSocialUiState provides socialViewModel.uiState,
+        LocalSocialContent provides socialContent,
+        LocalUserToken provides activeUserToken,
+        LocalSocialTheme provides theme,
         content = content,
     )
 }
 
 class SocialActions(
-    val onVoteUpClick: ActionBlock = {},
-    val onVoteDownClick: ActionBlock = {},
-    val onExpandedCommentIconClick: ActionBlock = {},
+    val onVoteUpClick: () -> Unit = {},
+    val onVoteDownClick: () -> Unit = {},
     val onCommentClick: (SocialComment) -> Unit = {},
-    val onCreateCommentClick: ActionBlock = {},
     val onCommentSubmitClick: (String) -> Unit = {},
 )
 
+
+private const val InactiveAlpha = 0.64F
 /**
  * Simple SocialTheme using app surface/content colors.
  */
@@ -127,7 +121,24 @@ class SocialTheme internal constructor(
     val collapsedOnBackground: Color = Color.Transparent,
     val expandedBackground: Color = Color.Transparent,
     val expandedOnBackground: Color = Color.Transparent,
-)
+) {
+    @Composable
+    fun inactiveColor(expandProgress: Float): Color =
+        expandProgress
+            .progressIn(0.5F, 0.8F)
+            .lerpBetween(
+                collapsedOnBackground.copy(alpha = InactiveAlpha),
+                expandedOnBackground.copy(alpha = InactiveAlpha)
+            )
+
+    @Composable
+    fun activeColor(expandProgress: Float): Color = expandProgress
+        .progressIn(0.5F, 0.8F)
+        .lerpBetween(
+            collapsedOnBackground,
+            expandedOnBackground,
+        )
+}
 
 @Composable
 fun ComposePartyColors.asSocialTheme() = SocialTheme(

@@ -14,10 +14,17 @@
     <string name="content_description_social_comment_count" translatable="true">Comments: %d</string>
     <string name="content_description_social_votes_count_for" translatable="true">Votes in favour: %d</string>
     <string name="content_description_social_votes_count_against" translatable="true">Votes against: %d</string>
+    <string name="content_description_social_comment" translatable="true">Comment by user "%s" at %s: "%s". </string>
+    <string name="content_description_social_action_vote_for" translatable="true">Upvote %s</string>
+    <string name="content_description_social_action_vote_against" translatable="true">Downvote %s</string>
+    <string name="content_description_social_action_open" translatable="true">View comments</string>
 
     <!-- User account -->
     <string name="content_description_open_account_management" translatable="true">Manage your account</string>
     <string name="content_description_edit_username" translatable="true">Edit username</string>
     <string name="content_description_edit_username_cancel" translatable="true">Cancel username edit</string>
     <string name="content_description_account_sign_in" translatable="true">Sign in with Google</string>
+
+    <!-- Member Profile -->
+    <string name="content_description_view_constituency" translatable="true">View constituency information for "%s"</string>
 </resources>

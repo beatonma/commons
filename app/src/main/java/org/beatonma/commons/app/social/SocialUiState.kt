@@ -1,11 +1,10 @@
 package org.beatonma.commons.app.social
 
-import androidx.compose.animation.core.TransitionState
-import androidx.compose.animation.transition
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import org.beatonma.commons.compose.ambient.animation
 
 enum class SocialUiState {
     Collapsed,
@@ -18,11 +17,15 @@ fun rememberSocialUiState(default: SocialUiState = SocialUiState.Collapsed) =
     remember { mutableStateOf(default) }
 
 @Composable
-fun socialTransitionState(toState: SocialUiState): TransitionState {
-    val transitionDef = rememberSocialScaffoldTransition()
-    return transition(definition = transitionDef, toState = toState)
-}
+fun SocialUiState.animateExpansionAsState() = animation.animateFloatAsState(
+    when (this) {
+        SocialUiState.Collapsed -> 0F
+        else -> 1F
+    })
 
+/**
+ * Try to update value to previous state, and return true if this was successful.
+ */
 fun MutableState<SocialUiState>.toPreviousState(): Boolean =
     when (this.value) {
         SocialUiState.Expanded -> {
