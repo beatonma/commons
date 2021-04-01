@@ -32,7 +32,7 @@ fun DefaultAnimation.AnimatedVisibility(
         delay = 1,
     )
 
-    if (visibility > 0F) {
+    if (visible || visibility > 0F) {
         Box(
             Modifier
                 .onlyWhen(horizontal) {
