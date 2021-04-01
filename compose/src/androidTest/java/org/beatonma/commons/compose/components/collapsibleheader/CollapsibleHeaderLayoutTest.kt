@@ -109,9 +109,13 @@ class CollapsibleHeaderLayoutTest: ComposeTest() {
         perform {
             onNodeWithTag(listTag)
                 .performGesture {
+                    // swipe towards end
                     swipe(bottomCenter, topCenter)
                 }
+
+            onNodeWithTag(listTag)
                 .performGesture {
+                    // swipe back towards start
                     swipe(topCenter, bottomCenter)
                 }
 
