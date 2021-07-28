@@ -1,7 +1,4 @@
-gradlew
-gradlew.bat
-gradle-wrapper.properties
-apk
+apk/
 local.properties
 buildSrc/**/local/
 captures/
@@ -14,5 +11,4 @@ captures/
 **/env/
 **/drawable*/*.png
 **/build/
-**/*.jar
 **/*.gitbundle
