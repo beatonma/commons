@@ -26,9 +26,10 @@ import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.offset
-import dev.chrisbanes.accompanist.insets.Insets
-import dev.chrisbanes.accompanist.insets.LocalWindowInsets
-import dev.chrisbanes.accompanist.insets.imePadding
+import com.google.accompanist.insets.Insets
+import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.imePadding
+
 
 /**
  * Selectively apply additional space which matches the width/height of any system bars present
@@ -163,9 +164,9 @@ private data class InsetsPaddingModifier(
         val horizontal = left + right
         val vertical = top + bottom
 
-        println("bottom $bottom")
-
-        val placeable = measurable.measure(constraints.offset(-horizontal, -vertical))
+        val placeable = measurable.measure(
+            constraints.offset(-horizontal, -vertical)
+        )
 
         val width = (placeable.width + horizontal)
             .coerceIn(constraints.minWidth, constraints.maxWidth)

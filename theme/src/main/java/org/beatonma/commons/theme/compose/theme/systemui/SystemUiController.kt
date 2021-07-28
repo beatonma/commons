@@ -30,8 +30,8 @@ import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.view.WindowCompat
-import dev.chrisbanes.accompanist.insets.ExperimentalAnimatedInsets
-import dev.chrisbanes.accompanist.insets.ProvideWindowInsets
+import com.google.accompanist.insets.ExperimentalAnimatedInsets
+import com.google.accompanist.insets.ProvideWindowInsets
 import org.beatonma.commons.theme.compose.theme.SystemBars
 
 /**
@@ -151,9 +151,10 @@ fun ProvideSystemUi(
     systemUiController.setSystemBarsColor(systemBarColor)
 
     ProvideWindowInsets(windowInsetsAnimationsEnabled = true, consumeWindowInsets = false) {
-        CompositionLocalProvider(LocalSystemUiController provides systemUiController) {
-            content()
-        }
+        CompositionLocalProvider(
+            LocalSystemUiController provides systemUiController,
+            content = content
+        )
     }
 }
 
