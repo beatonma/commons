@@ -51,7 +51,7 @@ private object Endpoints {
     const val SEARCH = "$MEMBER_API_PATH/?page_size=5"
     const val MOTD = "$API_PATH/motd/"
 
-    const val MEMBER_PROFILE = "$MEMBER_API_PATH/profile/$ID/"
+    const val MEMBER_PROFILE = "$MEMBER_API_PATH/$ID/"
     const val VOTES_BY_MEMBER =
         "$MEMBER_API_PATH/votes/{${Contract.HOUSE}}/$ID/"
 
@@ -84,7 +84,7 @@ interface CommonsService: SnommocService, CommonsDataService, CommonsSocialServi
         private fun getUrl(path: String) = "$BASE_URL$path"
 
         fun getMemberUrl(parliamentdotuk: ParliamentID) =
-            getUrl("$MEMBER_API_PATH/profile/$parliamentdotuk/")
+            getUrl("$MEMBER_API_PATH/$parliamentdotuk/")
 
         fun getDivisionUrl(house: House, parliamentdotuk: ParliamentID) =
             getUrl("$DIVISION_API_PATH/$house/$parliamentdotuk/")
