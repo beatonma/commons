@@ -19,7 +19,6 @@ import org.beatonma.commons.data.core.room.entities.member.CommitteeChairship
 import org.beatonma.commons.data.core.room.entities.member.CommitteeMemberWithChairs
 import org.beatonma.commons.data.core.room.entities.member.CommitteeMembership
 import org.beatonma.commons.data.core.room.entities.member.Experience
-import org.beatonma.commons.data.core.room.entities.member.FeaturedMember
 import org.beatonma.commons.data.core.room.entities.member.FinancialInterest
 import org.beatonma.commons.data.core.room.entities.member.HistoricalConstituency
 import org.beatonma.commons.data.core.room.entities.member.HistoricalConstituencyWithElection
@@ -39,7 +38,6 @@ import org.beatonma.commons.data.core.room.entities.member.ZeitgeistMember
 interface MemberDao: SharedPartyDao, SharedConstituencyDao, SharedElectionDao {
 
     // Get operations
-
     @Transaction
     @Query("""SELECT * FROM zeitgeist_members""")
     fun getZeitgeistMembers(): FlowList<ResolvedZeitgeistMember>
@@ -99,10 +97,6 @@ interface MemberDao: SharedPartyDao, SharedConstituencyDao, SharedElectionDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertZeitgeistMembers(zeitgeistMembers: List<ZeitgeistMember>)
-
-    @Deprecated("Use zeitgeist")
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertFeaturedPeople(people: List<FeaturedMember>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertProfile(profile: MemberProfile)
