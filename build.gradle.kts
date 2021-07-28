@@ -1,20 +1,21 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 plugins {
-    id("com.github.ben-manes.versions") version Versions.GRADLE_DEPENDENCY_UPDATES
+    id("com.github.ben-manes.versions") version Versions.Build.DEPENDENCY_UPDATES
 }
 
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
         maven("https://dl.bintray.com/kotlin/kotlin-eap")
+        jcenter()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:${Versions.GRADLE_PLUGIN}")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.KOTLIN}")
-        classpath("com.github.ben-manes:gradle-versions-plugin:${Versions.GRADLE_DEPENDENCY_UPDATES}")
-        classpath("com.google.dagger:hilt-android-gradle-plugin:${Versions.HILT}")
+        classpath(Dependencies.Build.GRADLE)
+        classpath(Dependencies.Build.KOTLIN)
+        classpath(Dependencies.Build.HILT)
+        classpath(Dependencies.Build.VERSIONS)
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle.kts files
     }
@@ -23,8 +24,9 @@ buildscript {
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
         maven("https://dl.bintray.com/kotlin/kotlin-eap")
+        jcenter()
     }
 }
 
