@@ -1,5 +1,6 @@
 package org.beatonma.commons.buildsrc.kts.plugin
 
+import Plugins
 import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import org.beatonma.commons.buildsrc.Commons
@@ -12,7 +13,7 @@ class CommonsApplicationModule: CommonsAndroidModule<BaseAppModuleExtension>() {
 
     override fun applyPlugins(plugins: PluginContainer) {
         with(plugins) {
-            apply("com.android.application")
+            apply(Plugins.Android.APPLICATION)
         }
         super.applyPlugins(plugins)
     }

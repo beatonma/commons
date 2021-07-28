@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val gradleVersion = "7.0.0-alpha08"
-val kotlinVersion = "1.4.21"
+val gradleVersion = "7.1.0-alpha05"
+val kotlinVersion = "1.5.10"
 
 plugins {
     `kotlin-dsl`
@@ -23,11 +23,11 @@ val compileTestKotlin: KotlinCompile by tasks
 
 compileKotlin.kotlinOptions {
     jvmTarget = "1.8"
-    languageVersion = "1.4"
+    languageVersion = "1.5"
 }
 compileTestKotlin.kotlinOptions {
     jvmTarget = "1.8"
-    languageVersion = "1.4"
+    languageVersion = "1.5"
 }
 
 gradlePlugin {

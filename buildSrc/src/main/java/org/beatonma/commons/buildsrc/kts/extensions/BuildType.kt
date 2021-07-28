@@ -1,8 +1,8 @@
 package org.beatonma.commons.buildsrc.kts.extensions
 
-import com.android.build.gradle.internal.dsl.BuildType
-import org.gradle.api.NamedDomainObjectContainer
-import java.util.*
+import com.android.build.api.dsl.BuildType
+import java.util.Locale
+
 
 fun BuildType.buildConfigStrings(vararg mapping: Pair<String, String>) =
     mapping.forEach { (key, value) ->
@@ -32,17 +32,5 @@ fun BuildType.minify(
         isObfuscate = obfuscate
         isRemoveUnusedCode = removeUnusedCode
         isRemoveUnusedResources = removeUnusedResources
-    }
-}
-
-fun NamedDomainObjectContainer<BuildType>.debug(block: BuildType.() -> Unit) {
-    getByName("debug") {
-        block()
-    }
-}
-
-fun NamedDomainObjectContainer<BuildType>.release(block: BuildType.() -> Unit) {
-    getByName("release") {
-        block()
     }
 }

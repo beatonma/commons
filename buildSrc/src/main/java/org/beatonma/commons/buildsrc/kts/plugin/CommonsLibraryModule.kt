@@ -1,8 +1,7 @@
 package org.beatonma.commons.buildsrc.kts.plugin
 
+import Plugins
 import com.android.build.gradle.LibraryExtension
-import org.beatonma.commons.buildsrc.kts.extensions.debug
-import org.beatonma.commons.buildsrc.kts.extensions.release
 import org.gradle.api.Project
 import org.gradle.api.plugins.PluginContainer
 import java.io.File
@@ -14,7 +13,7 @@ class CommonsLibraryModule : CommonsAndroidModule<LibraryExtension>() {
 
     override fun applyPlugins(plugins: PluginContainer) {
         with(plugins) {
-            apply("com.android.library")
+            apply(Plugins.Android.LIBRARY)
         }
         super.applyPlugins(plugins)
     }
@@ -24,16 +23,6 @@ class CommonsLibraryModule : CommonsAndroidModule<LibraryExtension>() {
         with(android) {
             defaultConfig {
                 consumerProguardFiles.add(File("consumer-rules.pro"))
-            }
-
-            buildTypes {
-                debug {
-                    isDebuggable = true
-                }
-
-                release {
-                    isDebuggable = false
-                }
             }
         }
     }

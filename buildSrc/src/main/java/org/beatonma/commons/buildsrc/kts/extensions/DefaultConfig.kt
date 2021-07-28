@@ -1,7 +1,7 @@
 package org.beatonma.commons.buildsrc.kts.extensions
 
-import com.android.build.gradle.internal.dsl.DefaultConfig
-import java.util.*
+import com.android.build.api.dsl.DefaultConfig
+import java.util.Locale
 
 fun DefaultConfig.injectStrings(vararg mapping: Pair<String, String>, asBuildConfig: Boolean, asResValue: Boolean) {
     mapping.forEach { (key, value) ->

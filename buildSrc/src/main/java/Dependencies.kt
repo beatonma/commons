@@ -1,348 +1,228 @@
-import org.gradle.api.JavaVersion
-
-
-object Versions {
-    // Build
-    const val GRADLE_PLUGIN = "7.0.0-alpha08"
-    const val GRADLE_DEPENDENCY_UPDATES = "0.36.0"
-
-    // Core
-    const val COROUTINES = "1.4.2"
-    const val KOTLIN = "1.4.31"
-    const val KOTLIN_LANGUAGE_VERSION = "1.4"
-    val JAVA = JavaVersion.VERSION_1_8
-
-    // Data
-    const val ROOM = "2.3.0-alpha02"
-
-    // Dependency injection
-    const val DAGGER = "2.33"
-    const val HILT = "2.33-beta"
-    const val AX_HILT = "1.0.0-alpha03"
-
-    // Google
-    const val GP_AUTH = "18.1.0"
-    const val GP_LOCATION = "17.0.0"
-    const val GP_MAPS = "17.0.0"
-    const val G_MAPS = "3.1.0-beta"
-    const val G_MAPS_UTIL = "2.0.3"
-    const val G_MAPS_KTX = "2.2.0"
-    const val MATERIAL = "1.3.0-alpha02"
-
-    // Android X
-    const val AX_ACTIVITY = "1.3.0-alpha02"
-    const val AX_ANNOTATIONS = "1.2.0-alpha01"
-    const val AX_APPCOMPAT = "1.3.0-alpha02"
-    const val AX_COMPOSE = "1.0.0-alpha10"
-    const val AX_CONSTRAINTLAYOUT = "2.0.4"
-    const val AX_CORE_KTX = "1.5.0-beta02"
-    const val AX_FRAGMENT = "1.3.0-beta01"
-    const val AX_LIFECYCLE = "2.3.0-alpha06"
-    const val AX_NAVIGATION = "2.3.1"
-    const val AX_RECYCLERVIEW = "1.2.0-alpha05"
-    const val AX_WORK = "2.4.0"
-    const val AX_VIEWBINDING = "4.1.0-alpha09"
-
-    // Square
-    const val OKHTTP =
-        "3.14.9"  // Version as used in Retrofit. Check for changes: https://github.com/square/retrofit/blob/master/CHANGELOG.md
-    const val MOSHI = "1.9.2"
-    const val RETROFIT = "2.9.0"
-    const val LEAK_CANARY = "2.4"
-
-    // Other 3rd party
-    const val GLIDE = "4.11.0"
-    const val GROUPIE = "2.8.0"
-    const val COIL = "1.1.0"
-    const val CHRISBANES_ACCOMPANIST_COIL = "0.4.0"
-
-    // Testing
-    const val AX_TEST_CORE = "1.4.0-alpha04"
-    const val AX_TEST_LIVEDATA = "2.1.0"
-    const val ESPRESSO = "3.3.0"
-    const val MOCKITO = "3.5.10"
-    const val MOCKK = "1.10.0"
-    const val JUNIT = "4.13"
-}
-
 object Dependencies {
-    object AndroidX {
-        private fun androidx(group: String, artifact: String, version: String) =
-            dependency("androidx.$group", artifact, version)
 
-        val APPCOMPAT = androidx("appcompat", "appcompat", Versions.AX_APPCOMPAT)
-        val ACTIVITY =
-            androidx("activity", "activity-ktx", Versions.AX_ACTIVITY)
-        val FRAGMENT = androidx("fragment", "fragment-ktx", Versions.AX_FRAGMENT)
-        val CONSTRAINTLAYOUT =
-            androidx("constraintlayout", "constraintlayout", Versions.AX_CONSTRAINTLAYOUT)
-        val CORE_KTX = androidx("core", "core-ktx", Versions.AX_CORE_KTX)
-        val LIFECYCLE_RUNTIME = androidx(
-            "lifecycle",
-            "lifecycle-runtime-ktx",
-            Versions.AX_LIFECYCLE
+    object Jetpack {
+        val APPCOMPAT = dependency("androidx.appcompat:appcompat", Versions.Jetpack.APPCOMPAT)
+        val ACTIVITY = dependency("androidx.activity:activity-ktx", Versions.Jetpack.ACTIVITY)
+        val ACTIVITY_COMPOSE =
+            dependency("androidx.activity:activity-compose", Versions.Jetpack.Compose.ACTIVITY)
+        val FRAGMENT = dependency("androidx.fragment:fragment-ktx", Versions.Jetpack.FRAGMENT)
+
+        val CONSTRAINTLAYOUT_COMPOSE = dependency(
+            "androidx.constraintlayout:constraintlayout-compose",
+            Versions.Jetpack.Compose.CONSTRAINT_LAYOUT
         )
-        val LIVEDATA_KTX = androidx(
-            "lifecycle",
-            "lifecycle-livedata-ktx",
-            Versions.AX_LIFECYCLE
+        val CORE_KTX = dependency("androidx.core:core-ktx", Versions.Jetpack.CORE_KTX)
+        val LIFECYCLE_RUNTIME =
+            dependency("androidx.lifecycle:lifecycle-runtime-ktx", Versions.Jetpack.LIFECYCLE)
+        val LIFECYCLE_VIEWMODEL_COMPOSE = dependency(
+            "androidx.lifecycle:lifecycle-viewmodel-compose",
+            Versions.Jetpack.Compose.LIFECYCLE_VIEWMODEL
         )
-        val VIEWMODEL_KTX = androidx(
-            "lifecycle",
-            "lifecycle-viewmodel-ktx",
-            Versions.AX_LIFECYCLE
-        )
-        val ANNOTATIONS = androidx("annotation", "annotation", Versions.AX_ANNOTATIONS)
-        val RECYCLERVIEW = androidx("recyclerview", "recyclerview", Versions.AX_RECYCLERVIEW)
+        val LIVEDATA_KTX =
+            dependency("androidx.lifecycle:lifecycle-livedata-ktx", Versions.Jetpack.LIFECYCLE)
+        val VIEWMODEL_KTX =
+            dependency("androidx.lifecycle:lifecycle-viewmodel-ktx", Versions.Jetpack.LIFECYCLE)
+        val SAVEDSTATE =
+            dependency("androidx.savedstate:savedstate-ktx", Versions.Jetpack.SAVED_STATE)
+        val ANNOTATIONS = dependency("androidx.annotation:annotation", Versions.Jetpack.ANNOTATIONS)
 
         val NAVIGATION_FRAGMENT =
-            androidx("navigation", "navigation-fragment-ktx", Versions.AX_NAVIGATION)
-        val NAVIGATION_UI = androidx("navigation", "navigation-ui-ktx", Versions.AX_NAVIGATION)
-
-        object Compose {
-            private fun compose(
-                group: String,
-                artifact: String = group,
-                version: String = Versions.AX_COMPOSE
-            ) = androidx("compose.$group", artifact, version)
-
-            val COMPILER = compose("compiler")
-
-            val ANIMATION = compose("animation")
-
-            val FOUNDATION = compose("foundation")
-            val FOUNDATION_LAYOUT = compose("foundation-layout")
-            val FOUNDATION_TEXT = compose("foundation-text")
-
-            val MATERIAL = compose("material")
-            val MATERIAL_ICONS_CORE = compose("material", "material-icons-core")
-            val MATERIAL_ICONS_EXTENDED = compose("material", "material-icons-extended")
-
-            val RUNTIME = compose("runtime")
-            val LIVEDATA = compose("runtime", "runtime-livedata")
-
-            val TEST = compose("ui", "ui-test")
-            val TEST_JUNIT = compose("ui", "ui-test-junit4")
-
-            val TOOLING = compose("ui", "ui-tooling")
-
-            val UI = compose("ui")
-        }
-
-        val VIEWBINDING = androidx(
-            "databinding",
-            "viewbinding",
-            Versions.AX_VIEWBINDING
+            dependency("androidx.navigation:navigation-fragment-ktx", Versions.Jetpack.NAVIGATION)
+        val NAVIGATION_UI =
+            dependency("androidx.navigation:navigation-ui-ktx", Versions.Jetpack.NAVIGATION)
+        val NAVIGATION_COMPOSE = dependency(
+            "androidx.navigation:navigation-compose",
+            Versions.Jetpack.Compose.NAVIGATION
         )
 
-        val WORK = androidx("work", "work-runtime-ktx", Versions.AX_WORK)
+        object Compose {
+            private fun compose(name: String) = dependency(name, Versions.Jetpack.Compose.COMPOSE)
+
+            val COMPILER = compose("androidx.compose.compiler:compiler")
+            val ANIMATION = compose("androidx.compose.animation:animation")
+            val FOUNDATION = compose("androidx.compose.foundation:foundation")
+
+            val MATERIAL = compose("androidx.compose.material:material")
+            val MATERIAL_ICONS_CORE = compose("androidx.compose.material:material-icons-core")
+            val MATERIAL_ICONS_EXTENDED =
+                compose("androidx.compose.material:material-icons-extended")
+
+
+            val RUNTIME = compose("androidx.compose.runtime:runtime")
+            val LIVEDATA = compose("androidx.compose.runtime:runtime-livedata")
+
+            val TEST = compose("androidx.compose.ui:ui-test")
+            val TEST_JUNIT = compose("androidx.compose.ui:ui-test-junit4")
+
+            val TOOLING = compose("androidx.compose.ui:ui-tooling")
+            val UI = compose("androidx.compose.ui:ui")
+        }
+
+        val WORK = dependency("androidx.work:work-runtime-ktx", Versions.Jetpack.WORK)
     }
 
     object Build {
+        val GRADLE = dependency("com.android.tools.build:gradle", Versions.Build.GRADLE_PLUGIN)
+        val KOTLIN = dependency("org.jetbrains.kotlin:kotlin-gradle-plugin", Versions.KOTLIN)
+        val HILT = dependency("com.google.dagger:hilt-android-gradle-plugin", Versions.Google.HILT)
         val VERSIONS = dependency(
-            "com.github.ben-manes",
-            "gradle-versions-plugin",
-            Versions.GRADLE_DEPENDENCY_UPDATES
+            "com.github.ben-manes:gradle-versions-plugin",
+            Versions.Build.DEPENDENCY_UPDATES
         )
     }
 
     object Coil {
-        val COIL = dependency("io.coil-kt", "coil", Versions.COIL)
-        val ACCOMPANIST = dependency(
-            "dev.chrisbanes.accompanist",
-            "accompanist-coil",
-            Versions.CHRISBANES_ACCOMPANIST_COIL
-        )
+        val COIL = dependency("io.coil-kt:coil", Versions.COIL)
+        val COIL_COMPOSE = dependency("io.coil-kt:coil-compose", Versions.COIL)
+    }
+
+    object Accompanist {
+        val INSETS =
+            dependency("com.google.accompanist:accompanist-insets", Versions.ACCOMPANIST_INSETS)
     }
 
     object Dagger {
-        private fun dagger(artifact: String, version: String = Versions.DAGGER) =
-            dependency("com.google.dagger", artifact, version)
+        private fun dagger(name: String) = dependency(name, Versions.Google.DAGGER)
 
-        val DAGGER = dagger("dagger")
-        val ANDROID = dagger("dagger-android")
-        val SUPPORT = dagger("dagger-android-support")
-        val COMPILER = dagger("dagger-compiler")
-        val ANNOTATION_PROCESSOR = dagger("dagger-android-processor")
-        val SPI = dagger("dagger-spi")
+        val DAGGER = dagger("com.google.dagger:dagger")
+        val ANDROID = dagger("com.google.dagger:dagger-android")
+        val ANDROID_SUPPORT = dagger("com.google.dagger:dagger-android-support")
+        val AP_COMPILER = dagger("com.google.dagger:dagger-compiler")
+        val AP_ANDROID = dagger("com.google.dagger:dagger-android-processor")
+        val SPI = dagger("com.google.dagger:dagger-spi")
 
         object Hilt {
+            private fun hilt(name: String) = dependency(name, Versions.Google.HILT)
+            private fun hiltJetpack(name: String) = dependency(name, Versions.Jetpack.HILT)
 
-            private fun hilt(artifact: String, version: String = Versions.HILT) =
-                dagger(artifact, version)
+            val AP = hilt("com.google.dagger:hilt-android-compiler")
+            val HILT = hilt("com.google.dagger:hilt-android")
+            val TESTING = hilt("com.google.dagger:hilt-android-testing")
 
-            private fun hiltAX(artifact: String, version: String = Versions.AX_HILT) =
-                dependency("androidx.hilt", artifact, version)
+            val KAPT_JETPACK = hiltJetpack("androidx.hilt:hilt-compiler")
+            val LIFECYCLE_VIEWMODEL = hiltJetpack("androidx.hilt:hilt-lifecycle-viewmodel")
+            val NAV_COMPOSE = hiltJetpack("androidx.hilt:hilt-navigation-compose")
+            val WORK = hiltJetpack("androidx.hilt:hilt-work")
 
-            val LIFECYCLE_VIEWMODEL = hiltAX("hilt-lifecycle-viewmodel")
-            val CORE = hilt("hilt-android")
-            val WORK = hiltAX("hilt-work")
-
-            val TESTING = hilt("hilt-android-testing")
-
-            val KAPT = hilt("hilt-android-compiler")
-            val AX_KAPT = hiltAX("hilt-compiler")
         }
-    }
-
-    object Glide {
-
-        private fun glide(artifact: String, version: String = Versions.GLIDE) =
-            dependency("com.github.bumptech.glide", artifact, version)
-
-        val COMPILER = glide("compiler")
-
-        val ANNOTATIONS = glide("annotations")
-        val CORE = glide("glide")
-        val OKHTTP = glide("okhttp3-integration")
-        val RECYCLERVIEW = glide("recyclerview-integration")
     }
 
     object Google {
-        private fun gms(artifact: String, version: String) =
-            dependency("com.google.android.gms", artifact, version)
-
-        val MATERIAL = dependency("com.google.android.material", "material", Versions.MATERIAL)
+        val MATERIAL = dependency("com.google.android.material:material", Versions.Google.MATERIAL)
 
         object Play {
-            val AUTH = gms("play-services-auth", Versions.GP_AUTH)
-            val LOCATION = gms("play-services-location", Versions.GP_LOCATION)
+            val AUTH =
+                dependency("com.google.android.gms:play-services-auth", Versions.Google.Play.AUTH)
+            val LOCATION = dependency(
+                "com.google.android.gms:play-services-location",
+                Versions.Google.Play.LOCATION
+            )
         }
 
         object Maps {
-            val MAPS = gms("play-services-maps", Versions.GP_MAPS)
-            val MAPS_KTX = dependency("com.google.maps.android:", "maps-ktx", Versions.G_MAPS_KTX)
-
-            val MAPS_UTIL = dependency(
-                "com.google.maps.android",
-                "android-maps-utils",
-                Versions.G_MAPS_UTIL
-            )
-            val MAPS_UTIL_KTX = dependency(
-                "com.google.maps.android",
-                "maps-utils-ktx",
-                Versions.G_MAPS_KTX
-            )
-
             object V3 {
-                val MAPS = dependency("com.google.android.libraries.maps", "maps", Versions.G_MAPS)
-                val MAPS_KTX = dependency("com.google.maps.android", "maps-v3-ktx", Versions.G_MAPS_KTX)
+                val MAPS =
+                    dependency("com.google.android.libraries.maps:maps", Versions.Google.Maps.MAPS)
+                val MAPS_KTX =
+                    dependency("com.google.maps.android:maps-v3-ktx", Versions.Google.Maps.KTX)
 
                 val MAPS_UTIL = dependency(
-                    "com.google.maps.android",
-                    "android-maps-utils-v3",
-                    Versions.G_MAPS_UTIL
+                    "com.google.maps.android:android-maps-utils-v3",
+                    Versions.Google.Maps.UTIL
                 )
                 val MAPS_UTIL_KTX = dependency(
-                    "com.google.maps.android",
-                    "maps-utils-v3-ktx",
-                    Versions.G_MAPS_KTX
+                    "com.google.maps.android:maps-utils-v3-ktx",
+                    Versions.Google.Maps.KTX
                 )
             }
         }
     }
 
     object Kotlin {
-        private fun kotlin(artifact: String, version: String = Versions.KOTLIN) =
-            dependency("org.jetbrains.kotlin", artifact, version)
+        private fun kotlin(name: String) = dependency(name, Versions.KOTLIN)
 
-        private fun kotlinx(artifact: String, version: String = Versions.KOTLIN) =
-            dependency("org.jetbrains.kotlinx", artifact, version)
-
-        val STDLIB = kotlin("kotlin-stdlib-jdk8")
-        val REFLECT = kotlin("kotlin-reflect")
+        val STDLIB = kotlin("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+        val REFLECT = kotlin("org.jetbrains.kotlin:kotlin-reflect")
 
         object Coroutines {
-            private fun coroutines(artifact: String, version: String = Versions.COROUTINES) =
-                kotlinx(
-                    "kotlinx-coroutines-$artifact",
-                    version
-                )
+            private fun coroutines(name: String) = dependency(name, Versions.COROUTINES)
 
-            val CORE = coroutines("core")
-            val ANDROID = coroutines("android")
-            val PLAY = coroutines("play-services")
-            val TEST = coroutines("test")
+            val CORE = coroutines("org.jetbrains.kotlinx:kotlinx-coroutines-core")
+            val ANDROID = coroutines("org.jetbrains.kotlinx:kotlinx-coroutines-android")
+            val PLAY = coroutines("org.jetbrains.kotlinx:kotlinx-coroutines-play-services")
+            val TEST = coroutines("org.jetbrains.kotlinx:kotlinx-coroutines-test")
         }
     }
 
     object Moshi {
-        private fun moshi(artifact: String, version: String = Versions.MOSHI) =
-            dependency("com.squareup.moshi", artifact, version)
+        private fun moshi(name: String) = dependency(name, Versions.Square.MOSHI)
 
-        val MOSHI = moshi("moshi")
-        val KAPT_CODEGEN = moshi("moshi-kotlin-codegen")
+        val MOSHI = moshi("com.squareup.moshi:moshi")
+        val KAPT_CODEGEN = moshi("com.squareup.moshi:moshi-kotlin-codegen")
     }
 
     object Retrofit {
-        private fun retrofit(artifact: String, version: String = Versions.RETROFIT) =
-            dependency("com.squareup.retrofit2", artifact, version)
+        private fun retrofit(name: String) = dependency(name, Versions.Square.RETROFIT)
 
-        val RETROFIT = retrofit("retrofit")
+        val RETROFIT = retrofit("com.squareup.retrofit2:retrofit")
 
         object Converter {
-
-            val MOSHI = retrofit("converter-moshi")
-            val GSON = retrofit("converter-gson")
-            val TEXT = retrofit("converter-scalars")
+            val MOSHI = retrofit("com.squareup.retrofit2:converter-moshi")
+            val GSON = retrofit("com.squareup.retrofit2:converter-gson")
+            val TEXT = retrofit("com.squareup.retrofit2:converter-scalars")
         }
 
-        val MOCK = retrofit("retrofit-mock")
+        val MOCK = retrofit("com.squareup.retrofit2:retrofit-mock")
     }
 
     object Room {
-        private fun room(artifact: String, version: String = Versions.ROOM) =
-            dependency("androidx.room", artifact, version)
+        private fun room(name: String) = dependency(name, Versions.Jetpack.ROOM)
 
-        val AP = room("room-compiler")
-        val RUNTIME = room("room-runtime")
-        val KTX = room("room-ktx")
-        val TEST = room("room-testing")
+        val AP = room("androidx.room:room-compiler")
+        val RUNTIME = room("androidx.room:room-runtime")
+        val KTX = room("androidx.room:room-ktx")
+        val TEST = room("androidx.room:room-testing")
     }
 
     object Test {
-        object AndroidX {
-            val CORE = dependency("androidx.test", "core", Versions.AX_TEST_CORE)
-            val RULES =
-                dependency("androidx.test", "rules", Versions.AX_TEST_CORE)
-            val RUNNER =
-                dependency("androidx.test", "runner", Versions.AX_TEST_CORE)
+        object Jetpack {
+            val CORE = dependency("androidx.test:core", Versions.Jetpack.Test.CORE)
+            val RULES = dependency("androidx.test:rules", Versions.Jetpack.Test.CORE)
+            val RUNNER = dependency("androidx.test:runner", Versions.Jetpack.Test.CORE)
             val LIVEDATA = dependency(
-                "androidx.arch.core",
-                "core-testing",
-                Versions.AX_TEST_LIVEDATA
+                "androidx.arch.core:core-testing",
+                Versions.Jetpack.Test.LIVEDATA
             )
 
             object Espresso {
-                private fun espresso(artifact: String, version: String = Versions.ESPRESSO) =
-                    dependency(
-                        "androidx.test.espresso",
-                        artifact,
-                        version
-                    )
+                private fun espresso(name: String) =
+                    dependency(name, Versions.Jetpack.Test.ESPRESSO)
 
-                val CORE = espresso("espresso-core")
-                val CONTRIB = espresso("espresso-contrib")
-                val INTENTS = espresso("espresso-intents")
-                val ACCESSIBILITY = espresso("espresso-accessibility")
+                val CORE = espresso("androidx.test.espresso:espresso-core")
+                val CONTRIB = espresso("androidx.test.espresso:espresso-contrib")
+                val INTENTS = espresso("androidx.test.espresso:espresso-intents")
+                val ACCESSIBILITY = espresso("androidx.test.espresso:espresso-accessibility")
             }
         }
 
-        val MOCKITO = dependency("org.mockito", "mockito-core", Versions.MOCKITO)
-        val MOCKK = dependency("io.mockk", "mockk", Versions.MOCKK)
-        val JUNIT = dependency("junit", "junit", Versions.JUNIT)
+        val MOCKITO = dependency("org.mockito:mockito-core", Versions.MOCKITO)
+        val MOCKK = dependency("io.mockk:mockk", Versions.MOCKK)
+        val JUNIT = dependency("junit:junit", Versions.JUNIT)
         val OKHTTP_MOCK_SERVER =
-            dependency("com.squareup.okhttp3", "mockwebserver", Versions.OKHTTP)
+            dependency("com.squareup.okhttp3:mockwebserver", Versions.Square.OKHTTP)
     }
 
     object Debug {
         val LEAK_CANARY = dependency(
-            "com.squareup.leakcanary",
-            "leakcanary-android",
-            Versions.LEAK_CANARY
+            "com.squareup.leakcanary:leakcanary-android",
+            Versions.Square.LEAK_CANARY
         )
     }
-}
 
-private fun dependency(group: String, artifact: String, version: String) =
-    "$group:$artifact:$version"
+    private fun dependency(name: String, version: String): String {
+        require(name.count { it == ':' } == 1) {
+            "Dependency name must be in group:artifact format. [$name]"
+        }
+        return "$name:$version"
+    }
+}

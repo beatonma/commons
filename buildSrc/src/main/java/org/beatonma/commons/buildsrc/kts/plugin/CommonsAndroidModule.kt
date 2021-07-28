@@ -2,12 +2,12 @@ package org.beatonma.commons.buildsrc.kts.plugin
 
 import Dependencies
 import Modules
+import Plugins
 import Versions
 import com.android.build.gradle.BaseExtension
 import org.beatonma.commons.buildsrc.Commons
 import org.beatonma.commons.buildsrc.Git
-import org.beatonma.commons.buildsrc.kts.extensions.debug
-import org.beatonma.commons.buildsrc.kts.extensions.release
+import org.beatonma.commons.buildsrc.kts.extensions.instrumentationTest
 import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.plugins.PluginContainer
@@ -15,7 +15,8 @@ import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.gradle.kotlin.dsl.maven
 import org.gradle.kotlin.dsl.project
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 abstract class CommonsAndroidModule<T : BaseExtension> : AndroidProjectPlugin<T>() {
 
@@ -30,11 +31,12 @@ abstract class CommonsAndroidModule<T : BaseExtension> : AndroidProjectPlugin<T>
 
     override fun applyPlugins(plugins: PluginContainer) {
         with(plugins) {
-            apply("kotlin-android")
-            apply("kotlin-kapt")
-            apply("com.github.ben-manes.versions")
-            apply("kotlin-parcelize")
+            apply(Plugins.Kotlin.ANDROID)
+            apply(Plugins.Kotlin.KAPT)
+            apply(Plugins.Kotlin.PARCELIZE)
+            apply(Plugins.VERSIONS)
         }
+        super.applyPlugins(plugins)
     }
 
     override fun applyAndroidConfig(android: T, target: Project) {
@@ -46,8 +48,8 @@ abstract class CommonsAndroidModule<T : BaseExtension> : AndroidProjectPlugin<T>
                 versionCode = git.commitCount
                 versionName = git.tag
 
-                minSdkVersion(Commons.Sdk.MIN)
-                targetSdkVersion(Commons.Sdk.TARGET)
+                minSdk = Commons.Sdk.MIN
+                targetSdk = Commons.Sdk.TARGET
 
                 buildConfigStrings(
                     "VERSION_NAME" to git.tag,
@@ -61,11 +63,11 @@ abstract class CommonsAndroidModule<T : BaseExtension> : AndroidProjectPlugin<T>
             }
 
             buildTypes {
-                debug {
+                getByName("debug") {
                     isDebuggable = true
                 }
 
-                release {
+                getByName("release") {
                     isDebuggable = false
                 }
             }
@@ -118,7 +120,7 @@ abstract class CommonsAndroidModule<T : BaseExtension> : AndroidProjectPlugin<T>
             unitTest {
                 implementations(
                     project(Modules.Test.toString()),
-                    Dependencies.Test.AndroidX.CORE,
+                    Dependencies.Test.Jetpack.CORE,
                     Dependencies.Test.JUNIT
                 )
             }
@@ -126,7 +128,8 @@ abstract class CommonsAndroidModule<T : BaseExtension> : AndroidProjectPlugin<T>
             instrumentationTest {
                 implementations(
                     project(Modules.Test.toString()),
-                    Dependencies.Test.AndroidX.CORE,
+                    Dependencies.Test.Jetpack.CORE,
+                    Dependencies.Test.Jetpack.RUNNER,
                     Dependencies.Test.JUNIT
                 )
             }

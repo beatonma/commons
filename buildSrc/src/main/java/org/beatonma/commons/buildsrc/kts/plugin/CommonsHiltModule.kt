@@ -2,6 +2,7 @@ package org.beatonma.commons.buildsrc.kts.plugin
 
 import Dependencies
 import Modules
+import Plugins
 import org.gradle.api.plugins.PluginContainer
 import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.gradle.kotlin.dsl.project
@@ -10,8 +11,9 @@ class CommonsHiltModule : ProjectPlugin() {
 
     override fun applyPlugins(plugins: PluginContainer) {
         with(plugins) {
-            apply("dagger.hilt.android.plugin")
+            apply(Plugins.HILT)
         }
+        super.applyPlugins(plugins)
     }
 
     override fun applyDependencies(dependencies: DependencyHandlerScope) {
@@ -26,11 +28,6 @@ class CommonsHiltModule : ProjectPlugin() {
             }
 
             instrumentationTest {
-                annotationProcessors(
-                    Dependencies.Dagger.COMPILER,
-                    Dependencies.Dagger.ANNOTATION_PROCESSOR
-                )
-
                 implementations(
                     Dependencies.Dagger.Hilt.TESTING,
                     project(Modules.TestHilt.toString())
@@ -39,18 +36,17 @@ class CommonsHiltModule : ProjectPlugin() {
 
             main {
                 annotationProcessors(
-                    Dependencies.Dagger.ANNOTATION_PROCESSOR,
-                    Dependencies.Dagger.COMPILER,
-                    Dependencies.Dagger.Hilt.AX_KAPT,
-                    Dependencies.Dagger.Hilt.KAPT
+                    Dependencies.Dagger.AP_ANDROID,
+                    Dependencies.Dagger.AP_COMPILER,
+                    Dependencies.Dagger.Hilt.AP,
+                    Dependencies.Dagger.Hilt.KAPT_JETPACK,
                 )
 
                 implementations(
                     Dependencies.Dagger.ANDROID,
                     Dependencies.Dagger.DAGGER,
-                    Dependencies.Dagger.SUPPORT,
-
-                    Dependencies.Dagger.Hilt.CORE
+                    Dependencies.Dagger.ANDROID_SUPPORT,
+                    Dependencies.Dagger.Hilt.HILT
                 )
             }
         }
