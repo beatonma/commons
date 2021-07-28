@@ -1,11 +1,11 @@
-package org.beatonma.commons.buildsrc.kts.plugin
+package org.beatonma.commons.buildsrc.gradle.plugins
 
 import Plugins
 import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import org.beatonma.commons.buildsrc.Commons
 import org.beatonma.commons.buildsrc.Git
-import org.beatonma.commons.buildsrc.kts.extensions.minify
+import org.beatonma.commons.buildsrc.gradle.minify
 import org.gradle.api.Project
 import org.gradle.api.plugins.PluginContainer
 

@@ -34,27 +34,30 @@ gradlePlugin {
     plugins {
         register("commons-application-module") {
             id = "commons-application-module"
-            implementationClass = "org.beatonma.commons.buildsrc.kts.plugin.CommonsApplicationModule"
+            implementationClass =
+                "org.beatonma.commons.buildsrc.gradle.plugins.CommonsApplicationModule"
         }
 
         register("commons-library-module") {
             id = "commons-library-module"
-            implementationClass = "org.beatonma.commons.buildsrc.kts.plugin.CommonsLibraryModule"
+            implementationClass =
+                "org.beatonma.commons.buildsrc.gradle.plugins.CommonsLibraryModule"
         }
 
         register("commons-hilt-module") {
             id = "commons-hilt-module"
-            implementationClass = "org.beatonma.commons.buildsrc.kts.plugin.CommonsHiltModule"
+            implementationClass = "org.beatonma.commons.buildsrc.gradle.plugins.CommonsHiltModule"
         }
 
         register("commons-room-module") {
             id = "commons-room-module"
-            implementationClass = "org.beatonma.commons.buildsrc.kts.plugin.CommonsRoomModule"
+            implementationClass = "org.beatonma.commons.buildsrc.gradle.plugins.CommonsRoomModule"
         }
 
         register("commons-compose-module") {
             id = "commons-compose-module"
-            implementationClass = "org.beatonma.commons.buildsrc.kts.plugin.CommonsComposeModule"
+            implementationClass =
+                "org.beatonma.commons.buildsrc.gradle.plugins.CommonsComposeModule"
         }
     }
 }

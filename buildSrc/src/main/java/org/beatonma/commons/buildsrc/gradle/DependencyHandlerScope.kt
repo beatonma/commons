@@ -1,4 +1,4 @@
-package org.beatonma.commons.buildsrc.kts.extensions
+package org.beatonma.commons.buildsrc.gradle
 
 import org.gradle.kotlin.dsl.DependencyHandlerScope
 

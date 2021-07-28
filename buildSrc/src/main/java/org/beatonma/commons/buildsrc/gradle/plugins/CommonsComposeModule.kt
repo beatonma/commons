@@ -1,4 +1,4 @@
-package org.beatonma.commons.buildsrc.kts.plugin
+package org.beatonma.commons.buildsrc.gradle.plugins
 
 import Dependencies
 import Modules

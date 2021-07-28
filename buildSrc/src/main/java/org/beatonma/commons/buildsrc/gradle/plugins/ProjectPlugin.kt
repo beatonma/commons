@@ -1,11 +1,11 @@
-package org.beatonma.commons.buildsrc.kts.plugin
+package org.beatonma.commons.buildsrc.gradle.plugins
 
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.internal.dsl.DefaultConfig
-import org.beatonma.commons.buildsrc.kts.extensions.DebugDependencyScope
-import org.beatonma.commons.buildsrc.kts.extensions.InstrumentationTestDependencyScope
-import org.beatonma.commons.buildsrc.kts.extensions.MainDependencyScope
-import org.beatonma.commons.buildsrc.kts.extensions.UnitTestDependencyScope
+import org.beatonma.commons.buildsrc.gradle.DebugDependencyScope
+import org.beatonma.commons.buildsrc.gradle.InstrumentationTestDependencyScope
+import org.beatonma.commons.buildsrc.gradle.MainDependencyScope
+import org.beatonma.commons.buildsrc.gradle.UnitTestDependencyScope
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.RepositoryHandler
@@ -13,7 +13,7 @@ import org.gradle.api.plugins.PluginContainer
 import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import java.util.*
+import java.util.Locale
 
 abstract class ProjectPlugin : Plugin<Project> {
 
@@ -85,4 +85,3 @@ internal fun DependencyHandlerScope.unitTest(
 internal fun DependencyHandlerScope.instrumentationTest(
     block: InstrumentationTestDependencyScope.() -> Unit
 ) = InstrumentationTestDependencyScope().block()
-

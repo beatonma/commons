@@ -1,4 +1,4 @@
-package org.beatonma.commons.buildsrc.kts.plugin
+package org.beatonma.commons.buildsrc.gradle.plugins
 
 import Dependencies
 import Modules
@@ -7,7 +7,6 @@ import Versions
 import com.android.build.gradle.BaseExtension
 import org.beatonma.commons.buildsrc.Commons
 import org.beatonma.commons.buildsrc.Git
-import org.beatonma.commons.buildsrc.kts.extensions.instrumentationTest
 import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.plugins.PluginContainer
