@@ -5,13 +5,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import org.beatonma.commons.compose.ambient.colors
-import org.beatonma.commons.core.extensions.lerpTo
 import org.beatonma.commons.core.extensions.mapToByte
 import org.beatonma.commons.core.extensions.normalize
 import org.beatonma.commons.theme.compose.theme.textPrimaryDark
 import org.beatonma.commons.theme.compose.theme.textPrimaryLight
 
-inline class HslColor(private val hsl: FloatArray = FloatArray(4)) {
+@JvmInline
+value class HslColor(private val hsl: FloatArray = FloatArray(4)) {
     constructor(
         hue: Float,
         saturation: Float = 1F,

@@ -9,7 +9,6 @@ import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
-import org.beatonma.commons.core.extensions.lerpTo
 import kotlin.math.roundToInt
 
 /**
@@ -23,7 +22,8 @@ interface DirectionalValue {
     operator fun compareTo(other: Int) = value.compareTo(other)
 }
 
-inline class VerticalValue(override val value: Int = 0) : DirectionalValue,
+@JvmInline
+value class VerticalValue(override val value: Int = 0) : DirectionalValue,
     Comparable<VerticalValue> {
 
     operator fun plus(other: VerticalValue) = VerticalValue(value + other.value)
@@ -34,7 +34,8 @@ inline class VerticalValue(override val value: Int = 0) : DirectionalValue,
     override fun compareTo(other: VerticalValue) = value.compareTo(other.value)
 }
 
-inline class HorizontalValue(override val value: Int = 0) : DirectionalValue,
+@JvmInline
+value class HorizontalValue(override val value: Int = 0) : DirectionalValue,
     Comparable<HorizontalValue> {
 
     operator fun plus(other: HorizontalValue) = HorizontalValue(value + other.value)
