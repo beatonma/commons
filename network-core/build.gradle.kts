@@ -1,11 +1,11 @@
 import org.beatonma.commons.buildsrc.Commons
-import org.beatonma.commons.buildsrc.kts.extensions.buildConfigStrings
-import org.beatonma.commons.buildsrc.kts.extensions.main
+import org.beatonma.commons.buildsrc.gradle.buildConfigStrings
+import org.beatonma.commons.buildsrc.gradle.main
 import org.beatonma.commons.buildsrc.local.LocalConfig
 
 plugins {
-    id(Plugins.COMMONS_LIBRARY_CONFIG)
-    id(Plugins.COMMONS_HILT_MODULE)
+    id(Plugins.Commons.COMMONS_LIBRARY_CONFIG)
+    id(Plugins.Commons.COMMONS_HILT_MODULE)
 }
 
 android {
@@ -24,7 +24,7 @@ dependencies {
         implementations(
             Dependencies.Kotlin.Coroutines.ANDROID,
             Dependencies.Kotlin.Coroutines.CORE,
-            Dependencies.AndroidX.CORE_KTX,
+            Dependencies.Jetpack.CORE_KTX,
             Dependencies.Retrofit.RETROFIT
         )
     }

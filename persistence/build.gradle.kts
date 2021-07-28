@@ -1,12 +1,12 @@
 import org.beatonma.commons.buildsrc.Commons
-import org.beatonma.commons.buildsrc.kts.extensions.buildConfigStrings
-import org.beatonma.commons.buildsrc.kts.extensions.instrumentationTest
-import org.beatonma.commons.buildsrc.kts.extensions.main
+import org.beatonma.commons.buildsrc.gradle.buildConfigStrings
+import org.beatonma.commons.buildsrc.gradle.instrumentationTest
+import org.beatonma.commons.buildsrc.gradle.main
 
 plugins {
-    id(Plugins.COMMONS_LIBRARY_CONFIG)
-    id(Plugins.COMMONS_HILT_MODULE)
-    id(Plugins.COMMONS_ROOM_MODULE)
+    id(Plugins.Commons.COMMONS_LIBRARY_CONFIG)
+    id(Plugins.Commons.COMMONS_HILT_MODULE)
+    id(Plugins.Commons.COMMONS_ROOM_MODULE)
 }
 
 android {
@@ -28,12 +28,12 @@ android {
 dependencies {
     instrumentationTest {
         annotationProcessors(
-            Dependencies.Dagger.COMPILER,
-            Dependencies.Dagger.ANNOTATION_PROCESSOR
+            Dependencies.Dagger.AP_COMPILER,
+            Dependencies.Dagger.AP_ANDROID
         )
 
         implementations(
-            Dependencies.Test.AndroidX.LIVEDATA
+            Dependencies.Test.Jetpack.LIVEDATA
         )
     }
 
@@ -41,7 +41,7 @@ dependencies {
         implementations(
             Dependencies.Kotlin.Coroutines.ANDROID,
             Dependencies.Kotlin.Coroutines.CORE,
-            Dependencies.AndroidX.CORE_KTX,
+            Dependencies.Jetpack.CORE_KTX,
 
             project(Modules.Core)
         )

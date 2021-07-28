@@ -1,15 +1,15 @@
-import org.beatonma.commons.buildsrc.kts.extensions.main
+import org.beatonma.commons.buildsrc.gradle.main
 
 plugins {
-    id(Plugins.COMMONS_LIBRARY_CONFIG)
-    id(Plugins.COMMONS_COMPOSE_MODULE)
+    id(Plugins.Commons.COMMONS_LIBRARY_CONFIG)
+    id(Plugins.Commons.COMMONS_COMPOSE_MODULE)
 }
 
 dependencies {
     main {
         implementations(
-            Dependencies.AndroidX.Compose.TEST,
-            Dependencies.AndroidX.Compose.TEST_JUNIT
+            Dependencies.Jetpack.Compose.TEST,
+            Dependencies.Jetpack.Compose.TEST_JUNIT
         )
     }
 }
