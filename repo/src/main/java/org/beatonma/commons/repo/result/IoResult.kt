@@ -33,7 +33,8 @@ class ErrorCode(responseCode: ResponseCode, message: String?) :
     constructor(response: Response<*>) : this(ResponseCode(response.code()), response.message())
 }
 
-inline class ResponseCode(val code: Int) {
+@JvmInline
+value class ResponseCode(val code: Int) {
     val isSuccess: Boolean get() = Http.Status.isSuccess(code)
     val isError: Boolean get() = Http.Status.isClientError(code)
     val isClientError: Boolean get() = Http.Status.isClientError(code)
