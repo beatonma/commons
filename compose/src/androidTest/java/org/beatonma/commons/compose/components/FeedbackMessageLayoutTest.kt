@@ -20,7 +20,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.test.filters.MediumTest
-import dev.chrisbanes.accompanist.insets.ProvideWindowInsets
+import com.google.accompanist.insets.ProvideWindowInsets
 import org.beatonma.commons.test.extensions.assertions.assertEquals
 import org.beatonma.commons.testcompose.test.ComposeTest
 import org.junit.Test

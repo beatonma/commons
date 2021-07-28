@@ -18,7 +18,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import androidx.test.filters.MediumTest
-import dev.chrisbanes.accompanist.insets.ProvideWindowInsets
+import com.google.accompanist.insets.ProvideWindowInsets
 import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.test.extensions.assertions.shouldbe
 import org.beatonma.commons.testcompose.test.ComposeTest
