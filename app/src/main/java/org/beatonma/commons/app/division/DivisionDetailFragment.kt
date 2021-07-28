@@ -28,7 +28,7 @@ class DivisionDetailFragment : SocialFragment() {
         savedInstanceState: Bundle?,
     ): View =
         composeScreen(
-            AmbientDivisionActions provides DivisionActions(
+            LocalDivisionActions provides DivisionActions(
                 onMemberClick = { vote ->
                     navigateToMember(vote.memberId)
                 }

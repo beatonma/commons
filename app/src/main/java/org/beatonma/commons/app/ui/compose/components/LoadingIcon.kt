@@ -10,23 +10,22 @@ import androidx.compose.material.LocalContentColor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.HdrWeak
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.stringResource
-import org.beatonma.commons.ActionBlock
-import org.beatonma.commons.R
 import org.beatonma.commons.compose.ambient.animation
 import org.beatonma.commons.compose.util.rememberBoolean
+import org.beatonma.commons.data.accessibility.ContentDescription
 
 
 @Composable
 fun LoadingIcon(
     modifier: Modifier = Modifier,
-    onClick: ActionBlock? = null,
+    onClick: (() -> Unit)? = null,
     tint: Color = LocalContentColor.current,
     state: MutableState<Boolean> = rememberBoolean(false),
     animSpec: InfiniteRepeatableSpec<Float> = animation.infiniteRepeatable(
@@ -47,20 +46,22 @@ fun LoadingIcon(
     if (onClick == null) {
         Icon(
             Icons.Default.HdrWeak,
-            contentDescription = stringResource(R.string.content_description_loading),
+            contentDescription = ContentDescription.Loading,
             tint = tint,
             modifier = iconModifier
         )
-    }
-    else {
+    } else {
         IconButton(onClick = onClick) {
             Icon(
                 Icons.Default.HdrWeak,
-                contentDescription = stringResource(R.string.content_description_loading),
+                contentDescription = ContentDescription.Loading,
                 tint = tint,
-                modifier = iconModifier)
+                modifier = iconModifier
+            )
         }
     }
 
-    state.value = true // Immediately change state value to start the animation.
+    LaunchedEffect(Unit) {
+        state.value = true // Immediately change state value to start the animation.
+    }
 }

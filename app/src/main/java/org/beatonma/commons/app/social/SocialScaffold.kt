@@ -39,13 +39,15 @@ private typealias SocialBlock = @Composable (socialProgress: SocialExpansion, he
  * Inline class for type safety to reduce confusion when coordinating animations
  * with different sources.
  */
-inline class HeaderExpansion(val value: Float)
+@JvmInline
+value class HeaderExpansion(val value: Float)
 
 /**
  * Inline class for type safety to reduce confusion when coordinating animations
  * with different sources.
  */
-inline class SocialExpansion(val value: Float)
+@JvmInline
+value class SocialExpansion(val value: Float)
 
 /**
  * A scaffold for using the social UI in a [CollapsibleHeaderLayout].

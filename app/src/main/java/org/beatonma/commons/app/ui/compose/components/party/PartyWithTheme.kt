@@ -12,7 +12,12 @@ val LocalPartyTheme: ProvidableCompositionLocal<PartyWithTheme> = compositionLoc
     error("Party not set")
 }
 
-data class PartyWithTheme(val party: Party, val theme: ComposePartyColors)
+data class PartyWithTheme(val party: Party, val theme: ComposePartyColors) {
+    val primary = theme.primary
+    val onPrimary = theme.onPrimary
+    val accent = theme.accent
+    val onAccent = theme.onAccent
+}
 
 @Composable
 fun partyWithTheme(party: Party?): PartyWithTheme {

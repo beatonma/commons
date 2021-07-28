@@ -9,35 +9,39 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Providers
-import androidx.compose.runtime.ambientOf
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.app.ui.colors.theme
 import org.beatonma.commons.app.ui.compose.components.image.Avatar
-import org.beatonma.commons.app.ui.compose.components.party.AmbientPartyTheme
+import org.beatonma.commons.app.ui.compose.components.party.LocalPartyTheme
 import org.beatonma.commons.app.ui.compose.components.party.PartyBackground
 import org.beatonma.commons.app.ui.compose.components.party.PartyWithTheme
 import org.beatonma.commons.compose.ambient.invertedColors
 import org.beatonma.commons.compose.ambient.shapes
 import org.beatonma.commons.compose.ambient.typography
+import org.beatonma.commons.compose.util.dot
+import org.beatonma.commons.data.accessibility.contentDescription
 import org.beatonma.commons.data.coerceCurrentPost
 import org.beatonma.commons.data.core.MinimalMember
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 import org.beatonma.commons.snommoc.models.ZeitgeistReason
 import org.beatonma.commons.theme.compose.theme.withSquareTop
-import org.beatonma.commons.theme.compose.util.dot
 
 private val PortraitWidth = 260.dp
 private val TextPadding = 16.dp
 private val MemberPadding = 4.dp // Space between members
 
-private val AmbientMemberTextHeight = ambientOf<Dp> { error("No size set for member text height") }
+private val LocalMemberTextHeight =
+    compositionLocalOf<Dp> { error("No size set for member text height") }
 
 @Composable
 fun Member(
@@ -58,20 +62,25 @@ fun Member(
     val party = member.party
     val partyWithTheme = PartyWithTheme(party, party.theme())
 
-    Providers(
-        AmbientPartyTheme provides partyWithTheme
+    val contentDescription = profile.contentDescription
+
+    CompositionLocalProvider(
+        LocalPartyTheme provides partyWithTheme
     ) {
         Surface(
-            modifier.width(PortraitWidth)
+            modifier
+                .width(PortraitWidth)
                 .padding(MemberPadding)
-                .shadow(4.dp, shapes.small),
+                .shadow(4.dp, shapes.small)
+                .semantics(mergeDescendants = true) {
+                    this.contentDescription = contentDescription
+                },
             color = invertedColors.surface,
         ) {
-            Providers(AmbientMemberTextHeight provides memberTextHeight) {
+            CompositionLocalProvider(LocalMemberTextHeight provides memberTextHeight) {
                 if (profile.portraitUrl == null) {
                     MemberWithoutPortrait(profile, onClick)
-                }
-                else {
+                } else {
                     MemberWithPortrait(profile, onClick, reason)
                 }
             }
@@ -84,7 +93,7 @@ private fun MemberWithoutPortrait(
     profile: MemberProfile,
     onClick: (MemberProfile) -> Unit,
     modifier: Modifier = Modifier,
-    height: Dp = AmbientMemberTextHeight.current,
+    height: Dp = LocalMemberTextHeight.current,
 ) {
     PartyBackground(
         modifier
@@ -108,13 +117,13 @@ private fun MemberWithPortrait(
         Avatar(
             profile.portraitUrl,
             modifier = Modifier
-                .height((AmbientMemberTextHeight.current * 2) + (MemberPadding * 4))
+                .height((LocalMemberTextHeight.current * 2) + (MemberPadding * 4))
                 .fillMaxWidth(),
         )
 
         PartyBackground(
             Modifier
-                .height(AmbientMemberTextHeight.current)
+                .height(LocalMemberTextHeight.current)
                 .clip(shapes.small.withSquareTop())
         ) {
             MemberText(profile)
@@ -129,9 +138,9 @@ private fun MemberText(
 ) =
     MemberText(
         profile.name,
-        AmbientPartyTheme.current.party.name dot profile.parliamentdotuk.toString(),
+        LocalPartyTheme.current.party.name dot profile.parliamentdotuk.toString(),
         profile.coerceCurrentPost(),
-        AmbientPartyTheme.current.theme.onPrimary,
+        LocalPartyTheme.current.theme.onPrimary,
         modifier
     )
 
@@ -145,7 +154,7 @@ private fun MemberText(
 ) {
     Column(
         modifier
-            .height(AmbientMemberTextHeight.current)
+            .height(LocalMemberTextHeight.current)
             .fillMaxWidth()
             .padding(TextPadding)
     ) {

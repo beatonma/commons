@@ -23,8 +23,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.focusTarget
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -39,8 +39,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.beatonma.commons.BuildConfig
 import org.beatonma.commons.R
+import org.beatonma.commons.app.preview.InAppPreview
 import org.beatonma.commons.app.social.Username
-import org.beatonma.commons.app.ui.compose.InAppPreview
 import org.beatonma.commons.app.ui.compose.components.LoadingIcon
 import org.beatonma.commons.app.ui.compose.components.image.ClickableIcon
 import org.beatonma.commons.compose.ambient.animation
@@ -266,7 +266,7 @@ private fun EditableUsernameLayout(
             maxLines = 1,
             singleLine = true,
             modifier = Modifier
-                .focusModifier()
+                .focusTarget()
                 .focusRequester(focusRequester),
             keyboardOptions = keyboardOptions,
             textStyle = TextStyle(color = LocalContentColor.current),

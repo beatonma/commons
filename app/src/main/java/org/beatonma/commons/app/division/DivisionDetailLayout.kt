@@ -1,13 +1,12 @@
 package org.beatonma.commons.app.division
 
-import androidx.compose.foundation.InteractionState
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayout
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -20,8 +19,8 @@ import androidx.compose.material.icons.filled.RemoveCircle
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.ProvidableAmbient
-import androidx.compose.runtime.ambientOf
+import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
@@ -39,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.beatonma.commons.R
 import org.beatonma.commons.app.signin.UserAccountViewModel
+import org.beatonma.commons.app.social.HeaderExpansion
 import org.beatonma.commons.app.social.ProvideSocial
 import org.beatonma.commons.app.social.SocialViewModel
 import org.beatonma.commons.app.social.StickySocialScaffold
@@ -48,9 +48,11 @@ import org.beatonma.commons.app.ui.compose.components.charts.ChartItem
 import org.beatonma.commons.app.ui.compose.components.charts.ChartKeyItem
 import org.beatonma.commons.app.ui.compose.components.charts.HorizontalStackedBarChart
 import org.beatonma.commons.compose.ambient.colors
-import org.beatonma.commons.compose.components.ResourceText
-import org.beatonma.commons.compose.components.SearchTextField
+import org.beatonma.commons.compose.components.text.Quote
+import org.beatonma.commons.compose.components.text.ResourceText
+import org.beatonma.commons.compose.components.text.ScreenTitle
 import org.beatonma.commons.compose.modifiers.wrapContentHeight
+import org.beatonma.commons.compose.util.dot
 import org.beatonma.commons.compose.util.mapUpdate
 import org.beatonma.commons.compose.util.rememberBoolean
 import org.beatonma.commons.compose.util.rememberListOf
@@ -68,17 +70,15 @@ import org.beatonma.commons.data.core.room.entities.division.VoteWithParty
 import org.beatonma.commons.data.resolution.description
 import org.beatonma.commons.kotlin.extensions.withMainContext
 import org.beatonma.commons.repo.result.IoLoading
-import org.beatonma.commons.theme.compose.Padding
 import org.beatonma.commons.theme.compose.Size
-import org.beatonma.commons.theme.compose.components.Quote
-import org.beatonma.commons.theme.compose.components.ScreenTitle
 import org.beatonma.commons.theme.compose.formatting.formatted
+import org.beatonma.commons.theme.compose.padding.Padding
+import org.beatonma.commons.theme.compose.padding.padding
 import org.beatonma.commons.theme.compose.theme.politicalVotes
 import org.beatonma.commons.theme.compose.theme.systemui.statusBarsPadding
-import org.beatonma.commons.theme.compose.util.dot
 
-internal val AmbientDivisionActions: ProvidableAmbient<DivisionActions> =
-    ambientOf { DivisionActions() }
+internal val LocalDivisionActions: ProvidableCompositionLocal<DivisionActions> =
+    compositionLocalOf { DivisionActions() }
 
 @Composable
 fun DivisionDetailLayout(
@@ -131,14 +131,14 @@ fun DivisionDetailLayout(
     applyFilter("")
 
     StickySocialScaffold(
-        headerContentAboveSocial = { headerExpansion: Float, headerModifier: Modifier ->
+        aboveSocial = { headerExpansion: HeaderExpansion, headerModifier: Modifier ->
             HeaderAboveSocial(
                 divisionWithVotes.division,
                 expandProgress = headerExpansion,
                 modifier = headerModifier,
             )
         },
-        headerContentBelowSocial = { headerExpansion: Float, headerModifier: Modifier ->
+        belowSocial = { headerExpansion: HeaderExpansion, headerModifier: Modifier ->
             HeaderBelowSocial(
                 division = divisionWithVotes.division,
                 expandProgress = headerExpansion,
@@ -156,11 +156,11 @@ fun DivisionDetailLayout(
     )
 }
 
-@OptIn(ExperimentalLayout::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun HeaderAboveSocial(
     division: Division,
-    expandProgress: Float,
+    expandProgress: HeaderExpansion,
     modifier: Modifier = Modifier,
 ) {
     val (title, description) = when (division.house) {
@@ -175,8 +175,8 @@ private fun HeaderAboveSocial(
         modifier
             .padding(Padding.Screen)
             .statusBarsPadding()
-            .wrapContentHeight(expandProgress)
-            .alpha(expandProgress)
+            .wrapContentHeight(expandProgress.value)
+            .alpha(expandProgress.value)
     ) {
         ScreenTitle(title)
 
@@ -186,11 +186,11 @@ private fun HeaderAboveSocial(
     }
 }
 
-@OptIn(ExperimentalLayout::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun HeaderBelowSocial(
     division: Division,
-    expandProgress: Float,
+    expandProgress: HeaderExpansion,
     onVoteTypeClick: (VoteType) -> Unit,
     applyFilter: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -228,11 +228,12 @@ private fun LazyListScope.voteList(
     )
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun Vote(
     voteWithParty: VoteWithParty,
     modifier: Modifier = Modifier,
-    onMemberClick: MemberVoteAction = AmbientDivisionActions.current.onMemberClick,
+    onMemberClick: MemberVoteAction = LocalDivisionActions.current.onMemberClick,
 ) {
     ListItem(
         modifier = modifier.clickable(onClick = { onMemberClick(voteWithParty.vote) }),
@@ -248,7 +249,7 @@ private fun SearchField(
     query: MutableState<String> = rememberText(),
     onQueryChange: (String) -> Unit,
 ) =
-    SearchTextField(
+    org.beatonma.commons.compose.components.text.SearchField(
         modifier = modifier,
         query = query,
         onQueryChange = onQueryChange,
@@ -256,15 +257,21 @@ private fun SearchField(
     )
 
 @Composable
-private fun VoteIcon(voteType: VoteType) = VoteIcon(voteType.icon, voteType.color)
+private fun VoteIcon(voteType: VoteType) = VoteIcon(
+    voteType.icon,
+    voteType.description(),
+    voteType.color
+)
 
 @Composable
 private fun VoteIcon(
     icon: ImageVector,
+    contentDescription: String?,
     tint: Color,
 ) {
     Icon(
         icon,
+        contentDescription = contentDescription,
         tint = tint,
         modifier = Modifier
             .padding(Padding.IconSmall)
@@ -272,7 +279,6 @@ private fun VoteIcon(
     )
 }
 
-@OptIn(ExperimentalLayout::class)
 @Composable
 private fun GraphKey(
     division: Division,
@@ -322,8 +328,8 @@ private fun GraphKey(
             storeRowAndReset()
         }
 
-        val totalWidth = rowSizes.maxOf { it.width }
-        val totalHeight = rowSizes.sumBy { it.height }
+        val totalWidth = rowSizes.maxOf(IntSize::width)
+        val totalHeight = rowSizes.sumOf(IntSize::height)
 
         check(rows.size < rowStartY.size)
         check(currentRow.isEmpty())
@@ -385,14 +391,14 @@ private fun GraphKeyItem(
     voteType: VoteType,
     voteCount: Int,
     modifier: Modifier = Modifier,
-    interactionState: InteractionState = remember(::InteractionState),
+    interactionSource: MutableInteractionSource = remember(::MutableInteractionSource),
     onClick: (VoteType) -> Unit,
 ) {
     val selected = rememberBoolean(false)
     if (voteCount == 0) return
 
     ChartKeyItem(
-        { VoteIcon(voteType.icon, voteType.color) },
+        { VoteIcon(voteType.icon, null, voteType.color) },
         { ResourceText(voteType.descriptionRes, voteCount, withAnnotatedStyle = true) },
         modifier = modifier.selectable(
             selected = selected.value,
@@ -400,7 +406,7 @@ private fun GraphKeyItem(
                 selected.toggle()
                 onClick(voteType)
             },
-            interactionState = interactionState,
+            interactionSource = interactionSource,
             indication = rememberRipple(),
         ),
     )

@@ -8,12 +8,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ListItem
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ProvidableAmbient
-import androidx.compose.runtime.Providers
-import androidx.compose.runtime.ambientOf
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -26,24 +29,27 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
 import com.google.android.libraries.maps.MapView
 import com.google.maps.android.ktx.awaitMap
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.beatonma.commons.R
 import org.beatonma.commons.app.signin.UserAccountViewModel
+import org.beatonma.commons.app.social.HeaderExpansion
 import org.beatonma.commons.app.social.ProvideSocial
 import org.beatonma.commons.app.social.SocialViewModel
 import org.beatonma.commons.app.social.StickySocialScaffold
 import org.beatonma.commons.app.ui.colors.ComposePartyColors
 import org.beatonma.commons.app.ui.compose.WithResultData
-import org.beatonma.commons.app.ui.compose.components.party.AmbientPartyTheme
+import org.beatonma.commons.app.ui.compose.components.party.LocalPartyTheme
 import org.beatonma.commons.app.ui.compose.components.party.PartyBackground
 import org.beatonma.commons.app.ui.compose.components.party.partyWithTheme
 import org.beatonma.commons.app.ui.compose.components.party.providePartyImageConfig
-import org.beatonma.commons.app.ui.maps.AmbientMapConfig
+import org.beatonma.commons.app.ui.maps.LocalMapConfig
 import org.beatonma.commons.app.ui.maps.MapConfig
 import org.beatonma.commons.app.ui.maps.moveCameraTo
 import org.beatonma.commons.app.ui.maps.rememberMapViewWithLifecycle
-import org.beatonma.commons.compose.components.OptionalText
+import org.beatonma.commons.compose.components.text.ComponentTitle
+import org.beatonma.commons.compose.components.text.OptionalText
+import org.beatonma.commons.compose.components.text.ScreenTitle
+import org.beatonma.commons.compose.util.dot
 import org.beatonma.commons.compose.util.rememberBoolean
 import org.beatonma.commons.data.core.room.entities.constituency.CompleteConstituency
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
@@ -53,12 +59,9 @@ import org.beatonma.commons.data.parse.Geometry
 import org.beatonma.commons.data.parse.KmlParser
 import org.beatonma.commons.kotlin.extensions.hasPermission
 import org.beatonma.commons.repo.result.IoLoading
-import org.beatonma.commons.theme.compose.components.ComponentTitle
-import org.beatonma.commons.theme.compose.components.ScreenTitle
-import org.beatonma.commons.theme.compose.util.dot
 
-internal val AmbientConstituencyActions: ProvidableAmbient<ConstituencyDetailActions> =
-    ambientOf { ConstituencyDetailActions() }
+internal val LocalConstituencyActions: ProvidableCompositionLocal<ConstituencyDetailActions> =
+    compositionLocalOf { ConstituencyDetailActions() }
 
 @Composable
 fun ConstituencyDetailLayout(
@@ -83,22 +86,25 @@ fun ConstituencyDetailLayout(
 @Composable
 fun ConstituencyDetailLayout(
     data: CompleteConstituency,
-    onMemberClick: ConstituencyMemberAction = AmbientConstituencyActions.current.onMemberClick,
-    onConstituencyResultClick: ConstituencyResultsAction = AmbientConstituencyActions.current.onConstituencyResultsClick,
+    onMemberClick: ConstituencyMemberAction = LocalConstituencyActions.current.onMemberClick,
+    onConstituencyResultClick: ConstituencyResultsAction = LocalConstituencyActions.current.onConstituencyResultsClick,
 ) {
-    Providers(
+    CompositionLocalProvider(
         *providePartyImageConfig(),
-        AmbientPartyTheme provides partyWithTheme(data.member?.party),
+        LocalPartyTheme provides partyWithTheme(data.member?.party),
     ) {
         StickySocialScaffold(
-            headerContentAboveSocial = { headerExpansion: Float, modifier: Modifier ->
+            aboveSocial = { headerExpansion: HeaderExpansion, modifier: Modifier ->
                 Header(data, headerExpansion, modifier)
             },
-            headerContentBelowSocial = { headerExpansion: Float, modifier: Modifier ->
-
-            },
             lazyListContent = {
-                MPs(data.constituency, data.member, data.electionResults, onMemberClick, onConstituencyResultClick)
+                MPs(
+                    data.constituency,
+                    data.member,
+                    data.electionResults,
+                    onMemberClick,
+                    onConstituencyResultClick
+                )
             }
         )
     }
@@ -107,7 +113,7 @@ fun ConstituencyDetailLayout(
 @Composable
 private fun Header(
     data: CompleteConstituency,
-    expansion: Float,
+    expansion: HeaderExpansion,
     modifier: Modifier,
 ) {
     val constituency = data.constituency
@@ -128,12 +134,12 @@ private fun ConstituencyMap(boundary: ConstituencyBoundary, modifier: Modifier =
     val map = rememberMapViewWithLifecycle()
 
     var geometry by remember { mutableStateOf<Geometry?>(null) }
-    var job by remember { mutableStateOf<Job?>(null) }
 
-    val coroutineScope = rememberCoroutineScope()
-    if (geometry == null && job == null) {
-        job = coroutineScope.launch {
-            geometry = KmlParser().parse(boundary.kml.byteInputStream())
+    LaunchedEffect(boundary) {
+        if (geometry == null) {
+            launch {
+                geometry = KmlParser().parse(boundary.kml.byteInputStream())
+            }
         }
     }
 
@@ -145,15 +151,15 @@ private fun MapContainer(
     map: MapView,
     geometry: Geometry?,
     modifier: Modifier = Modifier,
-    mapConfig: MapConfig = AmbientMapConfig.current,
-    theme: ComposePartyColors = AmbientPartyTheme.current.theme,
+    mapConfig: MapConfig = LocalMapConfig.current,
+    theme: ComposePartyColors = LocalPartyTheme.current.theme,
 ) {
     val coroutineScope = rememberCoroutineScope()
     var locked by rememberBoolean(false)
 
     Box(modifier) {
         AndroidView(
-            viewBlock = { map }
+            factory = { map }
         ) { mapView ->
             if (locked) return@AndroidView
 
@@ -188,6 +194,7 @@ private fun MapContainer(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 private fun LazyListScope.MPs(
     constituency: Constituency,
     currentMember: ConstituencyResultWithDetails?,
@@ -217,7 +224,7 @@ private fun LazyListScope.MPs(
             ComponentTitle(stringResource(R.string.constituency_previous_members))
         }
 
-        items(previousMembers) { formerMember ->
+        this.items(previousMembers) { formerMember ->
             ListItem(
                 text = { Text(formerMember.profile.name dot formerMember.party.name) },
                 overlineText = { Text(formerMember.election.name) },

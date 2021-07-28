@@ -43,7 +43,6 @@ class UserAccountViewModel @Inject constructor(
     @ApplicationContext application: Context,
     private val savedStateHandle: SavedStateHandle,
 ) : AndroidViewModel(application.app) {
-
     val userTokenLiveData: LiveData<UserToken> =
         savedStateHandle.getLiveData(SavedStateUserToken, NullUserToken)
     val signInIntent: Intent get() = googleSignInClient.signInIntent
@@ -87,7 +86,7 @@ class UserAccountViewModel @Inject constructor(
         return RenameResult.ERROR
     }
 
-    suspend fun deleteAccount(userToken: UserToken): ResultFlow<Void> {
+    fun deleteAccount(userToken: UserToken): ResultFlow<Void> {
         signOut()
         return repository.deleteAccount(userToken)
     }
@@ -173,8 +172,7 @@ private fun getGoogleAccountFromSignInResult(data: Intent?): GoogleAccount? {
         val task = GoogleSignIn.getSignedInAccountFromIntent(data)
         val account = task.getResult(ApiException::class.java)
         return account?.asGoogleAccount()
-    }
-    catch (e: ApiException) {
+    } catch (e: ApiException) {
         Log.w(TAG, "Google sign in failed - code=${e.statusCode}")
     }
     Log.w(TAG, "Google sign in failed!")
@@ -190,8 +188,7 @@ private fun GoogleSignInAccount.asGoogleAccount(): GoogleAccount? =
             googleId = id!!,
             googleIdToken = idToken!!,
         )
-    }
-    catch (e: NullPointerException) {
+    } catch (e: NullPointerException) {
         Log.w(TAG, "Unable to retrieve required ID from account.")
         null
     }

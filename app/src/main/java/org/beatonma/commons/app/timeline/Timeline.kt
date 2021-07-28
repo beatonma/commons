@@ -104,7 +104,7 @@ fun Timeline(
     scrollState: ScrollState = rememberScrollState(),
 ) {
     val renderData = renderData(data)
-    val colors = remember {
+    val colors = remember(surfaceColor, contentColor, barColors) {
         TimelineColors(surfaceColor, contentColor, bars = barColors)
     }
 
@@ -147,7 +147,7 @@ private fun TimelineLayout(
                 position + placeable.width
             }
 
-        val height = placeables.sumBy(Placeable::height)
+        val height = placeables.sumOf(Placeable::height)
 
         layout(width, height) {
             var y = 0
@@ -351,7 +351,8 @@ private fun GroupLabel(
     Column(Modifier.padding(top = 2.dp)) {
         Text(
             label,
-            Modifier.background(colors.overlay)
+            Modifier
+                .background(colors.overlay)
                 .requiredWidthIn(0.dp, 256.dp),
             maxLines = if (state.isExpanded) 10 else 1,
             style = typography.caption,

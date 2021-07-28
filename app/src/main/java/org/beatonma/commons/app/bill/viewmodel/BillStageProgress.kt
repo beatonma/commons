@@ -1,8 +1,8 @@
-package org.beatonma.commons.app.bill.compose.viewmodel
+package org.beatonma.commons.app.bill.viewmodel
 
 import org.beatonma.commons.core.House
 import org.beatonma.commons.data.extensions.BillStageCanonicalNames
-import java.util.*
+import java.util.Locale
 
 /**
  * https://www.parliament.uk/about/how/laws/passage-bill/commons/coms-royal-assent/
@@ -64,7 +64,7 @@ internal fun BillStageProgress.getCategory(originatingHouse: House): BillStageCa
     }
 
 internal fun classifyProgress(stageType: String, previous: BillStageProgress): BillStageProgress {
-    val stageTypeLowercase = stageType.toLowerCase(Locale.ROOT)
+    val stageTypeLowercase = stageType.lowercase(Locale.ROOT)
 
     BillStageProgress.values()
         .filter { it.ordinal >= previous.ordinal }

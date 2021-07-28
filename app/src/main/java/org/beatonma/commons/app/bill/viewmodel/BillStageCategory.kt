@@ -1,4 +1,4 @@
-package org.beatonma.commons.app.bill.compose.viewmodel
+package org.beatonma.commons.app.bill.viewmodel
 
 enum class BillStageCategory {
     /**

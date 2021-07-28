@@ -6,8 +6,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.AmbientContentColor
 import androidx.compose.material.ContentAlpha
+import androidx.compose.material.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -86,7 +86,7 @@ private fun CenterMarker(height: Dp) {
         Modifier
             .width(2.dp)
             .height(height)
-            .background(AmbientContentColor.current)
+            .background(LocalContentColor.current)
             .alpha(ContentAlpha.medium)
     )
 }

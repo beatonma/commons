@@ -1,4 +1,4 @@
-package org.beatonma.commons.app.bill.compose
+package org.beatonma.commons.app.bill
 
 import org.beatonma.commons.data.core.room.entities.bill.BillSponsorWithParty
 

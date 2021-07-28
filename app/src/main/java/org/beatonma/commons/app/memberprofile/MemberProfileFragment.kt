@@ -26,7 +26,7 @@ class MemberProfileFragment : SocialFragment() {
         viewmodel.memberID = getMemberIdFromBundle()
 
         return composeScreen(
-            AmbientMemberProfileActions provides MemberProfileActions(
+            LocalMemberProfileActions provides MemberProfileActions(
                 onConstituencyClick = this::navigateTo
             ),
         ) {

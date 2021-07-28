@@ -1,4 +1,4 @@
-package org.beatonma.commons.app.bill.compose
+package org.beatonma.commons.app.bill
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -8,13 +8,15 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.material.AmbientContentColor
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ListItem
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ProvidableAmbient
-import androidx.compose.runtime.Providers
-import androidx.compose.runtime.ambientOf
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
@@ -22,9 +24,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.R
-import org.beatonma.commons.app.bill.compose.viewmodel.AnnotatedBillStage
-import org.beatonma.commons.app.bill.compose.viewmodel.BillStageCategory
+import org.beatonma.commons.app.bill.viewmodel.AnnotatedBillStage
+import org.beatonma.commons.app.bill.viewmodel.BillStageCategory
 import org.beatonma.commons.app.signin.UserAccountViewModel
+import org.beatonma.commons.app.social.HeaderExpansion
 import org.beatonma.commons.app.social.ProvideSocial
 import org.beatonma.commons.app.social.SocialViewModel
 import org.beatonma.commons.app.social.StickySocialScaffold
@@ -35,32 +38,33 @@ import org.beatonma.commons.app.ui.compose.WithResultData
 import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.compose.ambient.shapes
 import org.beatonma.commons.compose.components.CollapsedColumn
-import org.beatonma.commons.compose.components.OptionalText
-import org.beatonma.commons.compose.components.PluralText
-import org.beatonma.commons.compose.components.ResourceText
 import org.beatonma.commons.compose.components.Tag
 import org.beatonma.commons.compose.components.stickyrow.StickyHeaderRow
+import org.beatonma.commons.compose.components.text.Caption
+import org.beatonma.commons.compose.components.text.ComponentTitle
+import org.beatonma.commons.compose.components.text.OptionalText
+import org.beatonma.commons.compose.components.text.PluralText
+import org.beatonma.commons.compose.components.text.Quote
+import org.beatonma.commons.compose.components.text.ResourceText
+import org.beatonma.commons.compose.components.text.ScreenTitle
 import org.beatonma.commons.compose.layout.optionalItem
+import org.beatonma.commons.compose.util.dot
+import org.beatonma.commons.compose.util.dotted
 import org.beatonma.commons.core.House
 import org.beatonma.commons.data.core.room.entities.bill.BillPublication
 import org.beatonma.commons.data.core.room.entities.bill.BillSponsorWithParty
 import org.beatonma.commons.data.core.room.entities.bill.CompleteBill
 import org.beatonma.commons.data.resolution.description
 import org.beatonma.commons.repo.result.IoLoading
-import org.beatonma.commons.theme.compose.Padding
-import org.beatonma.commons.theme.compose.components.Caption
-import org.beatonma.commons.theme.compose.components.ComponentTitle
-import org.beatonma.commons.theme.compose.components.Quote
-import org.beatonma.commons.theme.compose.components.ScreenTitle
 import org.beatonma.commons.theme.compose.formatting.formatted
-import org.beatonma.commons.theme.compose.paddingValues
-import org.beatonma.commons.theme.compose.plus
+import org.beatonma.commons.theme.compose.padding.Padding
+import org.beatonma.commons.theme.compose.padding.padding
+import org.beatonma.commons.theme.compose.padding.paddingValues
 import org.beatonma.commons.theme.compose.theme.house
 import org.beatonma.commons.theme.compose.theme.systemui.statusBarsPadding
-import org.beatonma.commons.theme.compose.util.dot
-import org.beatonma.commons.theme.compose.util.dotted
 
-internal val AmbientBillActions: ProvidableAmbient<BillActions> = ambientOf { BillActions() }
+internal val LocalBillActions: ProvidableCompositionLocal<BillActions> =
+    compositionLocalOf { BillActions() }
 
 @Composable
 fun BillDetailLayout(
@@ -84,14 +88,11 @@ fun BillDetailLayout(
 @Composable
 fun BillDetailLayout(
     bill: CompleteBill,
-    onSponsorClick: SponsorAction = AmbientBillActions.current.onSponsorClick,
+    onSponsorClick: SponsorAction = LocalBillActions.current.onSponsorClick,
 ) {
     StickySocialScaffold(
-        headerContentAboveSocial = { headerExpansion, modifier ->
+        aboveSocial = { headerExpansion, modifier ->
             HeaderAboveSocial(bill, headerExpansion, modifier)
-        },
-        headerContentBelowSocial = { headerExpansion, modifier ->
-
         },
         lazyListContent = {
             lazyContent(bill, onSponsorClick)
@@ -102,7 +103,7 @@ fun BillDetailLayout(
 @Composable
 private fun HeaderAboveSocial(
     completeBill: CompleteBill,
-    expansionProgress: Float,
+    expansionProgress: HeaderExpansion,
     modifier: Modifier,
 ) {
     val bill = completeBill.bill
@@ -140,6 +141,7 @@ private fun LazyListScope.lazyContent(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun Publications(
     publications: List<BillPublication>,
@@ -147,9 +149,13 @@ private fun Publications(
 ) {
     CollapsedColumn(
         publications,
-        headerBlock = CollapsedColumn.simpleHeader(stringResource(R.string.bill_publications), "${publications.size}"),
+        headerBlock = CollapsedColumn.simpleHeader(
+            stringResource(R.string.bill_publications),
+            "${publications.size}"
+        ),
         modifier = modifier,
-    ) { publication, itemModifier ->
+        scrollable = false,
+    ) { publication ->
         ListItem(
             text = { Text(publication.title) },
             trailing = { Tag("${publication.contentType}") }
@@ -210,9 +216,9 @@ private fun Stages(
                 ComponentTitle(
                     category.description(),
                     Modifier
-                        .padding(Padding.ScreenHorizontal + Padding.VerticalListItemLarge)
-                        .padding(end = 32.dp)
-                    ,
+                        .padding(Padding.ScreenHorizontal)
+                        .padding(Padding.VerticalListItemLarge)
+                        .padding(end = 32.dp),
                     color = theme.onSurface,
                     maxLines = 1,
                 )
@@ -223,7 +229,9 @@ private fun Stages(
             val stage = item.stage.stage
             val sittings = item.stage.sittings
 
-            Providers(AmbientContentColor provides theme.onSurface) {
+            CompositionLocalProvider(
+                LocalContentColor provides theme.onSurface
+            ) {
                 Column(
                     Modifier
                         .padding(paddingValues(horizontal = 8.dp, top = 6.dp, bottom = 16.dp))
@@ -234,7 +242,7 @@ private fun Stages(
                     Text(stage.type)
 
                     if (sittings.size > 1) {
-                        PluralText(R.plurals.bill_sittings, sittings.size, quantity = sittings.size)
+                        PluralText(R.plurals.bill_sittings, sittings.size)
                     }
 
                     Caption(

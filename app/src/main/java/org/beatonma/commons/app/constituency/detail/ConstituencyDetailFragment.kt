@@ -8,7 +8,7 @@ import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
 import org.beatonma.commons.app.ui.base.SocialFragment
 import org.beatonma.commons.app.ui.compose.composeScreen
-import org.beatonma.commons.app.ui.maps.AmbientMapConfig
+import org.beatonma.commons.app.ui.maps.LocalMapConfig
 import org.beatonma.commons.app.ui.maps.defaultMapConfig
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import org.beatonma.commons.data.core.room.entities.election.ConstituencyResultWithDetails
@@ -30,11 +30,11 @@ class ConstituencyDetailFragment: SocialFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View = composeScreen(
-        AmbientConstituencyActions provides ConstituencyDetailActions(
+        LocalConstituencyActions provides ConstituencyDetailActions(
             onMemberClick = ::navigateToMember,
             onConstituencyResultsClick = ::navigateToResult
         ),
-        AmbientMapConfig provides requireContext().defaultMapConfig(),
+        LocalMapConfig provides requireContext().defaultMapConfig(),
     ) {
         ConstituencyDetailLayout(
             viewmodel,

@@ -26,6 +26,8 @@ import kotlin.math.ceil
 import kotlin.math.roundToInt
 
 /**
+ * TODO cannot browse with accessibility
+ *
  * Displays member profile of two different sizes: big ones with an avatar and small ones without.
  * Small profiles are grouped into columns among the large profiles.
  *
@@ -35,10 +37,11 @@ import kotlin.math.roundToInt
  *  | | === | |
  *  --- === ---
  */
+@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
 @Composable
 internal fun MembersLayout(
-    modifier: Modifier = Modifier,
-    wrapHeight: Int = 240.dp.value.toInt(),
+    modifier: Modifier,
+    wrapHeight: Int,
     content: @Composable () -> Unit,
 ) {
     Layout(content, modifier) { measurables, constraints ->
@@ -49,22 +52,24 @@ internal fun MembersLayout(
 }
 
 @Composable
-internal fun ScrollableMembersLayout(
+internal fun MembersLayout(
     modifier: Modifier = Modifier,
-    scrollState: ScrollState = rememberScrollState(0f),
+    scrollState: ScrollState = rememberScrollState(0),
     isScrollEnabled: Boolean = true,
     reverseScrollDirection: Boolean = false,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     content: @Composable () -> Unit,
 ) {
-    MembersLayout(modifier = modifier
-        .horizontalScroll(
-            scrollState,
-            isScrollEnabled,
-            reverseScrolling = reverseScrollDirection,
-        )
-        .clipToBounds()
-        .padding(contentPadding),
+    MembersLayout(
+        modifier = modifier
+            .horizontalScroll(
+                scrollState,
+                isScrollEnabled,
+                reverseScrolling = reverseScrollDirection,
+            )
+            .clipToBounds()
+            .padding(contentPadding),
+        wrapHeight = 240.dp.value.toInt(),
         content = content
     )
 }
@@ -96,12 +101,10 @@ private fun MeasureScope.buildProfilesLayoutAllSameSize(
  * Expects items of 0-2 different sizes. Small items are grouped into columns.
  * Large items get a column of their own.
  */
-@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-fun MeasureScope.buildProfilesLayout(
+private fun MeasureScope.buildProfilesLayout(
     placeables: List<Placeable>,
     wrapHeight: Int,
 ): MeasureResult {
-
     if (placeables.isEmpty()) {
         return layout(0, 0) {}
     }

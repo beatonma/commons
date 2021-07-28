@@ -4,6 +4,8 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import org.beatonma.commons.app.ui.base.SocialTargetProvider
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.core.extensions.withNotNull
@@ -21,6 +23,7 @@ import org.beatonma.commons.snommoc.models.social.SocialTargetType
 import javax.inject.Inject
 
 private val MemberIdKey = SavedStateKey("member_id")
+typealias MemberHistory = List<Temporal>
 
 @HiltViewModel
 class MemberProfileViewModel @Inject constructor(
@@ -37,15 +40,14 @@ class MemberProfileViewModel @Inject constructor(
 
     fun getMemberData() = memberRepository.getMember(memberID)
 
-    suspend fun constructHistoryOf(member: CompleteMember): List<Temporal> {
+    fun getMemberHistory(member: CompleteMember): Flow<MemberHistory> {
         fun <T : Temporal> MutableList<Temporal>.addEvents(items: List<T>?) {
             withNotNull(items) { safeItems ->
                 addAll(
                     safeItems.mapNotNull {
                         try {
                             it
-                        }
-                        catch (e: Exception) {
+                        } catch (e: Exception) {
                             null
                         }
                     }
@@ -53,16 +55,19 @@ class MemberProfileViewModel @Inject constructor(
             }
         }
 
-        return mutableListOf<Temporal>().apply {
-            addEvents(member.posts)
-            addEvents(member.houses)
-            addEvents(member.experiences)
-            addEvents(compressConstituencies(member.historicConstituencies))
-            addEvents(compressParties(member.parties))
-            addEvents(member.committees)
-            addEvents(member.financialInterests)
+        return flow {
+            val events = mutableListOf<Temporal>().apply {
+                addEvents(member.posts)
+                addEvents(member.houses)
+                addEvents(member.experiences)
+                addEvents(compressConstituencies(member.historicConstituencies))
+                addEvents(compressParties(member.parties))
+                addEvents(member.committees)
+                addEvents(member.financialInterests)
 
-            sortBy { it.startOf() }
+                sortBy { it.startOf() }
+            }
+            emit(events)
         }
     }
 }

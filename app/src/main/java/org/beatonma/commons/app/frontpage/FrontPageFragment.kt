@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.material.AmbientContentColor
+import androidx.compose.material.LocalContentColor
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.Providers
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -15,10 +15,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
-import org.beatonma.commons.app.search.AmbientSearchActions
+import org.beatonma.commons.app.search.LocalSearchActions
 import org.beatonma.commons.app.search.SearchActions
 import org.beatonma.commons.app.search.SearchViewModel
-import org.beatonma.commons.app.signin.AmbientUserToken
+import org.beatonma.commons.app.signin.LocalUserToken
 import org.beatonma.commons.app.signin.NullUserToken
 import org.beatonma.commons.app.signin.UserAccountViewModel
 import org.beatonma.commons.app.ui.compose.composeScreen
@@ -42,15 +42,12 @@ class FrontPageFragment : Fragment(), BackPressConsumer {
     private val zeitgeistActions = ZeitgeistActions(
         onMemberClick = { profile ->
             navigateTo(profile)
-//            navigateTo(R.id.action_frontPageFragment_to_memberProfileFragment, profile)
         },
         onDivisionClick = { division ->
             navigateTo(division)
-//            navigateTo(R.id.action_frontPageFragment_to_divisionProfileFragment, division)
         },
         onBillClick = { bill ->
             navigateTo(bill)
-//            navigateTo(R.id.action_frontPageFragment_to_billFragment, bill)
         },
     )
 
@@ -59,7 +56,7 @@ class FrontPageFragment : Fragment(), BackPressConsumer {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View = composeScreen {
-        val userTokenState = accountViewModel.userTokenLiveData.observeAsState(initial = NullUserToken)
+        val userTokenState = accountViewModel.userTokenLiveData.observeAsState(NullUserToken)
 
         searchUiState = rememberExpandCollapseState()
         val searchActions = remember {
@@ -73,13 +70,13 @@ class FrontPageFragment : Fragment(), BackPressConsumer {
         val zeitgeistResult by viewmodel.zeitgeist.collectAsState(IoLoading)
         val searchResults by searchViewModel.resultLiveData.observeAsState(listOf())
 
-        Providers(
-            AmbientSearchActions provides searchActions,
-            AmbientUserToken provides userTokenState.value,
-            AmbientContentColor provides colors.onSurface,
-            AmbientZeitgeistActions provides zeitgeistActions,
+        CompositionLocalProvider(
+            LocalSearchActions provides searchActions,
+            LocalUserToken provides userTokenState.value,
+            LocalContentColor provides colors.onSurface,
+            LocalZeitgeistActions provides zeitgeistActions,
         ) {
-            FrontPageUi(zeitgeistResult, searchResults)
+            FrontPageUi(zeitgeistResult, searchResults, searchUiState)
         }
     }
 
