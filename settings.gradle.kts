@@ -5,18 +5,30 @@ pluginManagement {
         maven("https://plugins.gradle.org/m2/")
     }
 }
+
+// Core
 include(":core")
+include(":test")
+include(":testhilt")
 include(":network-core")
+
+// Data: network and persistence
 include(":snommoc")
+include(":ukparliament")
 include(":persistence")
 include(":repo")
-include(":app")
-include(":test")
-include(":theme")
-include(":compose")
-include(":themepreview")
-include(":svg")
+
+// UI
 include(":testcompose")
-include(":ukparliament")
-include(":testhilt")
+include(":compose")
+include(":theme")
+include(":svg")
+
+// Debug/dev
 include(":sampledata")
+include(":themepreview")
+
+// App
+include(":app")
+
+//include(":compose-preview")
