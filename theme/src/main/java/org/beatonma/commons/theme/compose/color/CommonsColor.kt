@@ -42,7 +42,7 @@ internal object CommonsColor {
     val SecondaryVariant: Themed = themed(Accent.DarkMint, Accent.DarkPurple)
     val WarningSurface: Color = Color(0xff_cd_2d_22)
     val OnWarningSurface: Color = Text.PrimaryLight
-    val SearchBar: Color = Color(0xff_37_31_51)
+    val SearchBar: Color = Color(0xff_48406e)
     val OnSearchBar: Color = Text.PrimaryLight
 
     val Positive = Color(0xff_4C_AF_50)

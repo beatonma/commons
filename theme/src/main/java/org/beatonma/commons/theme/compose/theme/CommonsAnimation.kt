@@ -2,6 +2,7 @@ package org.beatonma.commons.theme.compose.theme
 
 import androidx.annotation.IntRange
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.DurationBasedAnimationSpec
 import androidx.compose.animation.core.Easing
@@ -14,22 +15,33 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.SpringSpec
 import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.TweenSpec
+import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocal
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 private const val DURATION_DEFAULT = 300
 
 val LocalAnimationSpec: CompositionLocal<DefaultAnimation> = staticCompositionLocalOf { CommonsAnimation }
 
 private object CommonsAnimation: DefaultAnimation {
+    override val itemDelay: Long = 30L
+
     override fun <T> spec(): FiniteAnimationSpec<T> = CommonsSpring()
     override fun <T> fast(): FiniteAnimationSpec<T> = CommonsSpring(stiffness = 2500F)
 
@@ -53,6 +65,17 @@ private object CommonsAnimation: DefaultAnimation {
         animation = tween(duration),
         repeatMode = repeatMode,
     )
+
+    private fun <T> CommonsSpring(
+        dampingRatio: Float = Spring.DampingRatioNoBouncy,
+        stiffness: Float = 60F,
+//    stiffness: Float = 200F
+    ) = spring<T>(dampingRatio = dampingRatio, stiffness = stiffness)
+
+    private fun <T> CommonsTween(
+        duration: Int = DURATION_DEFAULT,
+        easing: Easing = FastOutSlowInEasing,
+    ) = tween<T>(duration, easing = easing)
 }
 
 /**
@@ -60,6 +83,8 @@ private object CommonsAnimation: DefaultAnimation {
  */
 @OptIn(ExperimentalAnimationApi::class)
 interface DefaultAnimation {
+    val itemDelay: Long
+
     fun <T> spec(): FiniteAnimationSpec<T>
     fun <T> fast(): FiniteAnimationSpec<T>
 
@@ -96,18 +121,66 @@ interface DefaultAnimation {
         targetValue: Float,
         visibilityThreshold: Float = 0.01F,
         finishedListener: ((Float) -> Unit)? = null,
-    ) = androidx.compose.animation.core.animateFloatAsState(
+    ): State<Float> = androidx.compose.animation.core.animateFloatAsState(
         targetValue = targetValue,
         animationSpec = spec(),
         visibilityThreshold = visibilityThreshold,
         finishedListener = finishedListener
     )
 
+    /**
+     * Animate with an initial [delay].
+     */
+    @Composable
+    fun animateFloatAsState(
+        targetValue: Float,
+        initialValue: Float,
+        delay: Long,
+        visibilityThreshold: Float = 0.01F,
+        finishedListener: ((Float) -> Unit)? = null,
+    ): State<Float> {
+        var value by remember { mutableStateOf(initialValue) }
+
+        val state = androidx.compose.animation.core.animateFloatAsState(
+            targetValue = value,
+            animationSpec = spec(),
+            visibilityThreshold = visibilityThreshold,
+            finishedListener = finishedListener
+        )
+
+        LaunchedEffect(targetValue) {
+            if (targetValue != value) {
+                launch {
+                    delay(delay)
+                    value = targetValue
+                }
+            }
+        }
+
+        return state
+    }
+
+    /**
+     * Animate with an initial delay based on [position]. Useful for per-item animations in a list.
+     */
+    @Composable
+    fun animateFloatAsState(
+        targetValue: Float,
+        initialValue: Float,
+        position: Int,
+        visibilityThreshold: Float = 0.01F,
+        finishedListener: ((Float) -> Unit)? = null,
+    ): State<Float> = animateFloatAsState(
+        targetValue = targetValue,
+        initialValue = initialValue,
+        delay = itemDelay * position,
+    )
+
     @Composable
     fun animateColorAsState(
         targetValue: Color,
         finishedListener: ((Color) -> Unit)? = null,
-    ) = androidx.compose.animation.animateColorAsState(
+    ): State<Color> = androidx.compose.animation.animateColorAsState(
         targetValue = targetValue,
         finishedListener = finishedListener
     )
@@ -116,7 +189,7 @@ interface DefaultAnimation {
     fun animateDpAsState(
         targetValue: Dp,
         finishedListener: ((Dp) -> Unit)? = null,
-    ) = androidx.compose.animation.core.animateDpAsState(
+    ): State<Dp> = androidx.compose.animation.core.animateDpAsState(
         targetValue = targetValue,
         finishedListener = finishedListener
     )
@@ -127,23 +200,36 @@ interface DefaultAnimation {
         transitionSpec: @Composable Transition.Segment<S>.() -> FiniteAnimationSpec<Float> = { spec() },
         label: String = "FloatAnimation",
         targetValueByState: @Composable (state: S) -> Float
-    ) = transition.animateFloat(
+    ): State<Float> = transition.animateFloat(
+        transitionSpec = transitionSpec,
+        label = label,
+        targetValueByState = targetValueByState
+    )
+
+    @Composable
+    fun <S> animateColor(
+        transition: Transition<S>,
+        transitionSpec: @Composable Transition.Segment<S>.() -> FiniteAnimationSpec<Color> = { spec() },
+        label: String = "FloatAnimation",
+        targetValueByState: @Composable (state: S) -> Color
+    ): State<Color> = transition.animateColor(
+        transitionSpec = transitionSpec,
+        label = label,
+        targetValueByState = targetValueByState
+    )
+
+    @Composable
+    fun <S> animateDp(
+        transition: Transition<S>,
+        transitionSpec: @Composable Transition.Segment<S>.() -> FiniteAnimationSpec<Dp> = { spec() },
+        label: String = "FloatAnimation",
+        targetValueByState: @Composable (state: S) -> Dp
+    ): State<Dp> = transition.animateDp(
         transitionSpec = transitionSpec,
         label = label,
         targetValueByState = targetValueByState
     )
 }
-
-private fun <T> CommonsSpring(
-    dampingRatio: Float = Spring.DampingRatioNoBouncy,
-    stiffness: Float = 200F
-) = spring<T>(dampingRatio = dampingRatio, stiffness = stiffness)
-
-private fun <T> CommonsTween(
-    duration: Int = DURATION_DEFAULT,
-    easing: Easing = FastOutSlowInEasing,
-) = tween<T>(duration, easing = easing)
-
 
 private fun cubicBezier(a: Number, b: Number, c: Number, d: Number) =
     CubicBezierEasing(a.toFloat(), b.toFloat(), c.toFloat(), d.toFloat())
