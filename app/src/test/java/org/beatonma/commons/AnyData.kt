@@ -1,6 +1,6 @@
 package org.beatonma.commons
 
-import org.beatonma.commons.app.bill.BillStageProgress
+import org.beatonma.commons.app.bill.viewmodel.BillStageProgress
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.room.entities.bill.BillStage
 import org.beatonma.commons.data.core.room.entities.bill.BillStageSitting

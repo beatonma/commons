@@ -5,7 +5,6 @@ import org.junit.runners.Suite
 
 @RunWith(Suite::class)
 @Suite.SuiteClasses(
-    GraphicsUnitTest::class,
     IntTest::class
 )
 class KotlinUtilTestSuite

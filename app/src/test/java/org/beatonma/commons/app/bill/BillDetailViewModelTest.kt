@@ -3,6 +3,9 @@ package org.beatonma.commons.app.bill
 import kotlinx.coroutines.runBlocking
 import org.beatonma.commons.anyBillStage
 import org.beatonma.commons.anyBillStageSitting
+import org.beatonma.commons.app.bill.viewmodel.BillStageCategory
+import org.beatonma.commons.app.bill.viewmodel.BillStageProgress
+import org.beatonma.commons.app.bill.viewmodel.classifyProgress
 import org.beatonma.commons.core.House
 import org.beatonma.commons.data.core.room.entities.bill.BillStageWithSittings
 import org.beatonma.commons.test.extensions.assertions.shouldbe
@@ -104,8 +107,8 @@ private val stages = listOf(
 class BillDetailViewModelTest {
     @Test
     fun `classifyProgress is correct`() {
-        classifyProgress("1st reading", previous = null) shouldbe
-                BillStageProgress.FirstFirstReading  // previous is not set so first matching value should be taken
+        classifyProgress("1st reading", previous = BillStageProgress.FirstFirstReading) shouldbe
+            BillStageProgress.FirstFirstReading  // previous is not set so first matching value should be taken
 
         classifyProgress("1st reading", previous = BillStageProgress.FirstFirstReading) shouldbe
                 BillStageProgress.FirstFirstReading  // Same as previous - we haven't seen any later stage yet so don't assume they exist
@@ -125,18 +128,27 @@ class BillDetailViewModelTest {
         classifyProgress("3rd reading", previous = BillStageProgress.SecondSecondReading) shouldbe
                 BillStageProgress.SecondThirdReading
 
-        classifyProgress("Consideration of Commons amendments", previous = BillStageProgress.SecondThirdReading) shouldbe
-                BillStageProgress.ConsiderationOfAmendments  // Unique value, value of previous does not matter
+        classifyProgress(
+            "Consideration of Commons amendments",
+            previous = BillStageProgress.SecondThirdReading
+        ) shouldbe
+            BillStageProgress.ConsiderationOfAmendments  // Unique value, value of previous does not matter
 
         classifyProgress("Royal Assent", previous = BillStageProgress.SecondSecondReading) shouldbe
-                BillStageProgress.RoyalAssent  // Unique value, value of previous does not matter
+            BillStageProgress.RoyalAssent  // Unique value, value of previous does not matter
 
 
-        classifyProgress("Carry-over motion", previous = BillStageProgress.FirstThirdReading) shouldbe
-                BillStageProgress.FirstThirdReading  // Unhandled stage type - return previous value
+        classifyProgress(
+            "Carry-over motion",
+            previous = BillStageProgress.FirstThirdReading
+        ) shouldbe
+            BillStageProgress.FirstThirdReading  // Unhandled stage type - return previous value
 
-        classifyProgress("Carry-over motion", previous = null) shouldbe
-                null  // Unhandled stage type - return previous value
+        classifyProgress(
+            "Carry-over motion",
+            previous = BillStageProgress.FirstFirstReading
+        ) shouldbe
+            BillStageProgress.FirstFirstReading  // Unhandled stage type - return previous value
     }
 
     @Test
@@ -151,61 +163,61 @@ class BillDetailViewModelTest {
 
             // 1st House
             annotated[0].run {
-                house shouldbe House.commons
+                category shouldbe BillStageCategory.Commons
                 progress shouldbe BillStageProgress.FirstFirstReading
             }
             annotated[1].run {
-                house shouldbe House.commons
+                category shouldbe BillStageCategory.Commons
                 progress shouldbe BillStageProgress.FirstSecondReading
             }
             annotated[2].run {
-                house shouldbe House.commons
+                category shouldbe BillStageCategory.Commons
                 progress shouldbe BillStageProgress.FirstCommitteeStage
             }
             annotated[3].run {
-                house shouldbe House.commons
+                category shouldbe BillStageCategory.Commons
                 progress shouldbe BillStageProgress.FirstReportStage
             }
             annotated[4].run {
-                house shouldbe House.commons
+                category shouldbe BillStageCategory.Commons
                 progress shouldbe BillStageProgress.FirstThirdReading
             }
 
             // 2nd House
             annotated[5].run {
-                house shouldbe House.lords
+                category shouldbe BillStageCategory.Lords
                 progress shouldbe BillStageProgress.SecondFirstReading
             }
             annotated[6].run {
-                house shouldbe House.lords
+                category shouldbe BillStageCategory.Lords
                 progress shouldbe BillStageProgress.SecondSecondReading
             }
             annotated[7].run {
-                house shouldbe House.lords
+                category shouldbe BillStageCategory.Lords
                 progress shouldbe BillStageProgress.SecondCommitteeStage
             }
             annotated[8].run {
-                house shouldbe House.lords
+                category shouldbe BillStageCategory.Lords
                 progress shouldbe BillStageProgress.SecondReportStage
             }
             annotated[9].run {
-                house shouldbe House.lords
+                category shouldbe BillStageCategory.Lords
                 progress shouldbe BillStageProgress.SecondThirdReading
             }
 
             // Consideration of amendments
             annotated[10].run {
-                house shouldbe null
+                category shouldbe BillStageCategory.ConsiderationOfAmendments
                 progress shouldbe BillStageProgress.ConsiderationOfAmendments
             }
             annotated[11].run {
-                house shouldbe null
+                category shouldbe BillStageCategory.ConsiderationOfAmendments
                 progress shouldbe BillStageProgress.ConsiderationOfAmendments
             }
 
             // Royal Assent
             annotated[12].run {
-                house shouldbe null
+                category shouldbe BillStageCategory.RoyalAssent
                 progress shouldbe BillStageProgress.RoyalAssent
             }
         }
