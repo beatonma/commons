@@ -29,7 +29,8 @@ class CommonsComposeModule : SimpleAndroidProjectPlugin() {
                 implementations(
                     Dependencies.Jetpack.Compose.TEST,
                     Dependencies.Jetpack.Compose.TEST_JUNIT,
-                    project(Modules.TestCompose)
+                    Dependencies.Jetpack.Compose.TEST_MANIFEST,
+                    project(Modules.TestCompose),
                 )
             }
 

@@ -44,11 +44,11 @@ abstract class ComposeTest {
      * Print UI state to log in both unmerged and merged forms to help identify
      * unexpected merge points.
      */
-    fun dump(label: String = "dump") {
-        println("[printToLog] Unmerged tree:")
+    fun dump(label: String = "default") {
+        println("[printToLog $label] Unmerged tree:")
         composeTestRule.onRoot(useUnmergedTree = true).printToLog(label)
         println("[printToLog] -")
-        println("[printToLog] Merged tree:")
+        println("[printToLog $label] Merged tree:")
         composeTestRule.onRoot(useUnmergedTree = false).printToLog(label)
         println("[printToLog] =======")
     }

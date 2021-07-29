@@ -9,7 +9,8 @@ dependencies {
     main {
         implementations(
             Dependencies.Jetpack.Compose.TEST,
-            Dependencies.Jetpack.Compose.TEST_JUNIT
+            Dependencies.Jetpack.Compose.TEST_JUNIT,
+            Dependencies.Jetpack.Compose.TEST_MANIFEST
         )
     }
 }
