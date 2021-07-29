@@ -1,5 +1,7 @@
 package org.beatonma.commons.compose.components
 
+import org.beatonma.commons.compose.components.text.TextValidationResult
+import org.beatonma.commons.compose.components.text.TextValidationRules
 import org.beatonma.commons.test.extensions.assertions.shouldNotBe
 import org.beatonma.commons.test.extensions.assertions.shouldbe
 import org.junit.Test
