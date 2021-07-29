@@ -23,3 +23,6 @@
 ## Needed for Navigation..?
 #-keep class * extends androidx.fragment.app.Fragment{}
 #-keep @org.beatonma.commons.app.navigation.NavigationTarget class **
+
+# Google Maps
+-keep,allowoptimization class com.google.android.libraries.maps.** { *; }
