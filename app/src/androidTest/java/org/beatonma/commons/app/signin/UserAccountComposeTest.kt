@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import dev.chrisbanes.accompanist.insets.ProvideWindowInsets
+import com.google.accompanist.insets.ProvideWindowInsets
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.sampledata.SampleUserToken
 import org.beatonma.commons.testcompose.test.ComposeTest

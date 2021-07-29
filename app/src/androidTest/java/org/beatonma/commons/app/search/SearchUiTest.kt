@@ -21,7 +21,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.test.filters.MediumTest
-import dev.chrisbanes.accompanist.insets.ProvideWindowInsets
+import com.google.accompanist.insets.ProvideWindowInsets
 import org.beatonma.commons.compose.animation.ExpandCollapseState
 import org.beatonma.commons.compose.animation.rememberExpandCollapseState
 import org.beatonma.commons.compose.util.rememberListOf

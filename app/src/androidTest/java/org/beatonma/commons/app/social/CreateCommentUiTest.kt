@@ -13,7 +13,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performTextInput
 import androidx.test.filters.MediumTest
-import dev.chrisbanes.accompanist.insets.ProvideWindowInsets
+import com.google.accompanist.insets.ProvideWindowInsets
 import org.beatonma.commons.app.signin.LocalUserAccountActions
 import org.beatonma.commons.app.signin.NullUserToken
 import org.beatonma.commons.app.signin.UserAccountActions
