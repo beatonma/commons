@@ -5,28 +5,21 @@ import Modules
 import Plugins
 import Versions
 import com.android.build.gradle.BaseExtension
-import org.beatonma.commons.buildsrc.Commons
 import org.beatonma.commons.buildsrc.Git
+import org.beatonma.commons.buildsrc.config.Commons
 import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.plugins.PluginContainer
 import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.gradle.kotlin.dsl.maven
 import org.gradle.kotlin.dsl.project
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
-abstract class CommonsAndroidModule<T : BaseExtension> : AndroidProjectPlugin<T>() {
+interface CommonsAndroidPlugin<T : BaseExtension> : AndroidProjectPlugin<T> {
 
     @Suppress("UNCHECKED_CAST")
     override val Project.android: T
         get() = extensions.findByName("android") as? T
             ?: error("Not an Android module: $name")
-
-    open val timestamp: String by lazy {
-        SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault()).format(Date())
-    }
 
     override fun applyPlugins(plugins: PluginContainer) {
         with(plugins) {
@@ -59,6 +52,7 @@ abstract class CommonsAndroidModule<T : BaseExtension> : AndroidProjectPlugin<T>
                 )
 
                 testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+                vectorDrawables.useSupportLibrary = true
             }
 
             buildTypes {

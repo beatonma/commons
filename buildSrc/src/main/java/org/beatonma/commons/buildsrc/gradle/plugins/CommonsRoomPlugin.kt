@@ -3,7 +3,10 @@ package org.beatonma.commons.buildsrc.gradle.plugins
 import Dependencies
 import org.gradle.kotlin.dsl.DependencyHandlerScope
 
-class CommonsRoomModule : ProjectPlugin() {
+/**
+ * Configure a project for use with Room.
+ */
+class CommonsRoomPlugin : ProjectPlugin {
 
     override fun applyDependencies(dependencies: DependencyHandlerScope) {
         super.applyDependencies(dependencies)
@@ -16,7 +19,7 @@ class CommonsRoomModule : ProjectPlugin() {
 
                 implementations(
                     Dependencies.Room.KTX,
-                    Dependencies.Room.RUNTIME
+                    Dependencies.Room.RUNTIME,
                 )
             }
         }

@@ -3,13 +3,21 @@ package org.beatonma.commons.buildsrc.gradle.plugins
 import Plugins
 import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
-import org.beatonma.commons.buildsrc.Commons
 import org.beatonma.commons.buildsrc.Git
+import org.beatonma.commons.buildsrc.config.Commons
 import org.beatonma.commons.buildsrc.gradle.minify
 import org.gradle.api.Project
 import org.gradle.api.plugins.PluginContainer
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
-class CommonsApplicationModule: CommonsAndroidModule<BaseAppModuleExtension>() {
+/**
+ * Configure a project as an Android application.
+ */
+class CommonsApplicationPlugin : CommonsAndroidPlugin<BaseAppModuleExtension> {
+    private val timestamp: String =
+        SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault()).format(Date())
 
     override fun applyPlugins(plugins: PluginContainer) {
         with(plugins) {
@@ -78,7 +86,7 @@ class CommonsApplicationModule: CommonsAndroidModule<BaseAppModuleExtension>() {
                     if (success) println("Mapping files copied to ${outputDir.absolutePath}")
                     else error(
                         "$taskName failed! Mapping files could not be copied from " +
-                                "build/outputs/mapping/release/ to ${outputDir.absolutePath}!"
+                            "build/outputs/mapping/release/ to ${outputDir.absolutePath}!"
                     )
                 }
             }

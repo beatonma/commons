@@ -1,4 +1,4 @@
-package org.beatonma.commons.buildsrc
+package org.beatonma.commons.buildsrc.data
 
 private fun String.toColorInt(): Int {
     // Use a long to avoid rollovers on #ffXXXXXX

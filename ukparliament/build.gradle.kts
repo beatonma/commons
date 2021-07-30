@@ -1,4 +1,5 @@
 import org.beatonma.commons.buildsrc.gradle.main
+import org.beatonma.commons.buildsrc.gradle.project
 import org.beatonma.commons.buildsrc.gradle.unitTest
 
 plugins {

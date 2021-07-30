@@ -9,7 +9,7 @@ import java.io.File
 /**
  * Project-wide basic configuration for library modules.
  */
-class CommonsLibraryModule : CommonsAndroidModule<LibraryExtension>() {
+class CommonsLibraryPlugin : CommonsAndroidPlugin<LibraryExtension> {
 
     override fun applyPlugins(plugins: PluginContainer) {
         with(plugins) {

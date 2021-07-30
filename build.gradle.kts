@@ -9,15 +9,12 @@ buildscript {
         google()
         mavenCentral()
         maven("https://dl.bintray.com/kotlin/kotlin-eap")
-        jcenter()
     }
     dependencies {
         classpath(Dependencies.Build.GRADLE)
         classpath(Dependencies.Build.KOTLIN)
         classpath(Dependencies.Build.HILT)
         classpath(Dependencies.Build.VERSIONS)
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle.kts files
     }
 }
 
@@ -26,7 +23,7 @@ allprojects {
         google()
         mavenCentral()
         maven("https://dl.bintray.com/kotlin/kotlin-eap")
-        jcenter()
+        jcenter() // Required for Volley 1.1.1 (required by Google Maps)
     }
 }
 
@@ -40,7 +37,16 @@ tasks.named<DependencyUpdatesTask>("dependencyUpdates") {
     resolutionStrategy {
         componentSelection {
             all {
-                val rejected = listOf("alpha", "beta", "rc", "cr", "m", "preview", "b", "ea").any { qualifier ->
+                val rejected = listOf(
+                    "alpha",
+                    "beta",
+                    "rc",
+                    "cr",
+                    "m",
+                    "preview",
+                    "b",
+                    "ea"
+                ).any { qualifier ->
                     candidate.version.matches(Regex("(?i).*[.-]$qualifier[.\\d-+]*"))
                 }
                 if (rejected) {

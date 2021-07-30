@@ -15,7 +15,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.Locale
 
-abstract class ProjectPlugin : Plugin<Project> {
+interface ProjectPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
         applyPlugins(target.plugins)
@@ -23,39 +23,39 @@ abstract class ProjectPlugin : Plugin<Project> {
         applyDependencies(DependencyHandlerScope.of(target.dependencies))
     }
 
-    open fun applyPlugins(plugins: PluginContainer) {}
-    open fun applyRepositories(repositories: RepositoryHandler) {}
-    open fun applyDependencies(dependencies: DependencyHandlerScope) {}
+    fun applyPlugins(plugins: PluginContainer) {}
+    fun applyRepositories(repositories: RepositoryHandler) {}
+    fun applyDependencies(dependencies: DependencyHandlerScope) {}
 }
 
-abstract class AndroidProjectPlugin<T : BaseExtension> : ProjectPlugin() {
+interface AndroidProjectPlugin<T : BaseExtension> : ProjectPlugin {
 
     @Suppress("UNCHECKED_CAST")
-    open val Project.android: T
+    val Project.android: T
         get() = extensions.findByName("android") as? T
             ?: error("Not an Android module: $name")
 
-    abstract fun applyAndroidConfig(android: T, target: Project)
+    fun applyAndroidConfig(android: T, target: Project)
 
     override fun apply(target: Project) {
         super.apply(target)
         applyAndroidConfig(target.android, target)
     }
 
-    protected fun DefaultConfig.buildConfigStrings(vararg mapping: Pair<String, String>) {
+    fun DefaultConfig.buildConfigStrings(vararg mapping: Pair<String, String>) {
         mapping.forEach { (key, value) ->
             buildConfigField("String", key.toUpperCase(Locale.getDefault()), "\"$value\"")
         }
     }
 
-    protected fun DefaultConfig.buildConfigInts(vararg mapping: Pair<String, Int>) {
+    fun DefaultConfig.buildConfigInts(vararg mapping: Pair<String, Int>) {
         mapping.forEach { (key, value) ->
             buildConfigField("int", key.toUpperCase(Locale.getDefault()), "$value")
         }
     }
 
     @Suppress("unused")
-    protected fun T.kotlinOptions(project: Project, block: KotlinJvmOptions.() -> Unit) {
+    fun T.kotlinOptions(project: Project, block: KotlinJvmOptions.() -> Unit) {
         project.tasks.withType(KotlinCompile::class.java).configureEach {
             kotlinOptions {
                 block()
@@ -64,7 +64,7 @@ abstract class AndroidProjectPlugin<T : BaseExtension> : ProjectPlugin() {
     }
 }
 
-abstract class SimpleAndroidProjectPlugin : AndroidProjectPlugin<BaseExtension>()
+interface SimpleAndroidProjectPlugin : AndroidProjectPlugin<BaseExtension>
 
 @Suppress("unused")
 internal fun DependencyHandlerScope.main(

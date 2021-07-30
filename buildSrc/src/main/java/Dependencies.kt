@@ -56,6 +56,7 @@ object Dependencies {
             val TEST_MANIFEST = compose("androidx.compose.ui:ui-test-manifest")
 
             val TOOLING = compose("androidx.compose.ui:ui-tooling")
+            val TOOLING_PREVIEW = compose("androidx.compose.ui:ui-tooling-preview")
             val UI = compose("androidx.compose.ui:ui")
         }
 

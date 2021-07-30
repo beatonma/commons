@@ -1,7 +1,7 @@
-import org.beatonma.commons.buildsrc.Commons
 import org.beatonma.commons.buildsrc.gradle.buildConfigStrings
 import org.beatonma.commons.buildsrc.gradle.instrumentationTest
 import org.beatonma.commons.buildsrc.gradle.main
+import org.beatonma.commons.buildsrc.gradle.project
 
 plugins {
     id(Plugins.Commons.COMMONS_LIBRARY_CONFIG)
@@ -12,7 +12,7 @@ plugins {
 android {
     defaultConfig {
         buildConfigStrings(
-            "APPLICATION_ID" to Commons.APPLICATION_ID
+            "APPLICATION_ID" to org.beatonma.commons.buildsrc.config.Commons.APPLICATION_ID
         )
 
         kapt {

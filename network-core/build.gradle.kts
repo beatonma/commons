@@ -1,4 +1,3 @@
-import org.beatonma.commons.buildsrc.Commons
 import org.beatonma.commons.buildsrc.gradle.buildConfigStrings
 import org.beatonma.commons.buildsrc.gradle.main
 import org.beatonma.commons.buildsrc.local.LocalConfig
@@ -11,7 +10,7 @@ plugins {
 android {
     defaultConfig {
         buildConfigStrings(
-            "APPLICATION_ID" to Commons.APPLICATION_ID,
+            "APPLICATION_ID" to org.beatonma.commons.buildsrc.config.Commons.APPLICATION_ID,
             "USER_AGENT_APP" to LocalConfig.UserAgent.NAME,
             "USER_AGENT_WEBSITE" to LocalConfig.UserAgent.WEBSITE,
             "USER_AGENT_EMAIL" to LocalConfig.UserAgent.EMAIL

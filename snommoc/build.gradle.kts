@@ -1,5 +1,6 @@
 import org.beatonma.commons.buildsrc.gradle.buildConfigStrings
 import org.beatonma.commons.buildsrc.gradle.main
+import org.beatonma.commons.buildsrc.gradle.project
 import org.beatonma.commons.buildsrc.gradle.unitTest
 import org.beatonma.commons.buildsrc.local.LocalConfig
 

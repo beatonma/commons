@@ -1,4 +1,4 @@
-package org.beatonma.commons.buildsrc
+package org.beatonma.commons.buildsrc.config
 
 object Commons {
     const val APPLICATION_ID = "org.beatonma.commons"

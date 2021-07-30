@@ -1,6 +1,9 @@
 package org.beatonma.commons.buildsrc.gradle
 
+import Modules
+import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.kotlin.dsl.DependencyHandlerScope
+import org.gradle.kotlin.dsl.project
 
 /**
  * Simple DSL for organising dependencies{ } by build type.
@@ -54,7 +57,6 @@ fun DependencyHandlerScope.instrumentationTest(
 ) = InstrumentationTestDependencyScope().block()
 
 interface DependencyScope {
-
     fun DependencyHandlerScope.ap(vararg modules: Any) = annotationProcessors(modules)
     fun DependencyHandlerScope.annotationProcessors(vararg modules: Any)
     fun DependencyHandlerScope.implementations(vararg modules: Any)
@@ -107,3 +109,7 @@ class InstrumentationTestDependencyScope : DependencyScope {
     override fun DependencyHandlerScope.apis(vararg modules: Any) =
         modules.forEach { "androidTestApi"(it) }
 }
+
+
+fun DependencyHandler.project(module: Modules) = project(module.toString())
+fun DependencyHandlerScope.project(module: Modules) = project(module.toString())

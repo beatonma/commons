@@ -1,6 +1,3 @@
-import org.gradle.api.artifacts.dsl.DependencyHandler
-import org.gradle.kotlin.dsl.project
-
 /**
  * Local modules
  */
@@ -25,5 +22,3 @@ enum class Modules(private val moduleName: String) {
 
     override fun toString(): String = ":$moduleName"
 }
-
-fun DependencyHandler.project(module: Modules) = project(module.toString())

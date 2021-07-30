@@ -1,23 +1,23 @@
-import com.android.build.gradle.internal.dsl.DefaultConfig
-import org.beatonma.commons.buildsrc.AllPartyThemes
-import org.beatonma.commons.buildsrc.Commons
+import com.android.build.api.dsl.DefaultConfig
 import org.beatonma.commons.buildsrc.Git
-import org.beatonma.commons.buildsrc.PartyColors
+import org.beatonma.commons.buildsrc.data.AllPartyThemes
 import org.beatonma.commons.buildsrc.data.ParliamentDotUkPartyIDs
-import org.beatonma.commons.buildsrc.kts.extensions.buildConfigInt
-import org.beatonma.commons.buildsrc.kts.extensions.debug
-import org.beatonma.commons.buildsrc.kts.extensions.injectInts
-import org.beatonma.commons.buildsrc.kts.extensions.injectStrings
-import org.beatonma.commons.buildsrc.kts.extensions.instrumentationTest
-import org.beatonma.commons.buildsrc.kts.extensions.main
-import org.beatonma.commons.buildsrc.kts.extensions.resColor
-import org.beatonma.commons.buildsrc.kts.extensions.unitTest
+import org.beatonma.commons.buildsrc.data.PartyColors
+import org.beatonma.commons.buildsrc.gradle.buildConfigInt
+import org.beatonma.commons.buildsrc.gradle.debug
+import org.beatonma.commons.buildsrc.gradle.injectInts
+import org.beatonma.commons.buildsrc.gradle.injectStrings
+import org.beatonma.commons.buildsrc.gradle.instrumentationTest
+import org.beatonma.commons.buildsrc.gradle.main
+import org.beatonma.commons.buildsrc.gradle.project
+import org.beatonma.commons.buildsrc.gradle.resColor
+import org.beatonma.commons.buildsrc.gradle.unitTest
 import org.beatonma.commons.buildsrc.local.LocalConfig
 
 plugins {
-    id(Plugins.COMMONS_APPLICATION_CONFIG)
-    id(Plugins.COMMONS_HILT_MODULE)
-    id(Plugins.COMMONS_COMPOSE_MODULE)
+    id(Plugins.Commons.COMMONS_APPLICATION_CONFIG)
+    id(Plugins.Commons.COMMONS_HILT_MODULE)
+    id(Plugins.Commons.COMMONS_COMPOSE_MODULE)
 }
 
 android {
@@ -25,8 +25,8 @@ android {
 
     defaultConfig {
         injectStrings(
-            "ACCOUNT_USERNAME_CHARACTERS" to Commons.Account.Username.ALLOWED_CHARACTERS,
-            "ACCOUNT_USERNAME_PATTERN" to Commons.Account.Username.REGEX,
+            "ACCOUNT_USERNAME_CHARACTERS" to org.beatonma.commons.buildsrc.config.Commons.Account.Username.ALLOWED_CHARACTERS,
+            "ACCOUNT_USERNAME_PATTERN" to org.beatonma.commons.buildsrc.config.Commons.Account.Username.REGEX,
             "GOOGLE_MAPS_API_KEY" to LocalConfig.Api.Google.MAPS,
             "GOOGLE_SIGNIN_CLIENT_ID" to LocalConfig.OAuth.Google.WEB_CLIENT_ID,
             asBuildConfig = true,
@@ -34,10 +34,10 @@ android {
         )
 
         injectInts(
-            "ACCOUNT_USERNAME_MAX_LENGTH" to Commons.Account.Username.MAX_LENGTH,
-            "ACCOUNT_USERNAME_MIN_LENGTH" to Commons.Account.Username.MIN_LENGTH,
-            "SOCIAL_COMMENT_MAX_LENGTH" to Commons.Social.MAX_COMMENT_LENGTH,
-            "SOCIAL_COMMENT_MIN_LENGTH" to Commons.Social.MIN_COMMENT_LENGTH,
+            "ACCOUNT_USERNAME_MAX_LENGTH" to org.beatonma.commons.buildsrc.config.Commons.Account.Username.MAX_LENGTH,
+            "ACCOUNT_USERNAME_MIN_LENGTH" to org.beatonma.commons.buildsrc.config.Commons.Account.Username.MIN_LENGTH,
+            "SOCIAL_COMMENT_MAX_LENGTH" to org.beatonma.commons.buildsrc.config.Commons.Social.MAX_COMMENT_LENGTH,
+            "SOCIAL_COMMENT_MIN_LENGTH" to org.beatonma.commons.buildsrc.config.Commons.Social.MIN_COMMENT_LENGTH,
             "THEME_TEXT_DARK" to PartyColors.TEXT_DARK,
             "THEME_TEXT_LIGHT" to PartyColors.TEXT_LIGHT,
             asBuildConfig = true,
@@ -55,9 +55,6 @@ android {
         injectPartyIDs(ParliamentDotUkPartyIDs)
 
         testApplicationId = "org.beatonma.commons.test"
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        vectorDrawables.useSupportLibrary = true
     }
 
     signingConfigs {
@@ -79,57 +76,33 @@ android {
             signingConfig = signingConfigs.getByName("release")
         }
     }
-
-    buildFeatures {
-        viewBinding = true
-    }
-    kotlinOptions {
-        useIR = true
-
-        freeCompilerArgs = freeCompilerArgs + listOf(
-            "-Xopt-in=kotlin.RequiresOptIn"
-        )
-    }
 }
 
 dependencies {
     unitTest {
-        annotationProcessors(
-            Dependencies.Dagger.COMPILER,
-            Dependencies.Dagger.ANNOTATION_PROCESSOR
-        )
-
         implementations(
             project(Modules.Test),
-            Dependencies.Dagger.DAGGER,
             Dependencies.Kotlin.REFLECT,
             Dependencies.Kotlin.Coroutines.TEST,
             Dependencies.Test.JUNIT,
             Dependencies.Test.MOCKITO,
             Dependencies.Retrofit.MOCK,
             Dependencies.Test.OKHTTP_MOCK_SERVER,
-            Dependencies.Test.AndroidX.CORE
+            Dependencies.Test.Jetpack.CORE,
         )
     }
 
     instrumentationTest {
-        annotationProcessors(
-            Dependencies.Dagger.COMPILER,
-            Dependencies.Dagger.ANNOTATION_PROCESSOR
-        )
-
         implementations(
             project(Modules.Test),
-            Dependencies.Dagger.Hilt.TESTING,
             Dependencies.Kotlin.Coroutines.TEST,
-            Dependencies.Test.AndroidX.CORE,
+            Dependencies.Test.Jetpack.CORE,
             Dependencies.Test.JUNIT,
-            Dependencies.Test.AndroidX.LIVEDATA,
-            Dependencies.Test.AndroidX.RULES,
-            Dependencies.Test.AndroidX.RUNNER,
-            Dependencies.Test.AndroidX.Espresso.CONTRIB,
-            Dependencies.Test.AndroidX.Espresso.CORE,
-            Dependencies.AndroidX.Compose.TEST
+            Dependencies.Test.Jetpack.LIVEDATA,
+            Dependencies.Test.Jetpack.RULES,
+            Dependencies.Test.Jetpack.RUNNER,
+            Dependencies.Test.Jetpack.Espresso.CONTRIB,
+            Dependencies.Test.Jetpack.Espresso.CORE,
         )
     }
 
@@ -138,7 +111,7 @@ dependencies {
             Dependencies.Kotlin.REFLECT,
 //            Dependencies.Debug.LEAK_CANARY,
             project(Modules.SampleData),
-            project(Modules.ThemePreview)
+            project(Modules.ThemePreview),
         )
     }
 
@@ -148,35 +121,37 @@ dependencies {
             Dependencies.Kotlin.Coroutines.CORE,
             Dependencies.Kotlin.Coroutines.PLAY,
 
+            Dependencies.Dagger.Hilt.NAV_COMPOSE,
             Dependencies.Dagger.Hilt.LIFECYCLE_VIEWMODEL,
             Dependencies.Dagger.Hilt.WORK,
 
             Dependencies.Room.RUNTIME,
 
-            Dependencies.AndroidX.Compose.ANIMATION,
-            Dependencies.AndroidX.Compose.LIVEDATA,
-            Dependencies.AndroidX.Compose.MATERIAL_ICONS_CORE,
-            Dependencies.AndroidX.Compose.MATERIAL_ICONS_EXTENDED,
-            Dependencies.AndroidX.Compose.RUNTIME,
-            Dependencies.AndroidX.Compose.UI,
+            Dependencies.Jetpack.Compose.ANIMATION,
+            Dependencies.Jetpack.Compose.LIVEDATA,
+            Dependencies.Jetpack.Compose.MATERIAL_ICONS_CORE,
+            Dependencies.Jetpack.Compose.MATERIAL_ICONS_EXTENDED,
+            Dependencies.Jetpack.NAVIGATION_COMPOSE,
+            Dependencies.Jetpack.LIFECYCLE_VIEWMODEL_COMPOSE,
 
-            Dependencies.AndroidX.ACTIVITY,
-            Dependencies.AndroidX.FRAGMENT,
-            Dependencies.AndroidX.APPCOMPAT,
-            Dependencies.AndroidX.CONSTRAINTLAYOUT,
-            Dependencies.AndroidX.CORE_KTX,
-            Dependencies.AndroidX.LIFECYCLE_RUNTIME,
-            Dependencies.AndroidX.LIVEDATA_KTX,
-            Dependencies.AndroidX.NAVIGATION_FRAGMENT,
-            Dependencies.AndroidX.NAVIGATION_UI,
-            Dependencies.AndroidX.RECYCLERVIEW,
-            Dependencies.AndroidX.VIEWMODEL_KTX,
-            Dependencies.AndroidX.WORK,
+            Dependencies.Jetpack.ACTIVITY,
+            Dependencies.Jetpack.ACTIVITY_COMPOSE,
+            Dependencies.Jetpack.FRAGMENT,
+            Dependencies.Jetpack.APPCOMPAT,
+            Dependencies.Jetpack.CORE_KTX,
+            Dependencies.Jetpack.LIFECYCLE_RUNTIME,
+            Dependencies.Jetpack.LIVEDATA_KTX,
+            Dependencies.Jetpack.NAVIGATION_FRAGMENT,
+            Dependencies.Jetpack.NAVIGATION_UI,
+            Dependencies.Jetpack.SAVEDSTATE,
+            Dependencies.Jetpack.VIEWMODEL_KTX,
+            Dependencies.Jetpack.WORK,
 
             Dependencies.Retrofit.Converter.MOSHI,
 
             Dependencies.Coil.COIL,
-            Dependencies.Coil.ACCOMPANIST,
+            Dependencies.Coil.COIL_COMPOSE,
+            Dependencies.Accompanist.INSETS,
 
             Dependencies.Google.MATERIAL,
             Dependencies.Google.Play.AUTH,
@@ -194,7 +169,7 @@ dependencies {
             project(Modules.Repository),
             project(Modules.Theme),
             project(Modules.Compose),
-            project(Modules.Svg)
+            project(Modules.Svg),
         )
     }
 }

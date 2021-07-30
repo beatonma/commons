@@ -3,25 +3,6 @@ package org.beatonma.commons.buildsrc
 import org.gradle.api.Project
 import java.io.File
 
-private fun String?.letIfEmpty(fallback: String): String {
-    return if (this == null || isEmpty()) {
-        fallback
-    } else {
-        this
-    }
-}
-
-private fun String?.execute(workingDir: File, fallback: String): String {
-    Runtime.getRuntime().exec(this, null, workingDir).let { process ->
-        process.waitFor()
-        return try {
-            process.inputStream.reader().readText().trim().letIfEmpty(fallback)
-        } catch (e: Exception) {
-            fallback
-        }
-    }
-}
-
 data class GitData(val sha: String, val tag: String, val commitCount: Int, val branch: String)
 object Git {
     fun resolveData(project: Project) = GitData(
@@ -46,5 +27,24 @@ object Git {
 
     fun branch(project: Project): String {
         return "git rev-parse --abbrev-ref HEAD".execute(project.rootDir, "unknown-branch")
+    }
+}
+
+private fun String?.letIfEmpty(fallback: String): String {
+    return if (this == null || isEmpty()) {
+        fallback
+    } else {
+        this
+    }
+}
+
+private fun String?.execute(workingDir: File, fallback: String): String {
+    Runtime.getRuntime().exec(this, null, workingDir).let { process ->
+        process.waitFor()
+        return try {
+            process.inputStream.reader().readText().trim().letIfEmpty(fallback)
+        } catch (e: Exception) {
+            fallback
+        }
     }
 }

@@ -17,21 +17,20 @@ object Versions {
         const val HILT = DAGGER
 
         object Play {
-            const val AUTH = "18.1.0"
-            const val LOCATION = "17.0.0"
-//            const val MAPS = "17.0.0"
+            const val AUTH = "19.2.0"
+            const val LOCATION = "18.0.0"
         }
 
         object Maps {
             const val MAPS = "3.1.0-beta"
-            const val UTIL = "2.0.3"
-            const val KTX = "2.2.0"
+            const val UTIL = "2.2.5"
+            const val KTX = "3.1.0"
         }
     }
 
     object Jetpack {
         const val HILT = "1.0.0-alpha03"
-        const val ACTIVITY = "1.3.0-rc02"
+        const val ACTIVITY = "1.3.0"
         const val ANNOTATIONS = "1.2.0"
         const val APPCOMPAT = "1.4.0-alpha03"
         const val CORE_KTX = "1.7.0-alpha01"
@@ -43,16 +42,15 @@ object Versions {
         const val WORK = "2.4.0"
 
         object Compose {
-            //            const val COMPOSE = "1.0.0-rc02"
-            const val COMPOSE = "1.0.0-rc02"
-            const val ACTIVITY = "1.3.0-rc02"
+            const val COMPOSE = "1.0.0"
+            const val ACTIVITY = "1.3.0"
             const val CONSTRAINT_LAYOUT = "1.0.0-beta01"
             const val LIFECYCLE_VIEWMODEL = "1.0.0-alpha07"
             const val NAVIGATION = "2.4.0-alpha05"
         }
 
         object Test {
-            const val CORE = "1.4.0"
+            const val CORE = "1.3.0" // 1.3.0 required by hilt 2.38.1
             const val LIVEDATA = "2.1.0"
             const val ESPRESSO = "3.4.0"
         }
@@ -69,8 +67,8 @@ object Versions {
     // Other 3rd party
     const val GLIDE = "4.11.0"
     const val GROUPIE = "2.8.0"
-    const val COIL = "1.3.0"
-    const val ACCOMPANIST_INSETS = "0.14.0"
+    const val COIL = "1.3.1"
+    const val ACCOMPANIST_INSETS = "0.15.0"
 
     // Testing
     const val MOCKITO = "3.5.10"

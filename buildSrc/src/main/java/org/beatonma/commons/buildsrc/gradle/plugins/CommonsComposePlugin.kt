@@ -2,27 +2,17 @@ package org.beatonma.commons.buildsrc.gradle.plugins
 
 import Dependencies
 import Modules
-import Plugins
 import Versions
 import com.android.build.gradle.BaseExtension
+import org.beatonma.commons.buildsrc.gradle.project
 import org.gradle.api.Project
-import org.gradle.api.artifacts.dsl.RepositoryHandler
-import org.gradle.api.plugins.PluginContainer
 import org.gradle.kotlin.dsl.DependencyHandlerScope
-import project
 
-class CommonsComposeModule : SimpleAndroidProjectPlugin() {
 
-    override fun applyPlugins(plugins: PluginContainer) {
-        with(plugins) {
-            apply(Plugins.Kotlin.ANDROID)
-        }
-        super.applyPlugins(plugins)
-    }
-
-    override fun applyRepositories(repositories: RepositoryHandler) {
-    }
-
+/**
+ * Configure a project for use with Jetpack Compose.
+ */
+class CommonsComposePlugin : SimpleAndroidProjectPlugin {
     override fun applyDependencies(dependencies: DependencyHandlerScope) {
         with(dependencies) {
             instrumentationTest {
@@ -37,7 +27,7 @@ class CommonsComposeModule : SimpleAndroidProjectPlugin() {
             debug {
                 implementations(
                     Dependencies.Jetpack.Compose.TOOLING,
-                    Dependencies.Kotlin.REFLECT
+                    Dependencies.Kotlin.REFLECT,
                 )
             }
 
@@ -46,7 +36,9 @@ class CommonsComposeModule : SimpleAndroidProjectPlugin() {
                     Dependencies.Jetpack.Compose.COMPILER,
                     Dependencies.Jetpack.Compose.FOUNDATION,
                     Dependencies.Jetpack.Compose.MATERIAL,
-                    Dependencies.Jetpack.Compose.UI
+                    Dependencies.Jetpack.Compose.RUNTIME,
+                    Dependencies.Jetpack.Compose.TOOLING_PREVIEW,
+                    Dependencies.Jetpack.Compose.UI,
                 )
             }
         }
@@ -61,7 +53,7 @@ class CommonsComposeModule : SimpleAndroidProjectPlugin() {
                 freeCompilerArgs = freeCompilerArgs + listOf(
                     "-Xskip-prerelease-check",
                     "-P",
-                    "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=true"
+                    "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=true",
                 )
                 languageVersion = Versions.KOTLIN_LANGUAGE_VERSION
             }

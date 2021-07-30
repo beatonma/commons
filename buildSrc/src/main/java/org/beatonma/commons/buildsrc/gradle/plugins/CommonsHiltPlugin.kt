@@ -3,11 +3,14 @@ package org.beatonma.commons.buildsrc.gradle.plugins
 import Dependencies
 import Modules
 import Plugins
+import org.beatonma.commons.buildsrc.gradle.project
 import org.gradle.api.plugins.PluginContainer
 import org.gradle.kotlin.dsl.DependencyHandlerScope
-import org.gradle.kotlin.dsl.project
 
-class CommonsHiltModule : ProjectPlugin() {
+/**
+ * Configure a project for use with Hilt.
+ */
+class CommonsHiltPlugin : ProjectPlugin {
 
     override fun applyPlugins(plugins: PluginContainer) {
         with(plugins) {
@@ -23,14 +26,14 @@ class CommonsHiltModule : ProjectPlugin() {
             unitTest {
                 implementations(
                     Dependencies.Dagger.Hilt.TESTING,
-                    project(Modules.TestHilt.toString())
+                    project(Modules.TestHilt)
                 )
             }
 
             instrumentationTest {
                 implementations(
                     Dependencies.Dagger.Hilt.TESTING,
-                    project(Modules.TestHilt.toString())
+                    project(Modules.TestHilt)
                 )
             }
 
