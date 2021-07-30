@@ -10,11 +10,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.test.assertHeightIsEqualTo
+import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.assertWidthIsAtLeast
-import androidx.compose.ui.test.assertWidthIsEqualTo
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -23,8 +22,9 @@ import androidx.compose.ui.unit.dp
 import androidx.test.filters.MediumTest
 import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.compose.ambient.LocalAccessibility
+import org.beatonma.commons.testcompose.assertSizeIsSquare
+import org.beatonma.commons.testcompose.assertSizeIsTouchable
 import org.beatonma.commons.testcompose.test.ComposeTest
-import org.beatonma.commons.theme.compose.Size
 import org.junit.Test
 
 @MediumTest
@@ -32,12 +32,9 @@ class CollapsibleChipTest: ComposeTest() {
     override fun withContent(content: @Composable () -> Unit) =
         composeTestRule.apply { setContent(content) }
 
-    private val chipTag = "chip"
+    private val chipTag = TestTag.Chip
     private val chipText = "Compose email"
     private val contentDescription = "Compose an email to fake@snommoc.org"
-
-    // Padding in all directions + icon size
-    private val expectedSizeCollapsed = 8.dp + Size.IconSmall + 8.dp
 
     @Test
     fun layout_default_isCorrect() {
@@ -48,8 +45,9 @@ class CollapsibleChipTest: ComposeTest() {
         perform {
             onNodeWithTag(chipTag)
                 .assertIsDisplayed()
-                .assertWidthIsEqualTo(expectedSizeCollapsed)
-                .assertHeightIsEqualTo(expectedSizeCollapsed)
+                .assertSizeIsSquare()
+                .assertSizeIsTouchable()
+                .assertHasClickAction()
         }
     }
 
@@ -95,7 +93,7 @@ class CollapsibleChipTest: ComposeTest() {
                 .performClick()
 
             onNodeWithTag(chipTag)
-                .assertWidthIsEqualTo(expectedSizeCollapsed)
+                .assertSizeIsSquare()
         }
     }
 
@@ -111,6 +109,8 @@ class CollapsibleChipTest: ComposeTest() {
 
             onNodeWithTag(TestTag.Confirm)
                 .performClick()
+
+            dump(label = "CollapsibleChip")
 
             onNodeWithText("1").assertIsDisplayed()
         }
@@ -137,7 +137,7 @@ class CollapsibleChipTest: ComposeTest() {
     }
 
     @Composable
-    fun TestLayout() {
+    private fun TestLayout() {
         var counter by remember { mutableStateOf(0) }
 
         Column {
@@ -149,7 +149,7 @@ class CollapsibleChipTest: ComposeTest() {
                 counter += 1
             }
 
-            Text(counter.toString())
+            Text("$counter")
         }
     }
 }

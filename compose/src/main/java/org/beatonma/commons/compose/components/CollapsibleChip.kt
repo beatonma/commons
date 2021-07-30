@@ -51,11 +51,13 @@ import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.compose.ambient.LocalAccessibility
 import org.beatonma.commons.compose.ambient.animation
 import org.beatonma.commons.compose.ambient.colors
+import org.beatonma.commons.compose.animation.AutoCollapse
 import org.beatonma.commons.compose.animation.ExpandCollapseState
 import org.beatonma.commons.compose.animation.isExpanded
 import org.beatonma.commons.compose.animation.rememberExpandCollapseState
 import org.beatonma.commons.compose.animation.toggle
 import org.beatonma.commons.compose.modifiers.design.centerOverlay
+import org.beatonma.commons.compose.modifiers.onlyWhen
 import org.beatonma.commons.compose.modifiers.wrapContentWidth
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.theme.compose.Size
@@ -63,6 +65,7 @@ import org.beatonma.commons.theme.compose.padding.padding
 import org.beatonma.commons.theme.compose.theme.CommonsTheme
 import org.beatonma.commons.theme.compose.theme.negative
 import org.beatonma.commons.theme.compose.theme.textSecondary
+
 
 @Composable
 fun CollapsibleChip(
@@ -72,7 +75,7 @@ fun CollapsibleChip(
     modifier: Modifier = Modifier,
     cancelIcon: ImageVector = Icons.Default.Close,
     tint: Color = colors.textSecondary,
-    autoCollapse: Long = 2000,
+    autoCollapse: Long = AutoCollapse.Default,
     confirmAction: () -> Unit,
 ) {
     BaseCollapsibleChip(
@@ -95,7 +98,7 @@ fun CollapsibleChip(
     modifier: Modifier = Modifier,
     cancelIcon: ImageVector = Icons.Default.Close,
     tint: Color = colors.textSecondary,
-    autoCollapse: Long = 2000,
+    autoCollapse: Long = AutoCollapse.Default,
     confirmAction: () -> Unit,
 ) {
     BaseCollapsibleChip(
@@ -118,7 +121,7 @@ fun CollapsibleChip(
     modifier: Modifier = Modifier,
     cancelIcon: ImageVector = Icons.Default.Close,
     tint: Color = colors.textSecondary,
-    autoCollapse: Long = 2000,
+    autoCollapse: Long = AutoCollapse.Default,
     confirmAction: () -> Unit,
 ) {
     BaseCollapsibleChip(
@@ -186,6 +189,7 @@ private fun BaseCollapsibleChip(
     var job: Job? by remember { mutableStateOf(null) }
 
     val toggleState = {
+        println("T O G G L E _ S T A T E")
         job?.cancel()
         state.toggle()
         if (autoCollapse > 0) {
@@ -248,12 +252,12 @@ private fun AccessibleChipLayout(
             icon,
             contentDescription = null,
             modifier = Modifier
-                .padding(all = 8.dp, start = 16.dp)
+                .padding(all = IconPadding, start = ExpandedPadding)
                 .size(Size.IconSmall),
             tint = tint
         )
 
-        text(Modifier.padding(end = 16.dp))
+        text(Modifier.padding(end = ExpandedPadding))
     }
 }
 
@@ -272,44 +276,23 @@ private fun CollapsibleChipLayout(
 ) {
     Row(
         modifier
-            .semantics(mergeDescendants = true) {
-                if (contentDescription != null) {
-                    this.contentDescription = contentDescription
-                }
-            }
             .clip(CircleShape)
             .clickable(
                 enabled = state.isCollapsed,
                 onClick = toggleState,
                 role = Role.Button,
             )
-            .border(2.dp, tint, CircleShape)
-            .padding(2.dp)
-            .testTag("chip"),
+            .semantics(mergeDescendants = true) {
+                if (contentDescription != null) {
+                    this.contentDescription = contentDescription
+                }
+                testTag = TestTag.Chip
+            }
+            .border(2.dp, tint, CircleShape),
 
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(
-            Modifier
-                .clickable(
-                    enabled = state.isExpanded,
-                    onClick = toggleState
-                )
-                .testTag(TestTag.Cancel)
-            ,
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                cancelIcon,
-                contentDescription = stringResource(R.string.content_description_cancel),
-                modifier = Modifier
-                    .wrapContentWidth(animationProgress)
-                    .padding(start = 16.dp, top = 8.dp, end = 8.dp, bottom = 8.dp)
-                    .size(Size.IconSmall)
-                    .alpha(animationProgress),
-                tint = colors.negative
-            )
-        }
+        ChipIcon(state, cancelIcon, animationProgress, toggleState)
 
         // Separator
         Spacer(
@@ -320,40 +303,87 @@ private fun CollapsibleChipLayout(
                 .height(20.dp)
                 .width(1.dp)
         )
+//
+        ExpandedContent(
+            state,
+            icon,
+            tint,
+            animationProgress,
+            confirmAction,
+            text,
+        )
+    }
+}
 
-        Row(
+@Composable
+private fun ChipIcon(
+    state: ExpandCollapseState,
+    cancelIcon: Painter,
+    animationProgress: Float,
+    toggleState: () -> Unit,
+) {
+    Box(
+        Modifier
+            .clickable(
+                enabled = state.isExpanded,
+                onClick = toggleState,
+            )
+            .testTag(TestTag.Cancel),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            cancelIcon,
+            contentDescription = stringResource(R.string.content_description_cancel),
+            modifier = Modifier
+                .wrapContentWidth(animationProgress)
+                .padding(all = IconPadding, start = ExpandedPadding)
+                .size(Size.IconSmall)
+                .alpha(animationProgress),
+            tint = colors.negative
+        )
+    }
+}
+
+@Composable
+private fun ExpandedContent(
+    state: ExpandCollapseState,
+    icon: Painter,
+    tint: Color,
+    animationProgress: Float,
+    confirmAction: () -> Unit,
+    text: @Composable (Modifier) -> Unit,
+) {
+    Row(
+        Modifier
+            .onlyWhen(state.isExpanded) {
+                clickable(onClick = confirmAction)
+            }
+            .testTag(TestTag.Confirm),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            icon,
+            contentDescription = null,
+            modifier = Modifier
+                .padding(IconPadding)
+                .size(Size.IconSmall),
+            tint = tint,
+        )
+
+        text(
             Modifier
-                .clickable(
-                    enabled = state.isExpanded,
-                    onClick = confirmAction
-                )
-                .testTag(TestTag.Confirm),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(
-                icon,
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .size(Size.IconSmall),
-                tint = tint
-            )
-
-            text(
-                Modifier
-                    .wrapContentWidth(animationProgress.progressIn(0F, 0.6F))
-                    .padding(end = 16.dp)
-                    .alpha(animationProgress.progressIn(0.3F, 1F))
-            )
-        }
+                .wrapContentWidth(animationProgress.progressIn(0F, 0.6F))
+                .padding(end = ExpandedPadding)
+                .alpha(animationProgress.progressIn(0.3F, 1F))
+        )
     }
 }
 
 @Preview
 @Composable
-private fun CollapsibleChipPreview() {
+fun CollapsibleChipPreview() {
     var counter by remember { mutableStateOf(0) }
-    CommonsTheme{
+    CommonsTheme {
         Surface {
             Column {
                 CollapsibleChip(
@@ -371,3 +401,14 @@ private fun CollapsibleChipPreview() {
         }
     }
 }
+
+
+/**
+ * Padding around icons.
+ */
+private val IconPadding = 15.dp
+
+/**
+ * Padding at start/end of expanded layout
+ */
+private val ExpandedPadding = IconPadding * 2
