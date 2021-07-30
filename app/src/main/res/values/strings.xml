@@ -131,7 +131,7 @@
     <string name="social_compose_comment" translatable="true">Create comment</string>
     <string name="social_compose_comment_hint" translatable="true">Have your say!</string>
     <string name="social_comment_post" translatable="true">Send</string>
-    <string name="social_comment_invalid_length" translatable="true">%d - %d characters</string>
+    <string name="social_comment_invalid_length" translatable="true">%1$d - %2$d characters</string>
     <string name="social_comment_no_comments" translatable="true">No comments here yet!</string>
     <string name="social_comment_count_nodata" translatable="false">-</string>
 

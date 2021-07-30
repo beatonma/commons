@@ -14,7 +14,7 @@
     <string name="content_description_social_comment_count" translatable="true">Comments: %d</string>
     <string name="content_description_social_votes_count_for" translatable="true">Votes in favour: %d</string>
     <string name="content_description_social_votes_count_against" translatable="true">Votes against: %d</string>
-    <string name="content_description_social_comment" translatable="true">Comment by user "%s" at %s: "%s". </string>
+    <string name="content_description_social_comment" translatable="true">Comment by user "%1$s" at %2$s: "%3$s". </string>
     <string name="content_description_social_action_vote_for" translatable="true">Upvote %s</string>
     <string name="content_description_social_action_vote_against" translatable="true">Downvote %s</string>
     <string name="content_description_social_action_open" translatable="true">View comments</string>
