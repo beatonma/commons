@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <color name="puk_house_of_commons_green">#006e46</color>
-    <color name="puk_house_of_lords_red">#B50938</color>
-
-    <color name="puk_parliament">#373151</color>
-    <color name="puk_royal">#233580</color>
-</resources>

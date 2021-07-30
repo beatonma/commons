@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <integer name="animation_duration">400</integer>
-    <integer name="animation_chip_duration">300</integer>
-    <integer name="animation_search_duration">@integer/animation_duration</integer>
-    <integer name="animation_window_duration">1000</integer>
-    <fraction name="transition_scale_start">0.92</fraction>
-</resources>

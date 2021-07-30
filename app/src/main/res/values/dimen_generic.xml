@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <dimen name="separator_thickness">2dp</dimen>
-    <dimen name="separator_height">@dimen/separator_thickness</dimen>
-    <dimen name="separator_width">@dimen/separator_thickness</dimen>
-    <dimen name="separator_indent_horizontal">16dp</dimen>
-    <dimen name="separator_indent_vertical">6dp</dimen>
-    <dimen name="separator_margin">8dp</dimen>
-</resources>

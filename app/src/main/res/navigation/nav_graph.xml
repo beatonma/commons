@@ -39,12 +39,12 @@
         <deepLink
             android:id="@+id/deeplink_member_profile"
             android:autoVerify="true"
-            app:uri="https://snommoc.org/api/member/{content}/{parliamentdotuk}/" />
+            app:uri="https://snommoc.org/api/member/{parliamentdotuk}/" />
     </fragment>
 
     <fragment
         android:id="@+id/billFragment"
-        android:name="org.beatonma.commons.app.bill.compose.BillDetailFragment"
+        android:name="org.beatonma.commons.app.bill.BillDetailFragment"
         android:label="BillFragment">
         <argument
             android:name="@string/parliamentdotuk"
@@ -79,7 +79,7 @@
 
     <fragment
         android:id="@+id/constituencyDetailFragment"
-        android:name="org.beatonma.commons.app.constituency.compose.detail.ConstituencyDetailFragment"
+        android:name="org.beatonma.commons.app.constituency.detail.ConstituencyDetailFragment"
         android:label="ConstituencyDetailFragment">
         <deepLink
             android:id="@+id/deeplink_constituency_detail"
@@ -95,7 +95,7 @@
 
     <fragment
         android:id="@+id/constituencyElectionResultsFragment"
-        android:name="org.beatonma.commons.app.constituency.compose.electionresults.ConstituencyResultsFragment"
+        android:name="org.beatonma.commons.app.constituency.electionresults.ConstituencyResultsFragment"
         android:label="ConstituencyElectionResultsFragment">
         <deepLink
             android:id="@+id/deeplink_constituency_election_detail"

@@ -154,13 +154,4 @@
 
     <!-- Fragment tags -->
     <string name="fragment_social">fragment_social</string>
-    <string name="fragment_search">fragment_search</string>
-    <string name="fragment_signin">fragment_signin</string>
-
-    <!-- Transition names -->
-    <string name="transition_social" translatable="false">transition_social</string>
-    <string name="transition_social_background" translatable="false">transition_social_background</string>
-    <string name="transition_upvote" translatable="false">transition_upvote</string>
-    <string name="transition_downvote" translatable="false">transition_downvote</string>
-    <string name="transition_comment" translatable="false">transition_comment</string>
 </resources>

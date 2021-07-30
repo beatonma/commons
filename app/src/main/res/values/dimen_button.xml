@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <dimen name="button_min_width">64dp</dimen>
-    <dimen name="button_min_height">@dimen/touchable_min_size</dimen>
-    <dimen name="button_elevation">2dp</dimen>
-</resources>
