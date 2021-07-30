@@ -42,7 +42,6 @@ dependencies {
             Dependencies.Kotlin.Coroutines.CORE,
             Dependencies.Jetpack.CORE_KTX,
             Dependencies.Dagger.Hilt.LIFECYCLE_VIEWMODEL,
-//            Dependencies.Dagger.Hilt.NAV_COMPOSE,
             Dependencies.Retrofit.Converter.MOSHI,
 
             project(Modules.Core),
