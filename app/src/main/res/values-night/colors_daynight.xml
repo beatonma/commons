@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- These colors change depending on day/night app theme -->
+    <color name="Card">#222222</color>
+    <color name="Tabletop">#111111</color>
+
+    <color name="TextPrimary">@color/TextPrimaryLight</color>
+    <color name="TextSecondary">@color/TextSecondaryLight</color>
+    <color name="TextPrimaryInverted">@color/TextPrimaryDark</color>
+    <color name="TextSecondaryInverted">@color/TextSecondaryDark</color>
+    <color name="TextTertiary">@color/TextTertiaryLight</color>
+    <color name="TextTertiaryInverted">@color/TextTertiaryDark</color>
+
+    <color name="SystemBar">@color/Card</color>
+    <color name="SystemStatusBar">@color/SystemBar</color>
+    <color name="SystemNavBar">@color/SystemBar</color>
+
+    <color name="Primary">#444444</color>
+    <color name="PrimaryDark">#333333</color>
+    <color name="Accent">@color/AccentMint</color>
+
+    <color name="SearchBar">#373151</color>
+</resources>
