@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Date and time -->
-    <string name="date_range" translatable="true">%s &#8594; %s</string>
+    <string name="date_range" translatable="true">%1$s &#8594; %2$s</string>
     <string name="date_since" translatable="true">Since %s</string>
     <string name="date_present" translatable="true">Present</string>
 

@@ -16,26 +16,28 @@
 
     <!-- Member profile -->
     <string name="search_lookup_local_member" translatable="true">Tap to find your local MP</string>
-    <string name="member_inactive">No current positions in Parliament</string>
+    <string name="member_status" translatable="true">Current status</string>
+    <string name="member_inactive">No current position in Parliament</string>
     <string name="member_house_of_lords">Member of the House of Lords</string>
+    <string name="member_former_house_of_lords">Former member of the House of Lords</string>
     <string name="member_former_member_for_constituency" translatable="true">Former MP for **%s**</string>
     <string name="member_member_for_constituency" translatable="true">MP for **%s**</string>
 
-    <string name="member_party_constituency">%s &#183; %s</string>
+    <string name="member_party_constituency">%1$s &#183; %2$s</string>
     <string name="member_contact_info" translatable="true">Contact</string>
     <string name="member_contact_info_none" translatable="true">No registered addresses</string>
     <string name="member_financial_interests" translatable="true">Registered interests</string>
     <string name="member_financial_interests_none" translatable="true">No registered interests</string>
     <string name="member_weblinks" translatable="true">Links</string>
-    <string name="member_history_title" translatable="true">History</string>
+    <string name="member_history_title" translatable="true">Timeline</string>
 
     <!-- Constituency details -->
     <string name="member_current_title" translatable="true">Current</string>
     <string name="constituency_current_member" translatable="true">Current MP:</string>
     <string name="constituency_previous_members" translatable="true">Previous MPs:</string>
     <string name="constituency_election_header" translatable="true">%s results</string>
-    <string name="constituency_election_turnout" translatable="true">**%s turnout** (%s of %s)</string>
-    <string name="constituency_candidate_votes" translatable="true">%s - %s</string>
+    <string name="constituency_election_turnout" translatable="true">**%1$s turnout** (%2$s of %3$s)</string>
+    <string name="constituency_candidate_votes" translatable="true">%1$s - %2$s</string>
     <string name="constituency_winner_majority" translatable="true">(+%s majority)</string>
     <string name="constituency_result_gain" translatable="true">Gained</string>
     <string name="constituency_result_hold" translatable="true">Held</string>
@@ -78,7 +80,7 @@
     <!-- Snippets -->
     <string name="snippet_birth_date" translatable="true">Born %s</string>
     <string name="snippet_birth_age" translatable="true">%d years</string>
-    <string name="snippet_birth_place" translatable="true">in %s, %s</string>
+    <string name="snippet_birth_place" translatable="true">in %1$s, %2$s</string>
 
     <string name="snippet_post_type_governmental" translatable="true">Government post</string>
     <string name="snippet_post_type_parliamentary" translatable="true">Parliamentary post</string>
@@ -88,11 +90,13 @@
     <string name="snippet_member_of_house" translatable="true">Member of House of %s</string>
 
     <string name="snippet_financial_interest" translatable="true">Financial interest: %s</string>
-    <string name="snippet_experience" translatable="true">%s @ %s</string>
+    <string name="snippet_experience" translatable="true">%1$s @ %2$s</string>
 
     <!-- Actions -->
     <string name="action_open" translatable="true">Open</string>
     <string name="action_open_url" translatable="true">Open %s</string>
+    <string name="action_open_twitter_user" translatable="true">View %s on Twitter</string>
+    <string name="action_open_facebook_user" translatable="true">View %s on Facebook</string>
     <string name="action_open_wifi_settings" translatable="true">Open wifi settings</string>
     <string name="action_dial_phonenumber" translatable="true">Dial %s</string>
     <string name="action_write_email" translatable="true">Write to %s</string>
@@ -104,7 +108,7 @@
     <string name="account_profile_title" translatable="true">Your account</string>
     <string name="account_sign_in" translatable="true">Sign in</string>
     <string name="account_sign_out" translatable="true">Sign out</string>
-    <string name="account_sign_in_already_signed_in" translatable="true">You are signed in with account \'%s:%s\'</string>
+    <string name="account_sign_in_already_signed_in" translatable="true">You are signed in with account \'%1$s:%2$s\'</string>
     <string name="account_sign_in_rationale" translatable="true">Sign in with your Google account to create an account on the Commons service. This is necessary if you want to vote or comment on any app content.\n\nPlease check our privacy policy for more details: <a href="https://snommoc.org/privacy">https://snommoc.org/privacy</a></string>
     <string name="account_profile_about" translatable="true">Your username may be visible to other users. Your name, email address and photo never leave your device.\n\nPlease check our privacy policy for more details: <a href="https://snommoc.org/privacy">https://snommoc.org/privacy</a>.</string>
     <string name="account_submit_new_username" translatable="true">Submit new username</string>
@@ -116,7 +120,7 @@
     <string name="account_username_validation_denied_by_server" translatable="true">That username is not available - please try something else</string>
 
     <string name="account_delete_account_title" translatable="true">Delete account</string>
-    <string name="account_delete_account_button" translatable="true">Delete account</string>
+    <string name="account_delete_account_button" translatable="true">Delete account…</string>
     <string name="account_delete_confirm_button" translatable="true">Confirm deletion</string>
     <string name="account_delete_confirm_twice_button" translatable="true">I\'m sure</string>
     <string name="account_delete_explanation" translatable="true">If you confirm deletion your account will be made inaccessible immediately and will be deleted completely within the next 14 days. Any votes or comments you have made on the Commons service will also be deleted at that time.</string>
@@ -124,7 +128,7 @@
 
     <!-- Social -->
     <string name="social_new_comment" translatable="true">Add comment</string>
-    <string name="social_compose_comment" translatable="true">Compose comment</string>
+    <string name="social_compose_comment" translatable="true">Create comment</string>
     <string name="social_compose_comment_hint" translatable="true">Have your say!</string>
     <string name="social_comment_post" translatable="true">Send</string>
     <string name="social_comment_invalid_length" translatable="true">%d - %d characters</string>
@@ -141,8 +145,8 @@
 
     <!-- Generic -->
     <string name="dot" translatable="false">&#8226;</string>
-    <string name="hyphenated" translatable="false">%s - %s</string>
-    <string name="dotted" translatable="false">%s &#183; %s</string>
+    <string name="hyphenated" translatable="false">%1$s - %2$s</string>
+    <string name="dotted" translatable="false">%1$s &#183; %2$s</string>
     <string name="integer" translatable="false">%s</string>
     <string name="more" translatable="true">More</string>
     <string name="empty_list" translatable="true">None</string>
