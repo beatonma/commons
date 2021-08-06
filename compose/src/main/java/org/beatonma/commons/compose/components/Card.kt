@@ -11,9 +11,9 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.compose.ambient.shapes
+import org.beatonma.commons.theme.compose.Elevation
 import org.beatonma.commons.theme.compose.padding.Padding
 import org.beatonma.commons.theme.compose.padding.padding
 
@@ -24,7 +24,7 @@ fun Card(
     backgroundColor: Color = colors.surface,
     contentColor: Color = colors.onSurface,
     border: BorderStroke? = null,
-    elevation: Dp = 4.dp,
+    elevation: Dp = Elevation.Card,
     content: @Composable () -> Unit,
 ) {
     Surface(
