@@ -17,15 +17,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
-import org.beatonma.commons.compose.components.OptionalText
 import org.beatonma.commons.compose.util.withAnnotatedStyle
 
 @Composable
 fun PluralText(
     @PluralsRes resId: Int,
-    vararg formatArgs: Any,
     quantity: Int,
     modifier: Modifier = Modifier,
+    vararg formatArgs: Any = arrayOf(quantity),
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
     fontStyle: FontStyle? = null,
@@ -71,5 +70,5 @@ fun PluralText(
 }
 
 @Composable
-private fun pluralResource(@PluralsRes resId: Int, quantity: Int, vararg formatArgs: Array<out Any>): String =
-    LocalContext.current.resources.getQuantityString(resId, quantity, formatArgs)
+private fun pluralResource(@PluralsRes resId: Int, quantity: Int, vararg formatArgs: Any): String =
+    LocalContext.current.resources.getQuantityString(resId, quantity, *formatArgs)
