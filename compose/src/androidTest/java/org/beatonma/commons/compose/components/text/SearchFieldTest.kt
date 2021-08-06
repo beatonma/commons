@@ -13,6 +13,7 @@ import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.test.filters.MediumTest
+import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.compose.util.rememberText
 import org.beatonma.commons.test.extensions.assertions.assertEquals
 import org.beatonma.commons.testcompose.test.ComposeTest
@@ -73,19 +74,19 @@ class SearchFieldTest: ComposeTest() {
         }
 
         perform {
-            onNodeWithTag("clear_icon")
+            onNodeWithTag(TestTag.Clear)
                 .assertDoesNotExist()
 
             onNodeWithTag(tag)
                 .performTextInput("a")
 
-            onNodeWithTag("clear_icon")
+            onNodeWithTag(TestTag.Clear)
                 .assertIsDisplayed()
 
             onNodeWithTag(tag)
                 .performTextClearance()
 
-            onNodeWithTag("clear_icon")
+            onNodeWithTag(TestTag.Clear)
                 .assertDoesNotExist()
         }
     }
@@ -100,18 +101,21 @@ class SearchFieldTest: ComposeTest() {
             onNodeWithTag(tag)
                 .performTextInput("abcdef")
 
-            onNodeWithTag("clear_icon")
+            onNodeWithTag(tag)
+                .assertTextEquals("abcdef")
+
+            onNodeWithTag(TestTag.Clear)
                 .assertIsDisplayed()
                 .performClick()
                 .assertDoesNotExist()
 
             onNodeWithTag(tag)
-                .assertTextEquals("")
+                .assertTextEquals(hintText, includeEditableText = false)
         }
     }
 
     @Composable
-    fun TestLayout(
+    private fun TestLayout(
         queryText: MutableState<String> = rememberText(),
         submittedText: MutableState<String> = rememberText(),
     ) {
@@ -119,12 +123,12 @@ class SearchFieldTest: ComposeTest() {
 
         SearchField(
             hintText,
-            Modifier.testTag("search_field"),
+            Modifier.testTag(tag),
             query = query,
             onQueryChange = { q ->
                 queryText.value = q
             },
-            onSubmit = { imeAction, q ->
+            onSubmit = { _, q ->
                 submittedText.value = q
             }
         )
