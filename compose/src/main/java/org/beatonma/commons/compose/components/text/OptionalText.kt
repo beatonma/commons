@@ -1,4 +1,4 @@
-package org.beatonma.commons.compose.components
+package org.beatonma.commons.compose.components.text
 
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.material.LocalTextStyle
@@ -84,9 +84,9 @@ fun OptionalText(
     onTextLayout: (TextLayoutResult) -> Unit = {},
     style: TextStyle = LocalTextStyle.current,
 ) {
-    if (!text?.toString().isNullOrBlank()) {
+    if (text != null && text.toString().isNotBlank()) {
         Text(
-            text!!,
+            text,
             modifier,
             color,
             fontSize,
@@ -106,4 +106,3 @@ fun OptionalText(
         )
     }
 }
-
