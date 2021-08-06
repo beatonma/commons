@@ -9,6 +9,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.filters.MediumTest
+import org.beatonma.commons.testcompose.assertSizeIsTouchable
 import org.beatonma.commons.testcompose.test.ComposeTest
 import org.junit.Test
 
@@ -30,6 +31,7 @@ class CollapsedColumnTest: ComposeTest() {
             onNodeWithText(headerText)
                 .assertIsDisplayed()
                 .assertHasClickAction()
+                .assertSizeIsTouchable()
 
             onNodeWithText("1")
                 .assertIsDisplayed()
