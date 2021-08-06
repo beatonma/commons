@@ -32,6 +32,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.compose.R
+import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.compose.util.rememberText
 
 @Composable
@@ -142,7 +143,7 @@ private fun SearchFieldLayout(
             ) {
                 IconButton(
                     onClick = { onQueryChange("") },
-                    Modifier.testTag("clear_icon")
+                    Modifier.testTag(TestTag.Clear)
                 ) {
                     Icon(
                         Icons.Default.Clear,
