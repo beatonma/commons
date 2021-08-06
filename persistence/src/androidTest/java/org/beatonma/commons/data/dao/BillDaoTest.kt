@@ -3,7 +3,7 @@ package org.beatonma.commons.data.dao
 import kotlinx.coroutines.runBlocking
 import org.beatonma.commons.data.core.room.dao.BillDao
 import org.beatonma.commons.data.core.room.entities.bill.Bill
-import org.beatonma.commons.data.core.room.entities.bill.BillPublication
+import org.beatonma.commons.data.core.room.entities.bill.BillPublicationBasic
 import org.beatonma.commons.data.core.room.entities.bill.BillSponsor
 import org.beatonma.commons.data.core.room.entities.bill.BillStage
 import org.beatonma.commons.data.core.room.entities.bill.BillStageSitting
@@ -79,7 +79,7 @@ class BillDaoTest: BaseRoomDaoTest<BillDao>() {
     fun ensure_BillPublication_is_written_and_retrieved_correctly() {
         runInsert(BillDao::insertBillPublications) {
             listOf(
-                BillPublication(
+                BillPublicationBasic(
                     billId = BILL_ID,
                     parliamentdotuk = 397898,
                     title = "Bill as introduced"
