@@ -24,13 +24,14 @@ import androidx.compose.ui.test.swipeDown
 import androidx.compose.ui.test.topCenter
 import androidx.compose.ui.unit.dp
 import androidx.test.filters.MediumTest
+import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.testcompose.test.ComposeTest
 import org.junit.Test
 
 @MediumTest
-class CollapsibleHeaderLayoutTest: ComposeTest() {
-    private val headerTag = "collapsing_header"
-    private val listTag = "lazy_list"
+class CollapsibleHeaderLayoutTest : ComposeTest() {
+    private val staticTag = "static"
+    private val collapsibleTag = "collapsible"
 
     private val collapsingHeight = 97.dp
     private val staticHeight = 61.dp
@@ -43,54 +44,54 @@ class CollapsibleHeaderLayoutTest: ComposeTest() {
         withContent { TestLayout() }
 
         perform {
-            onNodeWithTag("static")
+            onNodeWithTag(staticTag)
                 .assertHeightIsEqualTo(staticHeight)
 
-            onNodeWithTag("collapsible")
+            onNodeWithTag(collapsibleTag)
                 .assertHeightIsEqualTo(collapsingHeight)
 
-            onNodeWithTag(headerTag)
+            onNodeWithTag(TestTag.CollapsingHeader)
                 .assertHeightIsEqualTo(collapsingHeight + staticHeight)
         }
     }
 
     @Test
-    fun swipeToEnd_onHeader_collapsesHeader() {
+    fun swipeToEnd_onHeader_collapsesHeaderToMinimum() {
         withContent { TestLayout() }
 
         perform {
-            onNodeWithTag(headerTag)
+            onNodeWithTag(TestTag.CollapsingHeader)
                 .performGesture {
                     swipe(bottomCenter, topCenter)
                 }
                 .assertHeightIsEqualTo(staticHeight)
 
-            onNodeWithTag("static").assertHeightIsEqualTo(staticHeight)
-            onNodeWithTag("collapsible").assertHeightIsEqualTo(0.dp)
+            onNodeWithTag(staticTag).assertHeightIsEqualTo(staticHeight)
+            onNodeWithTag(collapsibleTag).assertHeightIsEqualTo(0.dp)
         }
     }
 
     @Test
-    fun swipeToEnd_onList_collapsesHeader() {
+    fun swipeToEnd_onList_collapsesHeaderToMinimum() {
         withContent { TestLayout() }
 
         perform {
-            onNodeWithTag(listTag)
+            onNodeWithTag(TestTag.LazyList)
                 .performGesture {
                     swipe(bottomCenter, topCenter)
                 }
 
-            onNodeWithTag(headerTag)
+            onNodeWithTag(TestTag.CollapsingHeader)
                 .assertHeightIsEqualTo(staticHeight)
         }
     }
 
     @Test
-    fun swipeToStart_onHeader_expandsHeader() {
+    fun swipeToStart_onHeader_expandsHeaderToFullHeight() {
         withContent { TestLayout() }
 
         perform {
-            onNodeWithTag(headerTag)
+            onNodeWithTag(TestTag.CollapsingHeader)
                 .performGesture {
                     swipe(bottomCenter, topCenter)
                 }
@@ -103,62 +104,62 @@ class CollapsibleHeaderLayoutTest: ComposeTest() {
     }
 
     @Test
-    fun swipeToStart_onList_expandsHeader() {
+    fun swipeToStart_onList_expandsHeaderToFullHeight() {
         withContent { TestLayout() }
 
         perform {
-            onNodeWithTag(listTag)
+            onNodeWithTag(TestTag.LazyList)
                 .performGesture {
                     // swipe towards end
                     swipe(bottomCenter, topCenter)
                 }
 
-            onNodeWithTag(listTag)
+            onNodeWithTag(TestTag.LazyList)
                 .performGesture {
                     // swipe back towards start
                     swipe(topCenter, bottomCenter)
                 }
 
-            onNodeWithTag(headerTag)
+            onNodeWithTag(TestTag.CollapsingHeader)
                 .assertHeightIsEqualTo(collapsingHeight + staticHeight)
         }
     }
 
     @Composable
-    fun TestLayout(
+    private fun TestLayout(
         lazyListState: LazyListState = rememberLazyListState(),
-        headerState : CollapsibleHeaderState = rememberCollapsibleHeaderState(lazyListState),
+        headerState: CollapsibleHeaderState = rememberCollapsibleHeaderState(
+            lazyListState,
+            snapToStateAt = null,
+        ),
     ) {
         val numbers = remember { (1..100).toList() }
-        Column {
-            CollapsibleHeaderLayout(
-                collapsingHeader = { expandedness ->
-                    Column {
-                        Spacer(
-                            Modifier
-                                .testTag("static")
-                                .background(Color.Blue)
-                                .fillMaxWidth()
-                                .height(staticHeight)
-                        )
+        CollapsibleHeaderLayout(
+            collapsingHeader = { expandedness ->
+                Column {
+                    Spacer(
+                        Modifier
+                            .testTag(staticTag)
+                            .background(Color.Blue)
+                            .fillMaxWidth()
+                            .height(staticHeight)
+                    )
 
-                        Spacer(
-                            Modifier
-                                .testTag("collapsible")
-                                .background(Color.Red)
-                                .fillMaxWidth()
-                                .height(collapsingHeight * expandedness)
-                        )
-                    }
-                },
-                lazyListContent = {
-                    items(numbers) {
-                        Text("$it")
-                    }
-                },
-                headerState = headerState
-            )
-        }
+                    Spacer(
+                        Modifier
+                            .testTag(collapsibleTag)
+                            .background(Color.Red)
+                            .fillMaxWidth()
+                            .height(collapsingHeight * expandedness)
+                    )
+                }
+            },
+            lazyListContent = {
+                items(numbers) {
+                    Text("$it")
+                }
+            },
+            headerState = headerState,
+        )
     }
-
 }
