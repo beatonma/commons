@@ -19,25 +19,22 @@ fun MutableState<Boolean>.toggle(): Boolean {
 }
 
 @Composable
-fun rememberText(default: String = ""): MutableState<String> = remember { mutableStateOf(default) }
+private fun <T> rememberMutableState(default: T) = remember { mutableStateOf(default) }
 
 @Composable
-fun rememberBoolean(default: Boolean = false) = remember { mutableStateOf(default) }
+fun rememberText(default: String = ""): MutableState<String> = rememberMutableState(default)
 
 @Composable
-fun <T> rememberListOf(default: List<T> = listOf()) = remember { mutableStateOf(default) }
+fun rememberBoolean(default: Boolean = false) = rememberMutableState(default)
 
 @Composable
-fun <T> rememberSetOf(default: Set<T> = setOf()) = remember { mutableStateOf(default) }
+fun rememberInt(default: Int = 0) = rememberMutableState(default)
 
-/**
- * Debug helper - print to log if the given value has changed since the previous recomposition.
- */
 @Composable
-fun <T> detectChanges(value: T, message: String = "") {
-    val previous = remember { mutableStateOf(value) }
-    if (previous.value != value) {
-        println("UPDATE [$message] $value")
-        previous.value = value
-    }
-}
+fun rememberFloat(default: Float = 0F) = rememberMutableState(default)
+
+@Composable
+fun <T> rememberListOf(default: List<T> = listOf()) = rememberMutableState(default)
+
+@Composable
+fun <T> rememberSetOf(default: Set<T> = setOf()) = rememberMutableState(default)
