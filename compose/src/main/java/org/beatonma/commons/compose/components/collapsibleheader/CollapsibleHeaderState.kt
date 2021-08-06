@@ -132,12 +132,11 @@ class CollapsibleHeaderState internal constructor(
 
     suspend fun snap() {
         withContext(dispatcher) {
-            check(snapToStateAt != null) { "Cannot snap(): CollapsibleHeaderState.snapToStateAt has not been set"}
+            check(snapToStateAt != null) { "Cannot snap(): CollapsibleHeaderState.snapToStateAt has not been set" }
 
             if (expansion > snapToStateAt) {
                 expand()
-            }
-            else {
+            } else {
                 collapse()
             }
         }

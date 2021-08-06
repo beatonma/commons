@@ -24,10 +24,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -40,6 +38,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import org.beatonma.commons.compose.TestTag
+import org.beatonma.commons.compose.util.rememberBoolean
 import org.beatonma.commons.compose.util.toggle
 import org.beatonma.commons.core.extensions.reversed
 import org.beatonma.commons.theme.compose.padding.EndOfContent
@@ -56,7 +56,10 @@ fun CollapsibleHeaderLayout(
     lazyListState: LazyListState = rememberLazyListState(),
     interactionSource: MutableInteractionSource = lazyListState.interactionSource as MutableInteractionSource,
     flingBehavior: FlingBehavior = ScrollableDefaults.flingBehavior(),
-    headerState: CollapsibleHeaderState = rememberCollapsibleHeaderState(lazyListState, snapToStateAt),
+    headerState: CollapsibleHeaderState = rememberCollapsibleHeaderState(
+        lazyListState,
+        snapToStateAt
+    ),
     scrollEnabled: Boolean = true,
     appendEndOfContentSpacing: Boolean = true,
 ) {
@@ -76,7 +79,7 @@ fun CollapsibleHeaderLayout(
     OnScrollEvents(
         interactionSource,
         onScrollStarted,
-        resolvedOnScrollStopped
+        resolvedOnScrollStopped,
     )
 
     val resolvedListContent = when {
@@ -96,7 +99,7 @@ fun CollapsibleHeaderLayout(
     CollapsibleHeaderLayout(
         modifier
             .scrollable(
-                headerState,
+                state = headerState,
                 orientation = Orientation.Vertical,
                 enabled = scrollEnabled,
                 interactionSource = interactionSource,
@@ -105,7 +108,7 @@ fun CollapsibleHeaderLayout(
             .fillMaxSize(),
         headerContent = resolvedHeaderContent,
         lazyListContent = resolvedListContent,
-        lazyListState,
+        lazyListState = lazyListState,
         lazyListModifier = Modifier
             .nestedScroll(
                 rememberNestedScrollConnection(
@@ -131,7 +134,7 @@ private fun CollapsibleHeaderLayout(
     Column(modifier) {
         Layout(
             content = headerContent,
-            modifier = Modifier.testTag("collapsing_header"),
+            modifier = Modifier.testTag(TestTag.CollapsingHeader),
         ) { measurables, constraints ->
             require(measurables.size == 1) {
                 "CollapsibleHeaderLayout header should contain exactly one child"
@@ -149,8 +152,8 @@ private fun CollapsibleHeaderLayout(
         LazyColumn(
             state = lazyListState,
             modifier = lazyListModifier
-                .testTag("lazy_list"),
-            content = lazyListContent
+                .testTag(TestTag.LazyList),
+            content = lazyListContent,
         )
     }
 }
@@ -165,14 +168,13 @@ private fun OnScrollEvents(
 
     if (dragged) {
         onScrollStarted()
-    }
-    else {
+    } else {
         onScrollFinished()
     }
 }
 
 private fun LazyListState.isAtTop() = this.firstVisibleItemIndex == 0
-        && this.firstVisibleItemScrollOffset == 0
+    && this.firstVisibleItemScrollOffset == 0
 
 @Composable
 private fun rememberNestedScrollConnection(
@@ -181,6 +183,9 @@ private fun rememberNestedScrollConnection(
     flingBehavior: FlingBehavior,
 ) = remember {
     object : NestedScrollConnection {
+        /**
+         * Try to scroll the header before scrolling the list.
+         */
         override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
             if (available == Offset.Zero) return Offset.Zero
 
@@ -201,6 +206,9 @@ private fun rememberNestedScrollConnection(
             return Offset.Zero
         }
 
+        /**
+         * Try to fling the header before scrolling the list.
+         */
         override suspend fun onPreFling(available: Velocity): Velocity {
             if (available.y == 0F) return Velocity.Zero
 
@@ -208,7 +216,7 @@ private fun rememberNestedScrollConnection(
 
             if (lazyListState.isAtTop()) {
                 headerState.scroll(MutatePriority.Default) {
-                    with (flingBehavior) {
+                    with(flingBehavior) {
                         result = Velocity(0F, performFling(available.y.reversed()))
                     }
                 }
@@ -216,79 +224,69 @@ private fun rememberNestedScrollConnection(
 
             return result
         }
-
-        override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
-            return available
-        }
     }
 }
 
 @Preview
 @Composable
 fun CollapsibleHeaderLayoutPreview() {
-    val flingBehavior = ScrollableDefaults.flingBehavior()
-    val listItems = (1..100).toList()
-    val lazyListState = rememberLazyListState()
-    val headerState = rememberCollapsibleHeaderState(lazyListState, snapToStateAt = 0.3F)
-    val coroutineScope = rememberCoroutineScope()
-    val expandOnClick = mutableStateOf(false)
-
     CommonsTheme {
-        Box(
-            Modifier.fillMaxSize(),
-            contentAlignment = Alignment.BottomCenter
-        ) {
-            CollapsibleHeaderLayout(
-                headerState = headerState,
-                lazyListState = lazyListState,
-                modifier = Modifier
-                    .clickable {
-                        coroutineScope.launch {
-                            if (expandOnClick.toggle()) {
-                                headerState.expand()
-                            }
-                            else {
-                                headerState.collapse()
-                            }
-                        }
-                    },
-                collapsingHeader = { expandedProgress ->
-                    Column {
-                        Text(
-                            "This should stay here",
-                            Modifier
-                                .height(80.dp)
-                                .background(Color.Blue)
-                        )
-                        Box(
-                            Modifier
-                                .height(300.dp * expandedProgress)
-                                .background(Color.Red)
-                        ) {
-                            Text("This should collapse")
+        val listItems = (1..100).toList()
+        val lazyListState = rememberLazyListState()
+        val headerState = rememberCollapsibleHeaderState(lazyListState = lazyListState)
+        val flingBehavior = ScrollableDefaults.flingBehavior()
+        val coroutineScope = rememberCoroutineScope()
+        val expandOnClick = rememberBoolean(false)
+
+        CollapsibleHeaderLayout(
+            headerState = headerState,
+            lazyListState = lazyListState,
+            modifier = Modifier
+                .clickable {
+                    coroutineScope.launch {
+                        if (expandOnClick.toggle()) {
+                            headerState.expand()
+                        } else {
+                            headerState.collapse()
                         }
                     }
                 },
-                lazyListContent = {
-                    itemsIndexed(listItems) { index, item ->
-                        Text(
-                            "$item",
-                            Modifier
-                                .fillMaxWidth()
-                                .background(
-                                    Color.Yellow.copy(
-                                        alpha = (index / 100F).coerceIn(
-                                            0F,
-                                            1F
-                                        )
+            collapsingHeader = { expandedProgress ->
+                Column {
+                    Text(
+                        "This should stay here",
+                        Modifier
+                            .height(80.dp)
+                            .background(Color.Blue)
+                    )
+                    Box(
+                        Modifier
+                            .height(300.dp * expandedProgress)
+                            .background(Color.Red)
+                    ) {
+                        Text("This should collapse")
+                    }
+                }
+            },
+            lazyListContent = {
+                itemsIndexed(listItems) { index, item ->
+                    Text(
+                        "$item",
+                        Modifier
+                            .fillMaxWidth()
+                            .background(
+                                Color.Yellow.copy(
+                                    alpha = (index / 100F).coerceIn(
+                                        0F,
+                                        1F
                                     )
                                 )
-                                .padding(4.dp)
-                        )
-                    }
-                },
-                flingBehavior = flingBehavior,
-            )
-        }
+                            )
+                            .padding(4.dp)
+                    )
+                }
+            },
+            flingBehavior = flingBehavior,
+        )
     }
 }
