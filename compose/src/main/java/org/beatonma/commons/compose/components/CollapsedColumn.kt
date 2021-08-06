@@ -274,6 +274,9 @@ private fun MoreContentIndication(
     }
 }
 
+/**
+ * Calculate how many items need to be visible given the current [state] and call [block] with the result.
+ */
 @Composable
 private inline fun <T> WithDisplayItems(
     items: List<T>,
@@ -287,12 +290,12 @@ private inline fun <T> WithDisplayItems(
     ) -> Unit,
 ) {
     val isCollapsible = items.size > collapsedItemCount
-    val transition = updateTransition(state.value)
+    val transition = updateTransition(state.value, label = "Display items transition")
 
     val toggleAction = { state.toggle() }
 
-    val progress by transition.animateFloat {
-        when (it) {
+    val progress by transition.animateFloat(label = "Display items progress") { expansionState ->
+        when (expansionState) {
             ExpandCollapseState.Expanded -> 1F
             ExpandCollapseState.Collapsed -> 0F
         }
