@@ -125,6 +125,9 @@ fun String.withAnnotatedStyle(
     // Traverse styleMap to find pairs of each style type and apply them to the AnnotatedString.
     styleMap.forEach { (position, style) ->
         when (style) {
+            MarkdownStyle.Normal -> {
+            }
+
             MarkdownStyle.Italic -> {
                 italicPosition = if (italicPosition < 0) position
                 else {
