@@ -14,13 +14,7 @@ import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.unit.dp
-import org.beatonma.commons.compose.util.HorizontalValue
-import org.beatonma.commons.compose.util.VerticalValue
-import org.beatonma.commons.compose.util.asHorizontal
-import org.beatonma.commons.compose.util.asVertical
-import org.beatonma.commons.compose.util.dimensions
-import org.beatonma.commons.compose.util.layout
-import org.beatonma.commons.compose.util.placeRelative
+import org.beatonma.commons.compose.util.size
 import org.beatonma.commons.core.extensions.fastForEach
 import kotlin.math.ceil
 import kotlin.math.roundToInt
@@ -39,7 +33,7 @@ import kotlin.math.roundToInt
  */
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
 @Composable
-internal fun MembersLayout(
+private fun MembersLayout(
     modifier: Modifier,
     wrapHeight: Int,
     content: @Composable () -> Unit,
@@ -82,16 +76,16 @@ private fun MeasureScope.buildProfilesLayoutAllSameSize(
 ): MeasureResult {
 
     val f = placeables.first()
-    val (w, h) = f.dimensions()
+    val (w, h) = f.size
 
     val totalWidth = w * placeables.size
 
     return layout(totalWidth, h) {
-        var x = HorizontalValue()
-        val y = VerticalValue()
+        var x = 0
+        val y = 0
 
         placeables.fastForEach { placeable ->
-            placeRelative(placeable, x, y)
+            placeable.placeRelative(x, y)
             x += w
         }
     }
@@ -118,29 +112,29 @@ private fun MeasureScope.buildProfilesLayout(
     check(groups.size == 2)
 
     val heights = groups.keys.sorted()
-    val minHeight = (heights.firstOrNull() ?: 1).asVertical()
-    val maxHeight = (heights.lastOrNull() ?: wrapHeight).asVertical()
+    val minHeight = (heights.firstOrNull() ?: 1)
+    val maxHeight = (heights.lastOrNull() ?: wrapHeight)
 
-    val smallRows = (maxHeight.value.toFloat() / minHeight.value.toFloat()).roundToInt()
+    val smallRows = (maxHeight.toFloat() / minHeight.toFloat()).roundToInt()
 
-    val smallCount = groups[minHeight.value]!!.size
-    val largeCount = groups[maxHeight.value]!!.size
+    val smallCount = groups[minHeight]!!.size
+    val largeCount = groups[maxHeight]!!.size
     val smallColumnsCount = ceil((smallCount.toFloat() / smallRows.toFloat())).toInt()
     val columnCount = smallColumnsCount + largeCount
-    val totalWidth = (columnCount * placeables.first().width).asHorizontal()
+    val totalWidth = (columnCount * placeables.first().width)
 
     return layout(totalWidth, maxHeight) {
         var smallRow = 0
-        var smallX = HorizontalValue(Int.MIN_VALUE)
-        var smallY = VerticalValue()
+        var smallX = Int.MIN_VALUE
+        var smallY = 0
 
-        var largeX = HorizontalValue(Int.MIN_VALUE)
-        val largeY = VerticalValue()
+        var largeX = Int.MIN_VALUE
+        val largeY = 0
 
-        var nextX = HorizontalValue()
+        var nextX = 0
 
         placeables.fastForEach { placeable ->
-            val (w, h) = placeable.dimensions()
+            val (w, h) = placeable.size
 
             // Combine small items into columns
             if (h == minHeight) {
@@ -149,12 +143,12 @@ private fun MeasureScope.buildProfilesLayout(
                     nextX = maxOf(smallX, largeX) + w
                 }
 
-                placeRelative(placeable, smallX, smallY)
+                placeable.placeRelative(smallX, smallY)
 
                 if (smallRow >= smallRows) {
                     smallRow = 0
                     smallX = nextX
-                    smallY = 0.asVertical()
+                    smallY = 0
                 }
                 else {
                     smallY += h
@@ -167,7 +161,7 @@ private fun MeasureScope.buildProfilesLayout(
                     largeX = nextX
                     nextX = maxOf(smallX, largeX) + w
                 }
-                placeRelative(placeable, largeX, largeY)
+                placeable.placeRelative(largeX, largeY)
 
                 largeX = nextX
             }

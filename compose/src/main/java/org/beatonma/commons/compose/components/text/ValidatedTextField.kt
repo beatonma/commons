@@ -266,12 +266,12 @@ private fun FeedbackText(
     message: AnnotatedString?,
 ) {
     if (message == null) {
-        Spacer(Modifier.testTag("feedback_text__null_message"))
+        Spacer(Modifier.testTag(TestTag.FeedbackNoText))
     } else {
         animation.Crossfade(message) {
             Text(
                 message,
-                Modifier.testTag("feedback_text"),
+                Modifier.testTag(TestTag.FeedbackText),
                 style = typography.caption
             )
         }
@@ -305,7 +305,7 @@ private fun CounterText(
 
     Text(
         counterText,
-        modifier.testTag("counter_text"),
+        modifier.testTag(TestTag.ValidationCounter),
         maxLines = 1,
         style = typography.caption,
     )

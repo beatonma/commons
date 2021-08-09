@@ -18,8 +18,6 @@ class WrapContentOrFillSizeTest: ComposeTest() {
     private val wrapperTag = "wrapper"
     private val contentTag = "content"
 
-    override fun withContent(content: @Composable () -> Unit) =
-        composeTestRule.apply { setContent(content) }
 
     @Test
     fun at_0_percent_isCorrect() {
@@ -87,4 +85,3 @@ class WrapContentOrFillSizeTest: ComposeTest() {
         }
     }
 }
-

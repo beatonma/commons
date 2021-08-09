@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.core.extensions.fastForEach
@@ -43,8 +44,8 @@ fun <T : Number> HorizontalStackedBarChart(
         ) { measurables, constraints ->
             val placeables = measurables.map { it.measure(constraints) }
 
-            val w = placeables.sumBy { it.width }
-            val h = placeables.maxOf { it.height }
+            val w = placeables.sumOf(Placeable::width)
+            val h = placeables.maxOf(Placeable::height)
 
             layout(w, h) {
                 var consumedWidth = 0

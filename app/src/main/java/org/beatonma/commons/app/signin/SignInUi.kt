@@ -25,23 +25,19 @@ fun SignInFabUi(
 }
 
 @Composable
-fun SignInFabUi(
-    onSignIn: () -> Unit
-) {
+private fun SignInFabUi(onSignIn: () -> Unit) {
     FabBottomSheet(
         fabClickLabel = stringResource(R.string.content_description_account_sign_in),
         fabContent = { progress ->
             FabText(
                 stringResource(R.string.account_sign_in),
                 progress,
-                Modifier.testTag("sign_in_fab")
             )
         },
         bottomSheetContent = { progress ->
-            println("SignInFabUi")
             BottomSheetText(
                 progress,
-                Modifier.testTag("sign_in_sheet")
+                Modifier.testTag(UserAccountTestTag.SignInSheet)
             ) {
                 Column(Modifier.fillMaxWidth()) {
                     SignInRationale(progress)
@@ -64,7 +60,7 @@ private fun SignInRationale(visibilityProgress: Float) {
         clickable = visibilityProgress == 1F,
         modifier = Modifier
             .wrapContentSize(linkedTextSize)
-            .testTag("account_rationale")
+            .testTag(UserAccountTestTag.SignInRationale)
     )
 }
 
@@ -81,6 +77,6 @@ private fun SignInButton(
                 setOnClickListener { onClick() }
             }
         },
-        modifier.testTag("google_signin_button"),
+        modifier.testTag(UserAccountTestTag.SignInGoogleButton),
     )
 }

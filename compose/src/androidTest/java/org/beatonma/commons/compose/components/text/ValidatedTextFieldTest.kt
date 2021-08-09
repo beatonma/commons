@@ -11,6 +11,7 @@ import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.text.AnnotatedString
 import androidx.test.filters.MediumTest
+import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.compose.components.FeedbackProvider
 import org.beatonma.commons.compose.util.rememberText
 import org.beatonma.commons.testcompose.test.ComposeTest
@@ -18,12 +19,10 @@ import org.junit.Test
 
 @MediumTest
 class ValidatedTextFieldTest: ComposeTest() {
-    private val counterTag = "counter_text"
-    private val textTag = "validated_text"
-    private val feedbackTag = "feedback_text"
+    private val counterTag = TestTag.ValidationCounter
+    private val textTag = TestTag.ValidatedText
+    private val feedbackTag = TestTag.FeedbackText
 
-    override fun withContent(content: @Composable () -> Unit) =
-        composeTestRule.apply { setContent(content) }
 
     private fun ComposeTestRule.clearText() {
         onNodeWithTag(textTag)

@@ -14,7 +14,7 @@ import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.room.entities.member.Party
 
 @Composable
-inline fun PartyDot(
+fun PartyDot(
     party: Party?,
     modifier: Modifier = Modifier,
     size: Dp = 8.dp,
@@ -30,7 +30,7 @@ inline fun PartyDot(
     )
 
 @Composable
-inline fun PartyDot(
+fun PartyDot(
     parliamentID: ParliamentID,
     modifier: Modifier = Modifier,
     size: Dp = 8.dp,

@@ -22,6 +22,7 @@ import androidx.test.filters.MediumTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.runBlockingTest
+import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.sampledata.SampleUserToken
 import org.beatonma.commons.testcompose.test.ComposeTest
@@ -29,13 +30,13 @@ import org.junit.Test
 
 @MediumTest
 class EditableUsernameTest: ComposeTest() {
-    private val readOnlyUsernameTag = "readonly_username"
-    private val makeEditableTag = "action_make_editable"
-    private val editableFieldTag = "validated_text"
-    private val testRenameSuccessfulTag = "rename_successful"
-    private val actionRequestRenameTag = "action_request_rename"
-    private val actionCancelRenameTag = "action_cancel_rename"
-    private val feedbackTextTag = "feedback_text"
+    private val readOnlyUsernameTag = UserAccountTestTag.UsernameReadOnly
+    private val makeEditableTag = UserAccountTestTag.UsernameEdit
+    private val editableFieldTag = TestTag.ValidatedText
+    private val testRenameSuccessfulTag = UserAccountTestTag.UsernameSuccessfulRename
+    private val actionRequestRenameTag = UserAccountTestTag.UsernameRequestRename
+    private val actionCancelRenameTag = UserAccountTestTag.UsernameCancelRename
+    private val feedbackTextTag = TestTag.FeedbackText
 
     private val username = SampleUserToken.username
 
@@ -46,8 +47,6 @@ class EditableUsernameTest: ComposeTest() {
     @OptIn(ExperimentalCoroutinesApi::class)
     private val dispatcher = TestCoroutineDispatcher()
 
-    override fun withContent(content: @Composable () -> Unit) =
-        composeTestRule.apply { setContent(content) }
 
     @Test
     fun readOnlyLayout_isCorrect() {

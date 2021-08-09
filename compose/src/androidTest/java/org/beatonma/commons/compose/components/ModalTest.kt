@@ -19,8 +19,6 @@ import org.junit.Test
 
 @MediumTest
 class ModalTest: ComposeTest() {
-    override fun withContent(content: @Composable () -> Unit) =
-        composeTestRule.apply { setContent(content) }
 
     @Test
     fun contentShouldNotBeMerged() {

@@ -22,10 +22,7 @@ import org.junit.Test
 
 @MediumTest
 class SocialIconsTest: ComposeTest() {
-    private val iconsTag = "social_icons"
-
-    override fun withContent(content: @Composable () -> Unit) =
-        composeTestRule.apply { setContent(content) }
+    private val iconsTag = SocialTestTag.Icons
 
     @Test
     fun collapsedLayout_isCorrect() {
@@ -40,9 +37,9 @@ class SocialIconsTest: ComposeTest() {
                 .assertExists()
                 .assertIsDisplayed()
                 .assertHasClickAction()
-                .assertContentDescriptionContains("3") // Comment count
-                .assertContentDescriptionContains("4") // Upvotes
-                .assertContentDescriptionContains("7") // Downvotes
+                .assertContentDescriptionContains("3", substring = true) // Comment count
+                .assertContentDescriptionContains("4", substring = true) // Upvotes
+                .assertContentDescriptionContains("7", substring = true) // Downvotes
         }
     }
 
@@ -63,19 +60,19 @@ class SocialIconsTest: ComposeTest() {
                 .onChildAt(0)
                 .assertIsDisplayed()
                 .assertHasClickAction()
-                .assertContentDescriptionContains("3")
+                .assertContentDescriptionContains("3", substring = true)
 
             onNodeWithTag(iconsTag)
                 .onChildAt(1)
                 .assertIsDisplayed()
                 .assertHasClickAction()
-                .assertContentDescriptionContains("4")
+                .assertContentDescriptionContains("4", substring = true)
 
             onNodeWithTag(iconsTag)
                 .onChildAt(2)
                 .assertIsDisplayed()
                 .assertHasClickAction()
-                .assertContentDescriptionContains("7")
+                .assertContentDescriptionContains("7", substring = true)
         }
     }
 

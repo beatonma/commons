@@ -32,8 +32,6 @@ class DoubleConfirmationButtonTest : ComposeTest() {
     private var onClickHasBeenTriggered by mutableStateOf(false)
     private val onClick = { onClickHasBeenTriggered = true }
 
-    override fun withContent(content: @Composable () -> Unit) =
-        composeTestRule.apply { setContent(content) }
 
 
     @Before

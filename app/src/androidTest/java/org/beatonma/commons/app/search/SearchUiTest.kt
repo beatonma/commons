@@ -22,6 +22,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.test.filters.MediumTest
 import com.google.accompanist.insets.ProvideWindowInsets
+import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.compose.animation.ExpandCollapseState
 import org.beatonma.commons.compose.animation.rememberExpandCollapseState
 import org.beatonma.commons.compose.util.rememberListOf
@@ -34,18 +35,11 @@ import org.junit.Test
 
 @MediumTest
 class SearchUiTest: ComposeTest() {
-    private val iconTag = "search_icon"
-    private val resultTag = "search_result"
-    private val fieldTag = "search_field"
-    private val modalScrimTag = "modal_scrim"
-
     private val results = SampleSearchResults
-
-    override fun withContent(content: @Composable () -> Unit) =
-        composeTestRule.apply { setContent(content) }
+    private val searchHint = "Search for something"
 
     private fun ComposeTestRule.performClickOnIcon() {
-        onNodeWithTag(iconTag)
+        onNodeWithTag(SearchTestTag.Icon)
             .performClick()
     }
 
@@ -56,14 +50,14 @@ class SearchUiTest: ComposeTest() {
         }
 
         perform {
-            onNodeWithTag(iconTag)
+            onNodeWithTag(SearchTestTag.Icon)
                 .assertIsDisplayed()
                 .assertHasClickAction()
 
-            onNodeWithTag(fieldTag)
+            onNodeWithTag(SearchTestTag.Field)
                 .assertDoesNotExist()
 
-            onNodeWithTag(resultTag)
+            onNodeWithTag(SearchTestTag.Result)
                 .assertDoesNotExist()
         }
     }
@@ -75,9 +69,9 @@ class SearchUiTest: ComposeTest() {
         }
 
         perform {
-            onNodeWithTag(fieldTag)
+            onNodeWithTag(SearchTestTag.Field)
                 .assertIsDisplayed()
-                .assertTextEquals("")
+                .assertTextEquals(searchHint, includeEditableText = false)
                 .assertIsFocused()
         }
     }
@@ -91,12 +85,12 @@ class SearchUiTest: ComposeTest() {
         perform {
             performClickOnIcon()
 
-            onNodeWithTag(fieldTag)
+            onNodeWithTag(SearchTestTag.Field)
                 .assertIsDisplayed()
 
             performClickOnIcon()
 
-            onNodeWithTag(fieldTag)
+            onNodeWithTag(SearchTestTag.Field)
                 .assertDoesNotExist()
         }
     }
@@ -117,7 +111,7 @@ class SearchUiTest: ComposeTest() {
                 .assertExists()
                 .assertIsDisplayed()
 
-            onAllNodesWithTag("search_result")
+            onAllNodesWithTag(SearchTestTag.Result)
                 .assertCountEquals(2)
         }
     }
@@ -131,10 +125,10 @@ class SearchUiTest: ComposeTest() {
         }
 
         perform {
-            onNodeWithTag(modalScrimTag)
+            onNodeWithTag(TestTag.ModalScrim)
                 .performClick()
 
-            onNodeWithTag(fieldTag)
+            onNodeWithTag(SearchTestTag.Field)
                 .assertDoesNotExist()
         }
     }
@@ -151,17 +145,17 @@ class SearchUiTest: ComposeTest() {
         }
 
         perform {
-            onNodeWithTag(fieldTag)
+            onNodeWithTag(SearchTestTag.Field)
                 .performTextInput("a")
-            onNodeWithTag(fieldTag)
+            onNodeWithTag(SearchTestTag.Field)
                 .performTextInput("b")
-            onNodeWithTag(fieldTag)
+            onNodeWithTag(SearchTestTag.Field)
                 .performTextInput("c")
-            onNodeWithTag(fieldTag)
+            onNodeWithTag(SearchTestTag.Field)
                 .performTextInput("d")
-            onNodeWithTag(fieldTag)
+            onNodeWithTag(SearchTestTag.Field)
                 .performTextInput("e")
-            onNodeWithTag(fieldTag)
+            onNodeWithTag(SearchTestTag.Field)
                 .performTextInput("f")
 
             counter shouldbe 6
@@ -180,13 +174,13 @@ class SearchUiTest: ComposeTest() {
         }
 
         perform {
-            onAllNodesWithTag(resultTag)
+            onAllNodesWithTag(SearchTestTag.Result)
                 .onFirst()
                 .performClick()
 
             clickedName shouldbe "Michael Beaton"
 
-            onAllNodesWithTag(resultTag)
+            onAllNodesWithTag(SearchTestTag.Result)
                 .onLast()
                 .performClick()
 
@@ -213,6 +207,7 @@ class SearchUiTest: ComposeTest() {
         ) {
             ProvideWindowInsets {
                 SearchUi(
+                    hint = searchHint,
                     results = results.value,
                     state = state,
                 )

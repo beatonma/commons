@@ -1,5 +1,7 @@
 package org.beatonma.commons.app.ui.compose.components.chips
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -22,7 +24,7 @@ fun PhoneLink(
     CollapsibleChip(
         displayText,
         contentDescription = displayText.text,
-        drawableId = R.drawable.ic_phone_call,
+        icon = Icons.Default.Phone,
         modifier = modifier,
         autoCollapse = autoCollapse
     ) {

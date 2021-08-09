@@ -6,12 +6,22 @@ object TestTag {
     const val Fab = "fab_bottomsheet_surface__fab"
     const val FabBottomSheet = "fab_bottomsheet_surface"
 
+    const val SearchField = "search_field"
+
     const val Chip = "chip"
 
+    const val FeedbackSurface = "feedback_surface"
+    const val FeedbackMessage = "feedback_message"
+    const val FeedbackText = "feedback_text"
+    const val FeedbackNoText = "feedback_text__null"
+
     const val ValidatedText = "validated_text"
+    const val ValidationCounter = "counter_text"
 
     const val LazyList = "lazy_list"
     const val CollapsingHeader = "collapsing_header"
+
+    const val ShowMore = "more_content"
 
     // Text
     const val DateTime = "datetime"

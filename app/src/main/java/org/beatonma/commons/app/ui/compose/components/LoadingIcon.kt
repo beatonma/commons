@@ -21,6 +21,7 @@ import org.beatonma.commons.compose.ambient.animation
 import org.beatonma.commons.compose.util.rememberBoolean
 import org.beatonma.commons.data.accessibility.ContentDescription
 
+internal const val LoadingTestTag = "loading_icon"
 
 @Composable
 fun LoadingIcon(
@@ -41,7 +42,7 @@ fun LoadingIcon(
     )
     val iconModifier = modifier
         .rotate(rotation)
-        .testTag("loading_icon")
+        .testTag(LoadingTestTag)
 
     if (onClick == null) {
         Icon(

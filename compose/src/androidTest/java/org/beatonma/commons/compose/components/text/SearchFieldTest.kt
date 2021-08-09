@@ -21,11 +21,8 @@ import org.junit.Test
 
 @MediumTest
 class SearchFieldTest: ComposeTest() {
-    private val tag = "search_field"
+    private val tag = TestTag.SearchField
     private val hintText = "Search for..."
-
-    override fun withContent(content: @Composable () -> Unit) =
-        composeTestRule.apply { setContent(content) }
 
     @Test
     fun onQueryChange_isCorrect() {

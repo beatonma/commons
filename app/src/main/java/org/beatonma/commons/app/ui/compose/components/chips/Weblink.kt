@@ -8,9 +8,13 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Facebook
+import androidx.compose.material.icons.filled.Link
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -42,7 +46,7 @@ fun Weblink(
                 displayText = AnnotatedString(getGenericDisplayUrl(uri)),
                 url = weblink.url,
                 contentDescription = stringResource(R.string.action_open_url, weblink.url),
-                drawableId = R.drawable.ic_link,
+                icon = Icons.Default.Link,
                 modifier = modifier,
             )
         }
@@ -58,7 +62,7 @@ private fun FacebookWeblink(
         displayText = AnnotatedString(username),
         url = "https://facebook.com/$username/",
         contentDescription = stringResource(R.string.action_open_facebook_user, username),
-        drawableId = R.drawable.ic_facebook,
+        icon = Icons.Default.Facebook,
         modifier = modifier
     )
 }
@@ -82,6 +86,7 @@ private fun Weblink(
     displayText: AnnotatedString,
     url: String,
     contentDescription: String,
+//    drawabl: ImageVector,
     drawableId: Int,
     modifier: Modifier = Modifier,
     autoCollapse: Long = 2500,
@@ -91,6 +96,27 @@ private fun Weblink(
         text = displayText,
         contentDescription = contentDescription,
         drawableId = drawableId,
+        modifier = modifier,
+        autoCollapse = autoCollapse
+    ) {
+        context.openUrl(url)
+    }
+}
+
+@Composable
+private fun Weblink(
+    displayText: AnnotatedString,
+    url: String,
+    contentDescription: String,
+    icon: ImageVector,
+    modifier: Modifier = Modifier,
+    autoCollapse: Long = 2500,
+) {
+    val context = LocalContext.current
+    CollapsibleChip(
+        text = displayText,
+        contentDescription = contentDescription,
+        icon = icon,
         modifier = modifier,
         autoCollapse = autoCollapse
     ) {

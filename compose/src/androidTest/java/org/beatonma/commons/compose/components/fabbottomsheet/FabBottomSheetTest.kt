@@ -30,8 +30,6 @@ class FabBottomSheetTest: ComposeTest() {
     private val fabText = "Click me"
     private val fabClickLabel = "Open content"
 
-    override fun withContent(content: @Composable () -> Unit) =
-        composeTestRule.apply { setContent(content) }
 
     @Test
     fun fabLayout_isCorrect() {

@@ -40,7 +40,7 @@ internal fun CommentList(
     } else {
         if (expandProgress < 0.7F) return
 
-        LazyColumn(Modifier.testTag("social_comment_list")) {
+        LazyColumn(Modifier.testTag(SocialTestTag.CommentsList)) {
             itemsIndexed(comments) { i, comment ->
                 animation.AnimatedItemVisibility(position = i, horizontal = false) {
                     Comment(
@@ -63,8 +63,7 @@ private fun NoComments(modifier: Modifier) {
         R.string.social_comment_no_comments,
         modifier = modifier
             .fillMaxWidth()
-            .testTag("social_comments_empty")
-        ,
+            .testTag(SocialTestTag.CommentsEmpty),
         style = typography.h6,
         textAlign = TextAlign.Center,
     )
@@ -85,7 +84,7 @@ private fun Comment(
             .clickable { onClick(comment) }
             .fillMaxWidth()
             .padding(Padding.VerticalListItem + Padding.ScreenHorizontal)
-            .testTag("social_comment")
+            .testTag(SocialTestTag.Comment)
     ) {
         WithContentAlpha(ContentAlpha.high) {
             Text(comment.text.withAnnotatedStyle())

@@ -1,5 +1,7 @@
 package org.beatonma.commons.app.ui.compose.components.chips
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -22,7 +24,7 @@ fun EmailLink(
     CollapsibleChip(
         displayText,
         contentDescription = displayText.text,
-        drawableId = R.drawable.ic_email,
+        icon = Icons.Default.Email,
         modifier = modifier,
         autoCollapse = autoCollapse
     ) {

@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.insets.navigationBarsPadding
 import org.beatonma.commons.compose.R
+import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.compose.animation.lerpBetween
 import org.beatonma.commons.compose.animation.withEasing
@@ -145,12 +146,11 @@ private fun Fab(
             .padding(Padding.Fab)
             .navigationBarsPadding() // The bottom sheet should extend behind navigation bar as it expands.
             .shadow(Elevation.ModalSurface, surfaceShape)
-            .testTag("fab_bottomsheet_surface__fab")
+            .testTag(TestTag.Fab)
             .clickable(
                 onClickLabel = onClickLabel,
                 onClick = onClick
-            )
-        ,
+            ),
         shape = surfaceShape,
         color = surfaceColor,
         contentColor = contentColor,
@@ -175,8 +175,7 @@ private fun BottomSheet(
             .navigationBarsPadding(scale = progress.reversed()) // The bottom sheet should extend behind navigation bar as it expands.
             .shadow(Elevation.ModalSurface, surfaceShape)
             .consumePointerInput()
-            .testTag("fab_bottomsheet_surface")
-        ,
+            .testTag(TestTag.FabBottomSheet),
         shape = surfaceShape,
         color = surfaceColor,
         contentColor = contentColor,

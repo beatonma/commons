@@ -36,8 +36,6 @@ class CollapsibleHeaderLayoutTest : ComposeTest() {
     private val collapsingHeight = 97.dp
     private val staticHeight = 61.dp
 
-    override fun withContent(content: @Composable () -> Unit) =
-        composeTestRule.apply { setContent(content) }
 
     @Test
     fun heightWhenFullyExpanded_isCorrect() {

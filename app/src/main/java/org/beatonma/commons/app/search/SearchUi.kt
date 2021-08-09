@@ -44,6 +44,7 @@ import com.google.accompanist.insets.ProvideWindowInsets
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.compose.components.Todo
 import org.beatonma.commons.app.ui.compose.components.party.PartyDot
+import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.compose.animation.ExpandCollapseState
 import org.beatonma.commons.compose.animation.animateExpansionAsState
@@ -75,6 +76,13 @@ import org.beatonma.commons.theme.compose.theme.systemui.statusBarsPadding
 
 internal typealias SearchUiState = ExpandCollapseState
 
+internal object SearchTestTag {
+    const val Bar = "search_bar"
+    const val Field = TestTag.SearchField
+    const val Icon = "search_icon"
+    const val Result = "search_result"
+}
+
 class SearchActions(
     val onSubmit: (query: String) -> Unit,
     val onClickMember: (MemberSearchResult) -> Unit,
@@ -88,24 +96,25 @@ fun SearchUi(
     results: List<SearchResult>,
     modifier: Modifier = Modifier,
     state: MutableState<SearchUiState> = rememberExpandCollapseState(),
+    hint: String = stringResource(R.string.search_hint),
     focusRequester: FocusRequester = remember(::FocusRequester),
 ) {
     val expansionProgress by state.value.animateExpansionAsState()
 
     SearchLayout(
-        state = state.value,
+        hint = hint,
         toggleState = { state.toggle() },
         results = results,
         modifier = modifier,
         focusRequester = focusRequester,
         onBackgroundClick = state::collapse,
-        expansionProgress = expansionProgress
+        expansionProgress = expansionProgress,
     )
 }
 
 @Composable
 private fun SearchLayout(
-    state: SearchUiState,
+    hint: String,
     toggleState: () -> Unit,
     results: List<SearchResult>,
     modifier: Modifier,
@@ -117,7 +126,7 @@ private fun SearchLayout(
         visible = expansionProgress > 0F,
         onClickAction = onBackgroundClick,
         onClickLabel = stringResource(R.string.content_description_close_overlay),
-        modifier = Modifier.testTag("modal_scrim")
+        modifier = Modifier.testTag(TestTag.ModalScrim)
     ) {
         Column(
             modifier
@@ -126,7 +135,7 @@ private fun SearchLayout(
             val animation = searchBarAnimation(expansionProgress = expansionProgress)
 
             SearchBar(
-                state = state,
+                hint = hint,
                 animation = animation,
                 modifier = Modifier.align(Alignment.End),
                 focusRequester = focusRequester,
@@ -147,7 +156,7 @@ private fun SearchLayout(
 
 @Composable
 private fun SearchBar(
-    state: SearchUiState,
+    hint: String,
     animation: SearchBarAnimation,
     modifier: Modifier,
     focusRequester: FocusRequester,
@@ -157,7 +166,7 @@ private fun SearchBar(
         modifier
             .wrapContentOrFillWidth(animation.widthProgress)
             .statusBarsPadding(animation.statusBarProgress.reversed())
-            .testTag("search_bar"),
+            .testTag(SearchTestTag.Bar),
         elevation = animation.elevation,
         color = animation.surfaceColor,
         shape = animation.shape,
@@ -172,6 +181,7 @@ private fun SearchBar(
         ) {
             if (animation.showSearchField) {
                 SearchField(
+                    hint = hint,
                     focusRequester = focusRequester,
                     modifier = Modifier.weight(10F)
                 )
@@ -189,16 +199,17 @@ private fun SearchBar(
 
 @Composable
 private fun SearchField(
+    hint: String,
     focusRequester: FocusRequester,
     modifier: Modifier = Modifier,
     onSubmit: (String) -> Unit = LocalSearchActions.current.onSubmit,
 ) {
     org.beatonma.commons.compose.components.text.SearchField(
-        hint = R.string.search_hint,
+        hint = hint,
         onQueryChange = onSubmit,
         modifier = modifier
             .focusRequester(focusRequester)
-            .testTag("search_field"),
+            .testTag(SearchTestTag.Field),
         colors = colors.searchBarColors,
     )
 }
@@ -212,7 +223,7 @@ private fun SearchIcon(
 
     IconButton(
         onClick = onClick,
-        modifier = modifier.testTag("search_icon")
+        modifier = modifier.testTag(SearchTestTag.Icon)
     ) {
         Icon(
             Icons.Default.Search,
@@ -269,8 +280,8 @@ private fun MemberSearchResult(
             .fillMaxWidth()
             .clickable { onClickMember(result) }
             .padding(Padding.VerticalListItemLarge)
-            .testTag("search_result"),
-        )
+            .testTag(SearchTestTag.Result),
+    )
 }
 
 @Composable

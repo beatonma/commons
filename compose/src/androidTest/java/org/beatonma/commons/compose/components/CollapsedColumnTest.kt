@@ -9,6 +9,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.filters.MediumTest
+import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.testcompose.assertSizeIsTouchable
 import org.beatonma.commons.testcompose.test.ComposeTest
 import org.junit.Test
@@ -16,10 +17,8 @@ import org.junit.Test
 @MediumTest
 class CollapsedColumnTest: ComposeTest() {
     private val headerText = "A wonderful group of integers"
-    private val moreContentTag = "more_content_indication"
+    private val moreContentTag = TestTag.ShowMore
 
-    override fun withContent(content: @Composable () -> Unit) =
-        composeTestRule.apply { setContent(content) }
 
     @Test
     fun defaultLayout_isCorrect() {

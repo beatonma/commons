@@ -7,12 +7,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.ImagePainter
 import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import org.beatonma.commons.app.ui.compose.components.ErrorUi
 import org.beatonma.commons.app.ui.compose.components.LoadingIcon
+
+internal const val AvatarTestTag = "avatar"
 
 
 @OptIn(ExperimentalCoilApi::class)
@@ -30,40 +33,39 @@ fun Avatar(
     },
     fallback: @Composable BoxScope.() -> Unit = {},
 ) {
+    @Composable
+    fun Boxed(content: @Composable BoxScope.() -> Unit) {
+        Box(modifier, contentAlignment = alignment, content = content)
+    }
+
+    if (source.isNullOrBlank()) {
+        Boxed(fallback)
+        return
+    }
+
     val painter = rememberImagePainter(
         data = source,
         builder = builder,
     )
 
-    when (val state = painter.state) {
-        is ImagePainter.State.Loading -> Box(contentAlignment = alignment, content = loading)
-        is ImagePainter.State.Empty -> Box(contentAlignment = alignment, content = fallback)
-        is ImagePainter.State.Error -> {
-            Box(contentAlignment = alignment) {
-                error(state.throwable)
+    Box(modifier) {
+        when (val state = painter.state) {
+            is ImagePainter.State.Loading -> {
+                Boxed(loading)
+            }
+            is ImagePainter.State.Error -> {
+                Boxed { error(state.throwable) }
             }
         }
-        is ImagePainter.State.Success -> {
-            Image(
-                painter = painter,
-                contentDescription = contentDescription,
-                modifier = modifier,
-                alignment = alignment,
-                contentScale = contentScale,
-            )
-        }
-    }
 
-//    CoilImage(
-//        data = source ?: fallback,
-//        contentDescription = contentDescription,
-//        modifier = modifier.testTag("avatar"),
-//        fadeIn = fadeIn,
-//        contentScale = contentScale,
-//        alignment = alignment,
-//        loading = loading,
-//        error = error,
-//    )
+        Image(
+            painter = painter,
+            contentDescription = contentDescription,
+            modifier = modifier.testTag(AvatarTestTag),
+            alignment = alignment,
+            contentScale = contentScale,
+        )
+    }
 }
 
 private val DefaultBuilder: ImageRequest.Builder.() -> Unit = {

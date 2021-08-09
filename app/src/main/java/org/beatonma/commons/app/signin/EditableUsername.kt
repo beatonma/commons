@@ -122,14 +122,14 @@ private fun ReadOnlyUsernameLayout(
                 userToken.username,
                 style = typography.h4,
                 modifier = Modifier
-                    .testTag("readonly_username")
+                    .testTag(UserAccountTestTag.UsernameReadOnly)
             )
 
             ClickableIcon(
                 Icons.Default.Edit,
                 contentDescription = contentDescription,
                 onClick = makeEditable,
-                testTag = "action_make_editable",
+                testTag = UserAccountTestTag.UsernameEdit,
             )
         }
 
@@ -277,13 +277,13 @@ private fun EditableUsernameLayout(
                         Icons.Default.Done,
                         contentDescription = stringResource(R.string.account_submit_new_username),
                         onClick = onSubmitName,
-                        testTag = "action_request_rename"
+                        testTag = UserAccountTestTag.UsernameRequestRename
                     )
 
                     ClickableIcon(
                         Icons.Default.Undo,
                         contentDescription = stringResource(R.string.content_description_edit_username),
-                        testTag = "action_cancel_rename"
+                        testTag = UserAccountTestTag.UsernameCancelRename,
                     ) { onStateChange(EditableState.ReadOnly) }
                 }
             }

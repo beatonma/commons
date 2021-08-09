@@ -84,7 +84,6 @@ internal fun UserProfileFabUi(
             FabText(
                 userToken.username,
                 progress,
-                Modifier.testTag("user_account_fab")
             )
         },
         bottomSheetContent = { progress ->
@@ -141,7 +140,7 @@ private fun ProfileSheetContent(
 ) {
     BottomSheetText(
         progress,
-        Modifier.testTag("user_account_sheet"),
+        Modifier.testTag(UserAccountTestTag.UserAccountSheet),
         handleImeInsets = true,
     ) {
         Column(
@@ -221,7 +220,7 @@ private fun SignOutButton(
         onClick = onClick,
         modifier = Modifier
             .padding(Padding.CardButton)
-            .testTag("action_sign_out"),
+            .testTag(UserAccountTestTag.SignOut),
     ) {
         ResourceText(R.string.account_sign_out)
     }
@@ -235,7 +234,7 @@ private fun DeleteAccountButton(
         onClick = onClick,
         modifier = Modifier
             .padding(Padding.CardButton)
-            .testTag("action_delete_account"),
+            .testTag(UserAccountTestTag.DeleteAccount),
     ) {
         ResourceText(R.string.account_delete_account_button)
     }

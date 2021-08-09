@@ -1,6 +1,5 @@
 package org.beatonma.commons.app.signin
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.test.assertHasClickAction
@@ -13,6 +12,7 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.matcher.ViewMatchers.withClassName
 import androidx.test.filters.MediumTest
 import org.beatonma.commons.R
+import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.sampledata.SampleUserToken
 import org.beatonma.commons.test.extensions.assertions.shouldbe
 import org.hamcrest.core.Is.`is`
@@ -20,13 +20,11 @@ import org.junit.Test
 
 @MediumTest
 class SignInUiTest: UserAccountComposeTest() {
-    private val signInFabTag = "fab_bottomsheet_surface__fab"
-    private val signInSheetTag = "sign_in_sheet"
-    private val signInButtonTag = "google_signin_button"
-    private val accountRationaleTag = "account_rationale"
+    private val signInFabTag = TestTag.Fab
+    private val signInSheetTag = UserAccountTestTag.SignInSheet
+    private val signInButtonTag = UserAccountTestTag.SignInGoogleButton
+    private val accountRationaleTag = UserAccountTestTag.SignInRationale
 
-    override fun withContent(content: @Composable () -> Unit) =
-        composeTestRule.apply { setContent(content) }
 
     @Test
     fun defaultLayout_shouldBeSignInFab() {

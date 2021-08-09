@@ -25,6 +25,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.zIndex
+import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.compose.animation.ExpandCollapseState
 import org.beatonma.commons.compose.animation.animateExpansion
 import org.beatonma.commons.compose.modifiers.onlyWhen
@@ -114,7 +115,7 @@ private fun FeedbackMessageLayout(
     alignment: Alignment,
     modifier: Modifier,
 ) {
-    val transition = updateTransition(state)
+    val transition = updateTransition(state, label = "FeedbackMessageLayout transition")
     val progress by transition.animateExpansion()
     val sizeProgress = progress.progressIn(0F, .6F)
     val alphaProgress = progress.progressIn(.7F, 1F)
@@ -123,8 +124,7 @@ private fun FeedbackMessageLayout(
         Surface(
             modifier
                 .wrapContentHeight(sizeProgress)
-                .testTag("feedback_surface")
-            ,
+                .testTag(TestTag.FeedbackSurface),
             elevation = Elevation.ModalSurface,
         ) {
             Text(
@@ -139,7 +139,7 @@ private fun FeedbackMessageLayout(
                         imeOrNavigationBarsPadding(scale = sizeProgress)
                     }
                     .alpha(alphaProgress)
-                    .testTag("feedback_message")
+                    .testTag(TestTag.FeedbackMessage)
             )
         }
     }

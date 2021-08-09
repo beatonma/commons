@@ -1,6 +1,5 @@
 package org.beatonma.commons.app.signin
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
@@ -8,21 +7,22 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.filters.MediumTest
+import org.beatonma.commons.app.ui.compose.components.image.AvatarTestTag
+import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.sampledata.SampleUserToken
 import org.beatonma.commons.test.extensions.assertions.shouldbe
 import org.junit.Test
 
 @MediumTest
 class UserAccountUiTest: UserAccountComposeTest() {
-    private val fabTag = "fab_bottomsheet_surface__fab"
-    private val accountSheetTag = "user_account_sheet"
-    private val avatarTag = "avatar"
-    private val signOutTag = "action_sign_out"
-    private val deleteAccountTag = "action_delete_account"
-    private val editUsernameButtonTag = "action_make_editable"
-    private val deleteUiTag = "delete_account_ui"
+    private val fabTag = TestTag.Fab
+    private val accountSheetTag = UserAccountTestTag.UserAccountSheet
+    private val signOutTag = UserAccountTestTag.SignOut
+    private val deleteAccountTag = UserAccountTestTag.DeleteAccount
+    private val editUsernameButtonTag = UserAccountTestTag.UsernameEdit
+    private val deleteUiTag = UserAccountTestTag.DeleteAccountUI
 
-    private val username = SampleUserToken.username!!
+    private val username = SampleUserToken.username
     private val email = SampleUserToken.email!!
     private val name = SampleUserToken.name!!
 
@@ -32,8 +32,6 @@ class UserAccountUiTest: UserAccountComposeTest() {
         check(name.isNotBlank())
     }
 
-    override fun withContent(content: @Composable () -> Unit) =
-        composeTestRule.apply { setContent(content) }
 
     @Test
     fun defaultLayout_shouldBeFabWithUsername() {
@@ -85,7 +83,7 @@ class UserAccountUiTest: UserAccountComposeTest() {
         }
 
         perform {
-            onNodeWithTag(avatarTag)
+            onNodeWithTag(AvatarTestTag)
                 .assertExists()
                 .assertIsDisplayed()
 

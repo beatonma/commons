@@ -189,7 +189,6 @@ private fun BaseCollapsibleChip(
     var job: Job? by remember { mutableStateOf(null) }
 
     val toggleState = {
-        println("T O G G L E _ S T A T E")
         job?.cancel()
         state.toggle()
         if (autoCollapse > 0) {

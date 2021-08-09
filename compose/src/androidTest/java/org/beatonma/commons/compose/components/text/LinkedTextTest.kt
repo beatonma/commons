@@ -28,8 +28,6 @@ class LinkedTextTest: ComposeTest() {
     private val defaultText = "beatonma#org | beatonma.org"
     private val clickedUrlsTag = "clicked_urls"
 
-    override fun withContent(content: @Composable () -> Unit) =
-        composeTestRule.apply { setContent(content) }
 
     @Test
     fun linkedText_clickOnNormalText_shouldNotTriggerClickAction() {
@@ -84,7 +82,7 @@ class LinkedTextTest: ComposeTest() {
 
             Text(
                 urlsOpened.value.joinToString(","),
-                Modifier.testTag("clicked_urls")
+                Modifier.testTag(clickedUrlsTag)
             )
         }
     }

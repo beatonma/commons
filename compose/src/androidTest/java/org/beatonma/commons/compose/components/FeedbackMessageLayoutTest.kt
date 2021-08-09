@@ -21,6 +21,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.test.filters.MediumTest
 import com.google.accompanist.insets.ProvideWindowInsets
+import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.test.extensions.assertions.assertEquals
 import org.beatonma.commons.testcompose.test.ComposeTest
 import org.junit.Test
@@ -28,16 +29,14 @@ import org.junit.Test
 @MediumTest
 class FeedbackMessageLayoutTest: ComposeTest() {
     private val message = "Here's some feedback!"
-    private val messageTag = "feedback_message"
-    private val surfaceTag = "feedback_surface"
+    private val messageTag = TestTag.FeedbackMessage
+    private val surfaceTag = TestTag.FeedbackSurface
     private val toggleAlignmentTag = "toggle_alignment"
     private val showFeedbackTag = "show_feedback"
     private val hideFeedback = "hide_feedback"
 
     private val displayHeight = 600.dp
 
-    override fun withContent(content: @Composable () -> Unit) =
-        composeTestRule.apply { setContent(content) }
 
     @Test
     fun feedback_shouldBeHidden_byDefault() {

@@ -14,8 +14,6 @@ import org.junit.Test
 class WrapContentHeightTest: ComposeTest() {
     private val wrapperTag = "wrapper"
 
-    override fun withContent(content: @Composable () -> Unit) =
-        composeTestRule.apply { setContent(content) }
 
     @Test
     fun at_0percent_isCorrect() {

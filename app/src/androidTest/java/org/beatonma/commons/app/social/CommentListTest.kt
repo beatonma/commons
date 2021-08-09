@@ -21,11 +21,9 @@ import org.junit.Test
 
 @MediumTest
 class CommentListTest : ComposeTest() {
-    private val listTag = "social_comment_list"
-    private val emptyTag = "social_comments_empty"
+    private val listTag = SocialTestTag.CommentsList
+    private val emptyTag = SocialTestTag.CommentsEmpty
 
-    override fun withContent(content: @Composable () -> Unit) =
-        composeTestRule.apply { setContent(content) }
 
     @Test
     fun emptyLayout_isCorrect() {

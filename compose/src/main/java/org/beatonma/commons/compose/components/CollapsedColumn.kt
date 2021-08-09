@@ -36,6 +36,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.compose.R
+import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.compose.ambient.animation
 import org.beatonma.commons.compose.animation.AnimatedItemVisibility
 import org.beatonma.commons.compose.animation.ExpandCollapseState
@@ -261,7 +262,7 @@ private fun MoreContentIndication(
                 role = Role.Button,
                 onClickLabel = contentDescription
             )
-            .testTag("more_content_indication"),
+            .testTag(TestTag.ShowMore),
         contentAlignment = Alignment.Center
     ) {
         Icon(

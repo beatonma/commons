@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.compose.components.CommonsOutlinedButton
 import org.beatonma.commons.app.ui.compose.components.LoadingIcon
+import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.components.ConfirmationState
@@ -45,15 +46,13 @@ internal fun DeleteAccountUi(
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     confirmDeleteAction: suspend (UserToken) -> Unit,
 ) {
-    println("DeleteAccountUi")
-    BottomSheetText(progress, Modifier.testTag("delete_account_ui")) {
+    BottomSheetText(progress, Modifier.testTag(UserAccountTestTag.DeleteAccountUI)) {
         Column(
             Modifier
                 .fillMaxWidth()
                 .alpha(progress.progressIn(0.6F, 1F))
         ) {
             ResourceText(R.string.account_delete_account_title, style = typography.h4)
-
             ResourceText(R.string.account_delete_explanation)
 
             Spacer(Modifier.height(16.dp))
@@ -86,7 +85,7 @@ private fun ConfirmDeletionButton(
     val confirmationState = rememberConfirmationState()
 
     DoubleConfirmationButton(
-        modifier = Modifier.testTag("action_confirm_delete"),
+        modifier = Modifier.testTag(UserAccountTestTag.DeleteAccount),
         onClick = {
             coroutineScope.launch {
                 confirmDeleteAction(userToken)
@@ -97,7 +96,8 @@ private fun ConfirmDeletionButton(
             safeColors = CommonsButtons.contentButtonColors(),
             awaitingConfirmationColors = CommonsButtons.buttonColors(
                 contentColor = colors.warningSurface,
-                backgroundColor = colors.onWarningSurface),
+                backgroundColor = colors.onWarningSurface
+            ),
             confirmedColor = CommonsButtons.contentButtonColors()
         ),
         border = if (confirmationState.value == ConfirmationState.Confirmed) null else ButtonDefaults.outlinedBorder,
@@ -114,7 +114,7 @@ private fun CancelButton(
     CommonsOutlinedButton(
         onClick = onClick,
         colors = CommonsButtons.contentButtonColors(),
-        modifier = Modifier.testTag("action_cancel")
+        modifier = Modifier.testTag(TestTag.Cancel)
     ) {
         ResourceText(R.string.account_delete_cancel_button)
     }

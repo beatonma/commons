@@ -5,11 +5,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.text
 import androidx.compose.ui.test.assertWidthIsEqualTo
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.testcompose.test.ComposeTest
 import org.junit.Test
@@ -17,8 +14,6 @@ import org.junit.Test
 class WrapContentWidthTest: ComposeTest() {
     private val wrapperTag = "wrapper"
 
-    override fun withContent(content: @Composable () -> Unit) =
-        composeTestRule.apply { setContent(content) }
 
     @Test
     fun at_0percent_isCorrect() {
@@ -59,4 +54,3 @@ class WrapContentWidthTest: ComposeTest() {
         }
     }
 }
-

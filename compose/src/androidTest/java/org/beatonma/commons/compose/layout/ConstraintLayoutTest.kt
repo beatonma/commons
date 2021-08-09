@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertHeightIsEqualTo
@@ -19,9 +18,9 @@ import org.beatonma.commons.testcompose.test.ComposeTest
 import org.junit.Test
 
 class ConstraintLayoutTest: ComposeTest() {
-
-    override fun withContent(content: @Composable () -> Unit) =
-        composeTestRule.apply { setContent(content) }
+    private val layoutTag = "constraint_layout"
+    private val firstTag = "first"
+    private val secondTag = "second"
 
     @Test
     fun constraintLayoutScope_verticalChain_isCorrect() {
@@ -29,39 +28,41 @@ class ConstraintLayoutTest: ComposeTest() {
             ConstraintLayout(
                 Modifier
                     .wrapContentHeight()
-                    .testTag("cl")
+                    .testTag(layoutTag)
             ) {
                 verticalChain(
                     {
-                        Spacer(it
-                            .testTag("first")
-                            .height(30.dp)
-                            .fillMaxWidth())
+                        Spacer(
+                            it
+                                .testTag(firstTag)
+                                .height(30.dp)
+                                .fillMaxWidth())
                     },
                     {
-                        Spacer(it
-                            .testTag("second")
-                            .height(70.dp)
-                            .fillMaxWidth())
+                        Spacer(
+                            it
+                                .testTag(secondTag)
+                                .height(70.dp)
+                                .fillMaxWidth())
                     },
                 )
             }
         }
 
         perform {
-            onNodeWithTag("cl").run {
+            onNodeWithTag(layoutTag).run {
                 assertHeightIsEqualTo(100.dp)
                 assertIsDisplayed()
                 assertTopPositionInRootIsEqualTo(0.dp)
             }
 
-            onNodeWithTag("first").run {
+            onNodeWithTag(firstTag).run {
                 assertHeightIsEqualTo(30.dp)
                 assertIsDisplayed()
                 assertTopPositionInRootIsEqualTo(0.dp)
             }
 
-            onNodeWithTag("second").run {
+            onNodeWithTag(secondTag).run {
                 assertHeightIsEqualTo(70.dp)
                 assertIsDisplayed()
                 assertTopPositionInRootIsEqualTo(30.dp)
@@ -76,21 +77,23 @@ class ConstraintLayoutTest: ComposeTest() {
                 Modifier
                     .height(200.dp)
                     .width(300.dp)
-                    .testTag("cl")
+                    .testTag(layoutTag)
             ) {
                 verticalChain(
                     {
-                        Spacer(it
-                            .testTag("first")
-                            .height(31.dp)
-                            .width(29.dp)
+                        Spacer(
+                            it
+                                .testTag(firstTag)
+                                .height(31.dp)
+                                .width(29.dp)
                         )
                     },
                     {
-                        Spacer(it
-                            .testTag("second")
-                            .height(71.dp)
-                            .width(92.dp)
+                        Spacer(
+                            it
+                                .testTag(secondTag)
+                                .height(71.dp)
+                                .width(92.dp)
                         )
                     },
                     first = {
@@ -109,20 +112,20 @@ class ConstraintLayoutTest: ComposeTest() {
         }
 
         perform {
-            onNodeWithTag("cl").run {
+            onNodeWithTag(layoutTag).run {
                 assertHeightIsEqualTo(200.dp)
                 assertIsDisplayed()
                 assertTopPositionInRootIsEqualTo(0.dp)
             }
 
-            onNodeWithTag("first").run {
+            onNodeWithTag(firstTag).run {
                 assertHeightIsEqualTo(31.dp)
                 assertIsDisplayed()
                 assertTopPositionInRootIsEqualTo(0.dp)
                 assertLeftPositionInRootIsEqualTo(271.dp)
             }
 
-            onNodeWithTag("second").run {
+            onNodeWithTag(secondTag).run {
                 assertHeightIsEqualTo(71.dp)
                 assertIsDisplayed()
                 assertTopPositionInRootIsEqualTo(80.dp)

@@ -81,7 +81,8 @@ internal fun SocialIcons(
                 this
                     .semantics(mergeDescendants = true) {
                         this.contentDescription = contentDescription
-                    }.clickable(
+                    }
+                    .clickable(
                         onClick = expandAction,
                         onClickLabel = expandActionContentDescription
                     )
@@ -111,7 +112,7 @@ private fun SocialIconsLayout(
     onVoteDownIconClick: () -> Unit,
 ) {
     Row(
-        modifier.testTag("social_icons"),
+        modifier.testTag(SocialTestTag.Icons),
         horizontalArrangement = arrangement,
     ) {
         CounterIconLayout(

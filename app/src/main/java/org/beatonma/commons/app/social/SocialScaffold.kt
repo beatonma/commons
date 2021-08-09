@@ -131,7 +131,7 @@ private fun CollapsibleSocialHeader(
                         start = progress.lerpBetween(12F, 0F).positiveDp,
                         bottom = progress.lerpBetween(8F, 0F).positiveDp
                     )
-                    .testTag("social_content"),
+                    .testTag(SocialTestTag.Content),
                 socialContent = socialContent,
                 state = state.value,
                 onStateChange = { state.value = it },

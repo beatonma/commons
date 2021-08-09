@@ -25,8 +25,6 @@ import org.junit.Test
 
 @MediumTest
 class CreateCommentUiTest: ComposeTest() {
-    override fun withContent(content: @Composable () -> Unit) =
-        composeTestRule.apply { setContent(content) }
 
     @Test
     fun whenSignedOut_collapsedLayout_shouldShowSignInFab() {
@@ -42,7 +40,7 @@ class CreateCommentUiTest: ComposeTest() {
                 .assertExists()
                 .assertIsDisplayed()
                 .assertHasClickAction()
-                .assertTextContains("sign in", ignoreCase = true)
+                .assertTextContains("sign in", substring = true, ignoreCase = true)
         }
     }
 
@@ -59,7 +57,7 @@ class CreateCommentUiTest: ComposeTest() {
                 .assertExists()
                 .assertIsDisplayed()
                 .assertHasClickAction()
-                .assertTextContains("comment", ignoreCase = true)
+                .assertTextContains("comment", substring = true, ignoreCase = true)
         }
     }
 
@@ -110,7 +108,7 @@ class CreateCommentUiTest: ComposeTest() {
     }
 
     @Composable
-    fun TestLayout(
+    private fun TestLayout(
         state: MutableState<SocialUiState>,
         userToken: UserToken = SampleUserToken,
     ) {

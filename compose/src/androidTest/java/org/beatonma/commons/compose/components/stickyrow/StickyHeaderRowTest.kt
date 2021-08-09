@@ -47,9 +47,6 @@ class StickyHeaderRowTest : ComposeTest() {
      */
     private val expectedLeftOfSecondHeader = itemWidth * 4
 
-    override fun withContent(content: @Composable () -> Unit) =
-        composeTestRule.apply { setContent(composable = content) }
-
     @Test
     fun size_isCorrect() {
         withContent { TestLayout() }
@@ -242,4 +239,3 @@ class StickyHeaderRowTest : ComposeTest() {
         }
     }
 }
-

@@ -29,8 +29,6 @@ import org.junit.Test
 
 @MediumTest
 class CollapsibleChipTest: ComposeTest() {
-    override fun withContent(content: @Composable () -> Unit) =
-        composeTestRule.apply { setContent(content) }
 
     private val chipTag = TestTag.Chip
     private val chipText = "Compose email"
