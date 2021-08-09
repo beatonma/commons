@@ -1,6 +1,7 @@
 package org.beatonma.commons.testcompose.test
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -17,13 +18,15 @@ abstract class ComposeTest {
     /**
      * Set content for [composeTestRule].
      */
-    abstract fun withContent(content: @Composable () -> Unit): ComposeContentTestRule
+    fun withContent(content: @Composable () -> Unit) {
+        composeTestRule.apply { setContent(content) }
+    }
 
     /**
      * Structural helper. Run the given [actions] on [composeTestRule] to get the UI to
      * the state required for the test. Assertions should not be made here - see [perform].
      */
-    infix fun setUp(actions: ComposeContentTestRule.() -> Unit) {
+    fun setUp(actions: ComposeContentTestRule.() -> Unit) {
         composeTestRule.actions()
     }
 
@@ -33,11 +36,14 @@ abstract class ComposeTest {
      * Run any gestures that are directly related to what you are testing and make
      * your assertions here.
      */
-    infix fun perform(actions: ComposeContentTestRule.() -> Unit) {
+    fun perform(actions: ComposeContentTestRule.() -> Unit) {
         composeTestRule.actions()
     }
 
-    fun <E, T: Enum<E>> ComposeTestRule.onNodeWithTag(enum: T, useUnmergedTree: Boolean = false) =
+    fun <E, T : Enum<E>> ComposeTestRule.onNodeWithTag(
+        enum: T,
+        useUnmergedTree: Boolean = false
+    ): SemanticsNodeInteraction =
         onNodeWithTag(enum.name, useUnmergedTree = useUnmergedTree)
 
     /**
