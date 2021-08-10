@@ -25,7 +25,7 @@ fun Any?.assertNotNull(message: String? = null) {
 }
 
 fun Nothing?.assertNotNull(message: String? = null) {
-    JUnit.assertNotNull(this)
+    JUnit.assertNotNull(message, this)
 }
 
 /**

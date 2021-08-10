@@ -26,5 +26,4 @@ inline fun <reified T> Any.invokePrivateMethod(methodName: String,
         isAccessible = accessible
         return result as? T
     }
-    return null
 }
