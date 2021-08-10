@@ -67,7 +67,7 @@ object Versions {
     // Other 3rd party
     const val GLIDE = "4.11.0"
     const val GROUPIE = "2.8.0"
-    const val COIL = "1.3.1"
+    const val COIL = "1.3.2"
     const val ACCOMPANIST_INSETS = "0.15.0"
 
     // Testing
