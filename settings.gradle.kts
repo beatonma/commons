@@ -30,5 +30,3 @@ include(":themepreview")
 
 // App
 include(":app")
-
-//include(":compose-preview")
