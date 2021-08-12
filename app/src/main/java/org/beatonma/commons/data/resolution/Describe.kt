@@ -2,20 +2,15 @@ package org.beatonma.commons.data.resolution
 
 import android.content.Context
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.AmbientContext
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import org.beatonma.commons.R
-import org.beatonma.commons.app.bill.compose.viewmodel.BillStageCategory
+import org.beatonma.commons.app.bill.viewmodel.BillStageCategory
 import org.beatonma.commons.core.House
+import org.beatonma.commons.core.VoteType
 import org.beatonma.commons.core.extensions.dump
 import org.beatonma.commons.data.core.interfaces.Named
-import org.beatonma.commons.data.core.room.entities.member.CommitteeMemberWithChairs
-import org.beatonma.commons.data.core.room.entities.member.Experience
-import org.beatonma.commons.data.core.room.entities.member.FinancialInterest
-import org.beatonma.commons.data.core.room.entities.member.HistoricalConstituencyWithElection
-import org.beatonma.commons.data.core.room.entities.member.HouseMembership
-import org.beatonma.commons.data.core.room.entities.member.PartyAssociationWithParty
-import org.beatonma.commons.data.core.room.entities.member.Post
+import org.beatonma.commons.data.core.room.entities.member.*
 import org.beatonma.commons.kotlin.extensions.stringCompat
 
 @Composable
@@ -32,13 +27,25 @@ fun BillStageCategory.description(): String = when (this) {
     BillStageCategory.RoyalAssent -> stringResource(R.string.bill_category_royal_assent)
 }
 
+@Composable
+fun VoteType.description(): String = when (this) {
+    VoteType.AyeVote -> stringResource(R.string.division_votetype_aye)
+    VoteType.NoVote -> stringResource(R.string.division_votetype_no)
+    VoteType.Abstains -> stringResource(R.string.division_votetype_abstain)
+    VoteType.SuspendedOrExpelledVote -> stringResource(R.string.division_votetype_suspended_or_expelled)
+    VoteType.DidNotVote -> stringResource(R.string.division_votetype_did_not_vote)
+}
+
 
 /**
  * Helper for getting more verbose descriptions of [Named] instances.
  */
 fun Named.description(context: Context): String = when (this) {
     is CommitteeMemberWithChairs -> {
-        if (chairs.isNotEmpty()) context.stringCompat(R.string.named_description_committee_chairship, name)
+        if (chairs.isNotEmpty()) context.stringCompat(
+            R.string.named_description_committee_chairship,
+            name
+        )
         else context.stringCompat(R.string.named_description_committee_member, name)
     }
     is Experience -> {
@@ -61,4 +68,4 @@ fun Named.description(context: Context): String = when (this) {
 }
 
 @Composable
-fun Named.description(): String = this.description(AmbientContext.current)
+fun Named.description(): String = this.description(LocalContext.current)
