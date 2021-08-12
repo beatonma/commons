@@ -4,10 +4,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Providers
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,8 +23,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import org.beatonma.commons.app.ui.compose.components.AmbientImageConfig
-import org.beatonma.commons.app.ui.compose.components.PartyPortrait
+import org.beatonma.commons.app.ui.compose.components.party.LocalImageConfig
+import org.beatonma.commons.app.ui.compose.components.party.PartyPortrait
 import org.beatonma.commons.compose.ambient.shapes
 import org.beatonma.commons.compose.util.*
 import org.beatonma.commons.logos.PartyLogos
@@ -38,14 +40,15 @@ import org.beatonma.compose.themepreview.ThemePreview
 @Preview
 fun CommonsThemePreview() {
     ThemePreview(
-        theme = { isDark, content -> CommonsTheme(isDark, content) },
         CustomPreviewScreen(
             "Commons",
         ) {
             AllPartyPortraits()
             Colors()
         }
-    )
+    ) { isDark, content ->
+        CommonsTheme(isDark, content)
+    }
 }
 
 @Composable
@@ -55,20 +58,18 @@ private fun Colors() {
             .shuffled()
     }
 
-    Column {
-        colors.forEach {
+    LazyColumn {
+        items(colors) {
             ColorRow(it)
         }
     }
-//    LazyColumnFor(colors) {
-//        ColorRow(it)
-//    }
 }
 
 @Composable
 private fun ColorPatch(c: Color, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     Surface(
-        modifier.padding(16.dp)
+        modifier
+            .padding(16.dp)
             .size(160.dp)
             .shadow(4.dp, shapes.medium),
         color = c,
@@ -109,7 +110,7 @@ private fun AllPartyPortraits() {
     val portraitConfig =
         remember { ImageConfig(ScaleType.Min, Alignment.Center, 1.0F) }
 
-    Providers(AmbientImageConfig provides portraitConfig) {
+    CompositionLocalProvider(LocalImageConfig provides portraitConfig) {
         PartyPortraits(partyLogos)
     }
 }
@@ -131,7 +132,7 @@ private fun PartyPortraits(
             ) {
                 PartyPortrait(
                     logo,
-                    AmbientImageConfig.current,
+                    LocalImageConfig.current,
                     modifier = modifier.size(size)
                 )
             }
