@@ -3,33 +3,15 @@ package org.beatonma.commons.app.memberprofile
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.ProvidableCompositionLocal
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -43,14 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import org.beatonma.commons.R
 import org.beatonma.commons.app.signin.UserAccountViewModel
-import org.beatonma.commons.app.social.HeaderExpansion
-import org.beatonma.commons.app.social.LocalSocialTheme
-import org.beatonma.commons.app.social.ProvideSocial
-import org.beatonma.commons.app.social.SocialExpansion
-import org.beatonma.commons.app.social.SocialUiState
-import org.beatonma.commons.app.social.SocialViewModel
-import org.beatonma.commons.app.social.StickySocialScaffold
-import org.beatonma.commons.app.social.asSocialTheme
+import org.beatonma.commons.app.social.*
 import org.beatonma.commons.app.timeline.Timeline
 import org.beatonma.commons.app.ui.compose.WithResultData
 import org.beatonma.commons.app.ui.compose.components.LoadingIcon
@@ -84,11 +59,7 @@ import org.beatonma.commons.core.extensions.reversed
 import org.beatonma.commons.data.core.CompleteMember
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import org.beatonma.commons.data.core.room.entities.constituency.NoConstituency
-import org.beatonma.commons.data.core.room.entities.member.FinancialInterest
-import org.beatonma.commons.data.core.room.entities.member.MemberProfile
-import org.beatonma.commons.data.core.room.entities.member.Party
-import org.beatonma.commons.data.core.room.entities.member.PhysicalAddress
-import org.beatonma.commons.data.core.room.entities.member.WebAddress
+import org.beatonma.commons.data.core.room.entities.member.*
 import org.beatonma.commons.repo.result.IoLoading
 import org.beatonma.commons.svg.ImageConfig
 import org.beatonma.commons.svg.ScaleType
@@ -100,6 +71,7 @@ import org.beatonma.commons.theme.compose.padding.padding
 import org.beatonma.commons.theme.compose.theme.systemui.statusBarsPadding
 
 private const val AVATAR_ASPECT_RATIO = 3F / 2F
+internal const val TestTagMemberTitleBar = "title_bar"
 
 internal val LocalMemberProfileActions: ProvidableCompositionLocal<MemberProfileActions> =
     compositionLocalOf { MemberProfileActions() }
@@ -182,7 +154,7 @@ private fun TitleBar(
                         .reversed()
                         .progressIn(.7F, 1F)
                 )
-                .testTag("title_bar")
+                .testTag(TestTagMemberTitleBar)
         ) {
             MemberName(
                 profile.name,
