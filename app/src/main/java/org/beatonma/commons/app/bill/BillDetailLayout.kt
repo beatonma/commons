@@ -13,11 +13,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ListItem
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.ProvidableCompositionLocal
-import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,13 +36,7 @@ import org.beatonma.commons.compose.ambient.shapes
 import org.beatonma.commons.compose.components.CollapsedColumn
 import org.beatonma.commons.compose.components.Tag
 import org.beatonma.commons.compose.components.stickyrow.StickyHeaderRow
-import org.beatonma.commons.compose.components.text.Caption
-import org.beatonma.commons.compose.components.text.ComponentTitle
-import org.beatonma.commons.compose.components.text.OptionalText
-import org.beatonma.commons.compose.components.text.PluralText
-import org.beatonma.commons.compose.components.text.Quote
-import org.beatonma.commons.compose.components.text.ResourceText
-import org.beatonma.commons.compose.components.text.ScreenTitle
+import org.beatonma.commons.compose.components.text.*
 import org.beatonma.commons.compose.layout.optionalItem
 import org.beatonma.commons.compose.util.dot
 import org.beatonma.commons.compose.util.dotted
@@ -54,7 +44,7 @@ import org.beatonma.commons.core.House
 import org.beatonma.commons.data.core.room.entities.bill.BillPublication
 import org.beatonma.commons.data.core.room.entities.bill.BillSponsorWithParty
 import org.beatonma.commons.data.core.room.entities.bill.CompleteBill
-import org.beatonma.commons.data.resolution.description
+import org.beatonma.commons.data.resolution.uiDescription
 import org.beatonma.commons.repo.result.IoLoading
 import org.beatonma.commons.theme.compose.formatting.formatted
 import org.beatonma.commons.theme.compose.padding.Padding
@@ -214,7 +204,7 @@ private fun Stages(
             if (category != null) {
                 val theme = category.theme()
                 ComponentTitle(
-                    category.description(),
+                    category.uiDescription(),
                     Modifier
                         .padding(Padding.ScreenHorizontal)
                         .padding(Padding.VerticalListItemLarge)

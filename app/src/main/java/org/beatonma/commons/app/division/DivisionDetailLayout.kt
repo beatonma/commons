@@ -17,14 +17,8 @@ import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.RemoveCircle
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.ProvidableCompositionLocal
-import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
@@ -52,13 +46,7 @@ import org.beatonma.commons.compose.components.text.Quote
 import org.beatonma.commons.compose.components.text.ResourceText
 import org.beatonma.commons.compose.components.text.ScreenTitle
 import org.beatonma.commons.compose.modifiers.wrapContentHeight
-import org.beatonma.commons.compose.util.dot
-import org.beatonma.commons.compose.util.mapUpdate
-import org.beatonma.commons.compose.util.rememberBoolean
-import org.beatonma.commons.compose.util.rememberListOf
-import org.beatonma.commons.compose.util.rememberSetOf
-import org.beatonma.commons.compose.util.rememberText
-import org.beatonma.commons.compose.util.toggle
+import org.beatonma.commons.compose.util.*
 import org.beatonma.commons.core.House
 import org.beatonma.commons.core.VoteType
 import org.beatonma.commons.core.extensions.allEqualTo
@@ -67,7 +55,7 @@ import org.beatonma.commons.core.extensions.fastForEachIndexed
 import org.beatonma.commons.data.core.room.entities.division.Division
 import org.beatonma.commons.data.core.room.entities.division.DivisionWithVotes
 import org.beatonma.commons.data.core.room.entities.division.VoteWithParty
-import org.beatonma.commons.data.resolution.description
+import org.beatonma.commons.data.resolution.uiDescription
 import org.beatonma.commons.kotlin.extensions.withMainContext
 import org.beatonma.commons.repo.result.IoLoading
 import org.beatonma.commons.theme.compose.Size
@@ -180,7 +168,7 @@ private fun HeaderAboveSocial(
     ) {
         ScreenTitle(title)
 
-        Text(division.house.description() dot division.date.formatted())
+        Text(division.house.uiDescription() dot division.date.formatted())
 
         Quote(description)
     }
@@ -259,7 +247,7 @@ private fun SearchField(
 @Composable
 private fun VoteIcon(voteType: VoteType) = VoteIcon(
     voteType.icon,
-    voteType.description(),
+    voteType.uiDescription(),
     voteType.color
 )
 

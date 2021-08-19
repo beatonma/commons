@@ -2,19 +2,8 @@ package org.beatonma.commons.app.timeline
 
 import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredWidthIn
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
@@ -40,21 +29,12 @@ import org.beatonma.commons.app.ui.compose.components.Dot
 import org.beatonma.commons.compose.ambient.animation
 import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.compose.ambient.typography
-import org.beatonma.commons.compose.animation.AnimatedItemVisibility
-import org.beatonma.commons.compose.animation.AnimatedVisibility
-import org.beatonma.commons.compose.animation.ExpandCollapseState
-import org.beatonma.commons.compose.animation.animateExpansionAsState
-import org.beatonma.commons.compose.animation.rememberExpandCollapseState
-import org.beatonma.commons.compose.animation.toggle
+import org.beatonma.commons.compose.animation.*
 import org.beatonma.commons.compose.modifiers.wrapContentWidth
-import org.beatonma.commons.core.extensions.clipToLength
-import org.beatonma.commons.core.extensions.fastForEach
-import org.beatonma.commons.core.extensions.fastForEachIndexed
-import org.beatonma.commons.core.extensions.modGet
-import org.beatonma.commons.core.extensions.pairs
+import org.beatonma.commons.core.extensions.*
 import org.beatonma.commons.data.core.interfaces.Named
 import org.beatonma.commons.data.core.interfaces.Temporal
-import org.beatonma.commons.data.resolution.description
+import org.beatonma.commons.data.resolution.uiDescription
 import org.beatonma.commons.kotlin.extensions.roundDown
 import org.beatonma.commons.kotlin.extensions.roundUp
 import org.beatonma.commons.theme.compose.formatting.dateRange
@@ -380,7 +360,7 @@ private fun renderData(rawData: List<Temporal>): RenderData {
 
     val grouped = data.groupBy {
         when (it) {
-            is Named -> it.description()
+            is Named -> it.uiDescription()
             else -> "NO DESCRIPTION"
         }
     }

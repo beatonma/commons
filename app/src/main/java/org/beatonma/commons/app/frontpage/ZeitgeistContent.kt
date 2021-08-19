@@ -5,11 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ListItem
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
@@ -29,7 +25,7 @@ import org.beatonma.commons.data.core.room.entities.division.Division
 import org.beatonma.commons.data.core.room.entities.division.ResolvedZeitgeistDivision
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 import org.beatonma.commons.data.core.room.entities.member.ResolvedZeitgeistMember
-import org.beatonma.commons.data.resolution.description
+import org.beatonma.commons.data.resolution.uiDescription
 import org.beatonma.commons.repo.models.Zeitgeist
 import org.beatonma.commons.snommoc.models.ZeitgeistReason
 import org.beatonma.commons.theme.compose.formatting.formatted
@@ -134,7 +130,7 @@ private fun Division(
     val division = item.division
     ListItem(
         modifier.clickable(onClick = { onClick(division) }),
-        overlineText = { Text(division.house.description() dot division.date.formatted()) },
+        overlineText = { Text(division.house.uiDescription() dot division.date.formatted()) },
         trailing = { Text(division.passed.toString()) },
         text = { Text(division.description ?: division.title) },
     )
@@ -156,4 +152,3 @@ private fun Bill(
         text = { Text(bill.title) },
     )
 }
-

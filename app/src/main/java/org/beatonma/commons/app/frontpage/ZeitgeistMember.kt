@@ -1,11 +1,7 @@
 package org.beatonma.commons.app.frontpage
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -30,9 +26,9 @@ import org.beatonma.commons.compose.ambient.shapes
 import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.util.dot
 import org.beatonma.commons.data.accessibility.contentDescription
-import org.beatonma.commons.data.coerceCurrentPost
 import org.beatonma.commons.data.core.MinimalMember
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
+import org.beatonma.commons.data.resolution.currentPostUiDescription
 import org.beatonma.commons.snommoc.models.ZeitgeistReason
 import org.beatonma.commons.theme.compose.theme.withSquareTop
 
@@ -139,7 +135,7 @@ private fun MemberText(
     MemberText(
         profile.name,
         LocalPartyTheme.current.party.name dot profile.parliamentdotuk.toString(),
-        profile.coerceCurrentPost(),
+        profile.currentPostUiDescription(),
         LocalPartyTheme.current.theme.onPrimary,
         modifier
     )
