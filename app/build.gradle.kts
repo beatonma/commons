@@ -1,17 +1,10 @@
 import com.android.build.api.dsl.DefaultConfig
 import org.beatonma.commons.buildsrc.Git
+import org.beatonma.commons.buildsrc.config.Commons
 import org.beatonma.commons.buildsrc.data.AllPartyThemes
 import org.beatonma.commons.buildsrc.data.ParliamentDotUkPartyIDs
 import org.beatonma.commons.buildsrc.data.PartyColors
-import org.beatonma.commons.buildsrc.gradle.buildConfigInt
-import org.beatonma.commons.buildsrc.gradle.debug
-import org.beatonma.commons.buildsrc.gradle.injectInts
-import org.beatonma.commons.buildsrc.gradle.injectStrings
-import org.beatonma.commons.buildsrc.gradle.instrumentationTest
-import org.beatonma.commons.buildsrc.gradle.main
-import org.beatonma.commons.buildsrc.gradle.project
-import org.beatonma.commons.buildsrc.gradle.resColor
-import org.beatonma.commons.buildsrc.gradle.unitTest
+import org.beatonma.commons.buildsrc.gradle.*
 import org.beatonma.commons.buildsrc.local.LocalConfig
 
 plugins {
@@ -24,37 +17,7 @@ android {
     val git = Git.resolveData(project)
 
     defaultConfig {
-        injectStrings(
-            "ACCOUNT_USERNAME_CHARACTERS" to org.beatonma.commons.buildsrc.config.Commons.Account.Username.ALLOWED_CHARACTERS,
-            "ACCOUNT_USERNAME_PATTERN" to org.beatonma.commons.buildsrc.config.Commons.Account.Username.REGEX,
-            "GOOGLE_MAPS_API_KEY" to LocalConfig.Api.Google.MAPS,
-            "GOOGLE_SIGNIN_CLIENT_ID" to LocalConfig.OAuth.Google.WEB_CLIENT_ID,
-            asBuildConfig = true,
-            asResValue = true
-        )
-
-        injectInts(
-            "ACCOUNT_USERNAME_MAX_LENGTH" to org.beatonma.commons.buildsrc.config.Commons.Account.Username.MAX_LENGTH,
-            "ACCOUNT_USERNAME_MIN_LENGTH" to org.beatonma.commons.buildsrc.config.Commons.Account.Username.MIN_LENGTH,
-            "SOCIAL_COMMENT_MAX_LENGTH" to org.beatonma.commons.buildsrc.config.Commons.Social.MAX_COMMENT_LENGTH,
-            "SOCIAL_COMMENT_MIN_LENGTH" to org.beatonma.commons.buildsrc.config.Commons.Social.MIN_COMMENT_LENGTH,
-            "THEME_TEXT_DARK" to PartyColors.TEXT_DARK,
-            "THEME_TEXT_LIGHT" to PartyColors.TEXT_LIGHT,
-            asBuildConfig = true,
-            asResValue = true
-        )
-
-        manifestPlaceholders.put(
-            "googleMapsApiKey" to LocalConfig.Api.Google.MAPS
-        )
-
-        // Party colors as @color resources and build config constants
-        injectPartyThemes(AllPartyThemes)
-
-        // Party IDs as build config constants
-        injectPartyIDs(ParliamentDotUkPartyIDs)
-
-        testApplicationId = "org.beatonma.commons.test"
+        injectAppConstants()
     }
 
     signingConfigs {
@@ -76,9 +39,15 @@ android {
             signingConfig = signingConfigs.getByName("release")
         }
     }
+
+    hilt {
+        enableExperimentalClasspathAggregation = true
+    }
 }
 
 dependencies {
+    androidTestUtil("androidx.test:orchestrator:${Versions.Jetpack.Test.CORE}")
+
     unitTest {
         implementations(
             project(Modules.Test),
@@ -133,9 +102,9 @@ dependencies {
             Dependencies.Jetpack.Compose.MATERIAL_ICONS_EXTENDED,
             Dependencies.Jetpack.NAVIGATION_COMPOSE,
             Dependencies.Jetpack.LIFECYCLE_VIEWMODEL_COMPOSE,
+            Dependencies.Jetpack.ACTIVITY_COMPOSE,
 
             Dependencies.Jetpack.ACTIVITY,
-            Dependencies.Jetpack.ACTIVITY_COMPOSE,
             Dependencies.Jetpack.FRAGMENT,
             Dependencies.Jetpack.APPCOMPAT,
             Dependencies.Jetpack.CORE_KTX,
@@ -174,24 +143,64 @@ dependencies {
     }
 }
 
+/**
+ * Inject values defined in buildsrc so they are accessible to the app at runtime.
+ * Depending on use case, these may be injected as BuildConfig constants, XML resources,
+ * or as values in the app manifest.
+ */
+fun DefaultConfig.injectAppConstants() {
+    injectStrings(
+        "ACCOUNT_USERNAME_CHARACTERS" to Commons.Account.Username.ALLOWED_CHARACTERS,
+        "ACCOUNT_USERNAME_PATTERN" to Commons.Account.Username.REGEX,
+        "GOOGLE_MAPS_API_KEY" to LocalConfig.Api.Google.MAPS,
+        "GOOGLE_SIGNIN_CLIENT_ID" to LocalConfig.OAuth.Google.WEB_CLIENT_ID,
+        asBuildConfig = true,
+        asResValue = true
+    )
 
-fun DefaultConfig.injectPartyIDs(ids: Map<String, Int>) =
-    ids.forEach { (party, parliamentdotuk) ->
+    injectInts(
+        "ACCOUNT_USERNAME_MAX_LENGTH" to Commons.Account.Username.MAX_LENGTH,
+        "ACCOUNT_USERNAME_MIN_LENGTH" to Commons.Account.Username.MIN_LENGTH,
+        "SOCIAL_COMMENT_MAX_LENGTH" to Commons.Social.MAX_COMMENT_LENGTH,
+        "SOCIAL_COMMENT_MIN_LENGTH" to Commons.Social.MIN_COMMENT_LENGTH,
+        "THEME_TEXT_DARK" to PartyColors.TEXT_DARK,
+        "THEME_TEXT_LIGHT" to PartyColors.TEXT_LIGHT,
+        asBuildConfig = true,
+        asResValue = true
+    )
+
+    injectManifestValues()
+
+    // Party colors as @color resources and build config constants
+    injectPartyThemes()
+
+    // Party IDs as build config constants
+    injectPartyIDs()
+}
+
+fun DefaultConfig.injectManifestValues() {
+    manifestPlaceholders.put(
+        "googleMapsApiKey" to LocalConfig.Api.Google.MAPS
+    )
+}
+
+fun DefaultConfig.injectPartyIDs() {
+    ParliamentDotUkPartyIDs.forEach { (party, parliamentdotuk) ->
         buildConfigInt("${party}_PARLIAMENTDOTUK", parliamentdotuk)
     }
+}
 
-fun DefaultConfig.injectPartyThemes(partyThemes: Map<String, PartyColors>) =
-    partyThemes.forEach { injectPartyTheme(it.key, it.value) }
+fun DefaultConfig.injectPartyThemes() {
+    AllPartyThemes.forEach { (name, theme) ->
+        buildConfigInt("COLOR_PARTY_${name}_PRIMARY", theme._primaryInt)
+        buildConfigInt("COLOR_PARTY_${name}_ACCENT", theme._accentInt)
 
-fun DefaultConfig.injectPartyTheme(name: String, theme: PartyColors) {
-    buildConfigInt("COLOR_PARTY_${name}_PRIMARY", theme._primaryInt)
-    buildConfigInt("COLOR_PARTY_${name}_ACCENT", theme._accentInt)
+        buildConfigInt("COLOR_PARTY_${name}_PRIMARY_TEXT", theme.primaryText)
+        buildConfigInt("COLOR_PARTY_${name}_ACCENT_TEXT", theme.accentText)
 
-    buildConfigInt("COLOR_PARTY_${name}_PRIMARY_TEXT", theme.primaryText)
-    buildConfigInt("COLOR_PARTY_${name}_ACCENT_TEXT", theme.accentText)
-
-    resColor("party_${name}_primary", theme.primary)
-    resColor("party_${name}_accent", theme.accent)
+        resColor("party_${name}_primary", theme.primary)
+        resColor("party_${name}_accent", theme.accent)
+    }
 }
 
 fun <K, V> MutableMap<K, V>.put(
