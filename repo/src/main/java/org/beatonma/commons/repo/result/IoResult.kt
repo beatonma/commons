@@ -1,33 +1,42 @@
 package org.beatonma.commons.repo.result
 
-private const val TAG = "IoResult"
+import org.beatonma.commons.network.core.Http
+import retrofit2.Response
 
-sealed class IoResult<out T>(
-    val data: T?,
-    val message: String?
-)
+sealed class BaseResult<out T, out E>
+typealias IoResult<T> = BaseResult<T, Throwable>
 
-class SuccessResult<T>(data: T, message: String?): IoResult<T>(data, message)
-class SuccessCodeResult(val responseCode: Int, message: String?): IoResult<Nothing>(null, message) {
-    override fun toString(): String {
-        return "[${this.javaClass.canonicalName}] responseCode=$responseCode"
-    }
+object IoLoading : BaseResult<Nothing, Nothing>()
+
+data class Success<out T>(
+    val data: T,
+    val message: String? = null,
+) : BaseResult<T, Nothing>()
+
+data class Failure<out E>(
+    val error: E,
+    val message: String? = null,
+) : BaseResult<Nothing, E>()
+
+sealed class HttpCodeResult(
+    val responseCode: ResponseCode,
+    val message: String? = null,
+) : BaseResult<Nothing, Nothing>()
+
+class SuccessCode(responseCode: ResponseCode, message: String?) :
+    HttpCodeResult(responseCode, message) {
+    constructor(response: Response<*>) : this(ResponseCode(response.code()), response.message())
 }
 
-sealed class IoError<T, E: Throwable>(data: T?, message: String?, val error: E?): IoResult<T>(data, message) {
-    override fun toString(): String {
-        return "[${this.javaClass.canonicalName}] data=`$data`, message=`$message`, error=`$error`"
-    }
+class ErrorCode(responseCode: ResponseCode, message: String?) :
+    HttpCodeResult(responseCode, message) {
+    constructor(response: Response<*>) : this(ResponseCode(response.code()), response.message())
 }
-class NetworkError(message: String?, error: Throwable?): IoError<Nothing, Throwable>(null, message, error)
-class GenericError(message: String?, error: Throwable?): IoError<Nothing, Throwable>(null, message, error)
-class LocalError(message: String?, error: Throwable?): IoError<Nothing, Throwable>(null, message, error)
-class UnexpectedValueError(message: String?, error: Throwable?): IoError<Nothing, Throwable>(null, message, error)
-class NotSignedInError(message: String?, error: Throwable? = null): IoError<Nothing, Throwable>(null, message, error)
 
-class LoadingResult<T>(data: T? = null, message: String? = null): IoResult<T>(data, message)
-
-
-val <R: IoResult<*>> R.isSuccess: Boolean get()  = this is SuccessResult<*> || this is SuccessCodeResult
-val <R: IoResult<*>> R.isLoading: Boolean get()  = this is LoadingResult<*>
-val <R: IoResult<*>> R.isError: Boolean get()  = this is IoError<*, *>
+@JvmInline
+value class ResponseCode(val code: Int) {
+    val isSuccess: Boolean get() = Http.Status.isSuccess(code)
+    val isError: Boolean get() = Http.Status.isClientError(code)
+    val isClientError: Boolean get() = Http.Status.isClientError(code)
+    val isServerError: Boolean get() = Http.Status.isServerError(code)
+}

@@ -1,7 +1,7 @@
-import org.beatonma.commons.buildsrc.kts.extensions.main
+import org.beatonma.commons.buildsrc.gradle.main
 
 plugins {
-    id(Plugins.COMMONS_LIBRARY_CONFIG)
+    id(Plugins.Commons.COMMONS_LIBRARY_CONFIG)
 }
 
 dependencies {
@@ -9,7 +9,7 @@ dependencies {
         implementations(
             Dependencies.Kotlin.Coroutines.ANDROID,
             Dependencies.Kotlin.Coroutines.CORE,
-            Dependencies.AndroidX.CORE_KTX
+            Dependencies.Jetpack.CORE_KTX
         )
     }
 }

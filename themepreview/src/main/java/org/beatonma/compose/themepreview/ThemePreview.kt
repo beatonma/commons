@@ -3,21 +3,23 @@ package org.beatonma.compose.themepreview
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.SpringSpec
 import androidx.compose.animation.core.TweenSpec
-import androidx.compose.foundation.*
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.*
+import androidx.compose.material.MaterialTheme.colors
+import androidx.compose.material.MaterialTheme.shapes
+import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.savedinstancestate.savedInstanceState
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.VectorAsset
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 
@@ -31,13 +33,13 @@ internal val ContentPadding = 16.dp
 interface BaseScreen {
 
     val title: String
-    val icon: VectorAsset
+    val icon: ImageVector
     val content: @Composable () -> Unit
 }
 
 internal enum class Screen(
     override val title: String,
-    override val icon: VectorAsset,
+    override val icon: ImageVector,
     override val content: @Composable () -> Unit,
 ) : BaseScreen {
 
@@ -50,7 +52,7 @@ internal enum class Screen(
 
 data class CustomPreviewScreen(
     override val title: String = "Custom app content",
-    override val icon: VectorAsset = Icons.Default.Android,
+    override val icon: ImageVector = Icons.Default.Android,
     override val content: @Composable () -> Unit,
 ) : BaseScreen
 
@@ -70,26 +72,25 @@ data class CustomPreviewScreen(
  */
 @Composable
 fun ThemePreview(
+    customScreen: CustomPreviewScreen? = null,
+
     theme: @Composable (
         isDark: Boolean,
         content: @Composable () -> Unit,
     ) -> Unit,
-
-    customScreen: CustomPreviewScreen? = null,
 ) {
     val initIsDark = isSystemInDarkTheme()
-    var isDark by savedInstanceState { initIsDark }
+    var isDark by rememberSaveable { mutableStateOf(initIsDark) }
     val crossfadeAnimSpec = remember { TweenSpec<Float>(durationMillis = 1000) }
-    val (currentScreen, onScreenChanged) = savedInstanceState { Screen.Custom }
+    val (currentScreen, onScreenChanged) = rememberSaveable { mutableStateOf(Screen.Custom) }
 
     val screenOverride =
         if (currentScreen == Screen.Custom && customScreen != null) {
             customScreen
-        }
-        else null
+        } else null
 
-    Crossfade(current = isDark, animation = crossfadeAnimSpec) {
-        theme(isDark) {
+    Crossfade(isDark, animationSpec = crossfadeAnimSpec) { dark ->
+        theme(dark) {
             ThemePreview(currentScreen,
                 screenOverride,
                 onScreenChanged,
@@ -105,7 +106,7 @@ private fun ThemePreview(
     onScreenChanged: (Screen) -> Unit,
     onToggleTheme: () -> Unit,
 ) {
-    val animSpec = remember {
+    val animationSpec = remember {
         SpringSpec<Float>(
             stiffness = 800f,
             dampingRatio = 0.8f,
@@ -113,16 +114,11 @@ private fun ThemePreview(
     }
 
     Scaffold(
-        bodyContent = {
-            BodyContent {
-                Section(screenOverride ?: currentScreen)
-            }
-        },
         bottomBar = {
             BottomBar(
                 selectedIndex = currentScreen.ordinal,
                 itemCount = Screen.values().size + 1, // Allow space for FAB
-                animSpec = animSpec,
+                animationSpec = animationSpec,
             ) { animProgress ->
                 Screen.values().forEach { screen ->
                     SectionIcon(
@@ -135,45 +131,54 @@ private fun ThemePreview(
             }
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onToggleTheme, shape = MaterialTheme.shapes.small) {
-                Icon(Icons.Default.InvertColors)
+            FloatingActionButton(onClick = onToggleTheme, shape = shapes.small) {
+                Icon(Icons.Default.InvertColors, contentDescription = "Toggle theme")
             }
         },
         floatingActionButtonPosition = FabPosition.End,
         isFloatingActionButtonDocked = true,
-    )
+    ) { paddingValues ->
+        BodyContent {
+            Section(screenOverride ?: currentScreen)
+        }
+    }
 }
 
 @Composable
 private fun BodyContent(content: @Composable () -> Unit) {
-    Surface(Modifier.fillMaxWidth(), color = MaterialTheme.colors.background) {
+    Surface(Modifier.fillMaxWidth(), color = colors.background) {
         content()
     }
 }
 
 @Composable
 private fun Section(screen: BaseScreen) {
-    val scrollState = rememberScrollState(0F)
-    val scrollProgress = scrollState.value / scrollState.maxValue
+    val scrollState = rememberScrollState()
+    val scrollProgress = scrollState.value.toFloat() / scrollState.maxValue.toFloat()
 
-    ScrollableColumn(
-        Modifier.fillMaxWidth(),
-        scrollState = scrollState,
-    ) {
-        SectionHeader(screen.title, scrollProgress)
-        screen.content()
-        Spacer(Modifier.height(160.dp))
+    LazyColumn {
+        item {
+            SectionHeader(screen.title, scrollProgress)
+        }
+
+        item {
+            screen.content()
+        }
+
+        item {
+            Spacer(Modifier.height(160.dp))
+        }
     }
 }
 
 @Composable
 private fun SectionHeader(text: String, progress: Float, modifier: Modifier = Modifier) {
-    Surface(Modifier.fillMaxWidth(), color = MaterialTheme.colors.secondary) {
+    Surface(Modifier.fillMaxWidth(), color = colors.primary) {
         Text(
             text,
             Modifier.padding(horizontal = ContentPadding, vertical = 32.dp),
             fontFamily = FontFamily.Monospace,
-            style = MaterialTheme.typography.h3,
+            style = typography.h3,
         )
     }
 }

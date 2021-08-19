@@ -5,7 +5,6 @@ import org.beatonma.commons.core.extensions.mapToByte
 import org.beatonma.commons.core.extensions.normalize
 import org.beatonma.commons.test.extensions.assertions.assertFuzzyEquals
 import org.beatonma.commons.test.extensions.assertions.shouldbe
-import org.beatonma.commons.test.extensions.util.dump
 import org.junit.Test
 import kotlin.random.Random
 
@@ -227,7 +226,7 @@ class ColorTest {
         // Generate random Colors and convert them to HslColor and back again, ensuring the result
         // is the same as the source.
         for (i in 1..50) {
-            val c = anyColor().dump()
+            val c = anyColor()
             c.toHslColor().toColor() shouldbe c
         }
     }

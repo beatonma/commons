@@ -4,7 +4,7 @@ import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.components.SingletonComponent
 import org.beatonma.commons.core.House
 import org.beatonma.commons.snommoc.converters.DateAdapter
 import org.beatonma.commons.snommoc.converters.DateTimeAdapter
@@ -14,10 +14,11 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.inject.Singleton
 
-@Module @InstallIn(ApplicationComponent::class)
+@Module @InstallIn(SingletonComponent::class)
 class MoshiModule {
     @Singleton
     @Provides
+    @SnommocClient
     fun providesMoshi(): Moshi =
         Moshi.Builder()
             .add(DeEnvelopeFactory())

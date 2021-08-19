@@ -1,19 +1,19 @@
-import org.beatonma.commons.buildsrc.Commons
-import org.beatonma.commons.buildsrc.kts.extensions.buildConfigStrings
-import org.beatonma.commons.buildsrc.kts.extensions.instrumentationTest
-import org.beatonma.commons.buildsrc.kts.extensions.main
+import org.beatonma.commons.buildsrc.gradle.buildConfigStrings
+import org.beatonma.commons.buildsrc.gradle.instrumentationTest
+import org.beatonma.commons.buildsrc.gradle.main
+import org.beatonma.commons.buildsrc.gradle.project
 
 plugins {
-    id(Plugins.COMMONS_LIBRARY_CONFIG)
-    id(Plugins.COMMONS_HILT_MODULE)
+    id(Plugins.Commons.COMMONS_LIBRARY_CONFIG)
+    id(Plugins.Commons.COMMONS_HILT_MODULE)
 }
 
 android {
     defaultConfig {
-        testInstrumentationRunner = "org.beatonma.commons.repo.androidTest.HiltTestRunner"
+        testInstrumentationRunner = "org.beatonma.commons.testhilt.HiltTestRunner"
 
         buildConfigStrings(
-            "APPLICATION_ID" to Commons.APPLICATION_ID
+            "APPLICATION_ID" to org.beatonma.commons.buildsrc.config.Commons.APPLICATION_ID
         )
     }
 }
@@ -21,31 +21,34 @@ android {
 dependencies {
     instrumentationTest {
         annotationProcessors(
-            Dependencies.Dagger.COMPILER,
-            Dependencies.Dagger.ANNOTATION_PROCESSOR
+            Dependencies.Dagger.AP_COMPILER,
+            Dependencies.Dagger.AP_ANDROID
         )
 
         implementations(
-            project(":test"),
+            project(Modules.Test),
+            project(Modules.TestHilt),
             Dependencies.Dagger.Hilt.TESTING,
             Dependencies.Room.RUNTIME,
-            Dependencies.Test.AndroidX.LIVEDATA,
-            Dependencies.Test.AndroidX.RUNNER
+            Dependencies.Test.Jetpack.LIVEDATA,
+            Dependencies.Test.Jetpack.RUNNER
         )
     }
+
 
     main {
         implementations(
             Dependencies.Kotlin.Coroutines.ANDROID,
             Dependencies.Kotlin.Coroutines.CORE,
-            Dependencies.AndroidX.CORE_KTX,
+            Dependencies.Jetpack.CORE_KTX,
             Dependencies.Dagger.Hilt.LIFECYCLE_VIEWMODEL,
             Dependencies.Retrofit.Converter.MOSHI,
 
-            project(":core"),
-            project(":network-core"),
-            project(":persistence"),
-            project(":snommoc")
+            project(Modules.Core),
+            project(Modules.NetworkCore),
+            project(Modules.Persistence),
+            project(Modules.Snommoc),
+            project(Modules.UkParliament)
         )
     }
 }

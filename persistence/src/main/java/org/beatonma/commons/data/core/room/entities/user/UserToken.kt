@@ -1,7 +1,9 @@
 package org.beatonma.commons.data.core.room.entities.user
 
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import kotlinx.parcelize.Parcelize
 import org.beatonma.commons.core.SnommocToken
 
 @Entity(
@@ -11,6 +13,7 @@ import org.beatonma.commons.core.SnommocToken
     ],
     tableName = "user_tokens",
 )
+@Parcelize
 data class UserToken(
     @ColumnInfo(name = "name") val name: String?,
     @ColumnInfo(name = "photo_url") val photoUrl: String?,
@@ -18,32 +21,4 @@ data class UserToken(
     @ColumnInfo(name = "snommoc_token") val snommocToken: SnommocToken,
     @ColumnInfo(name = "google_id") val googleId: String,
     @ColumnInfo(name = "username") val username: String,
-)
-
-//data class ApiUserToken(
-//    @field:Json(name = Contract.SNOMMOC_TOKEN) val snommocToken: SnommocToken,
-//    @field:Json(name = Contract.GOOGLE_TOKEN) val googleTokenStub: String,
-//    @field:Json(name = Contract.USERNAME) val username: String,
-//) {
-//    fun composeToUserToken(account: UserAccount) = UserToken(
-//        name = account.name,
-//        photoUrl = account.photoUrl,
-//        email = account.email,
-//        snommocToken = this.snommocToken,
-//        googleId = account.googleId,
-//        username = this.username,
-//    )
-//}
-
-//
-//sealed class AccountAction(@field:Json(name = Contract.ACCOUNT_ACTION) val action: String)
-//data class RenameAccountRequest(
-//    @field:Json(name = Contract.USERNAME) val currentUsername: String,
-//    @field:Json(name = Contract.ACCOUNT_NEW_USERNAME) val newUsername: String,
-//    @field:Json(name = Contract.SNOMMOC_TOKEN) val token: SnommocToken,
-//): AccountAction(action=Contract.ACCOUNT_ACTION_CHANGE_USERNAME)
-//
-//data class DeleteUserRequest(
-//    @field:Json(name = Contract.GOOGLE_TOKEN) val gtoken: String,
-//    @field:Json(name = Contract.SNOMMOC_TOKEN) val token: SnommocToken,
-//): AccountAction("delete")
+) : Parcelable

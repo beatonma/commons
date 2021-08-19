@@ -1,30 +1,29 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 plugins {
-    id("com.github.ben-manes.versions") version Versions.GRADLE_DEPENDENCY_UPDATES
+    id("com.github.ben-manes.versions") version Versions.Build.DEPENDENCY_UPDATES
 }
 
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
         maven("https://dl.bintray.com/kotlin/kotlin-eap")
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:4.2.0-alpha12")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.KOTLIN}")
-        classpath("com.github.ben-manes:gradle-versions-plugin:${Versions.GRADLE_DEPENDENCY_UPDATES}")
-        classpath("com.google.dagger:hilt-android-gradle-plugin:${Versions.HILT}")
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle.kts files
+        classpath(Dependencies.Build.GRADLE)
+        classpath(Dependencies.Build.KOTLIN)
+        classpath(Dependencies.Build.HILT)
+        classpath(Dependencies.Build.VERSIONS)
     }
 }
 
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
         maven("https://dl.bintray.com/kotlin/kotlin-eap")
+        jcenter() // Required for Volley 1.1.1 (required by Google Maps)
     }
 }
 
@@ -38,7 +37,16 @@ tasks.named<DependencyUpdatesTask>("dependencyUpdates") {
     resolutionStrategy {
         componentSelection {
             all {
-                val rejected = listOf("alpha", "beta", "rc", "cr", "m", "preview", "b", "ea").any { qualifier ->
+                val rejected = listOf(
+                    "alpha",
+                    "beta",
+                    "rc",
+                    "cr",
+                    "m",
+                    "preview",
+                    "b",
+                    "ea"
+                ).any { qualifier ->
                     candidate.version.matches(Regex("(?i).*[.-]$qualifier[.\\d-+]*"))
                 }
                 if (rejected) {

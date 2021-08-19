@@ -2,7 +2,6 @@ package org.beatonma.commons.svg
 
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Matrix
@@ -10,9 +9,9 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.withTransform
 
 data class ImageConfig(
-    val scaleType: ScaleType,
-    val alignment: Alignment,
-    val scaleMultiplier: Float,
+    val scaleType: ScaleType = ScaleType.Min,
+    val alignment: Alignment = Alignment.Center,
+    val scaleMultiplier: Float = 1.0F,
     val offset: Offset = Offset.Zero,
     val matrix: Matrix = Matrix(),
     val pathConfig: PathConfig? = null,
@@ -26,8 +25,15 @@ abstract class VectorGraphic(
 ) {
 
     private val _paths: Array<VectorPath?> = Array(pathCount) { null }
-    val paths: Array<VectorPath> get() = _paths as Array<VectorPath>
 
+    @Suppress("UNCHECKED_CAST")
+    val paths: Array<VectorPath>
+        get() = _paths as Array<VectorPath>
+
+    /**
+     * Populate [paths].
+     * Every position in the array (0..(pathCount - 1)) must be given a [VectorPath]!
+     */
     abstract fun buildPaths()
 
     fun render(drawScope: DrawScope, pathConfig: PathConfig? = null) {
@@ -37,20 +43,27 @@ abstract class VectorGraphic(
     }
 }
 
-fun VectorGraphic.getBounds(): Rect {
-    paths[0].path.getBounds()
-    var rect = Rect.Zero
-    paths.forEach {
-        rect = rect.expandToInclude(it.path.getBounds())
-    }
-    return rect
-}
-
 val VectorGraphic.size get() = Size(width.toFloat(), height.toFloat())
 val VectorGraphic.maxDimension get() = width.coerceAtLeast(height)
 val VectorGraphic.minDimension get() = width.coerceAtMost(height)
 
 fun VectorGraphic.render(
+    scope: DrawScope,
+    imageConfig: ImageConfig,
+) {
+    render(
+        scope,
+        imageConfig.scaleType,
+        imageConfig.alignment,
+        imageConfig.offset,
+        imageConfig.scaleMultiplier,
+        imageConfig.matrix,
+        imageConfig.pathConfig
+    )
+}
+
+
+private fun VectorGraphic.render(
     scope: DrawScope,
     scaleType: ScaleType,
     alignment: Alignment,
@@ -70,19 +83,4 @@ fun VectorGraphic.render(
     }
 
     matrix.reset()
-}
-
-fun VectorGraphic.render(
-    scope: DrawScope,
-    imageConfig: ImageConfig,
-) {
-    render(
-        scope,
-        imageConfig.scaleType,
-        imageConfig.alignment,
-        imageConfig.offset,
-        imageConfig.scaleMultiplier,
-        imageConfig.matrix,
-        imageConfig.pathConfig
-    )
 }

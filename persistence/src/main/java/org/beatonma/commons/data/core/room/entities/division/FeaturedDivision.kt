@@ -1,28 +1,13 @@
 package org.beatonma.commons.data.core.room.entities.division
 
-import androidx.room.*
+import androidx.room.ColumnInfo
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.PrimaryKey
+import androidx.room.Relation
 import org.beatonma.commons.core.PARLIAMENTDOTUK
 import org.beatonma.commons.core.ParliamentID
-
-@Deprecated("Use zeitgeist")
-@Entity(
-    tableName = "featured_divisions",
-)
-data class FeaturedDivision(
-    @ColumnInfo(name = "featured_division_id") @PrimaryKey val divisionId: ParliamentID,
-    @ColumnInfo(name = "featured_about") val about: String? = null,
-)
-
-@Deprecated("Use zeitgeist")
-data class FeaturedDivisionWithDivision(
-    @Embedded val featured: FeaturedDivision,
-    @Relation(
-        parentColumn = "featured_division_id",
-        entityColumn = "division_$PARLIAMENTDOTUK",
-        entity = Division::class
-    )
-    val division: Division,
-)
 
 @Entity(
     foreignKeys = [

@@ -5,7 +5,8 @@ import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.runBlocking
 import org.beatonma.commons.data.core.room.dao.BillDao
 import org.beatonma.commons.repo.BaseRoomTest
-import org.beatonma.commons.repo.CommonsApi
+import org.beatonma.commons.repo.remotesource.api.CommonsApi
+import org.beatonma.commons.repo.remotesource.api.UkParliamentApi
 import org.beatonma.commons.repo.testdata.API_BILL
 import org.beatonma.commons.repo.testdata.BILL_PUK
 import org.beatonma.commons.test.extensions.assertions.shouldbe
@@ -26,6 +27,7 @@ class BillRepositoryTest : BaseRoomTest() {
         super.setUp()
         repository = BillRepository(
             fakeOf(CommonsApi::class, object {  }),
+            fakeOf(UkParliamentApi::class, object {  }),
             db.billDao()
         )
 
@@ -41,7 +43,7 @@ class BillRepositoryTest : BaseRoomTest() {
                 .awaitValue(latchCount = 6)
                 .single()
                 .run {
-                    with(bill!!) {
+                    with(bill) {
                         parliamentdotuk shouldbe 392545
                         title shouldbe "Presumption of Death"
                         description shouldbe "A Bill to make provision in relation to the presumed deaths of missing persons; and for connected purposes."
@@ -56,7 +58,7 @@ class BillRepositoryTest : BaseRoomTest() {
                         publicInvolvementAllowed shouldbe true
                     }
 
-                    with(publications!!) {
+                    with(publications) {
                         size shouldbe 1
                         first().run {
                             parliamentdotuk shouldbe 397898
@@ -64,12 +66,12 @@ class BillRepositoryTest : BaseRoomTest() {
                         }
                     }
 
-                    with(session!!) {
+                    with(session) {
                         name shouldbe "2008-2009"
                         parliamentdotuk shouldbe 377312
                     }
 
-                    with(sponsors!!) {
+                    with(sponsors) {
                         size shouldbe 1
                         first().sponsor.run {
                             parliamentdotuk shouldbe 1727
@@ -77,7 +79,7 @@ class BillRepositoryTest : BaseRoomTest() {
                         }
                     }
 
-                    with(stages!!) {
+                    with(stages) {
                         size shouldbe 1
                         first().run {
                             stage.run {

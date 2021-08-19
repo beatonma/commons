@@ -53,4 +53,4 @@ fun VectorPath.render(scope: DrawScope, config: PathConfig? = null) {
 fun vectorPath(path: Path, color: Color, style: DrawStyle = Fill) =
     object : VectorPath(path, color, style) {}
 
-fun plotPath(path: Path = Path(), block: Path.() -> Unit) = path.apply { block() }
+inline fun plotPath(path: Path = Path(), block: Path.() -> Unit) = path.apply(block)

@@ -2,9 +2,9 @@ package org.beatonma.commons.repo.repository
 
 import org.beatonma.commons.data.core.room.dao.UserDao
 import org.beatonma.commons.data.core.room.entities.user.UserToken
-import org.beatonma.commons.repo.CommonsApi
-import org.beatonma.commons.repo.FlowIoResult
+import org.beatonma.commons.repo.ResultFlow
 import org.beatonma.commons.repo.converters.composeToUserToken
+import org.beatonma.commons.repo.remotesource.api.CommonsApi
 import org.beatonma.commons.repo.result.cachedResultFlow
 import org.beatonma.commons.repo.result.resultFlowLocalPreferred
 import org.beatonma.commons.repo.result.resultFlowNoCache
@@ -23,19 +23,19 @@ class UserRepository @Inject constructor(
     /**
      * Return local token if exists, otherwise contact web service to get token.
      */
-    fun getTokenForAccount(account: UserAccount): FlowIoResult<UserToken> = resultFlowLocalPreferred(
-        databaseQuery = { userDao.getUserToken(account.googleId) },
-        networkCall = { remoteSource.registerUser(account.googleIdToken) },
-        saveCallResult = { apiToken -> saveApiToken(account, apiToken) }
-    )
+    fun getTokenForAccount(account: GoogleAccount): ResultFlow<UserToken> =
+        resultFlowLocalPreferred(
+            databaseQuery = { userDao.getUserToken(account.googleId) },
+            networkCall = { remoteSource.registerUser(account.googleIdToken) },
+            saveCallResult = { apiToken -> saveApiToken(account, apiToken) }
+        )
 
-    /**
-     * Refresh account token from the server, even if we have a cached token.
-     */
-    fun forceGetTokenForAccount(account: UserAccount): FlowIoResult<UserToken> = cachedResultFlow(
-        databaseQuery = { userDao.getUserToken(account.googleId) },
-        networkCall = { remoteSource.registerUser(account.googleIdToken) },
-        saveCallResult = { apiToken -> saveApiToken(account, apiToken) }
+    fun refreshUsername(userToken: UserToken): ResultFlow<UserToken> = cachedResultFlow(
+        databaseQuery = { userDao.getUserToken(userToken.googleId) },
+        networkCall = { remoteSource.getUsername(userToken) },
+        saveCallResult = { apiUsername ->
+            userDao.update(userToken.copy(username = apiUsername.username))
+        }
     )
 
     fun requestRenameAccount(token: UserToken, newName: String) = resultFlowNoCache {
@@ -46,7 +46,7 @@ class UserRepository @Inject constructor(
         remoteSource.deleteUserAccount(token)
     }
 
-    private suspend fun saveApiToken(account: UserAccount, apiToken: ApiUserToken) {
+    private suspend fun saveApiToken(account: GoogleAccount, apiToken: ApiUserToken) {
         val googleTokenStub = account.googleIdToken.substring(0..31)
         if (googleTokenStub == apiToken.googleTokenStub) {
             userDao.insertUserToken(apiToken.composeToUserToken(account))
@@ -57,8 +57,7 @@ class UserRepository @Inject constructor(
     }
 }
 
-
-data class UserAccount(
+data class GoogleAccount(
     val name: String?,
     val photoUrl: String?,
     val email: String?,

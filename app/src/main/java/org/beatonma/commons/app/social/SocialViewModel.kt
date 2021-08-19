@@ -1,93 +1,115 @@
 package org.beatonma.commons.app.social
 
-import android.content.Context
-import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.Observer
-import androidx.lifecycle.asLiveData
-import dagger.hilt.android.qualifiers.ApplicationContext
-import org.beatonma.commons.BuildConfig
-import org.beatonma.commons.app
-import org.beatonma.commons.app.signin.BaseUserAccountViewModel
+import android.util.Log
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import org.beatonma.commons.core.extensions.autotag
+import org.beatonma.commons.data.SavedStateKey
+import org.beatonma.commons.data.core.interfaces.Sociable
 import org.beatonma.commons.data.core.room.entities.user.UserToken
-import org.beatonma.commons.repo.LiveDataIoResult
+import org.beatonma.commons.data.set
+import org.beatonma.commons.kotlin.extensions.withMainContext
+import org.beatonma.commons.repo.asSocialTarget
 import org.beatonma.commons.repo.models.CreatedComment
 import org.beatonma.commons.repo.models.CreatedVote
 import org.beatonma.commons.repo.repository.SocialRepository
-import org.beatonma.commons.repo.repository.UserRepository
 import org.beatonma.commons.repo.result.IoResult
-import org.beatonma.commons.repo.result.NotSignedInError
+import org.beatonma.commons.repo.result.isSuccess
+import org.beatonma.commons.repo.result.onError
+import org.beatonma.commons.repo.result.onErrorCode
+import org.beatonma.commons.repo.result.onSuccess
 import org.beatonma.commons.snommoc.annotations.SignInRequired
+import org.beatonma.commons.snommoc.models.social.EmptySocialContent
 import org.beatonma.commons.snommoc.models.social.SocialContent
 import org.beatonma.commons.snommoc.models.social.SocialTarget
 import org.beatonma.commons.snommoc.models.social.SocialVoteType
+import javax.inject.Inject
 
 private const val TAG = "SocialViewModel"
 
-class SocialViewModel @ViewModelInject constructor(
-    userRepository: UserRepository,
-    private val socialRepository: SocialRepository,
-    @ApplicationContext application: Context,
-): BaseUserAccountViewModel(userRepository, application.app) {
+private val SavedSocialContent = SavedStateKey("social_content")
+private val SavedUiState = SavedStateKey("ui_state") // TODO
 
-    lateinit var livedata: LiveDataIoResult<SocialContent>
+@HiltViewModel
+class SocialViewModel @Inject constructor(
+    private val socialRepository: SocialRepository,
+    private val savedStateHandle: SavedStateHandle,
+) : ViewModel() {
+
+    val livedata: LiveData<SocialContent> =
+        savedStateHandle.getLiveData(SavedSocialContent.name, EmptySocialContent)
+
+    val uiState = mutableStateOf(SocialUiState.Collapsed)
+
     lateinit var socialTarget: SocialTarget
 
-    private var token: UserToken? = null
-    private val tokenObserver = Observer<IoResult<UserToken>> { token = it.data }
-
-    fun forTarget(target: SocialTarget) {
-        getTokenForCurrentSignedInAccount()
-        activeUserToken?.observeForever(tokenObserver)
-        livedata = socialRepository.getSocialContent(target, token?.snommocToken ).asLiveData()
-        socialTarget = target
-    }
-
-    fun refresh() {
-        if (::socialTarget.isInitialized) {
-            livedata = socialRepository.getSocialContent(socialTarget, token?.snommocToken).asLiveData()
+    fun forTarget(target: SocialTarget, userToken: UserToken?) {
+        if (!this::socialTarget.isInitialized) {
+            socialTarget = target
+            refresh(userToken)
         }
     }
 
-    override fun onCleared() {
-        activeUserToken?.removeObserver(tokenObserver)
-        super.onCleared()
+    fun forTarget(target: Sociable, userToken: UserToken?) {
+        if (!this::socialTarget.isInitialized) {
+            socialTarget = target.asSocialTarget()
+            refresh(userToken)
+        }
+    }
+
+    fun refresh(userToken: UserToken?) {
+        viewModelScope.launch(Dispatchers.IO) {
+            fetchSocialContent(userToken)
+        }
     }
 
     @SignInRequired
-    suspend fun postComment(text: String): IoResult<*> {
-        val token = token ?: return NotSignedInError("User must be signed in to post a comment")
+    fun postComment(text: String, userToken: UserToken) {
+        submitSocialContent(userToken) {
+            val comment = CreatedComment(
+                userToken = userToken,
+                target = socialTarget,
+                text = text,
+            )
 
-        val comment = CreatedComment(
-            userToken = token,
-            target = socialTarget,
-            text = text,
-        )
-
-        return socialRepository.postComment(comment)
+            socialRepository.postComment(comment)
+        }
     }
 
     @SignInRequired
-    suspend fun postVote(voteType: SocialVoteType): IoResult<*> {
-        val token = token ?: return NotSignedInError("User must be signed in to vote")
+    private fun postVote(voteType: SocialVoteType, userToken: UserToken) {
+        submitSocialContent(userToken) {
+            val vote = CreatedVote(
+                userToken = userToken,
+                target = socialTarget,
+                voteType = voteType
+            )
 
-        val vote = CreatedVote(
-            userToken = token,
-            target = socialTarget,
-            voteType = voteType
-        )
-
-        return socialRepository.postVote(vote)
+            socialRepository.postVote(vote)
+        }
     }
 
-    internal fun validateComment(text: String): CommentValidation {
-        val length = text.length
+    @SignInRequired
+    fun updateVote(voteType: SocialVoteType, userToken: UserToken) {
+        postVote(
+            voteType = if (shouldRemoveVote(voteType)) SocialVoteType.NULL else voteType,
+            userToken = userToken
+        )
+    }
 
-        return when {
-            length < 10 -> CommentValidation.INVALID_TOO_SHORT
-            length > BuildConfig.SOCIAL_COMMENT_MAX_LENGTH -> CommentValidation.INVALID_TOO_LONG
-
-            // Further validation on server side
-            else -> CommentValidation.VALID
+    private fun <T> submitSocialContent(userToken: UserToken, block: suspend () -> IoResult<T>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            block()
+                .onSuccess { refresh(userToken) }
+                .onError { e -> Log.w(autotag, "Social content submission failed $e") }
+                .onErrorCode { e -> Log.w(autotag, "Social content submission failed $e") }
         }
     }
 
@@ -95,13 +117,17 @@ class SocialViewModel @ViewModelInject constructor(
      * Called when a user submits a vote.
      * Returns true if the voteType is the same as that already registered.
      */
-    internal fun shouldRemoveVote(voteType: SocialVoteType) =
-        livedata.value?.data?.userVote == voteType
-}
+    private fun shouldRemoveVote(voteType: SocialVoteType): Boolean =
+        voteType == livedata.value?.userVote
 
-
-internal enum class CommentValidation {
-    VALID,
-    INVALID_TOO_SHORT,
-    INVALID_TOO_LONG,
+    private suspend fun fetchSocialContent(userToken: UserToken?) {
+        socialRepository.getSocialContent(
+            socialTarget,
+            userToken?.snommocToken
+        ).first { it.isSuccess }.onSuccess { data ->
+            withMainContext {
+                savedStateHandle[SavedSocialContent] = data
+            }
+        }
+    }
 }

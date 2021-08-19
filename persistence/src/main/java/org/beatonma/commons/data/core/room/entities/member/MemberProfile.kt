@@ -1,9 +1,19 @@
 package org.beatonma.commons.data.core.room.entities.member
 
-import androidx.room.*
+import androidx.room.ColumnInfo
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Ignore
+import androidx.room.PrimaryKey
 import org.beatonma.commons.core.PARLIAMENTDOTUK
 import org.beatonma.commons.core.ParliamentID
-import org.beatonma.commons.data.core.interfaces.*
+import org.beatonma.commons.data.core.interfaces.Commentable
+import org.beatonma.commons.data.core.interfaces.Named
+import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
+import org.beatonma.commons.data.core.interfaces.Periodic
+import org.beatonma.commons.data.core.interfaces.Timestamped
+import org.beatonma.commons.data.core.interfaces.Votable
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import java.time.LocalDate
 
@@ -65,22 +75,4 @@ data class BasicProfile(
     @ColumnInfo(name = "party_id", index = true) val party: Party,  // Use Party object for api response, serialized to id for storage
     @ColumnInfo(name = "constituency_id", index = true) val constituency: Constituency?  // Use Constituency object for api response, serialized to id for storage
 ): Parliamentdotuk,
-    Named {
-    fun toMemberProfile() = MemberProfile(
-        parliamentdotuk = parliamentdotuk,
-        name = name,
-        portraitUrl = portraitUrl,
-        currentPost = currentPost,
-        party = party,
-        constituency = constituency
-    )
-}
-
-
-data class BasicProfileWithParty(
-    @Embedded
-    val profile: BasicProfile,
-
-    @Relation(parentColumn = "party_id", entityColumn = "party_$PARLIAMENTDOTUK")
-    val party: Party
-)
+    Named

@@ -2,68 +2,74 @@ package org.beatonma.commons.kotlin.extensions
 
 import android.net.Uri
 import android.os.Bundle
-import android.view.View
-import androidx.annotation.IdRes
 import androidx.core.net.toUri
-import androidx.core.os.bundleOf
-import androidx.navigation.NavOptions
+import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
-import androidx.navigation.fragment.FragmentNavigator
-import org.beatonma.commons.app.division.DivisionDetailFragment.Companion.HOUSE
 import org.beatonma.commons.core.House
 import org.beatonma.commons.core.PARLIAMENTDOTUK
 import org.beatonma.commons.core.ParliamentID
-import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
-import org.beatonma.commons.data.core.room.entities.bill.BillSponsor
-import org.beatonma.commons.data.core.room.entities.division.FeaturedDivisionWithDivision
-import org.beatonma.commons.data.core.room.entities.division.Vote
+import org.beatonma.commons.data.core.room.entities.bill.Bill
+import org.beatonma.commons.data.core.room.entities.constituency.Constituency
+import org.beatonma.commons.data.core.room.entities.division.Division
+import org.beatonma.commons.data.core.room.entities.member.MemberProfile
+import org.beatonma.commons.snommoc.CommonsService
+import org.beatonma.commons.snommoc.models.search.SearchResult
 
-fun View.navigateTo(
-    @IdRes navigationAction: Int,
-    args: Bundle? = null,
-    navOptions: NavOptions? = null,
-    extras: FragmentNavigator.Extras? = null,
-) {
-    Navigation.findNavController(this)
-        .navigate(
-            navigationAction,
-            args,
-            navOptions,
-            extras)
-}
+private const val HOUSE = "house"
+private const val CONSTITUENCY_ID = "constituency_id"
+private const val ELECTION_ID = "election_id"
 
-fun View.navigateTo(url: String) {
-    Navigation.findNavController(this)
-        .navigate(url.toUri())
-}
+fun Fragment.navigateTo(searchResult: SearchResult) = navigateTo(searchResult.toUri())
 
-fun View.navigateTo(url: Uri) {
-    Navigation.findNavController(this)
-        .navigate(url)
-}
+fun Fragment.navigateToMember(memberID: ParliamentID) =
+    navigateTo(CommonsService.getMemberUrl(memberID).toUri())
+
+fun Fragment.navigateToConstituencyResult(constituencyId: ParliamentID, electionId: ParliamentID) =
+    navigateTo(CommonsService.getConstituencyResultsUrl(constituencyId, electionId).toUri())
+
+fun Fragment.navigateTo(memberProfile: MemberProfile) =
+    navigateToMember(memberProfile.parliamentdotuk)
+
+fun Fragment.navigateTo(constituency: Constituency) =
+    navigateTo(CommonsService.getConstituencyUrl(constituency.parliamentdotuk).toUri())
+
+fun Fragment.navigateTo(division: Division) =
+    navigateTo(CommonsService.getDivisionUrl(division.house, division.parliamentdotuk).toUri())
+
+fun Fragment.navigateTo(bill: Bill) =
+    navigateTo(CommonsService.getBillUrl(bill.parliamentdotuk).toUri())
 
 
-fun FeaturedDivisionWithDivision.bundle() = bundleOf(
-    HOUSE to division.house,
-    PARLIAMENTDOTUK to featured.divisionId
-)
+val Bundle?.parliamentID: ParliamentID
+    get() {
+        require(this != null)
+        return getInt(PARLIAMENTDOTUK)
+    }
+
 fun Bundle?.getDivision(): BundledDivision {
-    this ?: throw NoSuchElementException("Unable to unpack Division from bundle: House and ParliamentID arguments are required!")
+    require(this != null)
     return BundledDivision(this)
 }
 
+fun Bundle?.getConstituencyResult(): BundledConstituencyResult {
+    require(this != null)
+    return BundledConstituencyResult(this)
+}
 
-fun Parliamentdotuk.bundle() = bundleOf(PARLIAMENTDOTUK to this.parliamentdotuk)
-fun Vote.memberBundle() = bundleOf(PARLIAMENTDOTUK to this.memberId)
-fun BillSponsor.memberBundle() = bundleOf(PARLIAMENTDOTUK to this.parliamentdotuk)
-
-fun Bundle?.getParliamentID(): ParliamentID = this?.getInt(PARLIAMENTDOTUK)
-    ?: throw Exception("ParliamentID not found in bundle: $this")
-
-
-class BundledDivision(val house: House, val parliamentdotuk: ParliamentID) {
-    constructor(bundle: Bundle): this(
-        house = bundle.getSerializable(HOUSE) as House,
-        parliamentdotuk = bundle.getParliamentID()
+class BundledConstituencyResult(val constituencyId: ParliamentID, val electionId: ParliamentID) {
+    constructor(bundle: Bundle) : this(
+        constituencyId = bundle.getInt(CONSTITUENCY_ID),
+        electionId = bundle.getInt(ELECTION_ID)
     )
 }
+
+class BundledDivision(val house: House, val parliamentdotuk: ParliamentID) {
+    constructor(bundle: Bundle) : this(
+        house = bundle.getSerializable(HOUSE) as House,
+        parliamentdotuk = bundle.parliamentID
+    )
+}
+
+private fun Fragment.navigateTo(uri: Uri) =
+    Navigation.findNavController(requireView())
+        .navigate(uri)

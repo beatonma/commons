@@ -1,16 +1,19 @@
-import org.beatonma.commons.buildsrc.kts.extensions.main
+import org.beatonma.commons.buildsrc.gradle.main
+import org.beatonma.commons.buildsrc.gradle.project
 
 plugins {
-    id(Plugins.COMMONS_LIBRARY_CONFIG)
-    id(Plugins.COMMONS_COMPOSE_MODULE)
+    id(Plugins.Commons.COMMONS_LIBRARY_CONFIG)
+    id(Plugins.Commons.COMMONS_COMPOSE_MODULE)
 }
 
 dependencies {
     main {
         implementations(
-            Dependencies.AndroidX.CORE_KTX,
-            project(":core"),
-            project(":theme")
+            Dependencies.Jetpack.CORE_KTX,
+            Dependencies.Jetpack.CONSTRAINTLAYOUT_COMPOSE,
+            Dependencies.Accompanist.INSETS,
+            project(Modules.Core),
+            project(Modules.Theme)
         )
     }
 }

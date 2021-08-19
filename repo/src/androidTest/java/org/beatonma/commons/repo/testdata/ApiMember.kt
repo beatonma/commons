@@ -2,12 +2,45 @@ package org.beatonma.commons.repo.testdata
 
 import org.beatonma.commons.core.House
 import org.beatonma.commons.data.core.CompleteMember
+import org.beatonma.commons.data.core.room.entities.constituency.NoConstituency
 import org.beatonma.commons.data.core.room.entities.member.CommitteeMemberWithChairs
 import org.beatonma.commons.data.core.room.entities.member.HistoricalConstituencyWithElection
 import org.beatonma.commons.data.core.room.entities.member.PartyAssociationWithParty
 import org.beatonma.commons.data.core.room.entities.member.Post
-import org.beatonma.commons.repo.converters.*
-import org.beatonma.commons.snommoc.models.*
+import org.beatonma.commons.repo.converters.toCommitteeChairship
+import org.beatonma.commons.repo.converters.toCommitteeMembership
+import org.beatonma.commons.repo.converters.toConstituency
+import org.beatonma.commons.repo.converters.toElection
+import org.beatonma.commons.repo.converters.toExperience
+import org.beatonma.commons.repo.converters.toFinancialInterest
+import org.beatonma.commons.repo.converters.toHistoricalConstituency
+import org.beatonma.commons.repo.converters.toHouseMembership
+import org.beatonma.commons.repo.converters.toMemberProfile
+import org.beatonma.commons.repo.converters.toParty
+import org.beatonma.commons.repo.converters.toPartyAssociation
+import org.beatonma.commons.repo.converters.toPhysicalAddress
+import org.beatonma.commons.repo.converters.toPost
+import org.beatonma.commons.repo.converters.toTopicOfInterest
+import org.beatonma.commons.repo.converters.toWebAddress
+import org.beatonma.commons.snommoc.models.ApiAddresses
+import org.beatonma.commons.snommoc.models.ApiCommittee
+import org.beatonma.commons.snommoc.models.ApiCommitteeChairship
+import org.beatonma.commons.snommoc.models.ApiCompleteMember
+import org.beatonma.commons.snommoc.models.ApiConstituencyMinimal
+import org.beatonma.commons.snommoc.models.ApiElection
+import org.beatonma.commons.snommoc.models.ApiExperience
+import org.beatonma.commons.snommoc.models.ApiFinancialInterest
+import org.beatonma.commons.snommoc.models.ApiHistoricalConstituency
+import org.beatonma.commons.snommoc.models.ApiHouseMembership
+import org.beatonma.commons.snommoc.models.ApiMemberProfile
+import org.beatonma.commons.snommoc.models.ApiParty
+import org.beatonma.commons.snommoc.models.ApiPartyAssociation
+import org.beatonma.commons.snommoc.models.ApiPhysicalAddress
+import org.beatonma.commons.snommoc.models.ApiPost
+import org.beatonma.commons.snommoc.models.ApiPosts
+import org.beatonma.commons.snommoc.models.ApiTopicOfInterest
+import org.beatonma.commons.snommoc.models.ApiTown
+import org.beatonma.commons.snommoc.models.ApiWebAddress
 import org.beatonma.commons.test.extensions.util.asDate
 
 const val MEMBER_PUK_BORIS_JOHNSON = 1423
@@ -215,12 +248,15 @@ val API_MEMBER_BORIS_JOHNSON = ApiCompleteMember(
 fun ApiCompleteMember.toCompleteMember() = CompleteMember(
     profile = profile.toMemberProfile(),
     party = profile.party.toParty(),
-    constituency = profile.constituency?.toConstituency(),
+    constituency = profile.constituency?.toConstituency() ?: NoConstituency,
     addresses = addresses.physical.map { it.toPhysicalAddress(MEMBER_PUK_BORIS_JOHNSON) },
     weblinks = addresses.web.map { it.toWebAddress(MEMBER_PUK_BORIS_JOHNSON) },
     posts = listOf(
         posts.governmental.map { it.toPost(MEMBER_PUK_BORIS_JOHNSON, Post.PostType.GOVERNMENTAL) },
-        posts.parliamentary.map { it.toPost(MEMBER_PUK_BORIS_JOHNSON, Post.PostType.PARLIAMENTARY) },
+        posts.parliamentary.map {
+            it.toPost(MEMBER_PUK_BORIS_JOHNSON,
+                Post.PostType.PARLIAMENTARY)
+        },
         posts.opposition.map { it.toPost(MEMBER_PUK_BORIS_JOHNSON, Post.PostType.OPPOSITION) },
     ).flatten(),
     committees = committees.map { committee ->

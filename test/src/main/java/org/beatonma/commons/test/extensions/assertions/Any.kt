@@ -25,7 +25,7 @@ fun Any?.assertNotNull(message: String? = null) {
 }
 
 fun Nothing?.assertNotNull(message: String? = null) {
-    JUnit.assertNotNull(this)
+    JUnit.assertNotNull(message, this)
 }
 
 /**
@@ -72,4 +72,5 @@ fun Any?.assertNotInstanceOf(cls: Class<*>, message: String? = "$this should not
 
 
 infix fun <T> T.shouldbe(other: T?) = JUnit.assertEquals(other, this)
+infix fun <T> T.shouldNotBe(other: T?) = JUnit.assertNotEquals(other, this)
 infix fun <T> T.shouldBeInstanceOf(cls: KClass<*>) = JUnit.assertTrue(cls.isInstance(this))

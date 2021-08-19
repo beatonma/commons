@@ -1,36 +1,80 @@
 package org.beatonma.commons.app.division
 
-import android.content.Context
-import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.asLiveData
-import dagger.hilt.android.qualifiers.ApplicationContext
-import org.beatonma.commons.R
-import org.beatonma.commons.app.ui.BaseIoAndroidViewModel
-import org.beatonma.commons.app.ui.views.BarChartCategory
-import org.beatonma.commons.data.core.room.entities.division.Division
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import org.beatonma.commons.app.ui.base.IoLiveDataViewModel
+import org.beatonma.commons.app.ui.base.SocialTargetProvider
+import org.beatonma.commons.core.House
+import org.beatonma.commons.core.ParliamentID
+import org.beatonma.commons.data.SavedStateKey
 import org.beatonma.commons.data.core.room.entities.division.DivisionWithVotes
 import org.beatonma.commons.data.core.room.entities.division.VoteWithParty
+import org.beatonma.commons.data.get
+import org.beatonma.commons.data.set
 import org.beatonma.commons.kotlin.extensions.BundledDivision
-import org.beatonma.commons.kotlin.extensions.colorCompat
 import org.beatonma.commons.repo.repository.DivisionRepository
+import org.beatonma.commons.repo.result.BaseResult
+import org.beatonma.commons.repo.result.map
+import org.beatonma.commons.snommoc.models.social.SocialTarget
+import org.beatonma.commons.snommoc.models.social.SocialTargetType
+import javax.inject.Inject
 
-class DivisionDetailViewModel @ViewModelInject constructor(
+private val HouseKey = SavedStateKey("house")
+private val DivisionKey = SavedStateKey("division_id")
+
+@HiltViewModel
+class DivisionDetailViewModel @Inject constructor(
     private val repository: DivisionRepository,
-    @ApplicationContext context: Context,
-) : BaseIoAndroidViewModel<DivisionWithVotes>(context) {
+    private val savedStateHandle: SavedStateHandle,
+) : IoLiveDataViewModel<DivisionWithVotes>(), SocialTargetProvider {
 
-    fun forDivision(bundled: BundledDivision) {
-        liveData = repository.getDivision(bundled.house, bundled.parliamentdotuk).asLiveData()
+    val house: House get() = savedStateHandle[HouseKey]!!
+    val divisionID: ParliamentID get() = savedStateHandle[DivisionKey]!!
+
+    override val socialTarget: SocialTarget
+        get() = SocialTarget(
+            targetType = when(house) {
+                House.commons -> SocialTargetType.division_commons
+                House.lords -> SocialTargetType.division_lords
+            },
+            parliamentdotuk = divisionID,
+        )
+
+    init {
+        forSavedDivision()
     }
 
-    fun getVoteChartData(division: Division) = listOf(
-        BarChartCategory(division.ayes, colorCompat(R.color.vote_aye), "Ayes"),
-        BarChartCategory(division.abstentions ?: 0, colorCompat(R.color.vote_abstain), "Abstentions"),
-        BarChartCategory(division.didNotVote ?: 0, colorCompat(R.color.vote_didnotvote), "Did not vote/not present"),
-        BarChartCategory(division.noes, colorCompat(R.color.vote_no), "Noes"),
-    ).filter { it.value > 0 }
+    fun forDivision(bundled: BundledDivision) = forDivision(bundled.house, bundled.parliamentdotuk)
 
-    suspend fun sortedVotes(votes: List<VoteWithParty>): List<VoteWithParty> = votes.sortedWith(
+    private fun forSavedDivision() {
+        val house: House? = savedStateHandle[HouseKey]
+        val divisionId: ParliamentID? = savedStateHandle[DivisionKey]
+
+        if (house != null && divisionId != null) {
+            forDivision(house, divisionId)
+        }
+    }
+
+    private fun forDivision(house: House, divisionId: ParliamentID) {
+        savedStateHandle[HouseKey] = house
+        savedStateHandle[DivisionKey] = divisionId
+
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.getDivision(house, divisionId)
+                .collect { result: BaseResult<DivisionWithVotes, Throwable> ->
+                    val sorted = result.map { divisionWithVotes ->
+                        divisionWithVotes.copy(votes = sortedVotes(divisionWithVotes.votes))
+                    }
+                    postValue(sorted)
+                }
+        }
+    }
+
+    private fun sortedVotes(votes: List<VoteWithParty>): List<VoteWithParty> = votes.sortedWith(
         compareBy(
             { it.vote.voteType },
             { it.vote.memberName }

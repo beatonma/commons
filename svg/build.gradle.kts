@@ -1,7 +1,7 @@
-import org.beatonma.commons.buildsrc.kts.extensions.main
+import org.beatonma.commons.buildsrc.gradle.main
 
 plugins {
-    id(Plugins.COMMONS_LIBRARY_CONFIG)
+    id(Plugins.Commons.COMMONS_LIBRARY_CONFIG)
 }
 
 android {
@@ -9,7 +9,6 @@ android {
         useIR = true
         jvmTarget = Versions.JAVA.toString()
         freeCompilerArgs = freeCompilerArgs + listOf(
-            "-Xallow-jvm-ir-dependencies",
             "-Xskip-prerelease-check"
         )
     }
@@ -18,7 +17,7 @@ android {
 dependencies {
     main {
         implementations(
-            Dependencies.AndroidX.Compose.UI
+            Dependencies.Jetpack.Compose.UI
         )
     }
 }

@@ -1,22 +1,23 @@
-import org.beatonma.commons.buildsrc.kts.extensions.main
+import org.beatonma.commons.buildsrc.gradle.main
 
 plugins {
-    id(Plugins.COMMONS_LIBRARY_CONFIG)
+    id(Plugins.Commons.COMMONS_LIBRARY_CONFIG)
 }
 
 dependencies {
     main {
         implementations(
             Dependencies.Test.JUNIT,
-            Dependencies.Test.AndroidX.CORE,
+            Dependencies.Test.Jetpack.CORE,
             Dependencies.Test.MOCKITO,
-            Dependencies.Test.AndroidX.Espresso.CORE,
-            Dependencies.Test.AndroidX.RULES,
-            Dependencies.Test.AndroidX.RUNNER,
-            Dependencies.AndroidX.ANNOTATIONS,
-            Dependencies.AndroidX.APPCOMPAT,
-            Dependencies.AndroidX.CORE_KTX,
+            Dependencies.Test.Jetpack.Espresso.CORE,
+            Dependencies.Test.Jetpack.RULES,
+            Dependencies.Test.Jetpack.RUNNER,
+            Dependencies.Jetpack.ANNOTATIONS,
+            Dependencies.Jetpack.APPCOMPAT,
+            Dependencies.Jetpack.CORE_KTX,
             Dependencies.Kotlin.Coroutines.CORE,
+            Dependencies.Kotlin.Coroutines.TEST,
             Dependencies.Kotlin.REFLECT
         )
     }

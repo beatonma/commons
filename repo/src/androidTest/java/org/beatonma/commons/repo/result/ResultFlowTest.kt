@@ -1,6 +1,8 @@
 package org.beatonma.commons.repo.result
 
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.runBlocking
 import org.beatonma.commons.core.ParliamentID
@@ -12,20 +14,23 @@ import org.beatonma.commons.repo.testdata.MEMBER_PUK_BORIS_JOHNSON
 import org.beatonma.commons.repo.testdata.MEMBER_PUK_KEIR_STARMER
 import org.beatonma.commons.snommoc.models.ApiMemberProfile
 import org.beatonma.commons.test.extensions.assertions.assertEach
+import org.beatonma.commons.test.extensions.assertions.assertInstanceOf
 import org.beatonma.commons.test.extensions.assertions.shouldBeInstanceOf
 import org.beatonma.commons.test.extensions.assertions.shouldbe
 import org.beatonma.commons.test.extensions.util.awaitValues
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Suite
+import java.util.concurrent.TimeoutException
 
 @RunWith(Suite::class)
 @Suite.SuiteClasses(
     CacheResultFlowTest::class,
     ResultFlowLocalPreferredTest::class,
     ResultFlowNoCacheTest::class,
+    NetworkCallsTest::class,
 )
-class ResultFlowTestSuite
+class ResultFlowSuite
 
 
 class CacheResultFlowTest: ResultFlowTest() {
@@ -40,8 +45,8 @@ class CacheResultFlowTest: ResultFlowTest() {
                 .awaitValues(latchCount = 3, timeoutThrows = false)
                 .single()
                 .assertEach(
-                    { it shouldBeInstanceOf LoadingResult::class },
-                    { it.data!!.parliamentdotuk shouldbe MEMBER_PUK_KEIR_STARMER },
+                    { it shouldbe IoLoading },
+                    { (it as Success).data.parliamentdotuk shouldbe MEMBER_PUK_KEIR_STARMER },
                 )
         }
     }
@@ -65,9 +70,9 @@ class CacheResultFlowTest: ResultFlowTest() {
                 .awaitValues(latchCount = 3)
                 .single()
                 .assertEach(
-                    { it shouldBeInstanceOf LoadingResult::class },
-                    { it.data!!.name shouldbe "Boris Johnson" }, // Cached before network call
-                    { it.data!!.name shouldbe "Joris Bohnson" }, // After network call
+                    { it shouldbe IoLoading },
+                    { (it as Success).data.name shouldbe "Boris Johnson" }, // Cached before network call
+                    { (it as Success).data.name shouldbe "Joris Bohnson" }, // After network call
                 )
         }
     }
@@ -86,9 +91,9 @@ class CacheResultFlowTest: ResultFlowTest() {
                 .awaitValues(latchCount = 3)
                 .single()
                 .assertEach(
-                    { it shouldBeInstanceOf LoadingResult::class },
-                    { it.data!!.name shouldbe "Boris Johnson" }, // Cached before network call
-                    { it shouldBeInstanceOf NetworkError::class }
+                    { it shouldbe IoLoading },
+                    { (it as Success).data.name shouldbe "Boris Johnson" }, // Cached before network call
+                    { it shouldBeInstanceOf ErrorCode::class }
                 )
         }
     }
@@ -101,11 +106,11 @@ class CacheResultFlowTest: ResultFlowTest() {
                 networkCall = ::makeErrorfulNetworkCall,
                 saveCallResult = ::saveProfiles
             )
-                .awaitValues(latchCount = 3, timeoutThrows = false)
+                .awaitValues(latchCount = 2, timeoutThrows = false)
                 .single()
                 .assertEach(
-                    { it shouldBeInstanceOf LoadingResult::class },
-                    { it shouldBeInstanceOf NetworkError::class }
+                    { it shouldbe IoLoading },
+                    { it shouldBeInstanceOf ErrorCode::class }
                 )
         }
     }
@@ -130,16 +135,12 @@ class ResultFlowLocalPreferredTest: ResultFlowTest() {
                 networkCall = { makeSuccessfulNetworkCall(listOf(editedNetworkResult)) },
                 saveCallResult = ::saveProfiles
             )
-                .awaitValues(latchCount = 3, timeoutThrows = false)
+                .awaitValues(latchCount = 2, timeoutThrows = false)
                 .single()
 
             results.assertEach(
-                { it shouldBeInstanceOf LoadingResult::class },
-                {
-                    it.data!!.run {
-                        name shouldbe "Boris Johnson" // Original cached data, network call skipped.
-                    }
-                },
+                { it shouldbe IoLoading },
+                { (it as Success).data.name shouldbe "Boris Johnson" },
             )
         }
     }
@@ -158,11 +159,11 @@ class ResultFlowLocalPreferredTest: ResultFlowTest() {
                 databaseQuery = { getProfileFromDatabase(MEMBER_PUK_BORIS_JOHNSON) },
                 networkCall = { makeSuccessfulNetworkCall(listOf(editedNetworkResult)) },
                 saveCallResult = ::saveProfiles
-            ).awaitValues(latchCount = 3, timeoutThrows = false)
+            ).awaitValues(latchCount = 2, timeoutThrows = false)
                 .single()
                 .assertEach(
-                    { it shouldBeInstanceOf LoadingResult::class },
-                    { it.data!!.name shouldbe "Joris Bohnson" }  // Updated network name - no pre-cached version exists
+                    { it shouldbe IoLoading },
+                    { (it as Success).data.name shouldbe "Joris Bohnson" }  // Updated network name - no pre-cached version exists
                 )
         }
     }
@@ -176,11 +177,11 @@ class ResultFlowLocalPreferredTest: ResultFlowTest() {
                 databaseQuery = { getProfileFromDatabase(MEMBER_PUK_BORIS_JOHNSON) },
                 networkCall = ::makeErrorfulNetworkCall,
                 saveCallResult = ::saveProfiles
-            ).awaitValues(latchCount = 3, timeoutThrows = false)
+            ).awaitValues(latchCount = 2, timeoutThrows = false)
                 .single()
                 .assertEach(
-                    { it shouldBeInstanceOf LoadingResult::class },
-                    { it shouldBeInstanceOf NetworkError::class }
+                    { it shouldbe IoLoading },
+                    { it shouldBeInstanceOf ErrorCode::class }
                 )
         }
     }
@@ -201,11 +202,13 @@ class ResultFlowNoCacheTest: ResultFlowTest() {
             }.awaitValues(2)
                 .single()
                 .assertEach(
-                    { result -> result shouldBeInstanceOf LoadingResult::class },
-                    { result -> result.data!!.assertEach(
-                        { it.name shouldbe "Boris Johnson" },
-                        { it.name shouldbe "Keir Starmer" },
-                    ) }
+                    { it shouldbe IoLoading },
+                    {
+                        (it as Success).data.assertEach(
+                            { profile -> profile.name shouldbe "Boris Johnson" },
+                            { profile -> profile.name shouldbe "Keir Starmer" },
+                        )
+                    },
                 )
         }
     }
@@ -214,13 +217,83 @@ class ResultFlowNoCacheTest: ResultFlowTest() {
     @Test
     fun resultFlowNoCache_should_emit_loading_then_network_errors() {
         runBlocking {
-            resultFlowNoCache(::makeErrorfulNetworkCall)
+            resultFlowNoCache { makeErrorfulNetworkCall<Nothing>() }
                 .awaitValues(2)
                 .single()
                 .assertEach(
-                    { it shouldBeInstanceOf LoadingResult::class },
-                    { it shouldBeInstanceOf NetworkError::class }
+                    { it shouldbe IoLoading },
+                    { it shouldBeInstanceOf ErrorCode::class }
                 )
+        }
+    }
+}
+
+class NetworkCallsTest {
+    private val results = mutableListOf<Int>()
+    private val networkCalls = arrayOf(
+        NetworkCall(
+            {
+                delay(500)
+                Success(2)
+            }, { n ->
+                results += n
+            }
+        ),
+        NetworkCall(
+            {
+                delay(500)
+                Success(3)
+            }, { n ->
+                results += n
+            }
+        )
+    )
+
+    @Test
+    fun makeNetworkCalls_withParallelStrategy_runsInParallel() {
+        runBlocking {
+            makeNetworkCalls(
+                *networkCalls,
+                strategy = NetworkCallStrategy.Parallel
+            ).awaitValues(2, timeout = 550)
+                .collect {
+                    it.size shouldbe 2
+                    results.sum() shouldbe 5
+                }
+        }
+    }
+
+    @Test
+    fun makeNetworkCalls_withSerialStrategy_runsSuccessfully() {
+        // Just make sure the tasks run.
+        runBlocking {
+            makeNetworkCalls(
+                *networkCalls,
+                strategy = NetworkCallStrategy.Serial
+            ).awaitValues(2, timeout = 1100)
+                .collect {
+                    it.size shouldbe 2
+                    results.sum() shouldbe 5
+                }
+        }
+    }
+
+    @Test
+    fun makeNetworkCalls_withSerialStrategy_tasksRunSequentially() {
+        // awaitValues should time out when tasks run one after another
+        runBlocking {
+            makeNetworkCalls(
+                *networkCalls,
+                strategy = NetworkCallStrategy.Serial
+            ).awaitValues(2, timeout = 750)
+                .catch { e ->
+                    println("awaitValue throws: $e")
+                    e.assertInstanceOf(TimeoutException::class)
+                }
+                .collect {
+                    it.size shouldbe 1
+                    results.sum() shouldbe 2
+                }
         }
     }
 }
@@ -240,14 +313,11 @@ abstract class ResultFlowTest: BaseRoomTest() {
         responseData: List<ApiMemberProfile> = listOf(EXAMPLE_MEMBER_PROFILE_KEIR_STARMER)
     ): IoResult<List<ApiMemberProfile>> {
         delay(100)
-        return SuccessResult(
-            responseData,
-            "Fake network result"
-        )
+        return Success(responseData)
     }
 
-    protected suspend fun makeErrorfulNetworkCall(): NetworkError {
+    protected suspend fun <T> makeErrorfulNetworkCall(): IoResult<T> {
         delay(100)
-        return NetworkError("Fake network error", error = null)
+        return ErrorCode(ResponseCode(400), "")
     }
 }

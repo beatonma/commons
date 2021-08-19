@@ -1,13 +1,17 @@
 package org.beatonma.commons.compose.util
 
+import androidx.annotation.VisibleForTesting
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
-import androidx.compose.ui.util.annotation.VisibleForTesting
+import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.core.extensions.mapToByte
 import org.beatonma.commons.core.extensions.normalize
-import org.beatonma.commons.theme.compose.color.CommonsColor
+import org.beatonma.commons.theme.compose.theme.textPrimaryDark
+import org.beatonma.commons.theme.compose.theme.textPrimaryLight
 
-inline class HslColor(private val hsl: FloatArray = FloatArray(4)) {
+@JvmInline
+value class HslColor(private val hsl: FloatArray = FloatArray(4)) {
     constructor(
         hue: Float,
         saturation: Float = 1F,
@@ -156,14 +160,11 @@ fun HslColor.toColor(): Color {
     return Color(red, green, blue, alphaByte)
 }
 
+@Composable
 fun Color.contentColor(): Color {
     // Alternative to contentColorFor(Color) when the receiving color is not defined in the theme.
-    return if (luminance() > 0.5F) {
-        CommonsColor.Text.PrimaryDark
-    }
-    else {
-        CommonsColor.Text.PrimaryLight
-    }
+    return if (luminance() > 0.5F) colors.textPrimaryDark
+    else colors.textPrimaryLight
 }
 
 fun Color.brighten(factor: Float = 0.1F, hsl: HslColor = HslColor()): Color {
@@ -193,6 +194,7 @@ val Color.blueByte get() = blue.mapToByte()
 val Color.alphaByte get() = alpha.mapToByte()
 val HslColor.alphaByte get() = alpha.mapToByte()
 
+@OptIn(ExperimentalUnsignedTypes::class)
 fun Color.toHexString() = value.toString(16).substring(0, 8)
 fun Color.toPrettyHexString() = "#${toHexString()}"
 

@@ -1,8 +1,11 @@
 package org.beatonma.commons.data.parse
 
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.maps.model.PolygonOptions
+import androidx.annotation.WorkerThread
+import com.google.android.libraries.maps.model.LatLng
+import com.google.android.libraries.maps.model.LatLngBounds
+import com.google.android.libraries.maps.model.PolygonOptions
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParser.*
 import org.xmlpull.v1.XmlPullParserException
@@ -39,34 +42,43 @@ class Geometry {
     }
 }
 
+@Suppress("BlockingMethodInNonBlockingContext")
 class KmlParser {
     val geometry = Geometry()
 
+    @WorkerThread
+    @Throws(XmlPullParserException::class, NumberFormatException::class)
     private fun createXmlParser(stream: InputStream): XmlPullParser =
         XmlPullParserFactory.newInstance().apply{
             isNamespaceAware = true
-        }.newPullParser().also { parser ->
-            parser.setInput(stream, null)
         }
+            .newPullParser().apply {
+                setInput(stream, null)
+            }
 
     @Throws(XmlPullParserException::class, NumberFormatException::class)
+    @WorkerThread
     suspend fun parse(stream: InputStream): Geometry {
         return parse(createXmlParser(stream))
     }
 
+    @WorkerThread
     private suspend fun parse(parser: XmlPullParser): Geometry {
-        var eventType: Int = parser.eventType
-        while (eventType != END_DOCUMENT) {
-            if (eventType == START_TAG) {
-                when(parser.name) {
-                    PLACEMARK -> parsePlacemark(parser)
+        return withContext(Dispatchers.IO) {
+            var eventType: Int = parser.eventType
+            while (eventType != END_DOCUMENT) {
+                if (eventType == START_TAG) {
+                    when (parser.name) {
+                        PLACEMARK -> parsePlacemark(parser)
+                    }
                 }
+                eventType = parser.next()
             }
-            eventType = parser.next()
+            geometry
         }
-        return geometry
     }
 
+    @WorkerThread
     private suspend fun parsePlacemark(parser: XmlPullParser) {
         var eventType: Int = parser.eventType
         while (eventType != END_TAG || parser.name != PLACEMARK) {
@@ -80,6 +92,7 @@ class KmlParser {
         }
     }
 
+    @WorkerThread
     private suspend fun parseMultiGeometry(parser: XmlPullParser) {
         var eventType: Int = parser.eventType
         while (eventType != END_TAG || parser.name != MULTIGEOMETRY) {
@@ -93,6 +106,7 @@ class KmlParser {
         }
     }
 
+    @WorkerThread
     private suspend fun parsePolygon(parser: XmlPullParser) {
         var eventType: Int = parser.eventType
         while (eventType != END_TAG || parser.name != POLYGON) {
@@ -107,6 +121,7 @@ class KmlParser {
 }
 
 @Throws(NumberFormatException::class)
+@WorkerThread
 private suspend fun parseLatLong(text: String): List<LatLng> {
     val coords = text.split(' ')
     return coords.map { c ->

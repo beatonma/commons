@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.lifecycle.AndroidViewModel
 import dagger.hilt.android.HiltAndroidApp
-import org.beatonma.commons.app.SystemTheme
+import org.beatonma.commons.app.ui.base.SystemTheme
 import org.beatonma.commons.kotlin.extensions.getPrefs
 import javax.inject.Inject
 import android.content.res.Configuration as ResConfiguration

@@ -1,7 +1,18 @@
 package org.beatonma.commons.kotlin
 
 import android.view.Gravity
-import org.beatonma.commons.kotlin.extensions.*
+import org.beatonma.commons.kotlin.extensions.addFlag
+import org.beatonma.commons.kotlin.extensions.combineFlags
+import org.beatonma.commons.kotlin.extensions.hasAllFlags
+import org.beatonma.commons.kotlin.extensions.hasAnyFlag
+import org.beatonma.commons.kotlin.extensions.hasFlag
+import org.beatonma.commons.kotlin.extensions.hasOnlyFlags
+import org.beatonma.commons.kotlin.extensions.removeFlag
+import org.beatonma.commons.kotlin.extensions.removeFlags
+import org.beatonma.commons.kotlin.extensions.replaceFlag
+import org.beatonma.commons.kotlin.extensions.roundDown
+import org.beatonma.commons.kotlin.extensions.roundUp
+import org.beatonma.commons.kotlin.extensions.setFlag
 import org.beatonma.commons.test.extensions.assertions.shouldbe
 import org.junit.Test
 

@@ -1,18 +1,23 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+// Versions object is not accessible here.
+val gradleVersion = "7.1.0-alpha05"
+val kotlinVersion = "1.5.10"
+val kotlinLanguageVersion = "1.5"
+val javaVersion = "1.8"
+
 plugins {
     `kotlin-dsl`
 }
 
 dependencies {
-    implementation("com.android.tools.build:gradle:4.1.0-rc02")
-    implementation(kotlin("gradle-plugin", "1.4.0"))
-    implementation(kotlin("android-extensions"))
+    implementation("com.android.tools.build:gradle:$gradleVersion")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
 }
 
 repositories {
     google()
-    jcenter()
+    mavenCentral()
     maven("https://dl.bintray.com/kotlin/kotlin-eap")
 }
 
@@ -20,39 +25,43 @@ val compileKotlin: KotlinCompile by tasks
 val compileTestKotlin: KotlinCompile by tasks
 
 compileKotlin.kotlinOptions {
-    jvmTarget = "1.8"
-    languageVersion = "1.4"
+    jvmTarget = javaVersion
+    languageVersion = kotlinLanguageVersion
 }
 compileTestKotlin.kotlinOptions {
-    jvmTarget = "1.8"
-    languageVersion = "1.4"
+    jvmTarget = javaVersion
+    languageVersion = kotlinLanguageVersion
 }
 
 gradlePlugin {
     plugins {
-        register("commons-application-module") {
-            id = "commons-application-module"
-            implementationClass = "org.beatonma.commons.buildsrc.kts.plugin.CommonsApplicationModule"
+        register("commons-application-plugin") {
+            id = "commons-application-plugin"
+            implementationClass =
+                "org.beatonma.commons.buildsrc.gradle.plugins.CommonsApplicationPlugin"
         }
 
-        register("commons-library-module") {
-            id = "commons-library-module"
-            implementationClass = "org.beatonma.commons.buildsrc.kts.plugin.CommonsLibraryModule"
+        register("commons-library-plugin") {
+            id = "commons-library-plugin"
+            implementationClass =
+                "org.beatonma.commons.buildsrc.gradle.plugins.CommonsLibraryPlugin"
+
         }
 
-        register("commons-hilt-module") {
-            id = "commons-hilt-module"
-            implementationClass = "org.beatonma.commons.buildsrc.kts.plugin.CommonsHiltModule"
+        register("commons-hilt-plugin") {
+            id = "commons-hilt-plugin"
+            implementationClass = "org.beatonma.commons.buildsrc.gradle.plugins.CommonsHiltPlugin"
         }
 
-        register("commons-room-module") {
-            id = "commons-room-module"
-            implementationClass = "org.beatonma.commons.buildsrc.kts.plugin.CommonsRoomModule"
+        register("commons-room-plugin") {
+            id = "commons-room-plugin"
+            implementationClass = "org.beatonma.commons.buildsrc.gradle.plugins.CommonsRoomPlugin"
         }
 
-        register("commons-compose-module") {
-            id = "commons-compose-module"
-            implementationClass = "org.beatonma.commons.buildsrc.kts.plugin.CommonsComposeModule"
+        register("commons-compose-plugin") {
+            id = "commons-compose-plugin"
+            implementationClass =
+                "org.beatonma.commons.buildsrc.gradle.plugins.CommonsComposePlugin"
         }
     }
 }

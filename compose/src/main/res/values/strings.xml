@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="content_description_cancel" translatable="true">Cancel</string>
+    <string name="content_description_clear_search_query" translatable="true">Clear search query</string>
+
+    <string name="content_description_show_more" translatable="true">Show more</string>
+    <string name="content_description_show_less" translatable="true">Show less</string>
+    <string name="content_description_close_overlay" translatable="true">Close overlay</string>
+</resources>

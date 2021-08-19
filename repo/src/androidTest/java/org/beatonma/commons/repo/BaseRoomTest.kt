@@ -15,9 +15,8 @@ abstract class BaseRoomTest {
     lateinit var db: CommonsDatabase
     val context = ApplicationProvider.getApplicationContext<Context>()
 
-    @get:Rule
+    @get:Rule(order = 1)
     val instantTaskExecutorRule = InstantTaskExecutorRule()
-
 
     @CallSuper
     @Before

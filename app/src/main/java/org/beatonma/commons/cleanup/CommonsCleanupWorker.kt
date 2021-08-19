@@ -2,15 +2,15 @@ package org.beatonma.commons.cleanup
 
 import android.content.Context
 import android.util.Log
-import androidx.hilt.Assisted
-import androidx.hilt.work.WorkerInject
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import org.beatonma.commons.data.core.PersistencePolicy
 import org.beatonma.commons.data.core.room.dao.MemberCleanupDao
 
 private const val TAG = "CommonsCleanup"
-class CommonsCleanupWorker @WorkerInject constructor(
+class CommonsCleanupWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
     private val memberCleanupDao: MemberCleanupDao

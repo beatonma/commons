@@ -3,10 +3,6 @@
     <!-- These colors change depending on day/night app theme -->
     <color name="Card">@color/White</color>
     <color name="Tabletop">#EBE9E8</color>
-    <color name="CardHeader">#BDBDBD</color>
-
-    <color name="TextOpaque">@color/Black</color>
-    <color name="TextOpaqueInverted">@color/White</color>
 
     <color name="TextPrimary">@color/TextPrimaryDark</color>
     <color name="TextPrimaryInverted">@color/TextPrimaryLight</color>
@@ -15,19 +11,13 @@
     <color name="TextTertiary">@color/TextTertiaryDark</color>
     <color name="TextTertiaryInverted">@color/TextTertiaryLight</color>
 
-    <color name="Ripple">#12000000</color>
-    <color name="TextField">@color/Ripple</color>
-    <color name="Divider">@color/TextTertiary</color>
-
-    <color name="SystemBar">#80EBE9E8</color>
+    <color name="SystemBar">@color/Card</color>
     <color name="SystemStatusBar">@color/SystemBar</color>
     <color name="SystemNavBar">@color/SystemBar</color>
 
     <color name="Primary">#444444</color>
     <color name="PrimaryDark">#333333</color>
-    <!--    <color name="Accent">#2680D0</color>-->
     <color name="Accent">@color/AccentPurple</color>
 
-    <!--    <color name="SearchBar">#2d4051</color>-->
     <color name="SearchBar">#373151</color>
 </resources>

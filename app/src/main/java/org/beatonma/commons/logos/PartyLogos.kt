@@ -5,7 +5,6 @@ import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.svg.VectorGraphic
 
 object PartyLogos {
-
     fun get(partyId: ParliamentID): VectorGraphic = when (partyId) {
         PARTY_ALLIANCE_PARLIAMENTDOTUK -> AllianceLogo()
         PARTY_CONSERVATIVE_PARLIAMENTDOTUK -> ConservativeLogo()
@@ -20,7 +19,7 @@ object PartyLogos {
         PARTY_SINN_FEIN_PARLIAMENTDOTUK -> SinnFeinLogo()
         PARTY_ULSTER_UNIONIST_PARTY_PARLIAMENTDOTUK -> UupLogo()
         else -> DefaultLogo()
-    }.apply { buildPaths() }
+    }.apply(VectorGraphic::buildPaths)
 
     fun all() = listOf(
         PARTY_ALLIANCE_PARLIAMENTDOTUK,

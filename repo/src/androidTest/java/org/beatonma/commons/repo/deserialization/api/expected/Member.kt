@@ -1,7 +1,22 @@
 package org.beatonma.commons.repo.deserialization.api.expected
 
 import org.beatonma.commons.core.House
-import org.beatonma.commons.snommoc.models.*
+import org.beatonma.commons.snommoc.models.ApiAddresses
+import org.beatonma.commons.snommoc.models.ApiCommittee
+import org.beatonma.commons.snommoc.models.ApiCompleteMember
+import org.beatonma.commons.snommoc.models.ApiConstituencyMinimal
+import org.beatonma.commons.snommoc.models.ApiElection
+import org.beatonma.commons.snommoc.models.ApiExperience
+import org.beatonma.commons.snommoc.models.ApiFinancialInterest
+import org.beatonma.commons.snommoc.models.ApiHistoricalConstituency
+import org.beatonma.commons.snommoc.models.ApiHouseMembership
+import org.beatonma.commons.snommoc.models.ApiMemberProfile
+import org.beatonma.commons.snommoc.models.ApiParty
+import org.beatonma.commons.snommoc.models.ApiPartyAssociation
+import org.beatonma.commons.snommoc.models.ApiPhysicalAddress
+import org.beatonma.commons.snommoc.models.ApiPost
+import org.beatonma.commons.snommoc.models.ApiPosts
+import org.beatonma.commons.snommoc.models.ApiTopicOfInterest
 import org.beatonma.commons.test.extensions.util.asDate
 
 /** https://snommoc.org/api/member/profile/965/ */

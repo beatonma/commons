@@ -5,6 +5,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.beatonma.commons.repo.testdata.API_DIVISION
 import org.beatonma.commons.repo.testdata.API_DIVISION_JSON
+import org.beatonma.commons.snommoc.dagger.SnommocClient
 import org.beatonma.commons.snommoc.models.ApiDivision
 import org.beatonma.commons.test.extensions.assertions.shouldbe
 import org.junit.Before
@@ -17,7 +18,7 @@ class DivisionDeserializeTest {
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
-    @Inject
+    @Inject @SnommocClient
     lateinit var moshi: Moshi
 
     @Before

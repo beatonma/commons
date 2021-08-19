@@ -1,6 +1,13 @@
 package org.beatonma.commons.repo.deserialization.api.expected
 
-import org.beatonma.commons.snommoc.models.*
+import org.beatonma.commons.snommoc.models.ApiBill
+import org.beatonma.commons.snommoc.models.ApiBillPublication
+import org.beatonma.commons.snommoc.models.ApiBillSponsor
+import org.beatonma.commons.snommoc.models.ApiBillStage
+import org.beatonma.commons.snommoc.models.ApiBillStageSitting
+import org.beatonma.commons.snommoc.models.ApiBillType
+import org.beatonma.commons.snommoc.models.ApiParliamentarySession
+import org.beatonma.commons.snommoc.models.ApiParty
 import org.beatonma.commons.test.extensions.util.asDate
 
 /** https://snommoc.org/api/bill/393258/ */

@@ -1,37 +1,14 @@
 package org.beatonma.commons.data.core.room.entities.member
 
-import androidx.room.*
+import androidx.room.ColumnInfo
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.PrimaryKey
+import androidx.room.Relation
 import org.beatonma.commons.core.PARLIAMENTDOTUK
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.MinimalMember
-
-@Deprecated("Use zeitgeist")
-@Entity(
-    foreignKeys = [
-        ForeignKey(
-            entity = MemberProfile::class,
-            parentColumns = [PARLIAMENTDOTUK],
-            childColumns = ["featured_member_id"],
-            onUpdate = ForeignKey.CASCADE,
-            onDelete = ForeignKey.CASCADE
-        )
-    ],
-    tableName = "featured_members"
-)
-data class FeaturedMember(
-    @ColumnInfo(name = "featured_member_id") @PrimaryKey val memberId: ParliamentID,
-    @ColumnInfo(name = "featured_about") val about: String? = null,
-)
-
-@Deprecated("Use zeitgeist")
-data class FeaturedMemberProfile(
-    @Embedded val featured: FeaturedMember,
-    @Relation(
-        parentColumn = "featured_member_id",
-        entityColumn = "parliamentdotuk",
-        entity = MemberProfile::class
-    ) val profile: MinimalMember,
-)
 
 @Entity(
     foreignKeys = [

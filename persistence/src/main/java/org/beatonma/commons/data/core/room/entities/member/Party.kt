@@ -10,7 +10,10 @@ import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
 
 @Entity(tableName = "parties")
 data class Party(
-    @ColumnInfo(name = "party_$PARLIAMENTDOTUK") @PrimaryKey override val parliamentdotuk: ParliamentID,
-    @ColumnInfo(name = "party_name") override val name: String
-): Parliamentdotuk,
+    @ColumnInfo(name = "party_$PARLIAMENTDOTUK") @PrimaryKey
+    override val parliamentdotuk: ParliamentID,
+    @ColumnInfo(name = "party_name") override val name: String,
+) : Parliamentdotuk,
     Named
+
+val NoParty = Party(-1, "Unknown party")

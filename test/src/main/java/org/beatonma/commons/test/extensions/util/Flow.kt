@@ -1,5 +1,6 @@
 package org.beatonma.commons.test.extensions.util
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
@@ -13,6 +14,7 @@ import java.util.concurrent.TimeoutException
 /**
  * Hide flow emissions until [latchCount] emissions have been collected, then emit the final result.
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 fun <T> Flow<T>.awaitValue(
     latchCount: Int = 1,
     timeout: Long = 500,
@@ -23,12 +25,12 @@ fun <T> Flow<T>.awaitValue(
     var latest: T? = null
 
     val timeoutJob = launch {
-        val timeout = timeUnit.toMillis(timeout)
-        delay(timeUnit.toMillis(timeout))
+        val timeoutMillis = timeUnit.toMillis(timeout)
+        delay(timeoutMillis)
         if (!this@channelFlow.isClosedForSend) {
             latest?.let { send(it) }
             if (timeoutThrows) {
-                throw TimeoutException("awaitValue did not complete (timeout=${timeout}ms)")
+                throw TimeoutException("awaitValue did not complete (timeout=${timeoutMillis}ms) [latches remaining: ${latch.count}]")
             }
             else {
                 close()
@@ -53,6 +55,7 @@ fun <T> Flow<T>.awaitValue(
 /**
  * Hide flow emissions until [latchCount] emissions have been collected, then emit list of all collected results.
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 fun <T> Flow<T>.awaitValues(
     latchCount: Int,
     timeout: Long = 500,
@@ -63,12 +66,12 @@ fun <T> Flow<T>.awaitValues(
     val values = mutableListOf<T>()
 
     val timeoutJob = launch {
-        val timeout = timeUnit.toMillis(timeout)
-        delay(timeUnit.toMillis(timeout))
+        val timeoutMillis = timeUnit.toMillis(timeout)
+        delay(timeoutMillis)
         if (!this@channelFlow.isClosedForSend) {
             send(values)
             if (timeoutThrows) {
-                throw TimeoutException("awaitValue did not complete (timeout=${timeout}ms)")
+                throw TimeoutException("awaitValue did not complete (timeout=${timeoutMillis}ms) [latches remaining: ${latch.count}]")
             }
             else {
                 close()

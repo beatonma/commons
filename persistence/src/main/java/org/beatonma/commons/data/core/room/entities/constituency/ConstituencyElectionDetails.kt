@@ -1,8 +1,14 @@
 package org.beatonma.commons.data.core.room.entities.constituency
 
-import androidx.room.*
+import androidx.room.ColumnInfo
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.PrimaryKey
+import androidx.room.Relation
 import org.beatonma.commons.core.PARLIAMENTDOTUK
 import org.beatonma.commons.core.ParliamentID
+import org.beatonma.commons.core.extensions.allNotNull
 import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
 import org.beatonma.commons.data.core.room.entities.election.Election
 
@@ -72,8 +78,30 @@ data class ConstituencyElectionDetailsWithCandidates(
 
 
 data class ConstituencyElectionDetailsWithExtras(
+    val details: ConstituencyElectionDetails,
+    val candidates: List<ConstituencyCandidate>,
+    val election: Election,
+    val constituency: Constituency,
+)
+
+data class ConstituencyElectionDetailsBuilder(
     var details: ConstituencyElectionDetails? = null,
     var candidates: List<ConstituencyCandidate>? = null,
     var election: Election? = null,
     var constituency: Constituency? = null,
-)
+) {
+    val isComplete: Boolean
+        get() = allNotNull(
+            details,
+            candidates,
+            election,
+            constituency,
+        )
+
+    fun toConstituencyElectionDetailsWithExtras() = ConstituencyElectionDetailsWithExtras(
+        details!!,
+        candidates!!,
+        election!!,
+        constituency!!,
+    )
+}

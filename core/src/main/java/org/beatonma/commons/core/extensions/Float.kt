@@ -1,13 +1,20 @@
 package org.beatonma.commons.core.extensions
 
+import androidx.annotation.FloatRange
 import java.lang.Float.max
 import java.lang.Float.min
 import kotlin.math.roundToInt
 
+/**
+ * Calculate position relative to toMin..toMax based on relative position in range fromMin..fromMax.
+ */
 fun Float.map(fromMin: Float, fromMax: Float, toMin: Float, toMax: Float): Float =
     normalizeIn(fromMin, fromMax)
         .mapTo(toMin, toMax)
 
+/**
+ * Same as [map], ensuring fromMin and fromMax are in the correct order.
+ */
 fun Float.safeMap(fromLimit1: Float, fromLimit2: Float, toMin: Float, toMax: Float): Float = map(
     min(fromLimit1, fromLimit2),
     max(fromLimit1, fromLimit2),
@@ -62,4 +69,26 @@ fun Float.normalize(max: Float): Float = normalizeIn(0F, max)
  */
 fun Float.mapToByte(): Int = mapTo(0, 255)
 
-fun Int.normalizeIn(min: Int, max: Int): Float = toFloat().normalizeIn(min.toFloat(), max.toFloat())
+fun Float.lerpBetween(start: Float, end: Float): Float = start + ((end - start) * this)
+
+/**
+ * Needs a better name
+ * lerp from 0..target and back again.
+ */
+fun Float.triangle(progress: Float, inflectAt: Float = 0.5F): Float =
+    this * (progress.progressIn(0F, inflectAt) - progress.progressIn(inflectAt, 1F))
+
+@FloatRange(from = 0.0, to = 1.0)
+fun Float.progressIn(min: Float = 0F, max: Float): Float = coerceIn(min, max).normalizeIn(min, max)
+
+/**
+ * Reverse direction of a value between 0..1, useful for animations.
+ */
+fun Float.reversed() = 1F - this
+
+/**
+ * Flip the sign (+-) of the receiver.
+ */
+fun Float.inverted() = this * -1F
+
+inline fun Float.withEasing(easing: (Float) -> Float): Float = easing(this)

@@ -9,3 +9,7 @@ data class ApiUserToken(
     @field:Json(name = Contract.GOOGLE_TOKEN) val googleTokenStub: String,
     @field:Json(name = Contract.USERNAME) val username: String,
 )
+
+data class ApiUserName(
+    @field:Json(name = Contract.USERNAME) val username: String,
+)

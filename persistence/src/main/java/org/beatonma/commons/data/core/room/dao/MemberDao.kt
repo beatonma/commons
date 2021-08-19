@@ -1,6 +1,10 @@
 package org.beatonma.commons.data.core.room.dao
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import org.beatonma.commons.core.ParliamentID
@@ -11,21 +15,32 @@ import org.beatonma.commons.data.core.room.dao.shared.SharedConstituencyDao
 import org.beatonma.commons.data.core.room.dao.shared.SharedElectionDao
 import org.beatonma.commons.data.core.room.dao.shared.SharedPartyDao
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
-import org.beatonma.commons.data.core.room.entities.member.*
+import org.beatonma.commons.data.core.room.entities.member.CommitteeChairship
+import org.beatonma.commons.data.core.room.entities.member.CommitteeMemberWithChairs
+import org.beatonma.commons.data.core.room.entities.member.CommitteeMembership
+import org.beatonma.commons.data.core.room.entities.member.Experience
+import org.beatonma.commons.data.core.room.entities.member.FinancialInterest
+import org.beatonma.commons.data.core.room.entities.member.HistoricalConstituency
+import org.beatonma.commons.data.core.room.entities.member.HistoricalConstituencyWithElection
+import org.beatonma.commons.data.core.room.entities.member.HouseMembership
+import org.beatonma.commons.data.core.room.entities.member.MemberProfile
+import org.beatonma.commons.data.core.room.entities.member.Party
+import org.beatonma.commons.data.core.room.entities.member.PartyAssociation
+import org.beatonma.commons.data.core.room.entities.member.PartyAssociationWithParty
+import org.beatonma.commons.data.core.room.entities.member.PhysicalAddress
+import org.beatonma.commons.data.core.room.entities.member.Post
+import org.beatonma.commons.data.core.room.entities.member.ResolvedZeitgeistMember
+import org.beatonma.commons.data.core.room.entities.member.TopicOfInterest
+import org.beatonma.commons.data.core.room.entities.member.WebAddress
+import org.beatonma.commons.data.core.room.entities.member.ZeitgeistMember
 
 @Dao
 interface MemberDao: SharedPartyDao, SharedConstituencyDao, SharedElectionDao {
 
     // Get operations
-
     @Transaction
     @Query("""SELECT * FROM zeitgeist_members""")
     fun getZeitgeistMembers(): FlowList<ResolvedZeitgeistMember>
-
-    @Deprecated("Use zeitgeist")
-    @Transaction
-    @Query("""SELECT * FROM featured_members""")
-    fun getFeaturedProfiles(): FlowList<FeaturedMemberProfile>
 
     @Query("""SELECT * FROM member_profiles WHERE member_profiles.parliamentdotuk = :memberId""")
     fun getMemberProfile(memberId: ParliamentID): Flow<MemberProfile>
@@ -83,10 +98,6 @@ interface MemberDao: SharedPartyDao, SharedConstituencyDao, SharedElectionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertZeitgeistMembers(zeitgeistMembers: List<ZeitgeistMember>)
 
-    @Deprecated("Use zeitgeist")
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertFeaturedPeople(people: List<FeaturedMember>)
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertProfile(profile: MemberProfile)
 
@@ -126,27 +137,13 @@ interface MemberDao: SharedPartyDao, SharedConstituencyDao, SharedElectionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPartyAssociations(partyAssociations: List<PartyAssociation>)
 
-
     /**
      * Retrieve the profile and update its accessed_at timestamp.
      */
-    suspend fun getMemberProfileTimestampedFlow(parliamentdotuk: ParliamentID): Flow<MemberProfile> {
-        val result = getMemberProfile(parliamentdotuk)
-
-        safeInsertProfile(result.first())
-
-        return result
-    }
-
-    @Deprecated("Use zeitgeist")
-    @Transaction
-    suspend fun saveFeaturedPeople(featuredPeople: List<MemberProfile>) {
-        safeInsertProfiles(featuredPeople, ifNotExists = true)
-
-        insertFeaturedPeople(
-            featuredPeople.map { profile -> FeaturedMember(profile.parliamentdotuk) }
-        )
-    }
+    suspend fun getMemberProfileTimestampedFlow(parliamentdotuk: ParliamentID): Flow<MemberProfile> =
+        getMemberProfile(parliamentdotuk).also {
+            safeInsertProfile(it.first())
+        }
 
     @Transaction
     suspend fun safeInsertProfile(profile: MemberProfile?, ifNotExists: Boolean = false) {

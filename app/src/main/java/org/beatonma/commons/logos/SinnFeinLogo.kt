@@ -5,13 +5,13 @@ import androidx.compose.ui.graphics.Path
 import org.beatonma.commons.svg.VectorGraphic
 import org.beatonma.commons.svg.plotPath
 import org.beatonma.commons.svg.vectorPath
-import org.beatonma.commons.theme.compose.color.CommonsColor
+import org.beatonma.commons.theme.compose.color.PoliticalColor
 
 class SinnFeinLogo : VectorGraphic(
     pathCount = 3,
     width = 707,
     height = 878,
-    primaryColor = CommonsColor.Political.Party.Primary.SinnFein,
+    primaryColor = PoliticalColor.Party.Primary.SinnFein,
 ) {
 
     override fun buildPaths() {

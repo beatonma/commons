@@ -8,8 +8,6 @@ import org.beatonma.commons.core.PARLIAMENTDOTUK
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
 
-private const val TAG = "BillPublication"
-
 @Entity(
     foreignKeys = [
         ForeignKey(
@@ -26,5 +24,26 @@ data class BillPublication(
     @ColumnInfo(name = "bill_pub_parliamentdotuk") @PrimaryKey override val parliamentdotuk: ParliamentID,
     @ColumnInfo(name = "bill_pub_bill_id") val billId: ParliamentID,
     @ColumnInfo(name = "bill_pub_title") val title: String,
+    @ColumnInfo(name = "bill_url") val url: String? = null,
+    @ColumnInfo(name = "bill_content_type") val contentType: String? = null,
+    @ColumnInfo(name = "bill_content_length") val contentLength: Int? = null,
 ) : Parliamentdotuk
 
+
+data class BillPublicationBasic(
+    @ColumnInfo(name = "bill_pub_parliamentdotuk") @PrimaryKey override val parliamentdotuk: ParliamentID,
+    @ColumnInfo(name = "bill_pub_bill_id") val billId: ParliamentID,
+    @ColumnInfo(name = "bill_pub_title") val title: String,
+) : Parliamentdotuk
+
+/**
+ * Additional detail for a [BillPublication], currently retrieved separately from remote sources.
+ */
+@Entity
+data class BillPublicationDetail(
+    @ColumnInfo(name = "bill_pub_parliamentdotuk") @PrimaryKey override val parliamentdotuk: ParliamentID,
+    @ColumnInfo(name = "bill_pub_bill_id") val billId: ParliamentID,
+    @ColumnInfo(name = "bill_url") val url: String,
+    @ColumnInfo(name = "bill_content_type") val contentType: String,
+    @ColumnInfo(name = "bill_content_length") val contentLength: Int,
+): Parliamentdotuk

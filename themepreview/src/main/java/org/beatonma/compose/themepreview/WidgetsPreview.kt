@@ -1,21 +1,42 @@
 package org.beatonma.compose.themepreview
 
-import androidx.compose.foundation.Icon
-import androidx.compose.foundation.ScrollableRow
-import androidx.compose.foundation.Text
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.selection.ToggleableState
-import androidx.compose.material.*
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.material.Button
+import androidx.compose.material.Checkbox
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.LinearProgressIndicator
+import androidx.compose.material.ListItem
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedButton
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.RadioButton
+import androidx.compose.material.ScrollableTabRow
+import androidx.compose.material.Slider
+import androidx.compose.material.Snackbar
+import androidx.compose.material.SnackbarDefaults
+import androidx.compose.material.Switch
+import androidx.compose.material.Tab
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
+import androidx.compose.material.TextField
+import androidx.compose.material.TriStateCheckbox
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Android
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.input.TextFieldValue
 
 private val FillMaxWidth = Modifier.fillMaxWidth()
@@ -33,7 +54,7 @@ internal fun WidgetsPreview() {
         Snackbar(
             action = {
                 TextButton(onClick = DefaultOnClick) {
-                    Text("Action", color = SnackbarConstants.defaultActionPrimaryColor)
+                    Text("Action", color = SnackbarDefaults.primaryActionColor)
                 }
             }
         ) {
@@ -54,8 +75,8 @@ private fun FullWidthSample(
 @Composable
 private fun Sample(
     name: String,
-    columnModifier: Modifier = Modifier,
     modifier: Modifier = Modifier,
+    columnModifier: Modifier = Modifier,
     content: @Composable (Modifier) -> Unit,
 ) {
     Column(
@@ -70,30 +91,42 @@ private fun Sample(
     }
 }
 
+
+private fun LazyListScope.SampleItem(
+    name: String,
+    modifier: Modifier = Modifier,
+    columnModifier: Modifier = Modifier,
+    content: @Composable (Modifier) -> Unit,
+) {
+    item {
+        Sample(name, modifier, columnModifier, content)
+    }
+}
+
 @Composable
 private fun Actions() {
-    ScrollableRow {
-        Sample("Button") {
+    LazyRow {
+        SampleItem("Button") {
             Button(onClick = DefaultOnClick) {
                 Text("Button")
             }
         }
-        Sample("OutlinedButton") {
+        SampleItem("OutlinedButton") {
             OutlinedButton(onClick = DefaultOnClick) {
                 Text("Button")
             }
         }
-        Sample("TextButton") {
+        SampleItem("TextButton") {
             TextButton(onClick = DefaultOnClick) {
                 Text("Button")
             }
         }
-        Sample("IconButton") {
+        SampleItem("IconButton") {
             IconButton(onClick = DefaultOnClick) {
                 DefaultIcon()
             }
         }
-        Sample("FloatingActionButton") {
+        SampleItem("FloatingActionButton") {
             FloatingActionButton(onClick = DefaultOnClick) {
                 DefaultIcon()
             }
@@ -103,21 +136,20 @@ private fun Actions() {
 
 @Composable
 private fun TextFields() {
-    ScrollableRow {
-        val textFieldValue = remember { mutableStateOf("") }
-        Sample("TextField") {
+    val textFieldValue = remember { mutableStateOf("") }
+    LazyRow {
+        SampleItem("TextField") {
             TextField(
-                TextFieldValue(textFieldValue.value),
-                onValueChange = { value -> textFieldValue.value = value.text },
+                textFieldValue.value,
+                onValueChange = { value -> textFieldValue.value = value },
                 label = { Text("TextField") },
-                backgroundColor = MaterialTheme.colors.onSurface.copy(alpha = 0.2F),
             )
         }
 
-        Sample("OutlinedTextField") {
+        SampleItem("OutlinedTextField") {
             OutlinedTextField(
-                TextFieldValue(textFieldValue.value),
-                onValueChange = { value -> textFieldValue.value = value.text },
+                textFieldValue.value,
+                onValueChange = { value -> textFieldValue.value = value },
                 label = { Text("OutlineTextField") })
         }
     }
@@ -125,12 +157,12 @@ private fun TextFields() {
 
 @Composable
 private fun ProgressIndicators() {
-    ScrollableRow {
-        Sample("CircularProgressIndicator") {
+    LazyRow {
+        SampleItem("CircularProgressIndicator") {
             CircularProgressIndicator()
         }
 
-        Sample("LinearProgressIndicator") {
+        SampleItem("LinearProgressIndicator") {
             LinearProgressIndicator()
         }
     }
@@ -138,13 +170,13 @@ private fun ProgressIndicators() {
 
 @Composable
 private fun Selections() {
-    ScrollableRow {
-        Sample("Switch") {
+    LazyRow {
+        SampleItem("Switch") {
             val state = remember { mutableStateOf(false) }
             Switch(checked = state.value, onCheckedChange = { state.value = it })
         }
 
-        Sample("RadioButton") {
+        SampleItem("RadioButton") {
             val selectedRadio = remember { mutableStateOf(0) }
             Row {
                 for (i in 0..3) {
@@ -154,7 +186,7 @@ private fun Selections() {
             }
         }
 
-        Sample("CheckBox") {
+        SampleItem("CheckBox") {
             Row {
                 val first = remember { mutableStateOf(ToggleableState.On) }
                 Checkbox(checked = first.value == ToggleableState.On,
@@ -168,7 +200,7 @@ private fun Selections() {
             }
         }
 
-        Sample("TriStateCheckbox") {
+        SampleItem("TriStateCheckbox") {
             val triState = remember { mutableStateOf(ToggleableState.Indeterminate) }
             TriStateCheckbox(state = triState.value,
                 onClick = { triState.value = triState.value.next(tristate = true) })
@@ -186,6 +218,7 @@ private fun Selections() {
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun Lists() {
     FullWidthSample("ListItem") {
@@ -221,7 +254,7 @@ private fun Tabs() {
 
 @Composable
 private fun DefaultIcon() {
-    Icon(Icons.Default.Android)
+    Icon(Icons.Default.Android, contentDescription = "Default icon")
 }
 
 private val DefaultOnClick = {
