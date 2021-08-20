@@ -35,8 +35,6 @@ import org.beatonma.commons.core.extensions.*
 import org.beatonma.commons.data.core.interfaces.Named
 import org.beatonma.commons.data.core.interfaces.Temporal
 import org.beatonma.commons.data.resolution.uiDescription
-import org.beatonma.commons.kotlin.extensions.roundDown
-import org.beatonma.commons.kotlin.extensions.roundUp
 import org.beatonma.commons.theme.compose.formatting.dateRange
 import org.beatonma.commons.theme.compose.formatting.formatted
 import org.beatonma.commons.theme.compose.formatting.formattedPeriod

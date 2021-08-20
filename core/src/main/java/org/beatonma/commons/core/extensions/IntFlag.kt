@@ -1,4 +1,4 @@
-package org.beatonma.commons.kotlin.extensions
+package org.beatonma.commons.core.extensions
 
 /**
  * Return the result of applying binary or to the given flags
@@ -83,30 +83,5 @@ fun Int.setFlag(flag: Int, condition: Boolean): Int =
         true -> this.addFlag(flag)
         false -> this.removeFlag(flag)
     }
-
-/**
- * Get the closest multiple of [nearest] AFTER the receiver.
- */
-fun Int.roundUp(nearest: Int): Int {
-    val mod = this % nearest
-    return if (mod == 0) this
-    else {
-        if (this < 0) this - mod
-        else this + nearest - mod
-    }
-}
-
-/**
- * Get the closest multiple of [nearest] BEFORE the receiver.
- */
-fun Int.roundDown(nearest: Int): Int {
-    val mod = this % nearest
-    return if (mod == 0) this
-    else {
-        if (this < 0) this - nearest - mod
-        else this - mod
-    }
-}
-
 
 fun Int.asBinaryString(): String = Integer.toBinaryString(this)

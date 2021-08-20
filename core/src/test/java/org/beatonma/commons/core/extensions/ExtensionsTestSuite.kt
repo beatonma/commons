@@ -8,5 +8,6 @@ import org.junit.runners.Suite
     CollectionsTest::class,
     FloatTest::class,
     IntTest::class,
+    IntFlagTest::class,
 )
 class ExtensionsTestSuite
