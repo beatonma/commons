@@ -67,7 +67,7 @@ dependencies {
             Dependencies.Kotlin.Coroutines.TEST,
             Dependencies.Test.Jetpack.CORE,
             Dependencies.Test.JUNIT,
-            Dependencies.Test.Jetpack.LIVEDATA,
+            Dependencies.Test.Jetpack.ARCH_CORE,
             Dependencies.Test.Jetpack.RULES,
             Dependencies.Test.Jetpack.RUNNER,
             Dependencies.Test.Jetpack.Espresso.CONTRIB,
