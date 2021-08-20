@@ -10,7 +10,6 @@ dependencies {
     main {
         implementations(
             Dependencies.Jetpack.CORE_KTX,
-            Dependencies.Jetpack.CONSTRAINTLAYOUT_COMPOSE,
             Dependencies.Accompanist.INSETS,
             project(Modules.Core),
             project(Modules.Theme)
