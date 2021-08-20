@@ -51,7 +51,7 @@ object Versions {
 
         object Test {
             const val CORE = "1.3.0" // 1.3.0 required by hilt 2.38.1
-            const val LIVEDATA = "2.1.0"
+            const val ARCH_CORE = "2.1.0"
             const val ESPRESSO = "3.4.0"
         }
     }

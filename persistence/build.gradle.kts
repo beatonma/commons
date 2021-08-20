@@ -27,13 +27,8 @@ android {
 
 dependencies {
     instrumentationTest {
-        annotationProcessors(
-            Dependencies.Dagger.AP_COMPILER,
-            Dependencies.Dagger.AP_ANDROID
-        )
-
         implementations(
-            Dependencies.Test.Jetpack.LIVEDATA
+            Dependencies.Test.Jetpack.ARCH_CORE,
         )
     }
 

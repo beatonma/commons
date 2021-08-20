@@ -191,9 +191,9 @@ object Dependencies {
             val CORE = dependency("androidx.test:core", Versions.Jetpack.Test.CORE)
             val RULES = dependency("androidx.test:rules", Versions.Jetpack.Test.CORE)
             val RUNNER = dependency("androidx.test:runner", Versions.Jetpack.Test.CORE)
-            val LIVEDATA = dependency(
+            val ARCH_CORE = dependency(
                 "androidx.arch.core:core-testing",
-                Versions.Jetpack.Test.LIVEDATA
+                Versions.Jetpack.Test.ARCH_CORE
             )
 
             object Espresso {

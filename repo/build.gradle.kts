@@ -22,7 +22,7 @@ dependencies {
     instrumentationTest {
         annotationProcessors(
             Dependencies.Dagger.AP_COMPILER,
-            Dependencies.Dagger.AP_ANDROID
+            Dependencies.Dagger.AP_ANDROID,
         )
 
         implementations(
@@ -30,8 +30,8 @@ dependencies {
             project(Modules.TestHilt),
             Dependencies.Dagger.Hilt.TESTING,
             Dependencies.Room.RUNTIME,
-            Dependencies.Test.Jetpack.LIVEDATA,
-            Dependencies.Test.Jetpack.RUNNER
+            Dependencies.Test.Jetpack.ARCH_CORE,
+            Dependencies.Test.Jetpack.RUNNER,
         )
     }
 
@@ -48,7 +48,7 @@ dependencies {
             project(Modules.NetworkCore),
             project(Modules.Persistence),
             project(Modules.Snommoc),
-            project(Modules.UkParliament)
+            project(Modules.UkParliament),
         )
     }
 }
