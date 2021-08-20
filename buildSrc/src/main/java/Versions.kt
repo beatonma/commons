@@ -2,7 +2,7 @@ import org.gradle.api.JavaVersion
 
 object Versions {
     val JAVA = JavaVersion.VERSION_1_8
-    const val KOTLIN = "1.5.10"
+    const val KOTLIN = "1.5.21"
     const val KOTLIN_LANGUAGE_VERSION = "1.5"
     const val COROUTINES = "1.5.1"
 
@@ -30,7 +30,7 @@ object Versions {
 
     object Jetpack {
         const val HILT = "1.0.0-alpha03"
-        const val ACTIVITY = "1.3.0"
+        const val ACTIVITY = "1.3.1"
         const val ANNOTATIONS = "1.2.0"
         const val APPCOMPAT = "1.4.0-alpha03"
         const val CORE_KTX = "1.7.0-alpha01"
@@ -39,12 +39,12 @@ object Versions {
         const val NAVIGATION = "2.4.0-alpha05"
         const val ROOM = "2.3.0"
         const val SAVED_STATE = "1.1.0"
-        const val WORK = "2.4.0"
+        const val WORK = "2.5.0"
 
         object Compose {
-            const val COMPOSE = "1.0.0"
-            const val ACTIVITY = "1.3.0"
-            const val CONSTRAINT_LAYOUT = "1.0.0-beta01"
+            const val COMPOSE = "1.0.1"
+            const val ACTIVITY = "1.3.1"
+            const val CONSTRAINT_LAYOUT = "1.0.0-beta02"
             const val LIFECYCLE_VIEWMODEL = "1.0.0-alpha07"
             const val NAVIGATION = "2.4.0-alpha05"
         }
@@ -68,7 +68,7 @@ object Versions {
     const val GLIDE = "4.11.0"
     const val GROUPIE = "2.8.0"
     const val COIL = "1.3.2"
-    const val ACCOMPANIST_INSETS = "0.15.0"
+    const val ACCOMPANIST_INSETS = "0.17.0"
 
     // Testing
     const val MOCKITO = "3.5.10"

@@ -59,4 +59,5 @@ tasks.named<DependencyUpdatesTask>("dependencyUpdates") {
     checkForGradleUpdate = true
     outputDir = "build/dependencyUpdates"
     reportfileName = "report"
+    outputFormatter = "json"
 }
