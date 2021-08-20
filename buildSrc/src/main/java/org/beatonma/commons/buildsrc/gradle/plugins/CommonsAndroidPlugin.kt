@@ -74,11 +74,7 @@ interface CommonsAndroidPlugin<T : BaseExtension> : AndroidProjectPlugin<T> {
                 jvmTarget = Versions.JAVA.toString()
                 languageVersion = Versions.KOTLIN_LANGUAGE_VERSION
                 freeCompilerArgs = freeCompilerArgs + listOf(
-                    "-XXLanguage:+InlineClasses",
-                    "-XXLanguage:+NonParenthesizedAnnotationsOnFunctionalTypes",
                     "-Xopt-in=kotlin.RequiresOptIn", // Hide warnings about @OptIn annotations.
-                    "-XXLanguage:+UnitConversion",
-                    "-XXLanguage:+NewInference"
                 )
             }
 

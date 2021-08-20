@@ -97,7 +97,7 @@ fun DivisionDetailLayout(
     val coroutineScope = rememberCoroutineScope()
     val filteredVotes = rememberListOf<VoteWithParty>()
 
-    val applyFilter = { queryText: String ->
+    val applyFilter: (String) -> Unit = { queryText: String ->
         coroutineScope.launch {
             val filtered = applyFilter(queryText, voteTypeFilters.value, divisionWithVotes)
 
@@ -105,7 +105,7 @@ fun DivisionDetailLayout(
         }
     }
 
-    val toggleVoteTypeFilter = { voteType: VoteType ->
+    val toggleVoteTypeFilter: (VoteType) -> Unit = { voteType: VoteType ->
         voteTypeFilters.mapUpdate { filters ->
             val exists = filters.contains(voteType)
             if (exists) {
