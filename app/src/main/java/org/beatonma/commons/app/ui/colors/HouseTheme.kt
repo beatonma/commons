@@ -10,7 +10,7 @@ import org.beatonma.commons.theme.compose.theme.textPrimaryLight
 
 @Composable
 fun houseTheme(
-    surface: Color = colors.house.Parliament,
+    surface: Color,
     onSurface: Color = colors.textPrimaryLight
 ) = SurfaceTheme(surface, onSurface)
 

@@ -2,41 +2,38 @@ package org.beatonma.commons.app.ui.colors
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import org.beatonma.commons.BuildConfig.*
 import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.core.ParliamentID
-import org.beatonma.commons.data.core.room.entities.member.Party
-import org.beatonma.commons.kotlin.data.Color
+import org.beatonma.commons.theme.compose.color.EditableColor
 import org.beatonma.commons.theme.compose.theme.textPrimaryDark
 import org.beatonma.commons.theme.compose.theme.textPrimaryLight
-import androidx.compose.ui.graphics.Color as ComposeColor
 
-class ComposePartyColors(
-    val primary: ComposeColor,
-    val accent: ComposeColor,
-    val onPrimary: ComposeColor,
-    val onAccent: ComposeColor,
+class PartyColors(
+    val primary: Color,
+    val accent: Color,
+    val onPrimary: Color,
+    val onAccent: Color,
 )
 
-@Composable
-fun Party.theme(): ComposePartyColors = partyTheme(parliamentdotuk = parliamentdotuk)
 
 @Composable
-fun partyTheme(parliamentdotuk: ParliamentID = -1): ComposePartyColors {
+fun partyTheme(parliamentdotuk: ParliamentID = -1): PartyColors {
     val isDarkTheme = isSystemInDarkTheme()
     val naiveColors = getNaivePartyTheme(parliamentdotuk)
 
-    return if (isDarkTheme) {
-        naiveColors.coerce(
-            minSaturation = .2F,
-            maxSaturation = .8F,
-            minLuminance = .2F,
-            maxLuminance = .8F
-        ).resolve()
-    }
-    else {
-        naiveColors.resolve()
-    }
+    return when {
+        isDarkTheme -> {
+            naiveColors.coerce(
+                minSaturation = .2F,
+                maxSaturation = .8F,
+                minLuminance = .2F,
+                maxLuminance = .8F
+            )
+        }
+        else -> naiveColors
+    }.resolve()
 }
 
 /**
@@ -205,16 +202,26 @@ private data class NaivePartyColors(
         maxLuminance: Float = 1F,
     ): NaivePartyColors =
         NaivePartyColors(
-            Color(primary).coerce(minSaturation, maxSaturation, minLuminance, maxLuminance).color,
-            Color(accent).coerce(minSaturation, maxSaturation, minLuminance, maxLuminance).color,
+            EditableColor(primary).coerce(
+                minSaturation,
+                maxSaturation,
+                minLuminance,
+                maxLuminance
+            ).color,
+            EditableColor(accent).coerce(
+                minSaturation,
+                maxSaturation,
+                minLuminance,
+                maxLuminance
+            ).color,
             primaryTextTheme,
             accentTextTheme,
         )
 
     @Composable
-    fun resolve(): ComposePartyColors = ComposePartyColors(
-        primary = ComposeColor(primary),
-        accent = ComposeColor(accent),
+    fun resolve(): PartyColors = PartyColors(
+        primary = Color(primary),
+        accent = Color(accent),
         onPrimary = if (primaryTextTheme == THEME_TEXT_DARK) colors.textPrimaryDark else colors.textPrimaryLight,
         onAccent = if (accentTextTheme == THEME_TEXT_DARK) colors.textPrimaryDark else colors.textPrimaryLight,
     )

@@ -9,13 +9,12 @@ import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import org.beatonma.commons.R
-import org.beatonma.commons.app.signin.LocalPlatformUserAccountActions
-import org.beatonma.commons.app.signin.PlatformUserAccountActions
-import org.beatonma.commons.app.signin.UserAccountViewModel
-import org.beatonma.commons.app.signin.userProfileActions
 import org.beatonma.commons.app.ui.base.DayNightActivity
 import org.beatonma.commons.app.ui.navigation.BackPressConsumer
-import org.beatonma.commons.commonsApp
+import org.beatonma.commons.app.ui.screens.signin.LocalPlatformUserAccountActions
+import org.beatonma.commons.app.ui.screens.signin.PlatformUserAccountActions
+import org.beatonma.commons.app.ui.screens.signin.UserAccountViewModel
+import org.beatonma.commons.app.ui.screens.signin.userProfileActions
 import org.beatonma.commons.theme.compose.theme.systemui.setDecorFitsSystemWindows
 
 @AndroidEntryPoint

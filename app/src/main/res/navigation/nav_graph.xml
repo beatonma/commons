@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/frontPageFragment"
-        android:name="org.beatonma.commons.app.frontpage.FrontPageFragment"
+        android:name="org.beatonma.commons.app.ui.screens.frontpage.FrontPageFragment"
         android:label="FrontPageFragment">
         <action
             android:id="@+id/action_frontPageFragment_to_memberProfileFragment"
@@ -28,7 +28,7 @@
 
     <fragment
         android:id="@+id/memberProfileFragment"
-        android:name="org.beatonma.commons.app.memberprofile.MemberProfileFragment"
+        android:name="org.beatonma.commons.app.ui.screens.memberprofile.MemberProfileFragment"
         android:label="MemberProfileFragment">
         <action
             android:id="@+id/action_memberProfileFragment_to_constituencyDetailFragment"
@@ -44,7 +44,7 @@
 
     <fragment
         android:id="@+id/billFragment"
-        android:name="org.beatonma.commons.app.bill.BillDetailFragment"
+        android:name="org.beatonma.commons.app.ui.screens.bill.BillDetailFragment"
         android:label="BillFragment">
         <argument
             android:name="@string/parliamentdotuk"
@@ -60,7 +60,7 @@
 
     <fragment
         android:id="@+id/divisionProfileFragment"
-        android:name="org.beatonma.commons.app.division.DivisionDetailFragment"
+        android:name="org.beatonma.commons.app.ui.screens.division.DivisionDetailFragment"
         android:label="DivisionProfileFragment">
         <action
             android:id="@+id/action_divisionProfileFragment_to_memberProfileFragment"
@@ -79,7 +79,7 @@
 
     <fragment
         android:id="@+id/constituencyDetailFragment"
-        android:name="org.beatonma.commons.app.constituency.detail.ConstituencyDetailFragment"
+        android:name="org.beatonma.commons.app.ui.screens.constituency.detail.ConstituencyDetailFragment"
         android:label="ConstituencyDetailFragment">
         <deepLink
             android:id="@+id/deeplink_constituency_detail"
@@ -95,7 +95,7 @@
 
     <fragment
         android:id="@+id/constituencyElectionResultsFragment"
-        android:name="org.beatonma.commons.app.constituency.electionresults.ConstituencyResultsFragment"
+        android:name="org.beatonma.commons.app.ui.screens.constituency.electionresults.ConstituencyResultsFragment"
         android:label="ConstituencyElectionResultsFragment">
         <deepLink
             android:id="@+id/deeplink_constituency_election_detail"

@@ -4,7 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
-import org.beatonma.commons.kotlin.extensions.getPrefs
+import org.beatonma.commons.app.util.getPrefs
 
 object SystemTheme {
     const val THEME_PREFS = "theme"
