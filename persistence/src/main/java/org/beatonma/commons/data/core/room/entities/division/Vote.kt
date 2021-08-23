@@ -47,4 +47,3 @@ data class VoteWithDivision(
     @Relation(parentColumn = "dvote_division_id", entityColumn = "division_$PARLIAMENTDOTUK", entity = Division::class)
     val division: Division
 )
-

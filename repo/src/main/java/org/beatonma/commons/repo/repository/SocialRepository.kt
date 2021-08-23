@@ -43,4 +43,3 @@ class SocialRepository @Inject constructor(
         remoteSource.getSocialForTarget(targetType, parliamentdotuk, snommocToken)
     }
 }
-

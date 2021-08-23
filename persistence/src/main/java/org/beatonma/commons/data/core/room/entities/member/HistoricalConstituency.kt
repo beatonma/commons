@@ -62,5 +62,3 @@ data class HistoricalConstituencyWithElection(
     override val end: LocalDate? get() = historicalConstituency.end
     override val name: String get() = constituency.name
 }
-
-
