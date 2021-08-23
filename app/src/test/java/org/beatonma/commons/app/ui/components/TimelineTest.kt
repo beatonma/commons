@@ -1,4 +1,4 @@
-package org.beatonma.commons.app.timeline
+package org.beatonma.commons.app.ui.components
 
 import org.beatonma.commons.data.core.interfaces.Periodic
 import org.beatonma.commons.test.extensions.assertions.shouldbe
@@ -13,7 +13,7 @@ class TimelineTest {
 
     @Test
     fun item_isCorrect() {
-        val item = Item(
+        val item = TimelineItem(
             Sample(
                 LocalDate.of(2015, 3, 5),
                 LocalDate.of(2016, 5, 5)
@@ -29,10 +29,10 @@ class TimelineTest {
 
     @Test
     fun group_isCorrect() {
-        val group = Group(
+        val group = TimelineGroup(
             "sample",
             listOf(
-                Item(
+                TimelineItem(
                     Sample(
                         LocalDate.of(2015, 3, 5),
                         LocalDate.of(2016, 5, 5)
@@ -40,7 +40,7 @@ class TimelineTest {
                     epochStart = epochStart,
                     now = now,
                 ),
-                Item(
+                TimelineItem(
                     Sample(
                         LocalDate.of(2017, 6, 5),
                         LocalDate.of(2019, 1, 5)
@@ -48,7 +48,7 @@ class TimelineTest {
                     epochStart = epochStart,
                     now = now,
                 ),
-                Item(
+                TimelineItem(
                     Sample(
                         LocalDate.of(2016, 3, 5),
                         LocalDate.of(2020, 1, 13)
@@ -91,10 +91,10 @@ class TimelineTest {
     @Test
     fun renderData_isCorrect() {
         val groups = listOf(
-            Group(
+            TimelineGroup(
                 "sample",
                 listOf(
-                    Item(
+                    TimelineItem(
                         Sample(
                             LocalDate.of(2015, 3, 5),
                             LocalDate.of(2016, 5, 5)
@@ -102,7 +102,7 @@ class TimelineTest {
                         epochStart = epochStart,
                         now = now,
                     ),
-                    Item(
+                    TimelineItem(
                         Sample(
                             LocalDate.of(2016, 3, 5),
                             LocalDate.of(2020, 1, 13)
@@ -112,10 +112,10 @@ class TimelineTest {
                     ),
                 )
             ),
-            Group(
+            TimelineGroup(
                 "same period sample",
                 listOf(
-                    Item(
+                    TimelineItem(
                         Sample(
                             LocalDate.of(2015, 3, 5),
                             LocalDate.of(2016, 5, 5)
@@ -123,7 +123,7 @@ class TimelineTest {
                         epochStart = epochStart,
                         now = now,
                     ),
-                    Item(
+                    TimelineItem(
                         Sample(
                             LocalDate.of(2016, 3, 5),
                             LocalDate.of(2020, 1, 13)
@@ -133,10 +133,10 @@ class TimelineTest {
                     ),
                 )
             ),
-            Group(
+            TimelineGroup(
                 "different sample",
                 listOf(
-                    Item(
+                    TimelineItem(
                         Sample(
                             LocalDate.of(2015, 3, 5),
                             LocalDate.of(2016, 5, 5)
@@ -144,7 +144,7 @@ class TimelineTest {
                         epochStart = epochStart,
                         now = now,
                     ),
-                    Item(
+                    TimelineItem(
                         Sample(
                             LocalDate.of(2016, 3, 5),
                             LocalDate.of(2021, 1, 13)

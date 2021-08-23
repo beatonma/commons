@@ -243,7 +243,7 @@ private fun TimelineBackground(
 
 @Composable
 private fun GroupLayout(
-    group: Group,
+    group: TimelineGroup,
     visibility: Float,
     colors: TimelineColors,
     color: Color,
@@ -298,7 +298,7 @@ private fun GroupLayout(
 
 @Composable
 private fun Bar(
-    group: Group,
+    group: TimelineGroup,
     visibility: Float,
     colors: TimelineColors,
     color: Color,
@@ -388,15 +388,15 @@ private fun renderData(rawData: List<Temporal>): RenderData {
     }
     val groups = grouped
         .map { (label, items) ->
-            Group(
+            TimelineGroup(
                 label.clipToLength(LabelMaxChars),
-                items.map { item -> Item(item, epochStart = start, now = now) }
+                items.map { item -> TimelineItem(item, epochStart = start, now = now) }
             )
         }
         .sortedWith(
-            compareBy(Group::startInEpoch)
-                .thenByDescending(Group::durationMonths)
-                .thenBy(Group::label)
+            compareBy(TimelineGroup::startInEpoch)
+                .thenByDescending(TimelineGroup::durationMonths)
+                .thenBy(TimelineGroup::label)
         )
 
     return RenderData(groups)
@@ -418,7 +418,7 @@ internal interface TimelineData {
 }
 
 @VisibleForTesting
-internal class RenderData(val groups: List<Group>) : TimelineData {
+internal class RenderData(val groups: List<TimelineGroup>) : TimelineData {
     override val start: LocalDate
     override val end: LocalDate
 
@@ -448,7 +448,7 @@ internal class RenderData(val groups: List<Group>) : TimelineData {
 }
 
 @VisibleForTesting
-internal class Item(item: Temporal, epochStart: LocalDate, now: LocalDate) : TimelineData {
+internal class TimelineItem(item: Temporal, epochStart: LocalDate, now: LocalDate) : TimelineData {
     override val start: LocalDate = item.startOf()
     override val end: LocalDate = item.endOf(now)
 
@@ -459,9 +459,9 @@ internal class Item(item: Temporal, epochStart: LocalDate, now: LocalDate) : Tim
 }
 
 @VisibleForTesting
-internal class Group(
+internal class TimelineGroup(
     val label: String,
-    val items: List<Item>
+    val items: List<TimelineItem>
 ) : TimelineData {
     override val start: LocalDate
     override val end: LocalDate
