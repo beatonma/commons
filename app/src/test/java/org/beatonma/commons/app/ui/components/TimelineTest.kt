@@ -12,7 +12,7 @@ class TimelineTest {
     private val now = LocalDate.of(2021, 3, 25)
 
     @Test
-    fun item_isCorrect() {
+    fun timelineItem_isCorrect() {
         val item = TimelineItem(
             Sample(
                 LocalDate.of(2015, 3, 5),
@@ -28,7 +28,7 @@ class TimelineTest {
     }
 
     @Test
-    fun group_isCorrect() {
+    fun timelineGroup_isCorrect() {
         val group = TimelineGroup(
             "sample",
             listOf(
