@@ -1,26 +1,19 @@
 package org.beatonma.commons.compose.components.fabbottomsheet
 
 import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.MaterialTheme.colors
+import androidx.compose.material.MaterialTheme.shapes
 import androidx.compose.material.Surface
-import androidx.compose.material.TextField
 import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -28,29 +21,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.insets.navigationBarsPadding
 import org.beatonma.commons.compose.R
 import org.beatonma.commons.compose.TestTag
-import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.compose.animation.lerpBetween
 import org.beatonma.commons.compose.animation.withEasing
 import org.beatonma.commons.compose.components.ModalScrim
 import org.beatonma.commons.compose.modifiers.consumePointerInput
-import org.beatonma.commons.core.extensions.lerpBetween
+import org.beatonma.commons.compose.shape.withSquareBottom
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.core.extensions.reversed
 import org.beatonma.commons.theme.compose.Elevation
 import org.beatonma.commons.theme.compose.padding.Padding
 import org.beatonma.commons.theme.compose.padding.padding
-import org.beatonma.commons.theme.compose.theme.CORNER_SMALL
 import org.beatonma.commons.theme.compose.theme.systemui.navigationBarsPadding
 
 
 /**
- * Displays a FAB which expands into a bottom sheet dialog.
+ * Displays a FloatingActionButton which expands into a bottom sheet dialog when tapped.
  */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -115,8 +103,7 @@ private fun FabBottomSheetLayout(
                 modifier = modifier,
                 content = { fabContent(0F) }
             )
-        }
-        else {
+        } else {
             BottomSheet(
                 progress = progress,
                 surfaceShape = surfaceShape,
@@ -193,42 +180,12 @@ private fun BottomSheet(
 private fun getSurfaceColor(progress: Float) =
     progress.progressIn(0F, 0.4F).lerpBetween(colors.primary, colors.surface)
 
-private fun getSurfaceShape(progress: Float): Shape {
+@Composable
+private fun getSurfaceShape(progress: Float): CornerBasedShape {
+    val fabShape = CircleShape
+    val expandedShape = shapes.medium.withSquareBottom()
+
     val eased = progress.withEasing(LinearOutSlowInEasing)
-    val upperCornerSize = eased.lerpBetween(24, CORNER_SMALL).dp
-    val lowerCornerSize = eased.lerpBetween(24, 0).dp
-    return RoundedCornerShape(upperCornerSize, upperCornerSize, lowerCornerSize, lowerCornerSize)
-}
 
-
-@Composable @Preview
-fun FabBottomSheetPreview() {
-    ProvideWindowInsets {
-        FabBottomSheet(
-            fabClickLabel = "open",
-            fabContent = { FabText("Clickme", it) },
-            bottomSheetContent = { progress ->
-                BottomSheetText(progress = progress) {
-                    Column {
-                        var text by remember { mutableStateOf("") }
-                        TextField(text, onValueChange = { v -> text = v })
-                        Row(Modifier.fillMaxWidth()) {
-                            Spacer(
-                                Modifier
-                                    .fillMaxWidth(.5F * progress)
-                                    .height(200.dp * progress)
-                                    .background(Color.Red)
-                            )
-                            Spacer(
-                                Modifier
-                                    .fillMaxWidth(progress)
-                                    .height(200.dp * progress)
-                                    .background(Color.Green)
-                            )
-                        }
-                    }
-                }
-            }
-        )
-    }
+    return eased.lerpBetween(fabShape, expandedShape)
 }
