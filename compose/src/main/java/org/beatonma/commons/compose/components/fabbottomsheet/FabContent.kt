@@ -1,10 +1,10 @@
 package org.beatonma.commons.compose.components.fabbottomsheet
 
+import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.core.extensions.reversed
 import org.beatonma.commons.theme.compose.padding.Padding

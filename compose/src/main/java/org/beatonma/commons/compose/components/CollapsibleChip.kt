@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -13,11 +12,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
-import androidx.compose.material.Surface
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,7 +38,6 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -49,20 +46,17 @@ import kotlinx.coroutines.launch
 import org.beatonma.commons.compose.R
 import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.compose.ambient.LocalAccessibility
-import org.beatonma.commons.compose.ambient.animation
-import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.compose.animation.AutoCollapse
 import org.beatonma.commons.compose.animation.ExpandCollapseState
 import org.beatonma.commons.compose.animation.isExpanded
 import org.beatonma.commons.compose.animation.rememberExpandCollapseState
 import org.beatonma.commons.compose.animation.toggle
-import org.beatonma.commons.compose.modifiers.design.centerOverlay
 import org.beatonma.commons.compose.modifiers.onlyWhen
 import org.beatonma.commons.compose.modifiers.wrapContentWidth
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.theme.compose.Size
 import org.beatonma.commons.theme.compose.padding.padding
-import org.beatonma.commons.theme.compose.theme.CommonsTheme
+import org.beatonma.commons.theme.compose.theme.animation
 import org.beatonma.commons.theme.compose.theme.negative
 import org.beatonma.commons.theme.compose.theme.textSecondary
 
@@ -375,29 +369,6 @@ private fun ExpandedContent(
                 .padding(end = ExpandedPadding)
                 .alpha(animationProgress.progressIn(0.3F, 1F))
         )
-    }
-}
-
-@Preview
-@Composable
-fun CollapsibleChipPreview() {
-    var counter by remember { mutableStateOf(0) }
-    CommonsTheme {
-        Surface {
-            Column {
-                CollapsibleChip(
-                    text = AnnotatedString("Compose email"),
-                    contentDescription = "Compose an email to fake@snommoc.org",
-                    icon = Icons.Default.Email,
-                    modifier = Modifier
-                        .centerOverlay(color = Color.Black)
-                ) {
-                    counter += 1
-                }
-
-                Text(counter.toString())
-            }
-        }
     }
 }
 

@@ -1,10 +1,10 @@
 package org.beatonma.commons.app.ui.colors
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import org.beatonma.commons.BuildConfig.*
-import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.theme.compose.color.EditableColor
 import org.beatonma.commons.theme.compose.theme.textPrimaryDark

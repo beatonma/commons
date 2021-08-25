@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material.MaterialTheme.colors
+import androidx.compose.material.MaterialTheme.shapes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -24,9 +26,6 @@ import org.beatonma.commons.app.ui.accessibility.contentDescription
 import org.beatonma.commons.app.ui.components.CommonsOutlinedButton
 import org.beatonma.commons.app.ui.components.WarningButton
 import org.beatonma.commons.app.ui.components.image.Avatar
-import org.beatonma.commons.compose.ambient.animation
-import org.beatonma.commons.compose.ambient.colors
-import org.beatonma.commons.compose.ambient.shapes
 import org.beatonma.commons.compose.animation.AnimatedVisibility
 import org.beatonma.commons.compose.animation.lerpBetween
 import org.beatonma.commons.compose.components.fabbottomsheet.BottomSheetText
@@ -41,6 +40,7 @@ import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.theme.compose.padding.Padding
 import org.beatonma.commons.theme.compose.padding.padding
+import org.beatonma.commons.theme.compose.theme.animation
 import org.beatonma.commons.theme.compose.theme.onWarningSurface
 import org.beatonma.commons.theme.compose.theme.warningSurface
 

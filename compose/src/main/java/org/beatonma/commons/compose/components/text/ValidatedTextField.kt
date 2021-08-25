@@ -11,7 +11,8 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.Surface
+import androidx.compose.material.MaterialTheme.shapes
+import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldColors
@@ -39,19 +40,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.compose.TestTag
-import org.beatonma.commons.compose.ambient.animation
-import org.beatonma.commons.compose.ambient.shapes
-import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.components.FeedbackProvider
 import org.beatonma.commons.compose.components.LocalFeedbackMessage
 import org.beatonma.commons.compose.components.clear
 import org.beatonma.commons.compose.components.rememberFeedbackProvider
-import org.beatonma.commons.compose.util.rememberText
-import org.beatonma.commons.theme.compose.theme.CommonsTheme
-import org.beatonma.commons.theme.compose.theme.withSquareBottom
+import org.beatonma.commons.compose.shape.withSquareBottom
+import org.beatonma.commons.theme.compose.theme.animation
 
 enum class TextValidationResult {
     OK,
@@ -309,32 +305,6 @@ private fun CounterText(
         maxLines = 1,
         style = typography.caption,
     )
-}
-
-
-@Preview
-@Composable
-fun ValidatedTextFieldPreview() {
-    val text = rememberText()
-    val rules = rememberValidationRules(
-        minLength = 3,
-        maxLength = 10,
-        regex = "[a-z]+".toRegex()
-    )
-
-    CommonsTheme {
-        Surface {
-            ValidatedTextField(
-                value = text.value,
-                validationRules = rules,
-                onValueChange = { newValue, valid ->
-                    text.value = newValue
-                    return@ValidatedTextField AnnotatedString(valid.name)
-                },
-                modifier = Modifier.padding(16.dp),
-            )
-        }
-    }
 }
 
 

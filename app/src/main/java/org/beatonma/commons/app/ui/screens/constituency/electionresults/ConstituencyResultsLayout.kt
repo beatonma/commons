@@ -17,6 +17,9 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.ListItem
 import androidx.compose.material.LocalContentColor
+import androidx.compose.material.MaterialTheme.colors
+import androidx.compose.material.MaterialTheme.shapes
+import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -45,9 +48,6 @@ import org.beatonma.commons.app.ui.components.party.PartyWithTheme
 import org.beatonma.commons.app.ui.components.party.partyWithTheme
 import org.beatonma.commons.app.ui.components.party.providePartyImageConfig
 import org.beatonma.commons.app.ui.util.WithResultData
-import org.beatonma.commons.compose.ambient.colors
-import org.beatonma.commons.compose.ambient.shapes
-import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.animation.ExpandCollapseState
 import org.beatonma.commons.compose.animation.animateExpansion
 import org.beatonma.commons.compose.animation.rememberExpandCollapseState

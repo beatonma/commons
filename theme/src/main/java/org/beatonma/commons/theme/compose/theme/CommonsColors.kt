@@ -80,8 +80,8 @@ val Colors.graphSecondaryColors get() = CommonsColor.Graph.Secondary
 
 val Colors.modalScrim get() = resolveColor(CommonsColor.ModalScrim)
 
-val MaterialTheme.invertedColors
-    @Composable get() = when (colors.isLight) {
+val invertedColors
+    @Composable get() = when (MaterialTheme.colors.isLight) {
         true -> CommonsDarkThemeColors
         false -> CommonsLightThemeColors
     }

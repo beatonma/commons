@@ -19,6 +19,8 @@ import androidx.compose.material.ContentAlpha
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentColor
+import androidx.compose.material.MaterialTheme.colors
+import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowRight
@@ -62,9 +64,6 @@ import org.beatonma.commons.app.ui.screens.social.StickySocialScaffold
 import org.beatonma.commons.app.ui.screens.social.asSocialTheme
 import org.beatonma.commons.app.ui.util.WithResultData
 import org.beatonma.commons.compose.ambient.WithContentAlpha
-import org.beatonma.commons.compose.ambient.animation
-import org.beatonma.commons.compose.ambient.colors
-import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.animation.ExpandCollapseState
 import org.beatonma.commons.compose.animation.isCollapsed
 import org.beatonma.commons.compose.animation.lerpBetween
@@ -97,6 +96,7 @@ import org.beatonma.commons.theme.compose.Layer
 import org.beatonma.commons.theme.compose.formatting.dateRange
 import org.beatonma.commons.theme.compose.padding.Padding
 import org.beatonma.commons.theme.compose.padding.padding
+import org.beatonma.commons.theme.compose.theme.animation
 import org.beatonma.commons.theme.compose.theme.systemui.statusBarsPadding
 
 private const val AVATAR_ASPECT_RATIO = 3F / 2F

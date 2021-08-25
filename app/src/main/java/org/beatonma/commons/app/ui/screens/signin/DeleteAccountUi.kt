@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.MaterialTheme.colors
+import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.rememberCoroutineScope
@@ -21,8 +23,6 @@ import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.components.CommonsOutlinedButton
 import org.beatonma.commons.app.ui.components.LoadingIcon
 import org.beatonma.commons.compose.TestTag
-import org.beatonma.commons.compose.ambient.colors
-import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.components.ConfirmationState
 import org.beatonma.commons.compose.components.DoubleConfirmationButton
 import org.beatonma.commons.compose.components.doubleConfirmationColors

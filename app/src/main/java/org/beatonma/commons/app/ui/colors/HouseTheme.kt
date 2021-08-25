@@ -1,8 +1,8 @@
 package org.beatonma.commons.app.ui.colors
 
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.core.House
 import org.beatonma.commons.theme.compose.theme.house
 import org.beatonma.commons.theme.compose.theme.textPrimaryLight

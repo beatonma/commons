@@ -1,10 +1,10 @@
 package org.beatonma.commons.compose.util
 
 import androidx.annotation.VisibleForTesting
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
-import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.core.extensions.mapToByte
 import org.beatonma.commons.core.extensions.normalize
 import org.beatonma.commons.theme.compose.theme.textPrimaryDark

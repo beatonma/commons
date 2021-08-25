@@ -2,48 +2,34 @@ package org.beatonma.commons.compose.components.collapsibleheader
 
 import androidx.annotation.FloatRange
 import androidx.compose.foundation.MutatePriority
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Velocity
-import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.beatonma.commons.compose.TestTag
-import org.beatonma.commons.compose.util.rememberBoolean
-import org.beatonma.commons.compose.util.toggle
 import org.beatonma.commons.core.extensions.reversed
 import org.beatonma.commons.theme.compose.padding.EndOfContent
-import org.beatonma.commons.theme.compose.theme.CommonsTheme
 
 @Composable
 fun CollapsibleHeaderLayout(
@@ -224,69 +210,5 @@ private fun rememberNestedScrollConnection(
 
             return result
         }
-    }
-}
-
-@Preview
-@Composable
-fun CollapsibleHeaderLayoutPreview() {
-    CommonsTheme {
-        val listItems = (1..100).toList()
-        val lazyListState = rememberLazyListState()
-        val headerState = rememberCollapsibleHeaderState(lazyListState = lazyListState)
-        val flingBehavior = ScrollableDefaults.flingBehavior()
-        val coroutineScope = rememberCoroutineScope()
-        val expandOnClick = rememberBoolean(false)
-
-        CollapsibleHeaderLayout(
-            headerState = headerState,
-            lazyListState = lazyListState,
-            modifier = Modifier
-                .clickable {
-                    coroutineScope.launch {
-                        if (expandOnClick.toggle()) {
-                            headerState.expand()
-                        } else {
-                            headerState.collapse()
-                        }
-                    }
-                },
-            collapsingHeader = { expandedProgress ->
-                Column {
-                    Text(
-                        "This should stay here",
-                        Modifier
-                            .height(80.dp)
-                            .background(Color.Blue)
-                    )
-                    Box(
-                        Modifier
-                            .height(300.dp * expandedProgress)
-                            .background(Color.Red)
-                    ) {
-                        Text("This should collapse")
-                    }
-                }
-            },
-            lazyListContent = {
-                itemsIndexed(listItems) { index, item ->
-                    Text(
-                        "$item",
-                        Modifier
-                            .fillMaxWidth()
-                            .background(
-                                Color.Yellow.copy(
-                                    alpha = (index / 100F).coerceIn(
-                                        0F,
-                                        1F
-                                    )
-                                )
-                            )
-                            .padding(4.dp)
-                    )
-                }
-            },
-            flingBehavior = flingBehavior,
-        )
     }
 }

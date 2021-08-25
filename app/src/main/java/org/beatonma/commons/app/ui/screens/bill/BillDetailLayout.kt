@@ -12,6 +12,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ListItem
 import androidx.compose.material.LocalContentColor
+import androidx.compose.material.MaterialTheme.colors
+import androidx.compose.material.MaterialTheme.shapes
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -35,8 +37,6 @@ import org.beatonma.commons.app.ui.screens.social.ProvideSocial
 import org.beatonma.commons.app.ui.screens.social.SocialViewModel
 import org.beatonma.commons.app.ui.screens.social.StickySocialScaffold
 import org.beatonma.commons.app.ui.util.WithResultData
-import org.beatonma.commons.compose.ambient.colors
-import org.beatonma.commons.compose.ambient.shapes
 import org.beatonma.commons.compose.components.CollapsedColumn
 import org.beatonma.commons.compose.components.Tag
 import org.beatonma.commons.compose.components.stickyrow.StickyHeaderRow

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.LocalContentColor
+import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
@@ -42,8 +43,6 @@ import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.components.LoadingIcon
 import org.beatonma.commons.app.ui.components.image.ClickableIcon
 import org.beatonma.commons.app.ui.screens.social.Username
-import org.beatonma.commons.compose.ambient.animation
-import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.animation.AnimatedVisibility
 import org.beatonma.commons.compose.components.FeedbackProvider
 import org.beatonma.commons.compose.components.rememberFeedbackProvider
@@ -60,6 +59,7 @@ import org.beatonma.commons.preview.InAppPreview
 import org.beatonma.commons.sampledata.SampleUserToken
 import org.beatonma.commons.theme.compose.padding.Padding
 import org.beatonma.commons.theme.compose.padding.padding
+import org.beatonma.commons.theme.compose.theme.animation
 
 internal enum class EditableState {
     ReadOnly,

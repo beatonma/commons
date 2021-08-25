@@ -6,7 +6,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import org.beatonma.commons.compose.ambient.animation
+import org.beatonma.commons.theme.compose.theme.animation
 
 @Composable
 fun rememberExpandCollapseState(

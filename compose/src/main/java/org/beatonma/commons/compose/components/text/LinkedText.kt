@@ -1,7 +1,6 @@
 package org.beatonma.commons.compose.components.text
 
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.Text
@@ -22,7 +21,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import org.beatonma.commons.compose.util.URL_TAG
 import org.beatonma.commons.compose.util.linkify
@@ -96,22 +94,4 @@ fun LinkedText(
         },
         style = style
     )
-}
-
-@Preview
-@Composable
-fun LinkedTextPreview() {
-    val urlsOpened: MutableState<List<String>> = remember { mutableStateOf(listOf()) }
-
-    Column {
-        LinkedText(
-            "org,beatonma | beatonma.org",
-            fontFamily = FontFamily.Monospace,
-            action = { url ->
-                urlsOpened.value = urlsOpened.value + listOf(url)
-            }
-        )
-
-        Text(urlsOpened.value.joinToString(","))
-    }
 }

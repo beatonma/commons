@@ -15,6 +15,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.ListItem
 import androidx.compose.material.LocalContentColor
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -45,7 +46,6 @@ import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.components.Todo
 import org.beatonma.commons.app.ui.components.party.PartyDot
 import org.beatonma.commons.compose.TestTag
-import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.compose.animation.ExpandCollapseState
 import org.beatonma.commons.compose.animation.animateExpansionAsState
 import org.beatonma.commons.compose.animation.collapse

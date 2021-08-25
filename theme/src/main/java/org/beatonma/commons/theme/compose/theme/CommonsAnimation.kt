@@ -37,9 +37,13 @@ import kotlinx.coroutines.launch
 
 private const val DURATION_DEFAULT = 300
 
-val LocalAnimationSpec: CompositionLocal<DefaultAnimation> = staticCompositionLocalOf { CommonsAnimation }
+val LocalAnimationSpec: CompositionLocal<DefaultAnimation> =
+    staticCompositionLocalOf { CommonsAnimation }
 
-private object CommonsAnimation: DefaultAnimation {
+inline val animation
+    @Composable get() = LocalAnimationSpec.current
+
+private object CommonsAnimation : DefaultAnimation {
     override val itemDelay: Long = 30L
 
     override fun <T> spec(): FiniteAnimationSpec<T> = CommonsSpring()

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme.shapes
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Comment
@@ -29,8 +30,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.accessibility.contentDescription
-import org.beatonma.commons.compose.ambient.animation
-import org.beatonma.commons.compose.ambient.shapes
 import org.beatonma.commons.compose.animation.lerpBetween
 import org.beatonma.commons.compose.modifiers.onlyWhen
 import org.beatonma.commons.compose.modifiers.withNotNull
@@ -42,6 +41,7 @@ import org.beatonma.commons.snommoc.models.social.SocialVoteType
 import org.beatonma.commons.theme.compose.Size
 import org.beatonma.commons.theme.compose.padding.Padding
 import org.beatonma.commons.theme.compose.padding.padding
+import org.beatonma.commons.theme.compose.theme.animation
 import kotlin.math.roundToInt
 
 @Composable

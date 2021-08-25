@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ListItem
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -19,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import org.beatonma.commons.BuildConfig
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.components.party.ProvidePartyImageConfig
-import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.components.text.OptionalText
 import org.beatonma.commons.compose.util.dot
 import org.beatonma.commons.core.extensions.fastForEach

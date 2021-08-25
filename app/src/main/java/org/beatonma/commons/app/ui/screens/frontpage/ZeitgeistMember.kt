@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.MaterialTheme.shapes
+import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -25,15 +27,13 @@ import org.beatonma.commons.app.ui.components.image.Avatar
 import org.beatonma.commons.app.ui.components.party.LocalPartyTheme
 import org.beatonma.commons.app.ui.components.party.PartyBackground
 import org.beatonma.commons.app.ui.components.party.partyWithTheme
-import org.beatonma.commons.compose.ambient.invertedColors
-import org.beatonma.commons.compose.ambient.shapes
-import org.beatonma.commons.compose.ambient.typography
+import org.beatonma.commons.compose.shape.withSquareTop
 import org.beatonma.commons.compose.util.dot
 import org.beatonma.commons.data.core.MinimalMember
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 import org.beatonma.commons.data.resolution.currentPostUiDescription
 import org.beatonma.commons.snommoc.models.ZeitgeistReason
-import org.beatonma.commons.theme.compose.theme.withSquareTop
+import org.beatonma.commons.theme.compose.theme.invertedColors
 
 private val PortraitWidth = 260.dp
 private val TextPadding = 16.dp

@@ -10,19 +10,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Icon
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,11 +30,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import org.beatonma.commons.compose.R
 import org.beatonma.commons.compose.TestTag
-import org.beatonma.commons.compose.ambient.animation
 import org.beatonma.commons.compose.animation.AnimatedItemVisibility
 import org.beatonma.commons.compose.animation.ExpandCollapseState
 import org.beatonma.commons.compose.animation.animateExpansion
@@ -45,7 +39,6 @@ import org.beatonma.commons.compose.animation.rememberExpandCollapseState
 import org.beatonma.commons.compose.animation.toggle
 import org.beatonma.commons.compose.components.text.ComponentTitle
 import org.beatonma.commons.compose.components.text.OptionalText
-import org.beatonma.commons.compose.modifiers.design.colorize
 import org.beatonma.commons.compose.modifiers.onlyWhen
 import org.beatonma.commons.compose.modifiers.wrapContentHeight
 import org.beatonma.commons.compose.util.rememberListOf
@@ -54,7 +47,7 @@ import org.beatonma.commons.core.extensions.reversed
 import org.beatonma.commons.theme.compose.Size
 import org.beatonma.commons.theme.compose.padding.Padding
 import org.beatonma.commons.theme.compose.padding.padding
-import org.beatonma.commons.theme.compose.theme.CommonsTheme
+import org.beatonma.commons.theme.compose.theme.animation
 import kotlin.math.roundToInt
 
 private typealias HeaderBlock = @Composable (
@@ -309,25 +302,4 @@ private inline fun <T> WithDisplayItems(
     displayItems = items.take(displayItemCount)
 
     block(displayItems, transition, isCollapsible, toggleAction)
-}
-
-@Preview
-@Composable
-fun CollapsedColumnPreview() {
-    CommonsTheme {
-        CollapsedColumn(
-            items = remember { (1..10).toList() },
-            headerBlock = CollapsedColumn.simpleHeader("A wonderful group of integers"),
-            scrollable = true,
-            collapsedItemCount = 3,
-        ) { integer ->
-            Text(
-                "$integer",
-                Modifier
-                    .colorize()
-                    .padding(8.dp)
-                    .fillMaxWidth()
-            )
-        }
-    }
 }

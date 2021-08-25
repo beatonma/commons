@@ -18,6 +18,14 @@ fun ConcaveCornerShape(topStart: Dp, topEnd: Dp, bottomEnd: Dp, bottomStart: Dp)
         CornerSize(bottomStart)
     )
 
+fun ConcaveCornerShape(topStart: Float, topEnd: Float, bottomEnd: Float, bottomStart: Float) =
+    ConcaveCornerShape(
+        CornerSize(topStart),
+        CornerSize(topEnd),
+        CornerSize(bottomEnd),
+        CornerSize(bottomStart)
+    )
+
 class ConcaveCornerShape(
     topStart: CornerSize,
     topEnd: CornerSize,

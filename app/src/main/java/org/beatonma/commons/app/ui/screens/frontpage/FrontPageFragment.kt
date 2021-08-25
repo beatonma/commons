@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.LocalContentColor
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
@@ -24,7 +25,6 @@ import org.beatonma.commons.app.ui.screens.signin.NullUserToken
 import org.beatonma.commons.app.ui.screens.signin.UserAccountViewModel
 import org.beatonma.commons.app.ui.util.composeScreen
 import org.beatonma.commons.app.util.navigateTo
-import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.compose.animation.ExpandCollapseState
 import org.beatonma.commons.compose.animation.collapse
 import org.beatonma.commons.compose.animation.isExpanded

@@ -7,9 +7,6 @@ import androidx.compose.animation.expandIn
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkOut
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
@@ -29,8 +26,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import org.beatonma.commons.compose.R
 import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.compose.util.rememberText
@@ -167,19 +162,4 @@ private fun SearchFieldLayout(
         visualTransformation = visualTransformation,
         colors = colors,
     )
-}
-
-@Composable @Preview
-fun SearchFieldPreview() {
-    Column {
-        SearchField(
-            hint = "Search for..."
-        )
-
-        Spacer(Modifier.height(64.dp))
-
-        SearchField(
-            hint = "Search for..."
-        )
-    }
 }

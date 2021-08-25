@@ -12,7 +12,7 @@ dependencies {
             Dependencies.Jetpack.CORE_KTX,
             Dependencies.Accompanist.INSETS,
             project(Modules.Core),
-            project(Modules.Theme)
+            project(Modules.Theme),
         )
     }
 }

@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.LocalContentColor
+import androidx.compose.material.MaterialTheme.colors
+import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,9 +38,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import org.beatonma.commons.compose.ambient.animation
-import org.beatonma.commons.compose.ambient.colors
-import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.animation.AnimatedItemVisibility
 import org.beatonma.commons.compose.animation.AnimatedVisibility
 import org.beatonma.commons.compose.animation.ExpandCollapseState
@@ -60,6 +59,7 @@ import org.beatonma.commons.data.resolution.uiDescription
 import org.beatonma.commons.theme.compose.formatting.dateRange
 import org.beatonma.commons.theme.compose.formatting.formatted
 import org.beatonma.commons.theme.compose.formatting.formattedPeriod
+import org.beatonma.commons.theme.compose.theme.animation
 import org.beatonma.commons.theme.compose.theme.graphPrimaryColors
 import org.beatonma.commons.theme.compose.theme.graphSecondaryColors
 import java.time.LocalDate

@@ -1,13 +1,10 @@
 package org.beatonma.commons.compose.components
 
 import androidx.compose.animation.core.updateTransition
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.Button
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -17,13 +14,11 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.zIndex
 import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.compose.animation.ExpandCollapseState
@@ -35,7 +30,6 @@ import org.beatonma.commons.theme.compose.Elevation
 import org.beatonma.commons.theme.compose.Layer
 import org.beatonma.commons.theme.compose.padding.Padding
 import org.beatonma.commons.theme.compose.padding.padding
-import org.beatonma.commons.theme.compose.theme.CommonsTheme
 import org.beatonma.commons.theme.compose.theme.systemui.imeOrNavigationBarsPadding
 import org.beatonma.commons.theme.compose.theme.systemui.statusBarsPadding
 
@@ -145,42 +139,6 @@ private fun FeedbackMessageLayout(
     }
 }
 
-
-@Composable
-@Preview
-fun FeedbackMessagePreview() {
-    var alignment by remember { mutableStateOf(Alignment.TopCenter) }
-
-    CommonsTheme {
-        FeedbackLayout(
-            alignment = alignment,
-        ) {
-            Column(
-                Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.SpaceAround,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                val feedbackProvider = LocalFeedbackMessage.current
-
-                Button(onClick = { feedbackProvider.value = AnnotatedString("Here's some feedback!") }) {
-                    Text("Show feedback!")
-                }
-
-                Button(onClick = { feedbackProvider.clear() }) {
-                    Text("Hide feedback!")
-                }
-
-                Button(
-                    onClick = {
-                        alignment = if (alignment == Alignment.TopCenter) Alignment.BottomCenter else Alignment.TopCenter
-                    }
-                ) {
-                    Text("Toggle alignment!")
-                }
-            }
-        }
-    }
-}
 
 private val Alignment.isAtTop: Boolean
     get() = this in listOf(

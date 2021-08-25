@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import org.beatonma.commons.compose.ambient.animation
 import org.beatonma.commons.compose.animation.TwoState
+import org.beatonma.commons.theme.compose.theme.animation
 
 enum class FabBottomSheetState : TwoState<FabBottomSheetState> {
     Fab,

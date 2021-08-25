@@ -3,6 +3,7 @@ package org.beatonma.commons.app.ui.components.party
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.material.LocalContentColor
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -16,7 +17,6 @@ import androidx.compose.ui.unit.Constraints
 import org.beatonma.commons.app.ui.colors.PartyColors
 import org.beatonma.commons.app.ui.colors.partyTheme
 import org.beatonma.commons.app.ui.logos.PartyLogos
-import org.beatonma.commons.compose.ambient.colors
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.room.entities.member.Party
 import org.beatonma.commons.svg.ImageConfig

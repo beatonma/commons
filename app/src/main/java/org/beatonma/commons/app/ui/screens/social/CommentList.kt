@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.ContentAlpha
+import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,8 +18,6 @@ import androidx.compose.ui.text.style.TextAlign
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.accessibility.contentDescription
 import org.beatonma.commons.compose.ambient.WithContentAlpha
-import org.beatonma.commons.compose.ambient.animation
-import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.animation.AnimatedItemVisibility
 import org.beatonma.commons.compose.components.text.DateTime
 import org.beatonma.commons.compose.components.text.ResourceText
@@ -27,6 +26,7 @@ import org.beatonma.commons.snommoc.models.social.SocialComment
 import org.beatonma.commons.theme.compose.padding.EndOfContent
 import org.beatonma.commons.theme.compose.padding.Padding
 import org.beatonma.commons.theme.compose.padding.padding
+import org.beatonma.commons.theme.compose.theme.animation
 
 @Composable
 internal fun CommentList(

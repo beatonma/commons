@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -26,7 +27,6 @@ import org.beatonma.commons.app.ui.screens.signin.LocalUserToken
 import org.beatonma.commons.app.ui.screens.signin.NullUserToken
 import org.beatonma.commons.app.ui.screens.signin.SignInFabUi
 import org.beatonma.commons.compose.TestTag
-import org.beatonma.commons.compose.ambient.typography
 import org.beatonma.commons.compose.components.fabbottomsheet.BottomSheetText
 import org.beatonma.commons.compose.components.fabbottomsheet.FabBottomSheet
 import org.beatonma.commons.compose.components.fabbottomsheet.FabBottomSheetState

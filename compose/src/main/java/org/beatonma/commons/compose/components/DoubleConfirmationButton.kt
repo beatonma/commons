@@ -14,7 +14,7 @@ import androidx.compose.material.ButtonColors
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ButtonElevation
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Text
+import androidx.compose.material.MaterialTheme.shapes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -23,15 +23,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.beatonma.commons.compose.ambient.shapes
 import org.beatonma.commons.compose.animation.AutoCollapse
 import org.beatonma.commons.theme.compose.theme.CommonsButtons
-import org.beatonma.commons.theme.compose.theme.CommonsTheme
 
 enum class ConfirmationState {
     /**
@@ -198,17 +195,4 @@ private fun DoubleConfirmationButton(
             }
         }
     )
-}
-
-@Preview
-@Composable
-fun DoubleConfirmationButtonPreview() {
-    CommonsTheme {
-        DoubleConfirmationButton(
-            onClick = { println("CLICKED") },
-            safeContent = { Text("Safe!") },
-            awaitingConfirmationContent = { Text("Press again to confirm") },
-            confirmedContent = { Text("Confirmed!") },
-        )
-    }
 }
