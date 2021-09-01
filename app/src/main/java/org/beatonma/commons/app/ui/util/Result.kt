@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import org.beatonma.commons.app.ui.components.ErrorUi
 import org.beatonma.commons.app.ui.components.LoadingIcon
+import org.beatonma.commons.compose.systemui.statusBarsPadding
 import org.beatonma.commons.repo.result.IoResult
 import org.beatonma.commons.repo.result.ResponseCode
 import org.beatonma.commons.repo.result.onError
@@ -13,7 +14,6 @@ import org.beatonma.commons.repo.result.onErrorCode
 import org.beatonma.commons.repo.result.onLoading
 import org.beatonma.commons.repo.result.onSuccess
 import org.beatonma.commons.repo.result.onSuccessCode
-import org.beatonma.commons.theme.compose.theme.systemui.statusBarsPadding
 
 private const val TAG = "Compose.Result"
 private typealias OnError = @Composable (error: Throwable?, code: ResponseCode?) -> Unit

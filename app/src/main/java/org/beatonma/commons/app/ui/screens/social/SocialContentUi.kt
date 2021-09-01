@@ -17,11 +17,11 @@ import androidx.compose.ui.draw.alpha
 import org.beatonma.commons.compose.animation.withEasing
 import org.beatonma.commons.compose.modifiers.wrapContentHeight
 import org.beatonma.commons.compose.modifiers.wrapContentOrFillWidth
+import org.beatonma.commons.compose.systemui.statusBarsPadding
 import org.beatonma.commons.compose.util.positiveDp
 import org.beatonma.commons.core.extensions.lerpBetween
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.snommoc.models.social.SocialContent
-import org.beatonma.commons.theme.compose.theme.systemui.statusBarsPadding
 
 /**
  * Fully animated transition from collapsed to expanded states

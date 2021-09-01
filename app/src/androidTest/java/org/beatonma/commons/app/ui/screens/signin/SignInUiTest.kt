@@ -33,7 +33,7 @@ class SignInUiTest: UserAccountComposeTest() {
         withContent {
             signInText = stringResource(R.string.account_sign_in)
 
-            TestLayout(
+            UserAccountTestLayout(
                 rememberUserToken(NullUserToken)
             )
         }
@@ -48,7 +48,7 @@ class SignInUiTest: UserAccountComposeTest() {
     @Test
     fun clickOnSignInFab_shouldOpenSignInUi() {
         withContent {
-            TestLayout(
+            UserAccountTestLayout(
                 rememberUserToken(NullUserToken)
             )
         }
@@ -65,7 +65,7 @@ class SignInUiTest: UserAccountComposeTest() {
     @Test
     fun signInSheet_isCorrect() {
         withContent {
-            TestLayout(
+            UserAccountTestLayout(
                 rememberUserToken(NullUserToken)
             )
         }
@@ -88,7 +88,7 @@ class SignInUiTest: UserAccountComposeTest() {
     fun clickSignIn_shouldTriggerSignInAction() {
         val token = mutableStateOf(NullUserToken)
         withContent {
-            TestLayout(token)
+            UserAccountTestLayout(token)
         }
 
         setUp {

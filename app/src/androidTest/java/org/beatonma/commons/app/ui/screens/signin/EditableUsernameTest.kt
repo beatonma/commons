@@ -26,6 +26,7 @@ import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.sampledata.SampleUserToken
 import org.beatonma.commons.testcompose.test.ComposeTest
+import org.beatonma.commons.theme.CommonsTheme
 import org.junit.Test
 
 @MediumTest
@@ -244,15 +245,17 @@ class EditableUsernameTest: ComposeTest() {
             renameResult
         }
 
-        Column {
-            EditableUsername(
-                userToken = SampleUserToken,
-                state = state,
-                validationMessages = validationMessages,
-                onSubmitRename = onSubmitRename,
-            )
+        CommonsTheme {
+            Column {
+                EditableUsername(
+                    userToken = SampleUserToken,
+                    state = state,
+                    validationMessages = validationMessages,
+                    onSubmitRename = onSubmitRename,
+                )
 
-            Text("$renameSuccessful", Modifier.testTag(testRenameSuccessfulTag))
+                Text("$renameSuccessful", Modifier.testTag(testRenameSuccessfulTag))
+            }
         }
     }
 }

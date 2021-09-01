@@ -33,15 +33,15 @@ import org.beatonma.commons.app.ui.accessibility.contentDescription
 import org.beatonma.commons.compose.animation.lerpBetween
 import org.beatonma.commons.compose.modifiers.onlyWhen
 import org.beatonma.commons.compose.modifiers.withNotNull
-import org.beatonma.commons.compose.util.ComposableBlock
+import org.beatonma.commons.compose.padding.padding
 import org.beatonma.commons.core.extensions.lerpBetween
 import org.beatonma.commons.core.extensions.triangle
 import org.beatonma.commons.snommoc.models.social.SocialContent
 import org.beatonma.commons.snommoc.models.social.SocialVoteType
-import org.beatonma.commons.theme.compose.Size
-import org.beatonma.commons.theme.compose.padding.Padding
-import org.beatonma.commons.theme.compose.padding.padding
-import org.beatonma.commons.theme.compose.theme.animation
+import org.beatonma.commons.themed.Padding
+import org.beatonma.commons.themed.themedAnimation
+import org.beatonma.commons.themed.themedPadding
+import org.beatonma.commons.themed.themedSize
 import kotlin.math.roundToInt
 
 @Composable
@@ -64,15 +64,15 @@ internal fun SocialIcons(
     val voteColors =
         SocialVoteType.values().map {
             if (progress == 1F) {
-                animation.animateColorAsState(if (socialContent.userVote == it) activeTint else inactiveTint)
-            }
-            else {
+                themedAnimation.animateColorAsState(if (socialContent.userVote == it) activeTint else inactiveTint)
+            } else {
                 derivedStateOf { inactiveTint }
             }
         }
 
     val contentDescription = socialContent.contentDescription
-    val expandActionContentDescription = stringResource(R.string.content_description_social_action_open)
+    val expandActionContentDescription =
+        stringResource(R.string.content_description_social_action_open)
 
     SocialIconsLayout(
         progress,
@@ -192,7 +192,7 @@ private fun CounterIconLayout(
     onClick: (() -> Unit)?,
     onClickLabel: String?,
 ) {
-    val content: ComposableBlock = {
+    val content: @Composable () -> Unit = {
         Icon(
             icon,
             contentDescription = null, // Set by parent layout
@@ -220,8 +220,7 @@ private fun CounterIconLayout(
             }
             .clearAndSetSemantics {
                 this.contentDescription = contentDescription
-            }
-        ,
+            },
     ) { measurables, constraints ->
         val iconTextSpace = 4.dp.roundToPx() // Space between icon and text
         val avoidOffset =
@@ -244,9 +243,14 @@ private fun CounterIconLayout(
                 expandProgress.lerpBetween((height - iconPlaceable.height) / 2, 0)
             )
             textPlaceable.placeRelative(
-                expandProgress.lerpBetween(textStart + horizontalSpace,
-                    (width - textPlaceable.width) / 2),
-                expandProgress.lerpBetween((height - textPlaceable.height) / 2, textTop + verticalSpace)
+                expandProgress.lerpBetween(
+                    textStart + horizontalSpace,
+                    (width - textPlaceable.width) / 2
+                ),
+                expandProgress.lerpBetween(
+                    (height - textPlaceable.height) / 2,
+                    textTop + verticalSpace
+                )
             )
         }
     }
@@ -254,8 +258,16 @@ private fun CounterIconLayout(
 
 private class IconStyle(val size: Dp, val padding: Padding)
 
-private val SmallIconStyle = IconStyle(Size.IconSmall, Padding.IconSmall)
-private val LargeIconStyle = IconStyle(Size.IconLarge, Padding.IconLarge,)
+private val SmallIconStyle
+    @Composable get() = IconStyle(
+        themedSize.IconSmall,
+        themedPadding.IconSmall
+    )
+private val LargeIconStyle
+    @Composable get() = IconStyle(
+        themedSize.IconLarge,
+        themedPadding.IconLarge
+    )
 
 private fun Float.lerpBetween(start: IconStyle, end: IconStyle): IconStyle =
     IconStyle(

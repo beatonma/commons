@@ -17,16 +17,16 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.accessibility.contentDescription
+import org.beatonma.commons.app.ui.components.DateTime
 import org.beatonma.commons.compose.ambient.WithContentAlpha
 import org.beatonma.commons.compose.animation.AnimatedItemVisibility
-import org.beatonma.commons.compose.components.text.DateTime
 import org.beatonma.commons.compose.components.text.ResourceText
+import org.beatonma.commons.compose.padding.EndOfContent
+import org.beatonma.commons.compose.padding.padding
 import org.beatonma.commons.compose.util.withAnnotatedStyle
 import org.beatonma.commons.snommoc.models.social.SocialComment
-import org.beatonma.commons.theme.compose.padding.EndOfContent
-import org.beatonma.commons.theme.compose.padding.Padding
-import org.beatonma.commons.theme.compose.padding.padding
-import org.beatonma.commons.theme.compose.theme.animation
+import org.beatonma.commons.theme.CommonsPadding
+import org.beatonma.commons.themed.themedAnimation
 
 @Composable
 internal fun CommentList(
@@ -42,7 +42,7 @@ internal fun CommentList(
 
         LazyColumn(Modifier.testTag(SocialTestTag.CommentsList)) {
             itemsIndexed(comments) { i, comment ->
-                animation.AnimatedItemVisibility(position = i, horizontal = false) {
+                themedAnimation.AnimatedItemVisibility(position = i, horizontal = false) {
                     Comment(
                         comment,
                         onClick,
@@ -83,7 +83,7 @@ private fun Comment(
             }
             .clickable { onClick(comment) }
             .fillMaxWidth()
-            .padding(Padding.VerticalListItem + Padding.ScreenHorizontal)
+            .padding(CommonsPadding.VerticalListItem + CommonsPadding.ScreenHorizontal)
             .testTag(SocialTestTag.Comment)
     ) {
         WithContentAlpha(ContentAlpha.high) {
@@ -95,7 +95,7 @@ private fun Comment(
                 Username(
                     comment.username,
                     style = typography.caption,
-                    modifier = Modifier.padding(Padding.HorizontalListItem)
+                    modifier = Modifier.padding(CommonsPadding.HorizontalListItem)
                 )
                 DateTime(comment.created)
             }

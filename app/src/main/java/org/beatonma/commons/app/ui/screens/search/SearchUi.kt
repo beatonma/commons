@@ -45,6 +45,7 @@ import com.google.accompanist.insets.ProvideWindowInsets
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.components.Todo
 import org.beatonma.commons.app.ui.components.party.PartyDot
+import org.beatonma.commons.compose.Layer
 import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.compose.animation.ExpandCollapseState
 import org.beatonma.commons.compose.animation.animateExpansionAsState
@@ -56,6 +57,8 @@ import org.beatonma.commons.compose.components.ModalScrim
 import org.beatonma.commons.compose.components.text.OptionalText
 import org.beatonma.commons.compose.modifiers.wrapContentHeight
 import org.beatonma.commons.compose.modifiers.wrapContentOrFillWidth
+import org.beatonma.commons.compose.padding.padding
+import org.beatonma.commons.compose.systemui.statusBarsPadding
 import org.beatonma.commons.compose.util.RequestFocusWhen
 import org.beatonma.commons.compose.util.rememberListOf
 import org.beatonma.commons.core.extensions.lerpBetween
@@ -64,15 +67,12 @@ import org.beatonma.commons.core.extensions.reversed
 import org.beatonma.commons.sampledata.SampleSearchResults
 import org.beatonma.commons.snommoc.models.search.MemberSearchResult
 import org.beatonma.commons.snommoc.models.search.SearchResult
-import org.beatonma.commons.theme.compose.Elevation
-import org.beatonma.commons.theme.compose.Layer
-import org.beatonma.commons.theme.compose.padding.Padding
-import org.beatonma.commons.theme.compose.padding.padding
-import org.beatonma.commons.theme.compose.theme.CommonsTheme
-import org.beatonma.commons.theme.compose.theme.onSearchBar
-import org.beatonma.commons.theme.compose.theme.searchBar
-import org.beatonma.commons.theme.compose.theme.searchBarColors
-import org.beatonma.commons.theme.compose.theme.systemui.statusBarsPadding
+import org.beatonma.commons.theme.CommonsElevation
+import org.beatonma.commons.theme.CommonsPadding
+import org.beatonma.commons.theme.CommonsTheme
+import org.beatonma.commons.theme.onSearchBar
+import org.beatonma.commons.theme.searchBar
+import org.beatonma.commons.theme.searchBarColors
 
 internal typealias SearchUiState = ExpandCollapseState
 
@@ -174,7 +174,7 @@ private fun SearchBar(
     ) {
         Row(
             Modifier
-                .padding(Padding.SearchBar)
+                .padding(CommonsPadding.SearchBar)
                 .statusBarsPadding(animation.statusBarProgress),
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
@@ -279,7 +279,7 @@ private fun MemberSearchResult(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClickMember(result) }
-            .padding(Padding.VerticalListItemLarge)
+            .padding(CommonsPadding.VerticalListItemLarge)
             .testTag(SearchTestTag.Result),
     )
 }
@@ -290,7 +290,7 @@ private fun searchBarAnimation(expansionProgress: Float) =
         expansionProgress,
         statusBarProgress = expansionProgress.progressIn(KeyframeFillStatusBar, 1F),
         widthProgress = expansionProgress.progressIn(0.1F, KeyframeFillWidth),
-        elevation = expansionProgress.lerpBetween(0.dp, Elevation.ModalSurface),
+        elevation = expansionProgress.lerpBetween(0.dp, CommonsElevation.ModalSurface),
         surfaceColor = expansionProgress
             .progressIn(0F, KeyframeIsOpaque)
             .lerpBetween(Color.Transparent, colors.searchBar),

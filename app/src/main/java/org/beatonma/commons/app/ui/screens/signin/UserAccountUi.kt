@@ -35,14 +35,14 @@ import org.beatonma.commons.compose.components.fabbottomsheet.animateExpansionAs
 import org.beatonma.commons.compose.components.fabbottomsheet.rememberFabBottomSheetState
 import org.beatonma.commons.compose.components.text.Caption
 import org.beatonma.commons.compose.components.text.ResourceText
+import org.beatonma.commons.compose.padding.padding
 import org.beatonma.commons.compose.util.dotted
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.data.core.room.entities.user.UserToken
-import org.beatonma.commons.theme.compose.padding.Padding
-import org.beatonma.commons.theme.compose.padding.padding
-import org.beatonma.commons.theme.compose.theme.animation
-import org.beatonma.commons.theme.compose.theme.onWarningSurface
-import org.beatonma.commons.theme.compose.theme.warningSurface
+import org.beatonma.commons.theme.CommonsPadding
+import org.beatonma.commons.theme.onWarningSurface
+import org.beatonma.commons.theme.warningSurface
+import org.beatonma.commons.themed.themedAnimation
 
 /**
  * Chooses the appropriate user UI to display depending on whether they are
@@ -152,7 +152,7 @@ private fun ProfileSheetContent(
                 verticalAlignment = Alignment.Top,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                animation.AnimatedVisibility(visible = isReadOnly) {
+                themedAnimation.AnimatedVisibility(visible = isReadOnly) {
                     Avatar(
                         userToken.photoUrl,
                         Modifier
@@ -169,16 +169,16 @@ private fun ProfileSheetContent(
                         userAccountActions.renameAccount
                     )
 
-                    animation.AnimatedVisibility(visible = isReadOnly, horizontal = false) {
+                    themedAnimation.AnimatedVisibility(visible = isReadOnly, horizontal = false) {
                         Caption(
                             dotted(userToken.name, userToken.email),
-                            Modifier.padding(Padding.VerticalListItem)
+                            Modifier.padding(CommonsPadding.VerticalListItem)
                         )
                     }
                 }
             }
 
-            animation.AnimatedVisibility(visible = isReadOnly, horizontal = false) {
+            themedAnimation.AnimatedVisibility(visible = isReadOnly, horizontal = false) {
                 Row(
                     Modifier
                         .fillMaxWidth()
@@ -219,7 +219,7 @@ private fun SignOutButton(
     CommonsOutlinedButton(
         onClick = onClick,
         modifier = Modifier
-            .padding(Padding.CardButton)
+            .padding(CommonsPadding.CardButton)
             .testTag(UserAccountTestTag.SignOut),
     ) {
         ResourceText(R.string.account_sign_out)
@@ -233,7 +233,7 @@ private fun DeleteAccountButton(
     WarningButton(
         onClick = onClick,
         modifier = Modifier
-            .padding(Padding.CardButton)
+            .padding(CommonsPadding.CardButton)
             .testTag(UserAccountTestTag.DeleteAccount),
     ) {
         ResourceText(R.string.account_delete_account_button)
@@ -265,7 +265,7 @@ private fun getContentColor(fabProgress: Float, profileProgress: Float): Color {
 }
 
 @Composable
-private fun ProfileState.animateAsState() = animation.animateFloatAsState(
+private fun ProfileState.animateAsState() = themedAnimation.animateFloatAsState(
     when (this) {
         ProfileState.Overview -> 0F
         ProfileState.DeleteAccount -> 1F

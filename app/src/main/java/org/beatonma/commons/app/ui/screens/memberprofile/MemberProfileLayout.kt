@@ -1,5 +1,7 @@
 package org.beatonma.commons.app.ui.screens.memberprofile
 
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -63,9 +65,9 @@ import org.beatonma.commons.app.ui.screens.social.SocialViewModel
 import org.beatonma.commons.app.ui.screens.social.StickySocialScaffold
 import org.beatonma.commons.app.ui.screens.social.asSocialTheme
 import org.beatonma.commons.app.ui.util.WithResultData
+import org.beatonma.commons.compose.Layer
 import org.beatonma.commons.compose.ambient.WithContentAlpha
 import org.beatonma.commons.compose.animation.ExpandCollapseState
-import org.beatonma.commons.compose.animation.isCollapsed
 import org.beatonma.commons.compose.animation.lerpBetween
 import org.beatonma.commons.compose.animation.rememberExpandCollapseState
 import org.beatonma.commons.compose.components.Card
@@ -76,6 +78,8 @@ import org.beatonma.commons.compose.components.text.OptionalText
 import org.beatonma.commons.compose.components.text.ResourceText
 import org.beatonma.commons.compose.components.text.ScreenTitle
 import org.beatonma.commons.compose.modifiers.wrapContentHeight
+import org.beatonma.commons.compose.padding.padding
+import org.beatonma.commons.compose.systemui.statusBarsPadding
 import org.beatonma.commons.compose.util.dot
 import org.beatonma.commons.core.extensions.fastForEachIndexed
 import org.beatonma.commons.core.extensions.progressIn
@@ -91,13 +95,10 @@ import org.beatonma.commons.data.core.room.entities.member.WebAddress
 import org.beatonma.commons.repo.result.IoLoading
 import org.beatonma.commons.svg.ImageConfig
 import org.beatonma.commons.svg.ScaleType
-import org.beatonma.commons.theme.compose.Elevation
-import org.beatonma.commons.theme.compose.Layer
-import org.beatonma.commons.theme.compose.formatting.dateRange
-import org.beatonma.commons.theme.compose.padding.Padding
-import org.beatonma.commons.theme.compose.padding.padding
-import org.beatonma.commons.theme.compose.theme.animation
-import org.beatonma.commons.theme.compose.theme.systemui.statusBarsPadding
+import org.beatonma.commons.theme.CommonsPadding
+import org.beatonma.commons.theme.formatting.dateRange
+import org.beatonma.commons.themed.themedAnimation
+import org.beatonma.commons.themed.themedElevation
 
 private const val AVATAR_ASPECT_RATIO = 3F / 2F
 internal const val TestTagMemberTitleBar = "title_bar"
@@ -265,10 +266,10 @@ private fun LazyListScope.MemberProfile(completeMember: CompleteMember, history:
 @Composable
 private fun Weblinks(weblinks: List<WebAddress>) {
     Links(
-        Modifier.padding(Padding.ScreenHorizontal)
+        Modifier.padding(CommonsPadding.ScreenHorizontal)
     ) {
         items(weblinks) { weblink ->
-            Weblink(weblink, Modifier.padding(Padding.LinkItem))
+            Weblink(weblink, Modifier.padding(CommonsPadding.LinkItem))
         }
     }
 }
@@ -365,7 +366,7 @@ private fun ConstituencyLink(
                 onClick = { onConstituencyClick(constituency) }
             )
             .fillMaxWidth()
-            .padding(Padding.VerticalListItemLarge),
+            .padding(CommonsPadding.VerticalListItemLarge),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -390,16 +391,23 @@ private fun MemberHistory(
     }
 
     val state = rememberExpandCollapseState(ExpandCollapseState.Collapsed)
-    val transition = updateTransition(targetState = state.value)
-    val surfaceColor by animation.animateColor(transition) {
-        if (state.isCollapsed) colors.surface else colors.background
+    val transition = updateTransition(targetState = state.value, label = "MemberHistoryTransition")
+
+    val surfaceColor by transition.animateColor(
+        transitionSpec = { themedAnimation.spec() },
+        label = "AnimatedSurfaceColor",
+    ) { s ->
+        if (s.isCollapsed) colors.surface else colors.background
     }
-    val contentColor by animation.animateColor(transition) {
-        if (state.isCollapsed) colors.onSurface else colors.onBackground
-    }
-    val elevation by animation.animateDp(transition) {
-        if (state.isCollapsed) Elevation.Card else 0.dp
-    }
+
+    val contentColor by transition.animateColor(
+        transitionSpec = { themedAnimation.spec() },
+        label = "AnimatedContentColor",
+    ) { s -> if (s.isCollapsed) colors.onSurface else colors.onBackground }
+    val elevation by transition.animateDp(
+        transitionSpec = { themedAnimation.spec() },
+        label = "AnimatedElevation",
+    ) { s -> if (s.isCollapsed) themedElevation.Card else 0.dp }
 
     Card(
         Modifier.fillMaxWidth(),
@@ -415,7 +423,7 @@ private fun MemberHistory(
         ) { memberHistory ->
             Timeline(
                 memberHistory,
-                Modifier.padding(Padding.VerticalListItemLarge),
+                Modifier.padding(CommonsPadding.VerticalListItemLarge),
                 barModifier = Modifier.padding(vertical = 6.dp),
                 surfaceColor = surfaceColor,
             )
@@ -431,7 +439,7 @@ private fun ContactInfo(addresses: List<PhysicalAddress>) {
             EmptyMessage(R.string.member_contact_info_none)
         } else {
             Column {
-                val itemModifier = Modifier.padding(Padding.LinkItem)
+                val itemModifier = Modifier.padding(CommonsPadding.LinkItem)
                 addresses.fastForEachIndexed { i, address ->
                     Text(address.description, style = typography.overline)
 
@@ -487,7 +495,7 @@ private fun FinancialInterests(interests: List<FinancialInterest>) {
                 scrollable = false,
             ) { interest ->
                 Column(
-                    Modifier.padding(Padding.VerticalListItem)
+                    Modifier.padding(CommonsPadding.VerticalListItem)
                 ) {
                     Text(interest.category, style = typography.overline)
                     Text(interest.description)
@@ -513,7 +521,7 @@ private fun Links(modifier: Modifier = Modifier, content: LazyListScope.() -> Un
     LazyRow(
         Modifier
             .fillMaxWidth()
-            .padding(Padding.Links)
+            .padding(CommonsPadding.Links)
             .then(modifier),
         content = content
     )

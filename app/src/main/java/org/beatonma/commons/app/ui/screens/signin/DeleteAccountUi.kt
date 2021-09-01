@@ -29,13 +29,12 @@ import org.beatonma.commons.compose.components.doubleConfirmationColors
 import org.beatonma.commons.compose.components.fabbottomsheet.BottomSheetText
 import org.beatonma.commons.compose.components.rememberConfirmationState
 import org.beatonma.commons.compose.components.text.ResourceText
+import org.beatonma.commons.compose.padding.endOfContent
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.data.core.room.entities.user.UserToken
-import org.beatonma.commons.theme.compose.padding.Padding
-import org.beatonma.commons.theme.compose.padding.padding
-import org.beatonma.commons.theme.compose.theme.CommonsButtons
-import org.beatonma.commons.theme.compose.theme.onWarningSurface
-import org.beatonma.commons.theme.compose.theme.warningSurface
+import org.beatonma.commons.theme.CommonsButtons
+import org.beatonma.commons.theme.onWarningSurface
+import org.beatonma.commons.theme.warningSurface
 
 
 @Composable
@@ -60,7 +59,7 @@ internal fun DeleteAccountUi(
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .padding(Padding.EndOfContent),
+                    .endOfContent(),
                 verticalAlignment = Alignment.Bottom,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {

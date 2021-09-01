@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import org.beatonma.commons.app.ui.accessibility.ContentDescription
 import org.beatonma.commons.compose.util.rememberBoolean
-import org.beatonma.commons.theme.compose.theme.animation
+import org.beatonma.commons.themed.themedAnimation
 
 internal const val LoadingTestTag = "loading_icon"
 
@@ -29,7 +29,7 @@ fun LoadingIcon(
     onClick: (() -> Unit)? = null,
     tint: Color = LocalContentColor.current,
     state: MutableState<Boolean> = rememberBoolean(false),
-    animSpec: InfiniteRepeatableSpec<Float> = animation.infiniteRepeatable(
+    animSpec: InfiniteRepeatableSpec<Float> = themedAnimation.infiniteRepeatable(
         duration = 600,
         repeatMode = RepeatMode.Reverse,
     ),

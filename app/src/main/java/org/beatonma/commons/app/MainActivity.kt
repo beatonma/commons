@@ -15,7 +15,7 @@ import org.beatonma.commons.app.ui.screens.signin.LocalPlatformUserAccountAction
 import org.beatonma.commons.app.ui.screens.signin.PlatformUserAccountActions
 import org.beatonma.commons.app.ui.screens.signin.UserAccountViewModel
 import org.beatonma.commons.app.ui.screens.signin.userProfileActions
-import org.beatonma.commons.theme.compose.theme.systemui.setDecorFitsSystemWindows
+import org.beatonma.commons.compose.systemui.setDecorFitsSystemWindows
 
 @AndroidEntryPoint
 class MainActivity : DayNightActivity() {
@@ -30,12 +30,12 @@ class MainActivity : DayNightActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         platformUserAccountActions = userProfileActions(this, accountViewModel)
-
+//
         setContentView(R.layout.activity_main)
         setDecorFitsSystemWindows(false)
-
+//
         navController = findNavController(R.id.nav_host_fragment)
-
+//
         handleIntent(intent)
     }
 

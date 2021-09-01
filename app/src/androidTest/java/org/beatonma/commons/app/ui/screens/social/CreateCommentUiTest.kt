@@ -21,6 +21,7 @@ import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.sampledata.SampleUserToken
 import org.beatonma.commons.testcompose.test.ComposeTest
+import org.beatonma.commons.theme.CommonsTheme
 import org.junit.Test
 
 @MediumTest
@@ -114,11 +115,14 @@ class CreateCommentUiTest: ComposeTest() {
     ) {
         LocalUserAccountActions = staticCompositionLocalOf { UserAccountActions() }
 
-        ProvideWindowInsets {
-            CreateCommentUi(
-                userToken,
-                state
-            )
+
+        CommonsTheme {
+            ProvideWindowInsets {
+                CreateCommentUi(
+                    userToken,
+                    state
+                )
+            }
         }
     }
 }

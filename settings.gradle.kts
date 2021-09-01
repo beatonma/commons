@@ -20,13 +20,14 @@ include(":repo")
 
 // UI
 include(":testcompose")
-include(":compose")
-include(":theme")
+include(":compose-core")
+include(":app-theme")
 include(":svg")
 
 // Debug/dev
 include(":sampledata")
-include(":themepreview")
+//include(":themepreview")
 
 // App
 include(":app")
+include(":theme-core")

@@ -4,7 +4,7 @@
 enum class Modules(private val moduleName: String) {
     App("app"),
     BuildSrc("buildSrc"),
-    Compose("compose"),
+    ComposeCore("compose-core"),
     Core("core"),
     NetworkCore("network-core"),
     Persistence("persistence"),
@@ -15,7 +15,8 @@ enum class Modules(private val moduleName: String) {
     Test("test"),
     TestCompose("testcompose"),
     TestHilt("testhilt"),
-    Theme("theme"),
+    AppTheme("app-theme"),
+    ThemeCore("theme-core"),
     ThemePreview("themepreview"),
     UkParliament("ukparliament"),
     ;

@@ -31,6 +31,7 @@ import org.beatonma.commons.snommoc.models.search.MemberSearchResult
 import org.beatonma.commons.snommoc.models.search.SearchResult
 import org.beatonma.commons.test.extensions.assertions.shouldbe
 import org.beatonma.commons.testcompose.test.ComposeTest
+import org.beatonma.commons.theme.CommonsTheme
 import org.junit.Test
 
 @MediumTest
@@ -202,15 +203,17 @@ class SearchUiTest: ComposeTest() {
             )
         }
 
-        CompositionLocalProvider(
-            LocalSearchActions provides searchActions,
-        ) {
-            ProvideWindowInsets {
-                SearchUi(
-                    hint = searchHint,
-                    results = results.value,
-                    state = state,
-                )
+        CommonsTheme {
+            CompositionLocalProvider(
+                LocalSearchActions provides searchActions,
+            ) {
+                ProvideWindowInsets {
+                    SearchUi(
+                        hint = searchHint,
+                        results = results.value,
+                        state = state,
+                    )
+                }
             }
         }
     }

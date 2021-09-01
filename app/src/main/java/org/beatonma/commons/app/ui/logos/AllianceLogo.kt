@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import org.beatonma.commons.svg.VectorGraphic
 import org.beatonma.commons.svg.vectorPath
-import org.beatonma.commons.theme.compose.color.PoliticalColor
+import org.beatonma.commons.theme.color.PoliticalColor
 
 class AllianceLogo : VectorGraphic(
     pathCount = 1,

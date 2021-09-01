@@ -37,12 +37,12 @@ import org.beatonma.commons.compose.components.text.TextValidationFeedback
 import org.beatonma.commons.compose.components.text.TextValidationResult
 import org.beatonma.commons.compose.components.text.TextValidationRules
 import org.beatonma.commons.compose.components.text.ValidatedTextField
+import org.beatonma.commons.compose.padding.padding
 import org.beatonma.commons.compose.util.RequestFocusWhen
 import org.beatonma.commons.compose.util.rememberBoolean
 import org.beatonma.commons.compose.util.rememberText
 import org.beatonma.commons.data.core.room.entities.user.UserToken
-import org.beatonma.commons.theme.compose.padding.Padding
-import org.beatonma.commons.theme.compose.padding.padding
+import org.beatonma.commons.theme.CommonsPadding
 
 
 /**
@@ -103,7 +103,7 @@ private fun CreateCommentSheetContent(
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .padding(Padding.VerticalListItem),
+                    .padding(CommonsPadding.VerticalListItem),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -137,9 +137,8 @@ private fun CreateCommentSheetContent(
                 onClick = { socialActions.onCommentSubmitClick(commentText.value) },
                 modifier = Modifier
                     .align(Alignment.End)
-                    .padding(Padding.CardButton)
-                    .testTag(TestTag.Submit)
-                ,
+                    .padding(CommonsPadding.CardButton)
+                    .testTag(TestTag.Submit),
                 enabled = commentIsValid.value,
             ) {
                 ResourceText(R.string.social_comment_post)
@@ -153,10 +152,12 @@ private fun CreateCommentSheetContent(
 @Composable
 private fun rememberCommentValidationFeedback(): TextValidationFeedback {
     val tooShort = AnnotatedString(
-        stringResource(R.string.social_comment_invalid_length,
+        stringResource(
+            R.string.social_comment_invalid_length,
             BuildConfig.SOCIAL_COMMENT_MIN_LENGTH,
             BuildConfig.SOCIAL_COMMENT_MAX_LENGTH
-        ))
+        )
+    )
 
     return remember {
         TextValidationFeedback(

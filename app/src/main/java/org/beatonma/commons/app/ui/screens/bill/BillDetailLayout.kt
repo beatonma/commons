@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -48,6 +47,8 @@ import org.beatonma.commons.compose.components.text.Quote
 import org.beatonma.commons.compose.components.text.ResourceText
 import org.beatonma.commons.compose.components.text.ScreenTitle
 import org.beatonma.commons.compose.layout.optionalItem
+import org.beatonma.commons.compose.padding.padding
+import org.beatonma.commons.compose.systemui.statusBarsPadding
 import org.beatonma.commons.compose.util.dot
 import org.beatonma.commons.compose.util.dotted
 import org.beatonma.commons.core.House
@@ -56,12 +57,10 @@ import org.beatonma.commons.data.core.room.entities.bill.BillSponsorWithParty
 import org.beatonma.commons.data.core.room.entities.bill.CompleteBill
 import org.beatonma.commons.data.resolution.uiDescription
 import org.beatonma.commons.repo.result.IoLoading
-import org.beatonma.commons.theme.compose.formatting.formatted
-import org.beatonma.commons.theme.compose.padding.Padding
-import org.beatonma.commons.theme.compose.padding.padding
-import org.beatonma.commons.theme.compose.padding.paddingValues
-import org.beatonma.commons.theme.compose.theme.house
-import org.beatonma.commons.theme.compose.theme.systemui.statusBarsPadding
+import org.beatonma.commons.theme.CommonsPadding
+import org.beatonma.commons.theme.formatting.formatted
+import org.beatonma.commons.theme.house
+import org.beatonma.commons.themed.paddingValues
 
 internal val LocalBillActions: ProvidableCompositionLocal<BillActions> =
     compositionLocalOf { BillActions() }
@@ -110,7 +109,7 @@ private fun HeaderAboveSocial(
 
     Column(
         modifier
-            .padding(Padding.Screen)
+            .padding(CommonsPadding.Screen)
             .statusBarsPadding()
     ) {
         ScreenTitle(bill.title, autoPadding = false)
@@ -125,8 +124,8 @@ private fun LazyListScope.lazyContent(
     completeBill: CompleteBill,
     onSponsorClick: SponsorAction,
 ) {
-    val sectionModifier = ScreenPaddingModifier.padding(Padding.VerticalListItemLarge)
-    val horizontalItemModifier = Modifier.padding(Padding.HorizontalListItem)
+    val sectionModifier = ScreenPaddingModifier.padding(CommonsPadding.VerticalListItemLarge)
+    val horizontalItemModifier = Modifier.padding(CommonsPadding.HorizontalListItem)
 
     optionalItem(completeBill.publications) { publications ->
         Publications(publications, sectionModifier)
@@ -178,7 +177,7 @@ private fun Sponsors(
                 Column(
                     itemModifier
                         .clickable { onSponsorClick(sponsor) }
-                        .padding(Padding.HorizontalListItem),
+                        .padding(CommonsPadding.HorizontalListItem),
                 ) {
                     Text(sponsor.sponsor.name)
                     OptionalText(sponsor.party?.name)
@@ -216,8 +215,8 @@ private fun Stages(
                 ComponentTitle(
                     category.uiDescription(),
                     Modifier
-                        .padding(Padding.ScreenHorizontal)
-                        .padding(Padding.VerticalListItemLarge)
+                        .padding(CommonsPadding.ScreenHorizontal)
+                        .padding(CommonsPadding.VerticalListItemLarge)
                         .padding(end = 32.dp),
                     color = theme.onSurface,
                     maxLines = 1,
@@ -265,4 +264,4 @@ private fun BillStageCategory.theme(): SurfaceTheme = when(this) {
     BillStageCategory.RoyalAssent -> houseTheme(colors.house.Royal)
 }
 
-private val ScreenPaddingModifier = Modifier.padding(Padding.ScreenHorizontal)
+private val ScreenPaddingModifier = Modifier.padding(CommonsPadding.ScreenHorizontal)

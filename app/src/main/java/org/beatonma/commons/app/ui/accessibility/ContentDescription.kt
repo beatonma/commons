@@ -7,7 +7,7 @@ import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.snommoc.models.social.SocialComment
 import org.beatonma.commons.snommoc.models.social.SocialContent
-import org.beatonma.commons.theme.compose.formatting.formatted
+import org.beatonma.commons.theme.formatting.formatted
 import org.beatonma.commons.compose.R as ComposeR
 
 object ContentDescription {

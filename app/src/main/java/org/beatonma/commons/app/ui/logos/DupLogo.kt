@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 import org.beatonma.commons.svg.VectorGraphic
 import org.beatonma.commons.svg.plotPath
 import org.beatonma.commons.svg.vectorPath
-import org.beatonma.commons.theme.compose.color.PoliticalColor
+import org.beatonma.commons.theme.color.PoliticalColor
 
 class DupLogo : VectorGraphic(
     pathCount = 2,

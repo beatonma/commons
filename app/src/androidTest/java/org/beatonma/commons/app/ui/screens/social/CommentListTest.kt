@@ -17,6 +17,7 @@ import org.beatonma.commons.sampledata.SampleSocialContent
 import org.beatonma.commons.snommoc.models.social.SocialComment
 import org.beatonma.commons.test.extensions.assertions.shouldbe
 import org.beatonma.commons.testcompose.test.ComposeTest
+import org.beatonma.commons.theme.CommonsTheme
 import org.junit.Test
 
 @MediumTest
@@ -101,11 +102,13 @@ class CommentListTest : ComposeTest() {
         comments: List<SocialComment> = SampleSocialContent.comments,
         onClick: (SocialComment) -> Unit = {},
     ) {
-        CommentList(
-            comments = comments,
-            modifier = Modifier,
-            expandProgress = 1F,
-            onClick = onClick,
-        )
+        CommonsTheme {
+            CommentList(
+                comments = comments,
+                modifier = Modifier,
+                expandProgress = 1F,
+                onClick = onClick,
+            )
+        }
     }
 }

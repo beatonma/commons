@@ -8,13 +8,14 @@ import com.google.accompanist.insets.ProvideWindowInsets
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.sampledata.SampleUserToken
 import org.beatonma.commons.testcompose.test.ComposeTest
+import org.beatonma.commons.theme.CommonsTheme
 
 /**
  * Shared TestLayout for [UserAccountUiTest] and [SignInUiTest].
  */
-abstract class UserAccountComposeTest: ComposeTest() {
+abstract class UserAccountComposeTest : ComposeTest() {
     @Composable
-    internal fun TestLayout(
+    internal fun UserAccountTestLayout(
         userToken: MutableState<UserToken>,
         deleted: MutableState<Boolean> = remember { mutableStateOf(false) },
     ) {
@@ -27,8 +28,10 @@ abstract class UserAccountComposeTest: ComposeTest() {
             )
         }
 
-        ProvideWindowInsets {
-            UserAccountFabUi(userToken.value, userAccountActions)
+        CommonsTheme {
+            ProvideWindowInsets {
+                UserAccountFabUi(userToken.value, userAccountActions)
+            }
         }
     }
 

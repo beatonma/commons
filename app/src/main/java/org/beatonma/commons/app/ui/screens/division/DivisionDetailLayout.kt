@@ -54,6 +54,8 @@ import org.beatonma.commons.compose.components.text.Quote
 import org.beatonma.commons.compose.components.text.ResourceText
 import org.beatonma.commons.compose.components.text.ScreenTitle
 import org.beatonma.commons.compose.modifiers.wrapContentHeight
+import org.beatonma.commons.compose.padding.padding
+import org.beatonma.commons.compose.systemui.statusBarsPadding
 import org.beatonma.commons.compose.util.dot
 import org.beatonma.commons.compose.util.mapUpdate
 import org.beatonma.commons.compose.util.rememberBoolean
@@ -71,12 +73,10 @@ import org.beatonma.commons.data.core.room.entities.division.DivisionWithVotes
 import org.beatonma.commons.data.core.room.entities.division.VoteWithParty
 import org.beatonma.commons.data.resolution.uiDescription
 import org.beatonma.commons.repo.result.IoLoading
-import org.beatonma.commons.theme.compose.Size
-import org.beatonma.commons.theme.compose.formatting.formatted
-import org.beatonma.commons.theme.compose.padding.Padding
-import org.beatonma.commons.theme.compose.padding.padding
-import org.beatonma.commons.theme.compose.theme.politicalVotes
-import org.beatonma.commons.theme.compose.theme.systemui.statusBarsPadding
+import org.beatonma.commons.theme.CommonsPadding
+import org.beatonma.commons.theme.CommonsSize
+import org.beatonma.commons.theme.formatting.formatted
+import org.beatonma.commons.theme.politicalVotes
 
 internal val LocalDivisionActions: ProvidableCompositionLocal<DivisionActions> =
     compositionLocalOf { DivisionActions() }
@@ -176,7 +176,7 @@ private fun HeaderAboveSocial(
 
     Column(
         modifier
-            .padding(Padding.Screen)
+            .padding(CommonsPadding.Screen)
             .statusBarsPadding()
             .wrapContentHeight(expandProgress.value)
             .alpha(expandProgress.value)
@@ -206,7 +206,7 @@ private fun HeaderBelowSocial(
         SearchField(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(Padding.ScreenHorizontal),
+                .padding(CommonsPadding.ScreenHorizontal),
             onQueryChange = applyFilter
         )
     }
@@ -277,8 +277,8 @@ private fun VoteIcon(
         contentDescription = contentDescription,
         tint = tint,
         modifier = Modifier
-            .padding(Padding.IconSmall)
-            .size(Size.IconSmall)
+            .padding(CommonsPadding.IconSmall)
+            .size(CommonsSize.IconSmall)
     )
 }
 
@@ -289,7 +289,7 @@ private fun GraphKey(
 ) {
     if (division.isEmpty()) return
 
-    val keyModifier = Modifier.padding(Padding.HorizontalListItem)
+    val keyModifier = Modifier.padding(CommonsPadding.HorizontalListItem)
 
     // Simple FlowRow
     Layout(content = {

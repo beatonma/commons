@@ -36,7 +36,7 @@ class UserAccountUiTest: UserAccountComposeTest() {
     @Test
     fun defaultLayout_shouldBeFabWithUsername() {
         withContent {
-            TestLayout(
+            UserAccountTestLayout(
                 rememberUserToken(SampleUserToken)
             )
         }
@@ -51,7 +51,7 @@ class UserAccountUiTest: UserAccountComposeTest() {
     @Test
     fun clickOnAccountFab_shouldOpenAccountProfileUI() {
         withContent {
-            TestLayout(
+            UserAccountTestLayout(
                 rememberUserToken(SampleUserToken)
             )
         }
@@ -72,7 +72,7 @@ class UserAccountUiTest: UserAccountComposeTest() {
     @Test
     fun accountProfileUi_hasRequiredData() {
         withContent {
-            TestLayout(
+            UserAccountTestLayout(
                 rememberUserToken(SampleUserToken)
             )
         }
@@ -104,7 +104,7 @@ class UserAccountUiTest: UserAccountComposeTest() {
     @Test
     fun accountProfileUi_hasRequiredActions() {
         withContent {
-            TestLayout(
+            UserAccountTestLayout(
                 rememberUserToken(SampleUserToken)
             )
         }
@@ -135,7 +135,7 @@ class UserAccountUiTest: UserAccountComposeTest() {
         val token = mutableStateOf(SampleUserToken)
 
         withContent {
-            TestLayout(token)
+            UserAccountTestLayout(token)
         }
 
         setUp {
@@ -154,7 +154,7 @@ class UserAccountUiTest: UserAccountComposeTest() {
     @Test
     fun accountProfileUi_clickDelete_opensDeleteConfirmationUi() {
         withContent {
-            TestLayout(
+            UserAccountTestLayout(
                 rememberUserToken(SampleUserToken)
             )
         }
@@ -176,7 +176,7 @@ class UserAccountUiTest: UserAccountComposeTest() {
     @Test
     fun accountProfileUi_shouldNotBeCoveredByIME_whenEditingUsername() {
         withContent {
-            TestLayout(
+            UserAccountTestLayout(
                 rememberUserToken(SampleUserToken)
             )
         }

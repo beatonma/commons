@@ -8,8 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import org.beatonma.commons.compose.systemui.systemBarsPadding
 import org.beatonma.commons.repo.result.ResponseCode
-import org.beatonma.commons.theme.compose.theme.systemui.systemBarsPadding
 
 @Composable
 fun ErrorUi(

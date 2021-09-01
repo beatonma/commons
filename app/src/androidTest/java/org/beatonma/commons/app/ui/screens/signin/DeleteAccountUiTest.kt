@@ -34,7 +34,7 @@ class DeleteAccountUiTest: UserAccountComposeTest() {
     @Test
     fun requiredAction_areAvailable() {
         withContent {
-            TestLayout(
+            UserAccountTestLayout(
                 rememberUserToken(SampleUserToken)
             )
         }
@@ -59,7 +59,7 @@ class DeleteAccountUiTest: UserAccountComposeTest() {
         val deleted = mutableStateOf(false)
 
         withContent {
-            TestLayout(
+            UserAccountTestLayout(
                 rememberUserToken(SampleUserToken),
                 deleted = deleted
             )
@@ -80,7 +80,7 @@ class DeleteAccountUiTest: UserAccountComposeTest() {
         val deleted = mutableStateOf(false)
 
         withContent {
-            TestLayout(
+            UserAccountTestLayout(
                 rememberUserToken(SampleUserToken),
                 deleted = deleted
             )
@@ -100,7 +100,7 @@ class DeleteAccountUiTest: UserAccountComposeTest() {
     @Test
     fun clickCancel_shouldReturnToMainAccountUi() {
         withContent {
-            TestLayout(
+            UserAccountTestLayout(
                 rememberUserToken(SampleUserToken),
             )
         }

@@ -33,7 +33,7 @@ import org.beatonma.commons.data.core.MinimalMember
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 import org.beatonma.commons.data.resolution.currentPostUiDescription
 import org.beatonma.commons.snommoc.models.ZeitgeistReason
-import org.beatonma.commons.theme.compose.theme.invertedColors
+import org.beatonma.commons.theme.invertedColors
 
 private val PortraitWidth = 260.dp
 private val TextPadding = 16.dp

@@ -56,12 +56,12 @@ import org.beatonma.commons.core.extensions.roundUp
 import org.beatonma.commons.data.core.interfaces.Named
 import org.beatonma.commons.data.core.interfaces.Temporal
 import org.beatonma.commons.data.resolution.uiDescription
-import org.beatonma.commons.theme.compose.formatting.dateRange
-import org.beatonma.commons.theme.compose.formatting.formatted
-import org.beatonma.commons.theme.compose.formatting.formattedPeriod
-import org.beatonma.commons.theme.compose.theme.animation
-import org.beatonma.commons.theme.compose.theme.graphPrimaryColors
-import org.beatonma.commons.theme.compose.theme.graphSecondaryColors
+import org.beatonma.commons.theme.formatting.dateRange
+import org.beatonma.commons.theme.formatting.formatted
+import org.beatonma.commons.theme.formatting.formattedPeriod
+import org.beatonma.commons.theme.graphPrimaryColors
+import org.beatonma.commons.theme.graphSecondaryColors
+import org.beatonma.commons.themed.themedAnimation
 import java.time.LocalDate
 import java.time.Period
 
@@ -132,7 +132,7 @@ private fun TimelineLayout(
     Layout(
         content = {
             renderData.groups.fastForEachIndexed { index, group ->
-                animation.AnimatedItemVisibility(position = index) { visibility ->
+                themedAnimation.AnimatedItemVisibility(position = index) { visibility ->
                     val color = colors.bars.modGet(index)
                     GroupLayout(group, visibility, colors, color, modifier)
                 }
@@ -282,7 +282,7 @@ private fun GroupLayout(
                 text = AnnotatedString("${group.label}: $allDatesText")
             }
             .clickable { state.toggle() }
-            .animateContentSize(animation.spec())
+            .animateContentSize(themedAnimation.spec())
             .then(modifier),
         horizontalAlignment = Alignment.Start,
     ) {
@@ -361,7 +361,7 @@ private fun GroupLabel(
             overflow = TextOverflow.Ellipsis,
         )
 
-        animation.AnimatedVisibility(visible = state.isExpanded, horizontal = false) {
+        themedAnimation.AnimatedVisibility(visible = state.isExpanded, horizontal = false) {
             Text(
                 expandedText,
                 Modifier.background(colors.overlay),

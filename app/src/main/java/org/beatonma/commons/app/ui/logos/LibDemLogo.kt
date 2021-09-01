@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Fill
 import org.beatonma.commons.svg.VectorGraphic
 import org.beatonma.commons.svg.vectorPath
-import org.beatonma.commons.theme.compose.color.PoliticalColor
+import org.beatonma.commons.theme.color.PoliticalColor
 
 class LibDemLogo : VectorGraphic(
     pathCount = 1,

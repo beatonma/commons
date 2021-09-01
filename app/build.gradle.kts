@@ -4,7 +4,15 @@ import org.beatonma.commons.buildsrc.config.Commons
 import org.beatonma.commons.buildsrc.data.AllPartyThemes
 import org.beatonma.commons.buildsrc.data.ParliamentDotUkPartyIDs
 import org.beatonma.commons.buildsrc.data.PartyColors
-import org.beatonma.commons.buildsrc.gradle.*
+import org.beatonma.commons.buildsrc.gradle.buildConfigInt
+import org.beatonma.commons.buildsrc.gradle.debug
+import org.beatonma.commons.buildsrc.gradle.injectInts
+import org.beatonma.commons.buildsrc.gradle.injectStrings
+import org.beatonma.commons.buildsrc.gradle.instrumentationTest
+import org.beatonma.commons.buildsrc.gradle.main
+import org.beatonma.commons.buildsrc.gradle.project
+import org.beatonma.commons.buildsrc.gradle.resColor
+import org.beatonma.commons.buildsrc.gradle.unitTest
 import org.beatonma.commons.buildsrc.local.LocalConfig
 
 plugins {
@@ -46,8 +54,6 @@ android {
 }
 
 dependencies {
-    androidTestUtil("androidx.test:orchestrator:${Versions.Jetpack.Test.CORE}")
-
     unitTest {
         implementations(
             project(Modules.Test),
@@ -80,7 +86,7 @@ dependencies {
             Dependencies.Kotlin.REFLECT,
 //            Dependencies.Debug.LEAK_CANARY,
             project(Modules.SampleData),
-            project(Modules.ThemePreview),
+//            project(Modules.ThemePreview),
         )
     }
 
@@ -136,8 +142,9 @@ dependencies {
             project(Modules.UkParliament),
             project(Modules.Persistence),
             project(Modules.Repository),
-            project(Modules.Theme),
-            project(Modules.Compose),
+            project(Modules.AppTheme),
+            project(Modules.ThemeCore),
+            project(Modules.ComposeCore),
             project(Modules.Svg),
         )
     }

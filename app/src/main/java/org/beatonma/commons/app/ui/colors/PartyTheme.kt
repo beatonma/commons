@@ -6,9 +6,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import org.beatonma.commons.BuildConfig.*
 import org.beatonma.commons.core.ParliamentID
-import org.beatonma.commons.theme.compose.color.EditableColor
-import org.beatonma.commons.theme.compose.theme.textPrimaryDark
-import org.beatonma.commons.theme.compose.theme.textPrimaryLight
+import org.beatonma.commons.theme.color.EditableColor
+import org.beatonma.commons.theme.textPrimaryDark
+import org.beatonma.commons.theme.textPrimaryLight
 
 class PartyColors(
     val primary: Color,

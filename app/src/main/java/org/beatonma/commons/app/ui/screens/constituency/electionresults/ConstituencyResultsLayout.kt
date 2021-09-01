@@ -1,6 +1,5 @@
 package org.beatonma.commons.app.ui.screens.constituency.electionresults
 
-import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -42,6 +40,7 @@ import kotlinx.coroutines.withContext
 import org.beatonma.commons.R
 import org.beatonma.commons.app.data.resolution.PartyResolution
 import org.beatonma.commons.app.ui.colors.PartyColors
+import org.beatonma.commons.app.ui.components.Date
 import org.beatonma.commons.app.ui.components.party.LocalPartyTheme
 import org.beatonma.commons.app.ui.components.party.PartyBackground
 import org.beatonma.commons.app.ui.components.party.PartyWithTheme
@@ -49,15 +48,16 @@ import org.beatonma.commons.app.ui.components.party.partyWithTheme
 import org.beatonma.commons.app.ui.components.party.providePartyImageConfig
 import org.beatonma.commons.app.ui.util.WithResultData
 import org.beatonma.commons.compose.animation.ExpandCollapseState
-import org.beatonma.commons.compose.animation.animateExpansion
+import org.beatonma.commons.compose.animation.animateExpansionAsState
 import org.beatonma.commons.compose.animation.rememberExpandCollapseState
 import org.beatonma.commons.compose.components.HorizontalSeparator
 import org.beatonma.commons.compose.components.Tag
 import org.beatonma.commons.compose.components.collapsibleheader.CollapsibleHeaderLayout
 import org.beatonma.commons.compose.components.text.ComponentTitle
-import org.beatonma.commons.compose.components.text.Date
 import org.beatonma.commons.compose.components.text.ResourceText
 import org.beatonma.commons.compose.modifiers.wrapContentHeight
+import org.beatonma.commons.compose.padding.padding
+import org.beatonma.commons.compose.systemui.statusBarsPadding
 import org.beatonma.commons.compose.util.dot
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.core.extensions.reversed
@@ -66,16 +66,16 @@ import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyEle
 import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyElectionDetailsWithExtras
 import org.beatonma.commons.data.core.room.entities.member.Party
 import org.beatonma.commons.repo.result.IoLoading
-import org.beatonma.commons.theme.compose.Size
-import org.beatonma.commons.theme.compose.formatting.formatPercent
-import org.beatonma.commons.theme.compose.formatting.formatted
-import org.beatonma.commons.theme.compose.padding.Padding
-import org.beatonma.commons.theme.compose.padding.padding
-import org.beatonma.commons.theme.compose.theme.componentTitle
-import org.beatonma.commons.theme.compose.theme.onWarningSurface
-import org.beatonma.commons.theme.compose.theme.systemui.statusBarsPadding
-import org.beatonma.commons.theme.compose.theme.warningSurface
-import java.util.*
+import org.beatonma.commons.theme.CommonsPadding
+import org.beatonma.commons.theme.CommonsSize
+import org.beatonma.commons.theme.componentTitle
+import org.beatonma.commons.theme.formatting.formatPercent
+import org.beatonma.commons.theme.formatting.formatted
+import org.beatonma.commons.theme.onWarningSurface
+import org.beatonma.commons.theme.warningSurface
+import org.beatonma.commons.themed.themedPadding
+import java.util.Locale
+
 
 /**
  * Candidates pay a deposit when they register.
@@ -126,7 +126,7 @@ private fun Header(data: ConstituencyElectionDetailsWithExtras, expanded: Float)
 
         Column(
             Modifier
-                .padding(Padding.ScreenHorizontal)
+                .padding(themedPadding.ScreenHorizontal)
                 .wrapContentHeight(expanded.progressIn(0.7F, 1F))
                 .alpha(expanded.progressIn(.7F, 1F))
         ) {
@@ -182,7 +182,7 @@ private fun WinningCandidate(
 ) {
     PartyBackground(
         modifier = Modifier
-            .padding(Padding.VerticalListItemLarge),
+            .padding(themedPadding.VerticalListItemLarge),
     ) {
         ListItem(
             text = {
@@ -195,16 +195,20 @@ private fun WinningCandidate(
                     ) {
                         Text(
                             candidate.votes.formatted() dot votePercentage.formatPercent(),
-                            Modifier.padding(Padding.LinkItem)
+                            Modifier.padding(CommonsPadding.LinkItem)
                         )
-                        ResourceText(R.string.constituency_winner_majority, details.majority.formatted(), style = typography.caption)
+                        ResourceText(
+                            R.string.constituency_winner_majority,
+                            details.majority.formatted(),
+                            style = typography.caption
+                        )
                     }
                     CandidateVotesBar(votePercentage = votePercentage, position = candidate.order)
                 }
             },
             icon = { CandidatePosition(position = candidate.order, withBackgroundColor = false) },
             trailing = { ResultSummary(details, Modifier.size(TrailingSize)) },
-            modifier = Modifier.padding(Padding.VerticalListItemLarge),
+            modifier = Modifier.padding(themedPadding.VerticalListItemLarge),
         )
     }
 }
@@ -236,8 +240,7 @@ private fun LosingCandidate(
 @Composable
 private fun DepositLostMarker() {
     val state by rememberExpandCollapseState(ExpandCollapseState.Collapsed)
-    val transition = updateTransition(targetState = state)
-    val expandedness by transition.animateExpansion()
+    val expandedness by state.animateExpansionAsState()
 
     Box(
         Modifier
@@ -268,8 +271,8 @@ private fun DepositLostMarker() {
                 R.string.constituency_candidate_deposit_info,
                 modifier = Modifier
                     .alpha(expandedness.progressIn(.8F, 1F))
-                    .padding(Padding.VerticalListItemLarge)
-                    .padding(Padding.ScreenHorizontal),
+                    .padding(themedPadding.VerticalListItemLarge)
+                    .padding(themedPadding.ScreenHorizontal),
                 color = colors.onWarningSurface,
             )
         }
@@ -284,13 +287,13 @@ private fun CandidatePosition(
 ) {
     Box(
         modifier = Modifier
-            .size(Size.IconButton)
+            .size(CommonsSize.IconButton)
             .clip(shapes.small)
-            .background(if (withBackgroundColor) partyWithTheme.theme.primary else Color.Transparent)
-        ,
+            .background(if (withBackgroundColor) partyWithTheme.theme.primary else Color.Transparent),
         contentAlignment = Alignment.Center,
     ) {
-        Text("$position",
+        Text(
+            "$position",
             style = typography.componentTitle,
             color = partyWithTheme.theme.onPrimary
         )
@@ -304,8 +307,7 @@ private fun CandidateVotesBar(
     theme: PartyColors = LocalPartyTheme.current.theme,
 ) {
     var state by rememberExpandCollapseState(ExpandCollapseState.Collapsed)
-    val transition = updateTransition(targetState = state, label = "Candidate votes ExpandCollapse")
-    val expandedness by transition.animateExpansion()
+    val expandedness by state.animateExpansionAsState()
 
     LaunchedEffect(Unit) {
         delay(position * CandidateVoteBarDelay)

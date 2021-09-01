@@ -19,9 +19,9 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import org.beatonma.commons.compose.Layer
 import org.beatonma.commons.compose.animation.withEasing
 import org.beatonma.commons.compose.components.collapsibleheader.CollapsibleHeaderLayout
-import org.beatonma.commons.compose.modifiers.design.colorize
 import org.beatonma.commons.compose.modifiers.wrapContentHeight
 import org.beatonma.commons.compose.modifiers.wrapContentOrFillHeight
 import org.beatonma.commons.compose.util.positiveDp
@@ -30,7 +30,6 @@ import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.core.extensions.reversed
 import org.beatonma.commons.preview.ProvideLocalForPreview
 import org.beatonma.commons.snommoc.models.social.SocialContent
-import org.beatonma.commons.theme.compose.Layer
 
 private typealias HeaderBlock = @Composable (headerExpansion: HeaderExpansion, Modifier) -> Unit
 private typealias SocialBlock = @Composable (socialProgress: SocialExpansion, headerExpansion: HeaderExpansion, social: @Composable () -> Unit) -> Unit
@@ -185,7 +184,6 @@ private fun CollapsibleSocialPreview() {
                         "$item",
                         Modifier
                             .padding(4.dp)
-                            .colorize()
                     )
                 }
             }

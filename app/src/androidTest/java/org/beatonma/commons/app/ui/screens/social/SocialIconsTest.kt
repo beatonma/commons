@@ -18,10 +18,11 @@ import org.beatonma.commons.sampledata.SampleSocialContent
 import org.beatonma.commons.snommoc.models.social.SocialContent
 import org.beatonma.commons.test.extensions.assertions.shouldbe
 import org.beatonma.commons.testcompose.test.ComposeTest
+import org.beatonma.commons.theme.CommonsTheme
 import org.junit.Test
 
 @MediumTest
-class SocialIconsTest: ComposeTest() {
+class SocialIconsTest : ComposeTest() {
     private val iconsTag = SocialTestTag.Icons
 
     @Test
@@ -159,11 +160,13 @@ class SocialIconsTest: ComposeTest() {
             },
         )
 
-        SocialIcons(
-            socialContent.value,
-            state,
-            actions,
-        )
+        CommonsTheme {
+            SocialIcons(
+                socialContent.value,
+                state,
+                actions,
+            )
+        }
     }
 
     @Composable

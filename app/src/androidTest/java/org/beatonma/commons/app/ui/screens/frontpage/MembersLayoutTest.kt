@@ -16,6 +16,7 @@ import androidx.test.filters.MediumTest
 import org.beatonma.commons.compose.util.HslColor
 import org.beatonma.commons.compose.util.toColor
 import org.beatonma.commons.testcompose.test.ComposeTest
+import org.beatonma.commons.theme.CommonsTheme
 import org.junit.Test
 
 @MediumTest
@@ -86,10 +87,12 @@ class MembersLayoutTest : ComposeTest() {
 
     @Composable
     private fun TestLayout(content: @Composable () -> Unit) {
-        MembersLayout(
-            Modifier.testTag(profileLayoutTag),
-            content = content,
-        )
+        CommonsTheme {
+            MembersLayout(
+                Modifier.testTag(profileLayoutTag),
+                content = content,
+            )
+        }
     }
 
     @Composable

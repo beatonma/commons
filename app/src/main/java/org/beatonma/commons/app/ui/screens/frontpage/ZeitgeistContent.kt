@@ -21,6 +21,8 @@ import org.beatonma.commons.BuildConfig
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.components.party.ProvidePartyImageConfig
 import org.beatonma.commons.compose.components.text.OptionalText
+import org.beatonma.commons.compose.padding.endOfContent
+import org.beatonma.commons.compose.systemui.navigationBarsPadding
 import org.beatonma.commons.compose.util.dot
 import org.beatonma.commons.core.extensions.fastForEach
 import org.beatonma.commons.data.core.room.entities.bill.Bill
@@ -32,9 +34,7 @@ import org.beatonma.commons.data.core.room.entities.member.ResolvedZeitgeistMemb
 import org.beatonma.commons.data.resolution.uiDescription
 import org.beatonma.commons.repo.models.Zeitgeist
 import org.beatonma.commons.snommoc.models.ZeitgeistReason
-import org.beatonma.commons.theme.compose.formatting.formatted
-import org.beatonma.commons.theme.compose.padding.endOfContent
-import org.beatonma.commons.theme.compose.theme.systemui.navigationBarsPadding
+import org.beatonma.commons.theme.formatting.formatted
 
 private fun String?.reason(): ZeitgeistReason? = this?.let { ZeitgeistReason.valueOf(it) }
 private fun ResolvedZeitgeistMember.reason() = this.zeitgeistMember.reason.reason()
