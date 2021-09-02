@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.MaterialTheme.shapes
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -23,18 +24,19 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import org.beatonma.commons.app.ui.compose.components.party.LocalImageConfig
-import org.beatonma.commons.app.ui.compose.components.party.PartyPortrait
-import org.beatonma.commons.compose.ambient.shapes
-import org.beatonma.commons.compose.util.*
-import org.beatonma.commons.logos.PartyLogos
+import org.beatonma.commons.app.ui.components.party.LocalImageConfig
+import org.beatonma.commons.app.ui.components.party.PartyPortrait
+import org.beatonma.commons.app.ui.logos.PartyLogos
+import org.beatonma.commons.compose.util.toColor
+import org.beatonma.commons.compose.util.toHslColor
+import org.beatonma.commons.compose.util.toPrettyHexString
 import org.beatonma.commons.svg.ImageConfig
 import org.beatonma.commons.svg.ScaleType
 import org.beatonma.commons.svg.VectorGraphic
-import org.beatonma.commons.theme.compose.color.PoliticalColor
-import org.beatonma.commons.theme.compose.theme.CommonsTheme
+import org.beatonma.commons.theme.color.PoliticalColor
 import org.beatonma.compose.themepreview.CustomPreviewScreen
 import org.beatonma.compose.themepreview.ThemePreview
+
 
 @Composable
 @Preview
@@ -80,15 +82,14 @@ private fun ColorPatch(c: Color, modifier: Modifier = Modifier, content: @Compos
 @Composable
 private fun ColorRow(c: Color) {
     val converted = c.toHslColor().toColor()
-
     val canonicalColorHex = c.toPrettyHexString()
+
     Row {
         ColorPatch(c) {
             Text(
                 canonicalColorHex,
                 Modifier.padding(16.dp),
                 fontFamily = FontFamily.Monospace,
-                color = c.contentColor(),
             )
         }
 
@@ -98,7 +99,7 @@ private fun ColorRow(c: Color) {
                 convertedColorHex.diff(canonicalColorHex),
                 Modifier.padding(16.dp),
                 fontFamily = FontFamily.Monospace,
-                color = converted.contentColor(),
+//                color = converted.contentColor(),
             )
         }
     }
@@ -153,8 +154,7 @@ fun CharSequence.diff(other: CharSequence) = buildAnnotatedString {
         val otherC = other.getOrNull(index)
         if (c == otherC) {
             append(c)
-        }
-        else {
+        } else {
             withStyle(differenceStyle) {
                 append(c)
             }
