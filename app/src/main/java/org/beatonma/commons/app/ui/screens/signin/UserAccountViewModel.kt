@@ -28,8 +28,9 @@ import org.beatonma.commons.repo.ResultFlow
 import org.beatonma.commons.repo.repository.GoogleAccount
 import org.beatonma.commons.repo.repository.UserRepository
 import org.beatonma.commons.repo.result.isComplete
-import org.beatonma.commons.repo.result.onResponseCode
+import org.beatonma.commons.repo.result.onErrorCode
 import org.beatonma.commons.repo.result.onSuccess
+import org.beatonma.commons.repo.result.onSuccessCode
 import javax.inject.Inject
 
 private const val TAG = "SignInViewModel"
@@ -70,11 +71,11 @@ class UserAccountViewModel @Inject constructor(
         repository.requestRenameAccount(userToken, newName)
             .filter { it.isComplete }
             .first()
-            .onSuccess {
+            .onSuccessCode {
                 refreshUsername(userToken)
                 return RenameResult.ACCEPTED
             }
-            .onResponseCode { responseCode ->
+            .onErrorCode { responseCode ->
                 val code = responseCode.code
                 return when {
                     code == Http.Status.FORBIDDEN_403 -> RenameResult.SERVER_DENIED

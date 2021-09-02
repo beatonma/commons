@@ -25,6 +25,7 @@ import org.beatonma.commons.repo.result.isSuccess
 import org.beatonma.commons.repo.result.onError
 import org.beatonma.commons.repo.result.onErrorCode
 import org.beatonma.commons.repo.result.onSuccess
+import org.beatonma.commons.repo.result.onSuccessCode
 import org.beatonma.commons.snommoc.annotations.SignInRequired
 import org.beatonma.commons.snommoc.models.social.EmptySocialContent
 import org.beatonma.commons.snommoc.models.social.SocialContent
@@ -107,7 +108,9 @@ class SocialViewModel @Inject constructor(
     private fun <T> submitSocialContent(userToken: UserToken, block: suspend () -> IoResult<T>) {
         viewModelScope.launch(Dispatchers.IO) {
             block()
-                .onSuccess { refresh(userToken) }
+                .onSuccessCode {
+                    refresh(userToken)
+                }
                 .onError { e -> Log.w(autotag, "Social content submission failed $e") }
                 .onErrorCode { e -> Log.w(autotag, "Social content submission failed $e") }
         }

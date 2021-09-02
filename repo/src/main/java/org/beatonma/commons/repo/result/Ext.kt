@@ -1,13 +1,13 @@
 package org.beatonma.commons.repo.result
 
 val <R : BaseResult<*, *>> R.isSuccess: Boolean
-    get() = this is Success<*> || (this is HttpCodeResult && this.responseCode.isSuccess)
+    get() = this is Success<*> || this is SuccessCode
 
 val <R : BaseResult<*, *>> R.isLoading: Boolean
     get() = this is IoLoading
 
 val <R : BaseResult<*, *>> R.isError: Boolean
-    get() = this is Failure<*> || (this is HttpCodeResult && this.responseCode.isError)
+    get() = this is Failure<*> || this is ErrorCode
 
 /**
  * Returns true when this is not a loading state
