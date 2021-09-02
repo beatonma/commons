@@ -25,19 +25,26 @@ import org.beatonma.commons.app.util.openUrl
 import org.beatonma.commons.compose.components.CollapsibleChip
 import org.beatonma.commons.data.core.room.entities.member.WebAddress
 
+private const val WIKIPEDIA_PATH_DESCRIPTION = "wikipedia_path"
+
 @Composable
 fun Weblink(
     weblink: WebAddress,
     modifier: Modifier = Modifier,
 ) {
     val uri = Uri.parse(weblink.url)
+    val host = uri.host
 
-    when (uri.host) {
-        "www.twitter.com", "twitter.com" -> {
+    when {
+        weblink.description == WIKIPEDIA_PATH_DESCRIPTION -> {
+            WikipediaWeblink(weblink.url, modifier)
+        }
+
+        host == "www.twitter.com" || host == "twitter.com" -> {
             TwitterWeblink(getTwitterUsername(uri), modifier)
         }
 
-        "www.facebook.com", "facebook.com" -> {
+        host == "www.facebook.com" || host == "facebook.com" -> {
             FacebookWeblink(getFacebookUsername(uri), modifier)
         }
 
@@ -82,11 +89,24 @@ private fun TwitterWeblink(
 }
 
 @Composable
+private fun WikipediaWeblink(
+    path: String,
+    modifier: Modifier,
+) {
+    Weblink(
+        displayText = AnnotatedString(path),
+        url = "https://${stringResource(R.string.url_wikipedia_language_code)}.wikipedia.org/wiki/$path/",
+        contentDescription = stringResource(R.string.action_open_wikipedia_page, path),
+        drawableId = R.drawable.ic_wikipedia,
+        modifier = modifier,
+    )
+}
+
+@Composable
 private fun Weblink(
     displayText: AnnotatedString,
     url: String,
     contentDescription: String,
-//    drawabl: ImageVector,
     drawableId: Int,
     modifier: Modifier = Modifier,
     autoCollapse: Long = 2500,

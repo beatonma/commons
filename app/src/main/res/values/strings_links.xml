@@ -3,4 +3,6 @@
     <string name="url_contact_faq_title">Who should I contact with my issue?</string>
     <string name="url_contact_faq_about">Please check this page to make sure you are contacting the right person.</string>
     <string name="url_contact_faq">https://members.parliament.uk/Help/WhoToContact</string>
+
+    <string name="url_wikipedia_language_code">en</string>
 </resources>

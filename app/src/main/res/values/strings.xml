@@ -97,6 +97,7 @@
     <string name="action_open_url" translatable="true">Open %s</string>
     <string name="action_open_twitter_user" translatable="true">View %s on Twitter</string>
     <string name="action_open_facebook_user" translatable="true">View %s on Facebook</string>
+    <string name="action_open_wikipedia_page" translatable="true">View %s on Wikipedia</string>
     <string name="action_open_wifi_settings" translatable="true">Open wifi settings</string>
     <string name="action_dial_phonenumber" translatable="true">Dial %s</string>
     <string name="action_write_email" translatable="true">Write to %s</string>
