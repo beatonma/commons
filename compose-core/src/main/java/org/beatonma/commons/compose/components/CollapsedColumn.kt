@@ -18,7 +18,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -36,7 +35,6 @@ import org.beatonma.commons.compose.animation.AnimatedItemVisibility
 import org.beatonma.commons.compose.animation.ExpandCollapseState
 import org.beatonma.commons.compose.animation.animateExpansion
 import org.beatonma.commons.compose.animation.rememberExpandCollapseState
-import org.beatonma.commons.compose.animation.toggle
 import org.beatonma.commons.compose.components.text.ComponentTitle
 import org.beatonma.commons.compose.components.text.OptionalText
 import org.beatonma.commons.compose.modifiers.onlyWhen
@@ -132,13 +130,15 @@ fun <T> CollapsedColumn(
     scrollable: Boolean,
     modifier: Modifier = Modifier,
     collapsedItemCount: Int = 3,
-    state: MutableState<ExpandCollapseState> = rememberExpandCollapseState(ExpandCollapseState.Collapsed),
+//    state: MutableState<ExpandCollapseState> = rememberExpandCollapseState(ExpandCollapseState.Collapsed),
     itemBlock: ItemBlock<T>,
 ) {
+    var state by rememberExpandCollapseState(ExpandCollapseState.Collapsed)
     WithDisplayItems(
         items,
         collapsedItemCount,
-        state
+        state,
+        { state = it },
     ) { displayItems, transition, isCollapsible, toggleAction ->
         val header: @Composable () -> Unit = {
             headerBlock(isCollapsible, transition, toggleAction)
@@ -190,13 +190,15 @@ fun <T> CollapsedColumn(
     headerBlock: HeaderBlock,
     modifier: Modifier = Modifier,
     collapsedItemCount: Int = 3,
-    state: MutableState<ExpandCollapseState> = rememberExpandCollapseState(ExpandCollapseState.Collapsed),
+    state: ExpandCollapseState,
+    onStateChange: (ExpandCollapseState) -> Unit,
     contentBlock: @Composable (List<T>) -> Unit,
 ) {
     WithDisplayItems(
         items,
         collapsedItemCount,
-        state
+        state,
+        onStateChange,
     ) { displayItems, transition, isCollapsible, toggleAction ->
         Column(modifier) {
             headerBlock(isCollapsible, transition, toggleAction)
@@ -287,7 +289,8 @@ private fun MoreContentIndication(
 private inline fun <T> WithDisplayItems(
     items: List<T>,
     collapsedItemCount: Int,
-    state: MutableState<ExpandCollapseState>,
+    state: ExpandCollapseState,
+    crossinline onStateChange: (ExpandCollapseState) -> Unit,
     block: @Composable (
         displayItems: List<T>,
         transition: Transition<ExpandCollapseState>,
@@ -296,11 +299,14 @@ private inline fun <T> WithDisplayItems(
     ) -> Unit,
 ) {
     val isCollapsible = items.size > collapsedItemCount
-    val transition = updateTransition(state.value, label = "Display items transition")
+    val transition = updateTransition(state, label = "Display items transition")
 
-    val toggleAction = { state.toggle() }
+    val toggleAction: () -> Unit = { onStateChange(state.toggle()) }
 
-    val progress by transition.animateFloat(label = "Display items progress") { expansionState ->
+    val progress by transition.animateFloat(
+        transitionSpec = { themedAnimation.spec() },
+        label = "Display items progress"
+    ) { expansionState ->
         when (expansionState) {
             ExpandCollapseState.Expanded -> 1F
             ExpandCollapseState.Collapsed -> 0F

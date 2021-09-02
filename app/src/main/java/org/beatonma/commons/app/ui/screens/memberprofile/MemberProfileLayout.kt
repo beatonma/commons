@@ -1,7 +1,5 @@
 package org.beatonma.commons.app.ui.screens.memberprofile
 
-import androidx.compose.animation.animateColor
-import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,6 +32,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -46,8 +45,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import org.beatonma.commons.R
+import org.beatonma.commons.app.ui.components.CollapsedTimeline
 import org.beatonma.commons.app.ui.components.LoadingIcon
-import org.beatonma.commons.app.ui.components.Timeline
 import org.beatonma.commons.app.ui.components.chips.EmailLink
 import org.beatonma.commons.app.ui.components.chips.PhoneLink
 import org.beatonma.commons.app.ui.components.chips.Weblink
@@ -68,6 +67,8 @@ import org.beatonma.commons.app.ui.util.WithResultData
 import org.beatonma.commons.compose.Layer
 import org.beatonma.commons.compose.ambient.WithContentAlpha
 import org.beatonma.commons.compose.animation.ExpandCollapseState
+import org.beatonma.commons.compose.animation.animateColor
+import org.beatonma.commons.compose.animation.animateDp
 import org.beatonma.commons.compose.animation.lerpBetween
 import org.beatonma.commons.compose.animation.rememberExpandCollapseState
 import org.beatonma.commons.compose.components.Card
@@ -97,7 +98,6 @@ import org.beatonma.commons.svg.ImageConfig
 import org.beatonma.commons.svg.ScaleType
 import org.beatonma.commons.theme.CommonsPadding
 import org.beatonma.commons.theme.formatting.dateRange
-import org.beatonma.commons.themed.themedAnimation
 import org.beatonma.commons.themed.themedElevation
 
 private const val AVATAR_ASPECT_RATIO = 3F / 2F
@@ -390,24 +390,18 @@ private fun MemberHistory(
         return
     }
 
-    val state = rememberExpandCollapseState(ExpandCollapseState.Collapsed)
-    val transition = updateTransition(targetState = state.value, label = "MemberHistoryTransition")
+    var state by rememberExpandCollapseState(ExpandCollapseState.Collapsed)
+    val transition = updateTransition(targetState = state, label = "MemberHistoryTransition")
 
-    val surfaceColor by transition.animateColor(
-        transitionSpec = { themedAnimation.spec() },
-        label = "AnimatedSurfaceColor",
-    ) { s ->
+    val surfaceColor by animateColor(transition) { s ->
         if (s.isCollapsed) colors.surface else colors.background
     }
-
-    val contentColor by transition.animateColor(
-        transitionSpec = { themedAnimation.spec() },
-        label = "AnimatedContentColor",
-    ) { s -> if (s.isCollapsed) colors.onSurface else colors.onBackground }
-    val elevation by transition.animateDp(
-        transitionSpec = { themedAnimation.spec() },
-        label = "AnimatedElevation",
-    ) { s -> if (s.isCollapsed) themedElevation.Card else 0.dp }
+    val contentColor by animateColor(transition) { s ->
+        if (s.isCollapsed) colors.onSurface else colors.onBackground
+    }
+    val elevation by animateDp(transition) { s ->
+        if (s.isCollapsed) themedElevation.Card else 0.dp
+    }
 
     Card(
         Modifier.fillMaxWidth(),
@@ -416,18 +410,16 @@ private fun MemberHistory(
         elevation = elevation,
         contentColor = contentColor,
     ) {
-        CollapsedColumn(
-            items = history,
-            headerBlock = CollapsedColumn.simpleHeader(stringResource(R.string.member_history_title)),
-            state = state,
-        ) { memberHistory ->
-            Timeline(
-                memberHistory,
-                Modifier.padding(CommonsPadding.VerticalListItemLarge),
-                barModifier = Modifier.padding(vertical = 6.dp),
-                surfaceColor = surfaceColor,
-            )
-        }
+        CollapsedTimeline(
+            stringResource(R.string.member_history_title),
+            history,
+            collapseState = state,
+            onCollapseStateChange = { state = it },
+            modifier = Modifier.padding(CommonsPadding.VerticalListItemLarge),
+            barModifier = Modifier.padding(vertical = 6.dp),
+            surfaceColor = surfaceColor,
+            contentColor = contentColor,
+        )
     }
 }
 

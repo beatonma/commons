@@ -16,13 +16,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,12 +38,14 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import org.beatonma.commons.app.ui.uiDescription
 import org.beatonma.commons.compose.animation.AnimatedItemVisibility
 import org.beatonma.commons.compose.animation.AnimatedVisibility
 import org.beatonma.commons.compose.animation.ExpandCollapseState
 import org.beatonma.commons.compose.animation.animateExpansionAsState
 import org.beatonma.commons.compose.animation.rememberExpandCollapseState
 import org.beatonma.commons.compose.animation.toggle
+import org.beatonma.commons.compose.components.CollapsedColumn
 import org.beatonma.commons.compose.components.Dot
 import org.beatonma.commons.compose.modifiers.wrapContentWidth
 import org.beatonma.commons.core.extensions.clipToLength
@@ -55,7 +57,6 @@ import org.beatonma.commons.core.extensions.roundDown
 import org.beatonma.commons.core.extensions.roundUp
 import org.beatonma.commons.data.core.interfaces.Named
 import org.beatonma.commons.data.core.interfaces.Temporal
-import org.beatonma.commons.data.resolution.uiDescription
 import org.beatonma.commons.theme.formatting.dateRange
 import org.beatonma.commons.theme.formatting.formatted
 import org.beatonma.commons.theme.formatting.formattedPeriod
@@ -72,34 +73,13 @@ private const val MonthsPadding = 12 * 5 // 5 years
 private const val LabelMaxChars = 100
 private val BarHeight = 16.dp
 
-private data class TimelineColors(
-    val surface: Color,
-    val content: Color,
-
-    /**
-     * Color of decade markers.
-     */
-    val lines: Color = content.copy(alpha = .1F),
-
-    /**
-     * Background color for foreground to ensure readability over background content.
-     */
-    val overlay: Color = surface.copy(alpha = .8F),
-
-    /**
-     * Background color of bars in the graph - only visible when the bar is discontinuous.
-     */
-    val barBackground: Color = content.copy(alpha = .15F),
-    val bars: List<Color>
-)
-
 @Composable
 fun Timeline(
     data: List<Temporal>,
     modifier: Modifier = Modifier,
     barModifier: Modifier = Modifier,
     surfaceColor: Color = colors.background,
-    contentColor: Color = LocalContentColor.current,
+    contentColor: Color = colors.onBackground,
     barColors: List<Color> = colors.graphPrimaryColors + colors.graphSecondaryColors,
     scrollState: ScrollState = rememberScrollState(),
 ) {
@@ -116,7 +96,71 @@ fun Timeline(
             .clipToBounds(),
         colors,
     ) {
-        TimelineLayout(renderData, barModifier, colors)
+        TimelineLayout(renderData.groups, barModifier, colors)
+    }
+}
+
+@Composable
+fun CollapsedTimeline(
+    title: String,
+    data: List<Temporal>,
+    modifier: Modifier = Modifier,
+    barModifier: Modifier = Modifier,
+    surfaceColor: Color = colors.background,
+    contentColor: Color = colors.onBackground,
+    barColors: List<Color> = colors.graphPrimaryColors + colors.graphSecondaryColors,
+    scrollState: ScrollState = rememberScrollState(),
+) {
+    var state by rememberExpandCollapseState()
+
+    CollapsedTimeline(
+        title,
+        data,
+        state,
+        { state = it },
+        modifier,
+        barModifier,
+        surfaceColor,
+        contentColor,
+        barColors,
+        scrollState,
+    )
+}
+
+@Composable
+fun CollapsedTimeline(
+    title: String,
+    data: List<Temporal>,
+    collapseState: ExpandCollapseState,
+    onCollapseStateChange: (ExpandCollapseState) -> Unit,
+    modifier: Modifier = Modifier,
+    barModifier: Modifier = Modifier,
+    surfaceColor: Color = colors.background,
+    contentColor: Color = colors.onBackground,
+    barColors: List<Color> = colors.graphPrimaryColors + colors.graphSecondaryColors,
+    scrollState: ScrollState = rememberScrollState(),
+) {
+    val renderData = renderData(data)
+    val colors = remember(surfaceColor, contentColor, barColors) {
+        TimelineColors(surfaceColor, contentColor, bars = barColors)
+    }
+
+    CollapsedColumn(
+        items = renderData.groups,
+        headerBlock = CollapsedColumn.simpleHeader(title),
+        state = collapseState,
+        onStateChange = onCollapseStateChange,
+    ) { renderGroups ->
+        TimelineBackground(
+            renderData.decades,
+            modifier
+                .wrapContentWidth()
+                .horizontalScroll(state = scrollState)
+                .clipToBounds(),
+            colors,
+        ) {
+            TimelineLayout(renderGroups, barModifier, colors)
+        }
     }
 }
 
@@ -125,13 +169,13 @@ fun Timeline(
  */
 @Composable
 private fun TimelineLayout(
-    renderData: RenderData,
+    groups: List<TimelineGroup>,
     modifier: Modifier,
     colors: TimelineColors,
 ) {
     Layout(
         content = {
-            renderData.groups.fastForEachIndexed { index, group ->
+            groups.fastForEachIndexed { index, group ->
                 themedAnimation.AnimatedItemVisibility(position = index) { visibility ->
                     val color = colors.bars.modGet(index)
                     GroupLayout(group, visibility, colors, color, modifier)
@@ -140,7 +184,7 @@ private fun TimelineLayout(
         }
     ) { measurables, constraints ->
         val placeables = measurables.map { it.measure(constraints) }
-        val xPositions = renderData.groups.map { it.startDp.roundToPx() }
+        val xPositions = groups.map { it.startDp.roundToPx() }
 
         val width = placeables.zip(xPositions)
             .maxOf { (placeable, position) ->
@@ -505,3 +549,25 @@ internal fun decadesBetween(start: LocalDate, end: LocalDate): List<Decade> {
         Decade(year, Period.between(start, date).toTotalMonths().toInt())
     }
 }
+
+
+private data class TimelineColors(
+    val surface: Color,
+    val content: Color,
+
+    /**
+     * Color of decade markers.
+     */
+    val lines: Color = content.copy(alpha = .1F),
+
+    /**
+     * Background color for foreground to ensure readability over background content.
+     */
+    val overlay: Color = surface.copy(alpha = .8F),
+
+    /**
+     * Background color of bars in the graph - only visible when the bar is discontinuous.
+     */
+    val barBackground: Color = content.copy(alpha = .15F),
+    val bars: List<Color>
+)
