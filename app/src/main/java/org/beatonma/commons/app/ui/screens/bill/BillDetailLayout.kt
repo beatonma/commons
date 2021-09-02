@@ -35,6 +35,7 @@ import org.beatonma.commons.app.ui.screens.social.HeaderExpansion
 import org.beatonma.commons.app.ui.screens.social.ProvideSocial
 import org.beatonma.commons.app.ui.screens.social.SocialViewModel
 import org.beatonma.commons.app.ui.screens.social.StickySocialScaffold
+import org.beatonma.commons.app.ui.uiDescription
 import org.beatonma.commons.app.ui.util.WithResultData
 import org.beatonma.commons.compose.components.CollapsedColumn
 import org.beatonma.commons.compose.components.Tag
@@ -55,7 +56,6 @@ import org.beatonma.commons.core.House
 import org.beatonma.commons.data.core.room.entities.bill.BillPublication
 import org.beatonma.commons.data.core.room.entities.bill.BillSponsorWithParty
 import org.beatonma.commons.data.core.room.entities.bill.CompleteBill
-import org.beatonma.commons.data.resolution.uiDescription
 import org.beatonma.commons.repo.result.IoLoading
 import org.beatonma.commons.theme.CommonsPadding
 import org.beatonma.commons.theme.formatting.formatted

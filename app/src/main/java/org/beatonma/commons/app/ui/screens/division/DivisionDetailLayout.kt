@@ -49,6 +49,7 @@ import org.beatonma.commons.app.ui.screens.social.HeaderExpansion
 import org.beatonma.commons.app.ui.screens.social.ProvideSocial
 import org.beatonma.commons.app.ui.screens.social.SocialViewModel
 import org.beatonma.commons.app.ui.screens.social.StickySocialScaffold
+import org.beatonma.commons.app.ui.uiDescription
 import org.beatonma.commons.app.ui.util.WithResultData
 import org.beatonma.commons.compose.components.text.Quote
 import org.beatonma.commons.compose.components.text.ResourceText
@@ -71,7 +72,6 @@ import org.beatonma.commons.core.extensions.fastForEachIndexed
 import org.beatonma.commons.data.core.room.entities.division.Division
 import org.beatonma.commons.data.core.room.entities.division.DivisionWithVotes
 import org.beatonma.commons.data.core.room.entities.division.VoteWithParty
-import org.beatonma.commons.data.resolution.uiDescription
 import org.beatonma.commons.repo.result.IoLoading
 import org.beatonma.commons.theme.CommonsPadding
 import org.beatonma.commons.theme.CommonsSize

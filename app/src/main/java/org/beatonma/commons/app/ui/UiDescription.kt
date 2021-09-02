@@ -1,4 +1,4 @@
-package org.beatonma.commons.data.resolution
+package org.beatonma.commons.app.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource

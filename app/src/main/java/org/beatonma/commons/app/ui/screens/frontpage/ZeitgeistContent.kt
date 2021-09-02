@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import org.beatonma.commons.BuildConfig
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.components.party.ProvidePartyImageConfig
+import org.beatonma.commons.app.ui.uiDescription
 import org.beatonma.commons.compose.components.text.OptionalText
 import org.beatonma.commons.compose.padding.endOfContent
 import org.beatonma.commons.compose.systemui.navigationBarsPadding
@@ -31,7 +32,6 @@ import org.beatonma.commons.data.core.room.entities.division.Division
 import org.beatonma.commons.data.core.room.entities.division.ResolvedZeitgeistDivision
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 import org.beatonma.commons.data.core.room.entities.member.ResolvedZeitgeistMember
-import org.beatonma.commons.data.resolution.uiDescription
 import org.beatonma.commons.repo.models.Zeitgeist
 import org.beatonma.commons.snommoc.models.ZeitgeistReason
 import org.beatonma.commons.theme.formatting.formatted

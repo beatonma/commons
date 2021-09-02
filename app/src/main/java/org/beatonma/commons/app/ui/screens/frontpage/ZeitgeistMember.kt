@@ -27,11 +27,11 @@ import org.beatonma.commons.app.ui.components.image.Avatar
 import org.beatonma.commons.app.ui.components.party.LocalPartyTheme
 import org.beatonma.commons.app.ui.components.party.PartyBackground
 import org.beatonma.commons.app.ui.components.party.partyWithTheme
+import org.beatonma.commons.app.ui.currentPostUiDescription
 import org.beatonma.commons.compose.shape.withSquareTop
 import org.beatonma.commons.compose.util.dot
 import org.beatonma.commons.data.core.MinimalMember
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
-import org.beatonma.commons.data.resolution.currentPostUiDescription
 import org.beatonma.commons.snommoc.models.ZeitgeistReason
 import org.beatonma.commons.theme.invertedColors
 
