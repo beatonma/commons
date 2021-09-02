@@ -7,7 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ListItem
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -61,7 +61,7 @@ fun ZeitgeistContent(
     actions: ZeitgeistActions = LocalZeitgeistActions.current,
 ) {
     ZeitgeistContent(
-        zeitgeist = zeitgeist,
+        zeitgeist,
         actions.onMemberClick,
         actions.onDivisionClick,
         actions.onBillClick,
@@ -79,33 +79,23 @@ private fun ZeitgeistContent(
 ) {
     Surface(
         modifier,
-        color = MaterialTheme.colors.background
+        color = colors.background
     ) {
         LazyColumn {
             item {
-                Text(
-                    stringResource(R.string.zeitgeist_title),
-                    Modifier.padding(16.dp),
-                    style = MaterialTheme.typography.h1
-                )
+                MainTitle()
             }
 
             item {
-                ProvidePartyImageConfig {
-                    MembersLayout {
-                        zeitgeist.members.fastForEach {
-                            Member(it.member, memberOnClick, it.reason())
-                        }
-                    }
-                }
+                ZeitgeistMembers(zeitgeist.members, onClick = memberOnClick)
             }
 
             items(zeitgeist.divisions) {
-                Division(it, onClick = divisionOnClick, reason = it.reason())
+                ZeitgeistDivision(it, onClick = divisionOnClick, reason = it.reason())
             }
 
             items(zeitgeist.bills) {
-                Bill(it, onClick = billOnClick, reason = it.reason())
+                ZeitgeistBill(it, onClick = billOnClick, reason = it.reason())
             }
 
             item {
@@ -123,9 +113,32 @@ private fun ZeitgeistContent(
     }
 }
 
+@Composable
+private fun MainTitle() {
+    Text(
+        stringResource(R.string.zeitgeist_title),
+        Modifier.padding(16.dp),
+        style = typography.h1
+    )
+}
+
+@Composable
+private fun ZeitgeistMembers(
+    members: List<ResolvedZeitgeistMember>,
+    onClick: MemberAction,
+) {
+    ProvidePartyImageConfig {
+        MembersLayout {
+            members.fastForEach {
+                Member(it.member, onClick, it.reason())
+            }
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun Division(
+private fun ZeitgeistDivision(
     item: ResolvedZeitgeistDivision,
     onClick: DivisionAction,
     reason: ZeitgeistReason?,
@@ -142,7 +155,7 @@ private fun Division(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun Bill(
+private fun ZeitgeistBill(
     item: ResolvedZeitgeistBill,
     onClick: BillAction,
     reason: ZeitgeistReason?,

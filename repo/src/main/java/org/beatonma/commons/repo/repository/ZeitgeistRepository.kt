@@ -42,7 +42,7 @@ class ZeitgeistRepository @Inject constructor(
             val bills = zeitgeist.bills
             insertBills(bills.map { it.target.toBill() })
             insertZeitgeistBills(bills.map {
-                ZeitgeistBill(it.target.parliamentdotuk, it.reason?.name)
+                ZeitgeistBill(it.target.parliamentdotuk, it.reason?.name, it.priority)
             })
         }
 
@@ -50,7 +50,7 @@ class ZeitgeistRepository @Inject constructor(
             val divisions = zeitgeist.divisions
             insertDivisions(divisions.map { it.target.toDivision() })
             insertZeitgeistDivisions(divisions.map {
-                ZeitgeistDivision(it.target.parliamentdotuk, it.reason?.name)
+                ZeitgeistDivision(it.target.parliamentdotuk, it.reason?.name, it.priority)
             })
         }
 
@@ -58,7 +58,7 @@ class ZeitgeistRepository @Inject constructor(
             val members = zeitgeist.people
             safeInsertProfiles(members.map { it.target.toMemberProfile() }, ifNotExists = true)
             insertZeitgeistMembers(members.map {
-                ZeitgeistMember(it.target.parliamentdotuk, it.reason?.name)
+                ZeitgeistMember(it.target.parliamentdotuk, it.reason?.name, it.priority)
             })
         }
     }

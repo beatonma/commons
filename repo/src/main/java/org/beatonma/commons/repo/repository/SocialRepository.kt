@@ -39,7 +39,6 @@ class SocialRepository @Inject constructor(
         parliamentdotuk: ParliamentID,
         snommocToken: SnommocToken?,
     ) = resultFlowNoCache {
-        println("getSocialContent()")
         remoteSource.getSocialForTarget(targetType, parliamentdotuk, snommocToken)
     }
 }

@@ -22,6 +22,7 @@ enum class ZeitgeistReason {
 
 data class ZeitgeistItem<T>(
     @field:Json(name = Contract.ZEITGEIST_REASON) val reason: ZeitgeistReason?,
+    @field:Json(name = Contract.ZEITGEIST_PRIORITY) val priority: Int,
     @field:Json(name = Contract.ZEITGEIST_TARGET) val target: T,
 )
 

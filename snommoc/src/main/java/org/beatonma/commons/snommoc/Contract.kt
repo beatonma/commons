@@ -156,5 +156,5 @@ object Contract {
     const val ZEITGEIST_BILLS = "bills"
     const val ZEITGEIST_TARGET = "target"
     const val ZEITGEIST_REASON = "reason"
+    const val ZEITGEIST_PRIORITY = "priority"
 }
-

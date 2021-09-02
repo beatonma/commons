@@ -9,6 +9,7 @@ import androidx.room.Relation
 import org.beatonma.commons.core.PARLIAMENTDOTUK
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.MinimalMember
+import org.beatonma.commons.data.core.room.entities.ZeitgeistContent
 
 @Entity(
     foreignKeys = [
@@ -24,8 +25,9 @@ import org.beatonma.commons.data.core.MinimalMember
 )
 data class ZeitgeistMember(
     @ColumnInfo(name = "zeitgeist_member_id") @PrimaryKey val memberId: ParliamentID,
-    @ColumnInfo(name = "zeitgeist_member_reason") val reason: String? = null,
-)
+    @ColumnInfo(name = "zeitgeist_member_reason") override val reason: String? = null,
+    @ColumnInfo(name = "zeitgeist_member_priority") override val priority: Int = 50,
+) : ZeitgeistContent
 
 data class ResolvedZeitgeistMember(
     @Embedded val zeitgeistMember: ZeitgeistMember,
