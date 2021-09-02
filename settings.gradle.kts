@@ -19,6 +19,7 @@ include(":persistence")
 include(":repo")
 
 // UI
+include(":theme-core")
 include(":test-compose")
 include(":compose-core")
 include(":app-theme")
@@ -26,8 +27,7 @@ include(":svg")
 
 // Debug/dev
 include(":sampledata")
-//include(":themepreview")
+include(":theme-preview")
 
 // App
 include(":app")
-include(":theme-core")

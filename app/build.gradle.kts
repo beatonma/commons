@@ -86,7 +86,7 @@ dependencies {
             Dependencies.Kotlin.REFLECT,
 //            Dependencies.Debug.LEAK_CANARY,
             project(Modules.SampleData),
-//            project(Modules.ThemePreview),
+            project(Modules.ThemePreview),
         )
     }
 
