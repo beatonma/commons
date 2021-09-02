@@ -13,11 +13,11 @@ enum class Modules(private val moduleName: String) {
     Snommoc("snommoc"),
     Svg("svg"),
     Test("test"),
-    TestCompose("testcompose"),
-    TestHilt("testhilt"),
+    TestCompose("test-compose"),
+    TestHilt("test-hilt"),
     AppTheme("app-theme"),
     ThemeCore("theme-core"),
-    ThemePreview("themepreview"),
+    ThemePreview("theme-preview"),
     UkParliament("ukparliament"),
     ;
 

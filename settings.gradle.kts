@@ -9,7 +9,7 @@ pluginManagement {
 // Core
 include(":core")
 include(":test")
-include(":testhilt")
+include(":test-hilt")
 include(":network-core")
 
 // Data: network and persistence
@@ -19,7 +19,7 @@ include(":persistence")
 include(":repo")
 
 // UI
-include(":testcompose")
+include(":test-compose")
 include(":compose-core")
 include(":app-theme")
 include(":svg")
