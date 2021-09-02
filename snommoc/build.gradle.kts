@@ -7,6 +7,7 @@ import org.beatonma.commons.buildsrc.local.LocalConfig
 plugins {
     id(Plugins.Commons.COMMONS_LIBRARY_CONFIG)
     id(Plugins.Commons.COMMONS_HILT_MODULE)
+    id(Plugins.Kotlin.PARCELIZE)
 }
 
 android {

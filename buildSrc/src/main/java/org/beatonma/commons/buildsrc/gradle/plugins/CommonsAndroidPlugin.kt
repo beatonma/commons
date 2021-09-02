@@ -25,7 +25,6 @@ interface CommonsAndroidPlugin<T : BaseExtension> : AndroidProjectPlugin<T> {
         with(plugins) {
             apply(Plugins.Kotlin.ANDROID)
             apply(Plugins.Kotlin.KAPT)
-            apply(Plugins.Kotlin.PARCELIZE)
             apply(Plugins.VERSIONS)
         }
         super.applyPlugins(plugins)

@@ -7,6 +7,7 @@ plugins {
     id(Plugins.Commons.COMMONS_LIBRARY_CONFIG)
     id(Plugins.Commons.COMMONS_HILT_MODULE)
     id(Plugins.Commons.COMMONS_ROOM_MODULE)
+    id(Plugins.Kotlin.PARCELIZE)
 }
 
 android {
