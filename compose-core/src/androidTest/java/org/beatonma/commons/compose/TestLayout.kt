@@ -49,17 +49,16 @@ internal fun TestLayout(
 ) {
     MaterialTheme {
         ProvideWindowInsets {
-            CompositionLocalProvider(*providedValues) {
-                CompositionLocalProvider(
-                    LocalAnimationSpec provides TestAnimation,
-                    LocalButtonTheme provides TestButtons,
-                    LocalElevation provides TestElevation,
-                    LocalPadding provides TestPadding,
-                    LocalSize provides TestSize,
-                    LocalSpanStyle provides TestSpanStyle,
-                    content = content,
-                )
-            }
+            CompositionLocalProvider(
+                LocalAnimationSpec provides TestAnimation,
+                LocalButtonTheme provides TestButtons,
+                LocalElevation provides TestElevation,
+                LocalPadding provides TestPadding,
+                LocalSize provides TestSize,
+                LocalSpanStyle provides TestSpanStyle,
+                *providedValues,
+                content = content,
+            )
         }
     }
 }
