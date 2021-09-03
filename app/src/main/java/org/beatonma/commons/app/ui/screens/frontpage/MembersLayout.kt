@@ -109,7 +109,9 @@ private fun MeasureScope.buildProfilesLayout(
         return buildProfilesLayoutAllSameSize(placeables)
     }
 
-    check(groups.size == 2)
+    check(groups.size == 2) {
+        "Unexpected number of member card size groups: ${groups.size}"
+    }
 
     val heights = groups.keys.sorted()
     val minHeight = (heights.firstOrNull() ?: 1)
