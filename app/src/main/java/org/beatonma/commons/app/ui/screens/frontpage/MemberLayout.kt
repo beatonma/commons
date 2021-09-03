@@ -2,9 +2,13 @@ package org.beatonma.commons.app.ui.screens.frontpage
 
 import android.text.TextPaint
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.width
@@ -15,6 +19,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -43,10 +48,11 @@ private const val MemberDescriptionMaxLines = 2
 
 
 @Composable
-fun Member(
+fun MemberLayout(
     member: MinimalMember,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    decoration: @Composable () -> Unit = {},
 ) {
     val profile = member.profile
     val partyWithTheme = partyWithTheme(member.party)
@@ -68,9 +74,9 @@ fun Member(
             shape = shapes.small,
         ) {
             if (profile.portraitUrl == null) {
-                MemberWithoutPortrait(profile, onClick)
+                MemberWithoutPortrait(profile, onClick, decoration = decoration)
             } else {
-                MemberWithPortrait(profile, onClick)
+                MemberWithPortrait(profile, onClick, decoration = decoration)
             }
         }
     }
@@ -81,11 +87,12 @@ private fun MemberWithoutPortrait(
     profile: MemberProfile,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    decoration: @Composable () -> Unit,
 ) {
     PartyBackground(
         modifier.clickable(onClick = onClick)
     ) {
-        MemberText(profile)
+        MemberText(profile, decoration)
     }
 }
 
@@ -94,6 +101,7 @@ private fun MemberWithPortrait(
     profile: MemberProfile,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    decoration: @Composable () -> Unit,
 ) {
     Column(
         modifier.clickable(onClick = onClick)
@@ -108,7 +116,7 @@ private fun MemberWithPortrait(
         PartyBackground(
             Modifier.clip(shapes.small.withSquareTop())
         ) {
-            MemberText(profile)
+            MemberText(profile, decoration)
         }
     }
 }
@@ -116,6 +124,7 @@ private fun MemberWithPortrait(
 @Composable
 private fun MemberText(
     profile: MemberProfile,
+    decoration: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     partyTheme: PartyWithTheme = LocalPartyTheme.current,
 ) {
@@ -124,6 +133,7 @@ private fun MemberText(
         overline = partyTheme.party.name,
         currentPost = profile.currentPostUiDescription(),
         textColor = partyTheme.theme.onPrimary,
+        decoration = decoration,
         modifier = modifier,
     )
 }
@@ -134,6 +144,7 @@ private fun MemberText(
     overline: String,
     currentPost: String,
     textColor: Color,
+    decoration: @Composable () -> Unit,
     modifier: Modifier,
 ) {
     Column(
@@ -141,12 +152,22 @@ private fun MemberText(
             .fillMaxWidth()
             .padding(TextPadding)
     ) {
-        Text(
-            overline,
-            style = typography.overline,
-            maxLines = 1,
-            color = textColor,
-        )
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                overline,
+                style = typography.overline,
+                maxLines = 1,
+                color = textColor,
+            )
+
+            decoration()
+        }
 
         Text(
             name,

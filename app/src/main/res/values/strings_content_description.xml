@@ -27,4 +27,8 @@
 
     <!-- Member Profile -->
     <string name="content_description_view_constituency" translatable="true">View constituency information for "%s"</string>
+
+    <!-- Zeitgeist -->
+    <string name="content_description_featured" translatable="true">Featured</string>
+    <string name="content_description_trending" translatable="true">Trending</string>
 </resources>

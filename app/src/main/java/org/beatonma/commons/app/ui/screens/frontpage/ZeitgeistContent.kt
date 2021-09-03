@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
 import androidx.compose.material.ListItem
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.MaterialTheme.typography
@@ -19,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.BuildConfig
 import org.beatonma.commons.R
+import org.beatonma.commons.app.ui.components.image.AppIcon
 import org.beatonma.commons.app.ui.components.party.ProvidePartyImageConfig
 import org.beatonma.commons.app.ui.uiDescription
 import org.beatonma.commons.compose.components.text.OptionalText
@@ -37,9 +39,9 @@ import org.beatonma.commons.snommoc.models.ZeitgeistReason
 import org.beatonma.commons.theme.formatting.formatted
 
 private fun String?.reason(): ZeitgeistReason? = this?.let { ZeitgeistReason.valueOf(it) }
-private fun ResolvedZeitgeistMember.reason() = this.zeitgeistMember.reason.reason()
-private fun ResolvedZeitgeistDivision.reason() = this.zeitgeistDivision.reason.reason()
-private fun ResolvedZeitgeistBill.reason() = this.zeitgeistBill.reason.reason()
+private fun ResolvedZeitgeistMember.reason() = this.zeitgeistContent.reason.reason()
+private fun ResolvedZeitgeistDivision.reason() = this.zeitgeistContent.reason.reason()
+private fun ResolvedZeitgeistBill.reason() = this.zeitgeistContent.reason.reason()
 
 val LocalZeitgeistActions: ProvidableCompositionLocal<ZeitgeistActions> =
     compositionLocalOf { error("ZeitgeistActions have not been provided") }
@@ -130,7 +132,13 @@ private fun ZeitgeistMembers(
     ProvidePartyImageConfig {
         MembersLayout {
             members.fastForEach {
-                Member(it.member, onClick, it.reason())
+                MemberLayout(
+                    it.member,
+                    onClick = { onClick(it.member.profile) },
+                    decoration = {
+                        ReasonIcon(it.reason())
+                    }
+                )
             }
         }
     }
@@ -167,5 +175,31 @@ private fun ZeitgeistBill(
         overlineText = { Text(bill.date.formatted()) },
         secondaryText = { OptionalText(bill.description) },
         text = { Text(bill.title) },
+    )
+}
+
+@Composable
+private fun ReasonIcon(reason: ZeitgeistReason?, modifier: Modifier = Modifier) {
+    when (reason) {
+        ZeitgeistReason.feature -> FeaturedReasonIcon(modifier)
+        ZeitgeistReason.social -> TrendingReasonIcon(modifier)
+    }
+}
+
+@Composable
+private fun FeaturedReasonIcon(modifier: Modifier = Modifier) {
+    Icon(
+        AppIcon.Featured,
+        contentDescription = stringResource(id = R.string.content_description_featured),
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun TrendingReasonIcon(modifier: Modifier = Modifier) {
+    Icon(
+        AppIcon.Trending,
+        contentDescription = stringResource(id = R.string.content_description_featured),
+        modifier = modifier,
     )
 }
