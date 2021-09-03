@@ -14,6 +14,7 @@ import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.test.filters.MediumTest
+import org.beatonma.commons.app.TestTheme
 import org.beatonma.commons.sampledata.SampleSocialContent
 import org.beatonma.commons.snommoc.models.social.SocialContent
 import org.beatonma.commons.test.extensions.assertions.shouldbe
@@ -175,14 +176,16 @@ class SocialIconsTest : ComposeTest() {
         state: MutableState<SocialUiState>,
         actions: SocialActions,
     ) {
-        SocialIcons(
-            socialContent,
-            state.value,
-            socialTheme(),
-            actions,
-            Modifier,
-            collapseAction = { state.value = SocialUiState.Collapsed },
-            expandAction = { state.value = SocialUiState.Expanded },
-        )
+        TestTheme {
+            SocialIcons(
+                socialContent,
+                state.value,
+                socialTheme(),
+                actions,
+                Modifier,
+                collapseAction = { state.value = SocialUiState.Collapsed },
+                expandAction = { state.value = SocialUiState.Expanded },
+            )
+        }
     }
 }

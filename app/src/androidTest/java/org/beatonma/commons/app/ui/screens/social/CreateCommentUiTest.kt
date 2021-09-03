@@ -13,7 +13,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performTextInput
 import androidx.test.filters.MediumTest
-import com.google.accompanist.insets.ProvideWindowInsets
+import org.beatonma.commons.app.TestTheme
 import org.beatonma.commons.app.ui.screens.signin.LocalUserAccountActions
 import org.beatonma.commons.app.ui.screens.signin.NullUserToken
 import org.beatonma.commons.app.ui.screens.signin.UserAccountActions
@@ -21,11 +21,10 @@ import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.sampledata.SampleUserToken
 import org.beatonma.commons.testcompose.test.ComposeTest
-import org.beatonma.commons.theme.CommonsTheme
 import org.junit.Test
 
 @MediumTest
-class CreateCommentUiTest: ComposeTest() {
+class CreateCommentUiTest : ComposeTest() {
 
     @Test
     fun whenSignedOut_collapsedLayout_shouldShowSignInFab() {
@@ -115,14 +114,11 @@ class CreateCommentUiTest: ComposeTest() {
     ) {
         LocalUserAccountActions = staticCompositionLocalOf { UserAccountActions() }
 
-
-        CommonsTheme {
-            ProvideWindowInsets {
-                CreateCommentUi(
-                    userToken,
-                    state
-                )
-            }
+        TestTheme {
+            CreateCommentUi(
+                userToken,
+                state
+            )
         }
     }
 }

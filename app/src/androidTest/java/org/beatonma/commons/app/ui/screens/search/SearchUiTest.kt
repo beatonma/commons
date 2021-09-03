@@ -1,7 +1,6 @@
 package org.beatonma.commons.app.ui.screens.search
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,7 +20,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.test.filters.MediumTest
-import com.google.accompanist.insets.ProvideWindowInsets
+import org.beatonma.commons.app.TestTheme
 import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.compose.animation.ExpandCollapseState
 import org.beatonma.commons.compose.animation.rememberExpandCollapseState
@@ -31,11 +30,10 @@ import org.beatonma.commons.snommoc.models.search.MemberSearchResult
 import org.beatonma.commons.snommoc.models.search.SearchResult
 import org.beatonma.commons.test.extensions.assertions.shouldbe
 import org.beatonma.commons.testcompose.test.ComposeTest
-import org.beatonma.commons.theme.CommonsTheme
 import org.junit.Test
 
 @MediumTest
-class SearchUiTest: ComposeTest() {
+class SearchUiTest : ComposeTest() {
     private val results = SampleSearchResults
     private val searchHint = "Search for something"
 
@@ -203,18 +201,15 @@ class SearchUiTest: ComposeTest() {
             )
         }
 
-        CommonsTheme {
-            CompositionLocalProvider(
-                LocalSearchActions provides searchActions,
-            ) {
-                ProvideWindowInsets {
-                    SearchUi(
-                        hint = searchHint,
-                        results = results.value,
-                        state = state,
-                    )
-                }
-            }
+        TestTheme(
+            LocalSearchActions provides searchActions,
+        ) {
+            SearchUi(
+                hint = searchHint,
+                results = results.value,
+                state = state.value,
+                onStateChange = { state.value = it },
+            )
         }
     }
 }

@@ -12,12 +12,12 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.filters.MediumTest
+import org.beatonma.commons.app.TestTheme
 import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.sampledata.SampleSocialContent
 import org.beatonma.commons.snommoc.models.social.SocialComment
 import org.beatonma.commons.test.extensions.assertions.shouldbe
 import org.beatonma.commons.testcompose.test.ComposeTest
-import org.beatonma.commons.theme.CommonsTheme
 import org.junit.Test
 
 @MediumTest
@@ -102,7 +102,7 @@ class CommentListTest : ComposeTest() {
         comments: List<SocialComment> = SampleSocialContent.comments,
         onClick: (SocialComment) -> Unit = {},
     ) {
-        CommonsTheme {
+        TestTheme {
             CommentList(
                 comments = comments,
                 modifier = Modifier,

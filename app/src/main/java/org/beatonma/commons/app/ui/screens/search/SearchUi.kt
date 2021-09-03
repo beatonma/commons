@@ -27,6 +27,7 @@ import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -49,10 +50,8 @@ import org.beatonma.commons.compose.Layer
 import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.compose.animation.ExpandCollapseState
 import org.beatonma.commons.compose.animation.animateExpansionAsState
-import org.beatonma.commons.compose.animation.collapse
 import org.beatonma.commons.compose.animation.lerpBetween
 import org.beatonma.commons.compose.animation.rememberExpandCollapseState
-import org.beatonma.commons.compose.animation.toggle
 import org.beatonma.commons.compose.components.ModalScrim
 import org.beatonma.commons.compose.components.text.OptionalText
 import org.beatonma.commons.compose.modifiers.wrapContentHeight
@@ -95,19 +94,20 @@ val LocalSearchActions: ProvidableCompositionLocal<SearchActions> =
 fun SearchUi(
     results: List<SearchResult>,
     modifier: Modifier = Modifier,
-    state: MutableState<SearchUiState> = rememberExpandCollapseState(),
+    state: SearchUiState,
+    onStateChange: (SearchUiState) -> Unit,
     hint: String = stringResource(R.string.search_hint),
     focusRequester: FocusRequester = remember(::FocusRequester),
 ) {
-    val expansionProgress by state.value.animateExpansionAsState()
+    val expansionProgress by state.animateExpansionAsState()
 
     SearchLayout(
         hint = hint,
-        toggleState = { state.toggle() },
+        toggleState = { onStateChange(state.toggle()) },
         results = results,
         modifier = modifier,
         focusRequester = focusRequester,
-        onBackgroundClick = state::collapse,
+        onBackgroundClick = { onStateChange(ExpandCollapseState.Collapsed) },
         expansionProgress = expansionProgress,
     )
 }
@@ -326,7 +326,7 @@ private fun getSearchSurfaceShape(progress: Float): Shape {
 @Preview
 @Composable
 fun SearchTestLayout() {
-    val state: MutableState<SearchUiState> = rememberExpandCollapseState()
+    var state: SearchUiState by rememberExpandCollapseState()
     val results: MutableState<List<SearchResult>> = rememberListOf(SampleSearchResults)
     val onSubmit: (String) -> Unit = {}
     val onClickMember: (MemberSearchResult) -> Unit = {}
@@ -346,6 +346,7 @@ fun SearchTestLayout() {
                 SearchUi(
                     results = results.value,
                     state = state,
+                    onStateChange = { state = it }
                 )
             }
         }
