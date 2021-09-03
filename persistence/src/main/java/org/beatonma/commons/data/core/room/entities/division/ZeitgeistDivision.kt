@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey
 import androidx.room.Relation
 import org.beatonma.commons.core.PARLIAMENTDOTUK
 import org.beatonma.commons.core.ParliamentID
+import org.beatonma.commons.data.core.room.entities.ResolvedZeitgeistContent
 import org.beatonma.commons.data.core.room.entities.ZeitgeistContent
 
 @Entity(
@@ -23,17 +24,17 @@ import org.beatonma.commons.data.core.room.entities.ZeitgeistContent
     tableName = "zeitgeist_divisions"
 )
 data class ZeitgeistDivision(
-    @ColumnInfo(name = "zeitgeist_division_id") @PrimaryKey val divisionId: ParliamentID,
+    @ColumnInfo(name = "zeitgeist_division_id") @PrimaryKey override val id: ParliamentID,
     @ColumnInfo(name = "zeitgeist_division_reason") override val reason: String? = null,
     @ColumnInfo(name = "zeitgeist_division_priority") override val priority: Int = 50,
 ) : ZeitgeistContent
 
 data class ResolvedZeitgeistDivision(
-    @Embedded val zeitgeistDivision: ZeitgeistDivision,
+    @Embedded override val zeitgeistContent: ZeitgeistDivision,
     @Relation(
         parentColumn = "zeitgeist_division_id",
         entityColumn = "division_$PARLIAMENTDOTUK",
         entity = Division::class
     )
     val division: Division,
-)
+) : ResolvedZeitgeistContent<ZeitgeistDivision>
