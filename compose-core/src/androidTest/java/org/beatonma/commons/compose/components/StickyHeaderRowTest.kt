@@ -1,8 +1,7 @@
-package org.beatonma.commons.compose.components.stickyrow
+package org.beatonma.commons.compose.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.width
@@ -23,8 +22,6 @@ import androidx.compose.ui.test.performGesture
 import androidx.compose.ui.unit.dp
 import androidx.test.filters.MediumTest
 import org.beatonma.commons.compose.TestLayout
-import org.beatonma.commons.compose.modifiers.design.gridOverlay
-import org.beatonma.commons.compose.padding.HorizontalPadding
 import org.beatonma.commons.testcompose.actions.swipeLeft
 import org.beatonma.commons.testcompose.test.ComposeTest
 import org.junit.Test
@@ -95,83 +92,6 @@ class StickyHeaderRowTest : ComposeTest() {
         }
     }
 
-    @Test
-    fun groupStyle_padding_isAppliedCorrectly() {
-        withContent {
-            TestLayout(
-                rememberGroupStyle(
-                    padding = HorizontalPadding(start = 3.dp, end = 7.dp),
-                    spaceBetween = HorizontalPadding(0.dp)
-                )
-            )
-        }
-
-        perform {
-            onNodeWithText("1")
-                .assertLeftPositionInRootIsEqualTo(3.dp)
-
-            onNodeWithText("5")
-                .assertLeftPositionInRootIsEqualTo(
-                    253.dp  /* expectedLeftOfSecondHeader + (padding.start + padding.end) + padding.start */
-                )
-
-            onNodeWithText(Headers.LessThanFifty.toString())
-                .assertLeftPositionInRootIsEqualTo(253.dp)
-        }
-    }
-
-    @Test
-    fun groupStyle_between_isAppliedCorrectly() {
-        withContent {
-            TestLayout(
-                rememberGroupStyle(
-                    padding = HorizontalPadding(0.dp),
-                    spaceBetween = HorizontalPadding(start = 11.dp, end = 13.dp)
-                )
-            )
-        }
-
-        perform {
-            onNodeWithText("1")
-                .assertLeftPositionInRootIsEqualTo(11.dp)
-
-            onNodeWithText("5")
-                .assertLeftPositionInRootIsEqualTo(
-                    275.dp  /* expectedLeftOfSecondHeader + (spaceBetween.start + spaceBetween.end) + spaceBetween.start */
-                )
-
-            onNodeWithText(Headers.LessThanFifty.toString())
-                .assertLeftPositionInRootIsEqualTo(275.dp)
-        }
-    }
-
-    @Test
-    fun groupStyle_isAppliedCorrectly() {
-        withContent {
-            TestLayout(
-                rememberGroupStyle(
-                    padding = HorizontalPadding(start = 3.dp, end = 5.dp),
-                    spaceBetween = HorizontalPadding(start = 11.dp, end = 13.dp)
-                )
-            )
-        }
-
-        perform {
-            onNodeWithText("1")
-                .assertLeftPositionInRootIsEqualTo(14.dp)
-
-            onNodeWithText("5")
-                .assertLeftPositionInRootIsEqualTo(
-                    expectedLeftOfSecondHeader + 3.dp + 11.dp + 5.dp + 13.dp + 3.dp + 11.dp
-                )
-
-            onNodeWithText(Headers.LessThanFifty.toString())
-                .assertLeftPositionInRootIsEqualTo(
-                    286.dp // Same as above
-                )
-        }
-    }
-
     enum class Headers(val color: Color) {
         LessThanFive(Color.Red),
         LessThanFifty(Color.Blue),
@@ -182,9 +102,9 @@ class StickyHeaderRowTest : ComposeTest() {
 
     @Suppress("RemoveExplicitTypeArguments")
     @Composable
-    private fun TestLayout(groupStyle: GroupStyle = rememberGroupStyle()) {
+    private fun TestLayout() {
         @Composable
-        fun Header(header: Headers?, modifier: Modifier = Modifier) =
+        fun Header(header: Headers?, modifier: Modifier = Modifier) {
             Text(
                 header?.toString() ?: "null",
                 modifier
@@ -193,9 +113,10 @@ class StickyHeaderRowTest : ComposeTest() {
                     .background(Color.Cyan)
                     .testTag(headerTag)
             )
+        }
 
         @Composable
-        fun Item(item: Int, modifier: Modifier = Modifier) =
+        fun Item(item: Int, modifier: Modifier = Modifier) {
             Text(
                 "$item",
                 modifier
@@ -204,39 +125,29 @@ class StickyHeaderRowTest : ComposeTest() {
                     .background(Color.Yellow)
                     .testTag(itemTag)
             )
-
-        @Composable
-        fun Background(header: Headers?) {
-            Spacer(Modifier.background(header!!.color))
         }
+
+        val items = remember { (1..100).toList() }
 
         TestLayout {
             Box(Modifier.width(layoutWidth)) {
-                StickyHeaderRow<Int, Headers>(
-                    items = remember { (1..100).toList() },
-                    headerForItem =
-                    { item ->
+                StickyHeaderRow(
+                    items = items,
+                    headerForItem = { item ->
                         when {
-                            item == null -> Headers.Null
                             item < 5 -> Headers.LessThanFive
                             item < 50 -> Headers.LessThanFifty
                             else -> Headers.Other
                         }
                     },
-                    headerContent = { header ->
-                        Header(header)
-                    },
-                    groupBackground = { header ->
-                        Background(header)
-                    },
                     itemContent = { item ->
                         Item(item)
                     },
-                    groupStyle = groupStyle,
-                    modifier = Modifier
-                        .background(Color.LightGray)
-                        .testTag(stickyLayoutTag)
-                        .gridOverlay(60.dp, strokeWidth = 1.dp),
+                    headerContent = { header ->
+                        Header(header)
+                    },
+                    modifier = Modifier.testTag(stickyLayoutTag),
+                    groupModifier = { Modifier },
                 )
             }
         }

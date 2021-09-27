@@ -4,7 +4,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -38,8 +37,8 @@ import org.beatonma.commons.app.ui.screens.social.StickySocialScaffold
 import org.beatonma.commons.app.ui.uiDescription
 import org.beatonma.commons.app.ui.util.WithResultData
 import org.beatonma.commons.compose.components.CollapsedColumn
+import org.beatonma.commons.compose.components.StickyHeaderRow
 import org.beatonma.commons.compose.components.Tag
-import org.beatonma.commons.compose.components.stickyrow.StickyHeaderRow
 import org.beatonma.commons.compose.components.text.Caption
 import org.beatonma.commons.compose.components.text.ComponentTitle
 import org.beatonma.commons.compose.components.text.OptionalText
@@ -136,7 +135,7 @@ private fun LazyListScope.lazyContent(
     }
 
     optionalItem(completeBill.stages) { stages ->
-        Stages(completeBill.getAnnotatedBillStages())
+        Stages(completeBill.getAnnotatedBillStages(), Modifier)
     }
 }
 
@@ -191,38 +190,13 @@ private fun Sponsors(
 @Composable
 private fun Stages(
     stages: List<AnnotatedBillStage>,
-    modifier: Modifier = Modifier,
+    modifier: Modifier,
 ) {
     Text("Stages")
 
     StickyHeaderRow(
-        stages,
-        modifier = modifier,
-        headerForItem = { it?.category },
-        groupBackground = { category ->
-            if (category != null) {
-                val theme = category.theme()
-                Spacer(
-                    Modifier
-                        .clip(shapes.small)
-                        .background(theme.surface)
-                )
-            }
-        },
-        headerContent = { category ->
-            if (category != null) {
-                val theme = category.theme()
-                ComponentTitle(
-                    category.uiDescription(),
-                    Modifier
-                        .padding(CommonsPadding.ScreenHorizontal)
-                        .padding(CommonsPadding.VerticalListItemLarge)
-                        .padding(end = 32.dp),
-                    color = theme.onSurface,
-                    maxLines = 1,
-                )
-            }
-        },
+        items = stages,
+        headerForItem = AnnotatedBillStage::category,
         itemContent = { item ->
             val theme = item.category.theme()
             val stage = item.stage.stage
@@ -239,11 +213,9 @@ private fun Stages(
                         .padding(8.dp)
                 ) {
                     Text(stage.type)
-
                     if (sittings.size > 1) {
                         PluralText(R.plurals.bill_sittings, sittings.size)
                     }
-
                     Caption(
                         sittings
                             .sortedBy { it.date }
@@ -252,12 +224,33 @@ private fun Stages(
                     )
                 }
             }
+        },
+        headerContent = { category ->
+            category ?: return@StickyHeaderRow
+
+            ComponentTitle(
+                category.uiDescription(),
+                Modifier
+                    .padding(CommonsPadding.VerticalListItemLarge)
+                    .padding(start = 8.dp, end = 32.dp),
+                color = category.theme().onSurface,
+                maxLines = 1,
+                autoPadding = false,
+            )
+        },
+        modifier = modifier,
+        groupModifier = { category ->
+            category ?: return@StickyHeaderRow Modifier
+            Modifier
+                .padding(8.dp)
+                .clip(shapes.small)
+                .background(category.theme().surface)
         }
     )
 }
 
 @Composable
-private fun BillStageCategory.theme(): SurfaceTheme = when(this) {
+private fun BillStageCategory.theme(): SurfaceTheme = when (this) {
     BillStageCategory.Commons -> House.commons.theme()
     BillStageCategory.Lords -> House.lords.theme()
     BillStageCategory.ConsiderationOfAmendments -> houseTheme(colors.house.Parliament)
