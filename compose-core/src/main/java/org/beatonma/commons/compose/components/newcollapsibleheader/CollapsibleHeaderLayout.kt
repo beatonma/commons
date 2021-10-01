@@ -1,7 +1,5 @@
 package org.beatonma.commons.compose.components.newcollapsibleheader
 
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -14,9 +12,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.layout.Placeable
-import kotlin.math.max
+import org.beatonma.commons.compose.util.math.Matrix2x2
 import kotlin.math.roundToInt
+
+private const val DefaultMin = Int.MAX_VALUE
+private const val DefaultMax = Int.MIN_VALUE
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -25,18 +25,15 @@ fun NewCollapsibleHeaderLayout(
     content: LazyListScope.() -> Unit,
     state: LazyListState = rememberLazyListState(),
 ) {
-    var expansion by remember { mutableStateOf(0f) }
-    val expansionAnim by animateFloatAsState(targetValue = expansion, animationSpec = tween(20))
+    var expansion by remember { mutableStateOf(1f) }
 
+    var minHeight by remember { mutableStateOf(DefaultMin) }
+    var maxHeight by remember { mutableStateOf(DefaultMax) }
 
-    var limitsMeasured by remember { mutableStateOf(false) }
+    var flexibleHeight by remember { mutableStateOf(0) }
 
-    var minHeight by remember { mutableStateOf(-1) }
-    var maxHeight by remember { mutableStateOf(0) }
-
-    LaunchedEffect(minHeight) {
-        expansion = 1f
-    }
+    val matrix = remember { Matrix2x2() }
+    val matrixArray = remember { arrayOf(0f, 0f) }
 
     LaunchedEffect(state.firstVisibleItemScrollOffset) {
         if (minHeight < 0 || maxHeight < 0) {
@@ -47,9 +44,12 @@ fun NewCollapsibleHeaderLayout(
         val firstItemOffset = state.firstVisibleItemScrollOffset
 
         if (firstItemIndex == 0) {
-            if (maxHeight != 0) {
-                expansion = 1f - (firstItemOffset / maxHeight.toFloat())
-                check(expansion in 0f..1f) { "Invalid expansion $expansion should be in 0..1f" }
+            if (maxHeight != DefaultMax) {
+                expansion = if (flexibleHeight != 0) {
+                    1f - (firstItemOffset / flexibleHeight.toFloat())
+                } else {
+                    1f - (firstItemOffset / maxHeight.toFloat())
+                }.coerceIn(0f, 1f)
             }
         } else {
             // Collapse header completely
@@ -61,45 +61,84 @@ fun NewCollapsibleHeaderLayout(
         stickyHeader {
             Layout(
                 content = {
-                    header(if (limitsMeasured) expansion else expansionAnim)
+                    header(expansion)
                 },
             ) { measurables, constraints ->
-                val placeables = if (maxHeight == 0 || minHeight < 0) {
-                    measurables.map { it.measure(constraints) }
-                } else {
-                    val c = constraints.copy(
-                        maxHeight = max(
-                            minHeight,
-                            (expansion * maxHeight.toFloat()).roundToInt()
-                        )
-                    )
-                    measurables.map { it.measure(c) }
+                check(measurables.size == 1) {
+                    "CollapsibleHeaderLayout only supports one child layout (got ${measurables.size})"
                 }
 
-                val width: Int = placeables.maxOf(Placeable::width)
-                val height: Int = placeables.maxOf(Placeable::height)
+                val placeable = measurables.first().measure(constraints)
 
-                when {
-                    limitsMeasured -> { /* NOOP */
-                    }
-                    maxHeight == 0 && expansionAnim == 1f -> {
-                        maxHeight = height
-                        if (minHeight >= 0) limitsMeasured = true
-                    }
-                    expansionAnim == 0f -> {
+                val width: Int = placeable.width
+                val height: Int = placeable.height
+
+
+                if (expansion == 1f && maxHeight == DefaultMax) {
+                    // First layout
+                    maxHeight = height
+                } else if (minHeight == DefaultMin) {
+                    if (expansion == 0f) {
                         minHeight = height
-                        if (maxHeight > 0) limitsMeasured = true
+                        flexibleHeight = maxHeight - minHeight
+                    } else {
+                        flexibleHeight =
+                            predictFlexibleHeight(maxHeight, height, expansion, matrix, matrixArray)
                     }
+                } else if (height < minHeight) {
+                    minHeight = height
+                    flexibleHeight = maxHeight - minHeight
                 }
-
-                println("$minHeight | $maxHeight")
 
                 layout(width, maxHeight) {
-                    placeables.forEach { it.placeRelative(0, 0) }
+                    placeable.placeRelative(0, 0)
                 }
             }
         }
 
         content()
     }
+}
+
+/**
+ * Current header height = (expansion * flexibleHeight) + minHeight
+ *
+ * [flexibleHeight] and minHeight are not known until we actually reach expansion == 0f, but we can
+ * predict their values by extrapolating from measured heights at 2 different points of expansion.
+ *
+ * On first layout (with expansion == 1f) we get: maxHeight = (1f * flexibleHeight) + (1f * minHeight)
+ * On next layout (with expansion < 1f) we get : currentHeight = (expansion * flexibleHeight) + (1f * minHeight)
+ *
+ * Or:
+ *   y1 = x + c
+ *   y2 = ax + c
+ *
+ * We can then solve this as a system of equations by putting the coefficients of
+ * flexibleHeight and minHeight into a matrix.
+ *
+ * We can then solve Ax = b for x, where A is our matrix of coefficients and y is a vector of known heights.
+ *
+ * x = inverse(A) * b
+ *
+ * This gives us the vector x with projected values for flexibleHeight and minHeight.
+ */
+private fun predictFlexibleHeight(
+    maxHeight: Int,
+    currentHeight: Int,
+    expansion: Float,
+    matrix: Matrix2x2,
+    knownValues: Array<Float>
+): Int {
+    matrix.set(1f, 1f, expansion, 1f)
+
+    try {
+        matrix.invert()
+    } catch (e: ArithmeticException) {
+        return 0
+    }
+    knownValues[0] = maxHeight.toFloat()
+    knownValues[1] = currentHeight.toFloat()
+
+    matrix *= knownValues
+    return knownValues[0].roundToInt()
 }
