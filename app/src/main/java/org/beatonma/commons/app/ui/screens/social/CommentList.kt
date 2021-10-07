@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.MaterialTheme.typography
@@ -32,19 +33,17 @@ import org.beatonma.commons.themed.themedAnimation
 internal fun CommentList(
     comments: List<SocialComment>,
     modifier: Modifier,
-    expandProgress: Float,
     onClick: (SocialComment) -> Unit,
 ) {
     if (comments.isEmpty()) {
         NoComments(modifier)
     } else {
-        if (expandProgress < 0.7F) return
-
         LazyColumn(Modifier.testTag(SocialTestTag.CommentsList)) {
             itemsIndexed(comments) { i, comment ->
                 themedAnimation.AnimatedItemVisibility(position = i, horizontal = false) {
                     Comment(
                         comment,
+                        modifier,
                         onClick,
                     )
                 }
@@ -53,6 +52,22 @@ internal fun CommentList(
             item {
                 EndOfContent()
             }
+        }
+    }
+}
+
+internal fun LazyListScope.CommentList(
+    comments: List<SocialComment>,
+    modifier: Modifier,
+    onClick: (SocialComment) -> Unit,
+) {
+    itemsIndexed(comments) { i, comment ->
+        themedAnimation.AnimatedItemVisibility(position = i, horizontal = false) {
+            Comment(
+                comment,
+                modifier,
+                onClick,
+            )
         }
     }
 }
@@ -72,12 +87,13 @@ private fun NoComments(modifier: Modifier) {
 @Composable
 private fun Comment(
     comment: SocialComment,
+    modifier: Modifier,
     onClick: (SocialComment) -> Unit,
 ) {
     val contentDescription = comment.contentDescription
 
     Column(
-        Modifier
+        modifier
             .semantics(mergeDescendants = true) {
                 this.contentDescription = contentDescription
             }

@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -26,21 +26,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -55,13 +48,11 @@ import org.beatonma.commons.app.ui.components.party.LocalPartyTheme
 import org.beatonma.commons.app.ui.components.party.PartyBackground
 import org.beatonma.commons.app.ui.components.party.partyWithTheme
 import org.beatonma.commons.app.ui.screens.signin.UserAccountViewModel
-import org.beatonma.commons.app.ui.screens.social.HeaderExpansion
 import org.beatonma.commons.app.ui.screens.social.LocalSocialTheme
+import org.beatonma.commons.app.ui.screens.social.NewSocialScaffold
 import org.beatonma.commons.app.ui.screens.social.ProvideSocial
-import org.beatonma.commons.app.ui.screens.social.SocialExpansion
 import org.beatonma.commons.app.ui.screens.social.SocialUiState
 import org.beatonma.commons.app.ui.screens.social.SocialViewModel
-import org.beatonma.commons.app.ui.screens.social.StickySocialScaffold
 import org.beatonma.commons.app.ui.screens.social.asSocialTheme
 import org.beatonma.commons.app.ui.util.WithResultData
 import org.beatonma.commons.compose.Layer
@@ -69,7 +60,6 @@ import org.beatonma.commons.compose.ambient.WithContentAlpha
 import org.beatonma.commons.compose.animation.ExpandCollapseState
 import org.beatonma.commons.compose.animation.animateColor
 import org.beatonma.commons.compose.animation.animateDp
-import org.beatonma.commons.compose.animation.lerpBetween
 import org.beatonma.commons.compose.animation.rememberExpandCollapseState
 import org.beatonma.commons.compose.components.Card
 import org.beatonma.commons.compose.components.CardText
@@ -78,13 +68,10 @@ import org.beatonma.commons.compose.components.HorizontalSeparator
 import org.beatonma.commons.compose.components.text.OptionalText
 import org.beatonma.commons.compose.components.text.ResourceText
 import org.beatonma.commons.compose.components.text.ScreenTitle
-import org.beatonma.commons.compose.modifiers.wrapContentHeight
+import org.beatonma.commons.compose.modifiers.onlyWhen
 import org.beatonma.commons.compose.padding.padding
-import org.beatonma.commons.compose.systemui.statusBarsPadding
 import org.beatonma.commons.compose.util.dot
 import org.beatonma.commons.core.extensions.fastForEachIndexed
-import org.beatonma.commons.core.extensions.progressIn
-import org.beatonma.commons.core.extensions.reversed
 import org.beatonma.commons.data.core.CompleteMember
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import org.beatonma.commons.data.core.room.entities.constituency.NoConstituency
@@ -94,13 +81,11 @@ import org.beatonma.commons.data.core.room.entities.member.Party
 import org.beatonma.commons.data.core.room.entities.member.PhysicalAddress
 import org.beatonma.commons.data.core.room.entities.member.WebAddress
 import org.beatonma.commons.repo.result.IoLoading
-import org.beatonma.commons.svg.ImageConfig
-import org.beatonma.commons.svg.ScaleType
 import org.beatonma.commons.theme.CommonsPadding
 import org.beatonma.commons.theme.formatting.dateRange
 import org.beatonma.commons.themed.themedElevation
 
-private const val AVATAR_ASPECT_RATIO = 3F / 2F
+private const val AVATAR_ASPECT_RATIO = 1f
 internal const val TestTagMemberTitleBar = "title_bar"
 
 internal val LocalMemberProfileActions: ProvidableCompositionLocal<MemberProfileActions> =
@@ -121,7 +106,11 @@ fun MemberProfileLayout(
     ) {
         WithResultData(memberData) { data ->
             val memberHistory by viewmodel.getMemberHistory(data).collectAsState(listOf())
-            MemberProfileLayout(data, memberHistory, socialViewModel.uiState)
+            MemberProfileLayout(
+                data,
+                memberHistory,
+                socialViewModel.uiState.value,
+            ) { socialViewModel.uiState.value = it }
         }
     }
 }
@@ -130,7 +119,8 @@ fun MemberProfileLayout(
 fun MemberProfileLayout(
     completeMember: CompleteMember,
     history: MemberHistory,
-    socialState: MutableState<SocialUiState>,
+    socialState: SocialUiState,
+    onSocialStateChange: (SocialUiState) -> Unit,
 ) {
     val profile = completeMember.profile
     val partyData = partyWithTheme(completeMember.party)
@@ -140,77 +130,41 @@ fun MemberProfileLayout(
         LocalPartyTheme provides partyData,
         LocalSocialTheme provides socialTheme,
     ) {
-        StickySocialScaffold(
-            state = socialState,
-            aboveSocial = { headerExpansion, mod ->
-                MemberProfileImage(completeMember, headerExpansion, mod)
+        NewSocialScaffold(
+            title = { TitleBar(profile) },
+            socialUiState = socialState,
+            onStateChange = onSocialStateChange,
+            aboveSocial = {
+                MemberProfileImage(completeMember)
             },
-            social = { socialProgress, headerExpansion, social ->
-                TitleBar(profile, headerExpansion, socialProgress, social)
-            },
-            lazyListContent = {
-                MemberProfile(completeMember, history)
-            },
-            snapToStateAt = 0.5F
-        )
+            belowSocial = null,
+        ) { mod: Modifier ->
+            MemberProfile(completeMember, history, mod)
+        }
     }
 }
 
 @Composable
 private fun TitleBar(
     profile: MemberProfile,
-    headerExpansion: HeaderExpansion,
-    socialExpansion: SocialExpansion,
-    social: @Composable () -> Unit
 ) {
     CompositionLocalProvider(
         LocalContentColor provides LocalPartyTheme.current.onPrimary,
     ) {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .shadow(1.dp)
-                .zIndex(Layer.Low)
-                .background(
-                    socialExpansion.value
-                        .reversed()
-                        .lerpBetween(
-                            LocalPartyTheme.current.primary,
-                            Color.Transparent
-                        )
-                )
-                .statusBarsPadding(
-                    headerExpansion.value
-                        .reversed()
-                        .progressIn(.7F, 1F)
-                )
-                .testTag(TestTagMemberTitleBar)
-        ) {
-            MemberName(
-                profile.name,
-                Modifier
-                    .wrapContentHeight(socialExpansion.value)
-                    .padding(top = 8.dp)
-                    .alpha(socialExpansion.value)
-            )
-            social()
-        }
+        ScreenTitle(profile.name)
     }
 }
 
 @Composable
 private fun MemberProfileImage(
     member: CompleteMember,
-    visibility: HeaderExpansion,
-    modifier: Modifier
+    modifier: Modifier = Modifier,
 ) {
     val portraitUrl = member.profile.portraitUrl
     val imageModifier = Modifier
-        .clipToBounds()
-        .zIndex(Layer.Low)
         .fillMaxWidth()
-        .wrapContentHeight(visibility.value)
         .aspectRatio(AVATAR_ASPECT_RATIO)
+        .zIndex(Layer.Low)
 
     Box(modifier) {
         if (portraitUrl != null) {
@@ -219,57 +173,59 @@ private fun MemberProfileImage(
                 imageModifier.background(LocalPartyTheme.current.primary)
             )
         } else {
-            val scale = 0.5F + (0.33F * visibility.value.reversed().progressIn(0.5F, 1F))
-            val imageConfig = remember(scale) {
-                ImageConfig(ScaleType.Min, scaleMultiplier = scale)
-            }
+//            val scale = 0.5F + (0.33F * scroll.reversed().progressIn(0.5F, 1F))
+//            val imageConfig = remember(scale) {
+//                ImageConfig(ScaleType.Min, scaleMultiplier = scale)
+//            }
 
             PartyBackground(
                 member.party,
                 imageModifier,
-                imageConfig,
+//                imageConfig,
                 useCache = false,
             )
         }
     }
 }
 
-@Composable
-private fun MemberName(name: String, modifier: Modifier) {
-    ScreenTitle(name, modifier)
-}
 
-private fun LazyListScope.MemberProfile(completeMember: CompleteMember, history: MemberHistory) {
+private fun LazyListScope.MemberProfile(
+    completeMember: CompleteMember,
+    history: MemberHistory,
+    modifier: Modifier
+) {
     val profile = completeMember.profile
 
     item {
-        Weblinks(completeMember.weblinks)
+        Weblinks(completeMember.weblinks, modifier)
     }
 
     item {
-        CurrentPosition(profile, completeMember.party, completeMember.constituency)
+        CurrentPosition(profile, completeMember.party, completeMember.constituency, modifier)
     }
 
     item {
-        MemberHistory(history)
+        MemberHistory(history, modifier)
     }
 
     item {
-        ContactInfo(completeMember.addresses)
+        ContactInfo(completeMember.addresses, modifier)
     }
 
     item {
-        FinancialInterests(completeMember.financialInterests)
+        FinancialInterests(completeMember.financialInterests, modifier)
     }
 }
 
 @Composable
-private fun Weblinks(weblinks: List<WebAddress>) {
-    Links(
-        Modifier.padding(CommonsPadding.ScreenHorizontal)
-    ) {
-        items(weblinks) { weblink ->
-            Weblink(weblink, Modifier.padding(CommonsPadding.LinkItem))
+private fun Weblinks(weblinks: List<WebAddress>, modifier: Modifier) {
+    Links(modifier) {
+        itemsIndexed(weblinks) { i, weblink ->
+            val itemModifier = Modifier
+                .onlyWhen(i == 0) { padding(start = 4.dp) }
+                .padding(CommonsPadding.LinkItem)
+
+            Weblink(weblink, itemModifier)
         }
     }
 }
@@ -279,9 +235,10 @@ private fun CurrentPosition(
     profile: MemberProfile,
     party: Party?,
     constituency: Constituency,
+    modifier: Modifier,
     onConstituencyClick: ConstituencyAction = LocalMemberProfileActions.current.onConstituencyClick,
 ) {
-    ProfileCard {
+    ProfileCard(modifier) {
         Column {
             ResourceText(R.string.member_status, style = typography.overline)
 
@@ -383,7 +340,8 @@ private fun ConstituencyLink(
 
 @Composable
 private fun MemberHistory(
-    history: MemberHistory
+    history: MemberHistory,
+    modifier: Modifier,
 ) {
     if (history.isEmpty()) {
         LoadingIcon()
@@ -404,7 +362,7 @@ private fun MemberHistory(
     }
 
     Card(
-        Modifier.fillMaxWidth(),
+        modifier.fillMaxWidth(),
         shape = RectangleShape,
         backgroundColor = surfaceColor,
         elevation = elevation,
@@ -424,9 +382,12 @@ private fun MemberHistory(
 }
 
 @Composable
-private fun ContactInfo(addresses: List<PhysicalAddress>) {
+private fun ContactInfo(
+    addresses: List<PhysicalAddress>,
+    modifier: Modifier,
+) {
     val size = addresses.size
-    ProfileCard {
+    ProfileCard(modifier) {
         if (addresses.isEmpty()) {
             EmptyMessage(R.string.member_contact_info_none)
         } else {
@@ -473,8 +434,11 @@ private fun ContactInfo(addresses: List<PhysicalAddress>) {
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun FinancialInterests(interests: List<FinancialInterest>) {
-    ProfileCard {
+private fun FinancialInterests(
+    interests: List<FinancialInterest>,
+    modifier: Modifier,
+) {
+    ProfileCard(modifier) {
         if (interests.isEmpty()) {
             EmptyMessage(R.string.member_financial_interests_none)
         } else {
@@ -520,7 +484,10 @@ private fun Links(modifier: Modifier = Modifier, content: LazyListScope.() -> Un
 }
 
 @Composable
-private fun ProfileCard(modifier: Modifier = Modifier, content: @Composable BoxScope.() -> Unit) {
+private fun ProfileCard(
+    modifier: Modifier = Modifier,
+    content: @Composable BoxScope.() -> Unit
+) {
     Card(modifier.fillMaxWidth(), shape = RectangleShape) {
         CardText(content = content)
     }

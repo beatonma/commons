@@ -1,7 +1,6 @@
 package org.beatonma.commons.app.ui.screens.social
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import org.beatonma.commons.themed.themedAnimation
@@ -10,7 +9,11 @@ enum class SocialUiState {
     Collapsed,
     Expanded,
     ComposeComment,
+    ;
 }
+
+val SocialUiState.isCollapsed get() = this == SocialUiState.Collapsed
+val SocialUiState.isExpanded get() = this != SocialUiState.Collapsed
 
 @Composable
 fun rememberSocialUiState(default: SocialUiState = SocialUiState.Collapsed) =
@@ -24,20 +27,9 @@ fun SocialUiState.animateExpansionAsState() = themedAnimation.animateFloatAsStat
     }
 )
 
-/**
- * Try to update value to previous state, and return true if this was successful.
- */
-fun MutableState<SocialUiState>.toPreviousState(): Boolean =
-    when (this.value) {
-        SocialUiState.Expanded -> {
-            value = SocialUiState.Collapsed
-            true
-        }
-
-        SocialUiState.ComposeComment -> {
-            value = SocialUiState.Expanded
-            true
-        }
-
-        else -> false
+val SocialUiState.previousState
+    get() = when (this) {
+        SocialUiState.Collapsed -> throw IllegalArgumentException("previousState failed: SocialUiState is already collapsed")
+        SocialUiState.Expanded -> SocialUiState.Collapsed
+        SocialUiState.ComposeComment -> SocialUiState.Expanded
     }
