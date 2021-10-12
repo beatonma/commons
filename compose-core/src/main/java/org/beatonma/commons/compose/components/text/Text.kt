@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
 import org.beatonma.commons.compose.modifiers.onlyWhen
 import org.beatonma.commons.compose.padding.padding
 import org.beatonma.commons.themed.themedPadding
@@ -21,6 +22,7 @@ fun ScreenTitle(
     modifier: Modifier = Modifier,
     color: Color = Color.Unspecified,
     maxLines: Int = 3,
+    textAlign: TextAlign? = null,
     autoPadding: Boolean = true,
 ) {
     Text(
@@ -33,6 +35,7 @@ fun ScreenTitle(
         color,
         style = typography.h4,
         maxLines = maxLines,
+        textAlign = textAlign,
     )
 }
 

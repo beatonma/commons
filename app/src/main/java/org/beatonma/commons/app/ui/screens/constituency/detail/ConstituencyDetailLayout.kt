@@ -43,15 +43,13 @@ import org.beatonma.commons.app.ui.maps.MapConfig
 import org.beatonma.commons.app.ui.maps.moveCameraTo
 import org.beatonma.commons.app.ui.maps.rememberMapViewWithLifecycle
 import org.beatonma.commons.app.ui.screens.signin.UserAccountViewModel
-import org.beatonma.commons.app.ui.screens.social.HeaderExpansion
 import org.beatonma.commons.app.ui.screens.social.ProvideSocial
+import org.beatonma.commons.app.ui.screens.social.SocialScaffold
 import org.beatonma.commons.app.ui.screens.social.SocialViewModel
-import org.beatonma.commons.app.ui.screens.social.StickySocialScaffold
 import org.beatonma.commons.app.ui.util.WithResultData
 import org.beatonma.commons.app.util.hasPermission
 import org.beatonma.commons.compose.components.text.ComponentTitle
 import org.beatonma.commons.compose.components.text.OptionalText
-import org.beatonma.commons.compose.components.text.ScreenTitle
 import org.beatonma.commons.compose.util.dot
 import org.beatonma.commons.compose.util.rememberBoolean
 import org.beatonma.commons.data.core.room.entities.constituency.CompleteConstituency
@@ -93,17 +91,16 @@ fun ConstituencyDetailLayout(
         *providePartyImageConfig(),
         LocalPartyTheme provides partyWithTheme(data.member?.party),
     ) {
-        StickySocialScaffold(
-            aboveSocial = { headerExpansion: HeaderExpansion, modifier: Modifier ->
-                Header(data, headerExpansion, modifier)
-            },
-            lazyListContent = {
+        SocialScaffold(
+            title = data.constituency.name,
+            aboveSocial = { Header(data) },
+            content = {
                 MPs(
                     data.constituency,
                     data.member,
                     data.electionResults,
                     onMemberClick,
-                    onConstituencyResultClick
+                    onConstituencyResultClick,
                 )
             }
         )
@@ -113,8 +110,7 @@ fun ConstituencyDetailLayout(
 @Composable
 private fun Header(
     data: CompleteConstituency,
-    expansion: HeaderExpansion,
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
 ) {
     val constituency = data.constituency
 
@@ -125,7 +121,6 @@ private fun Header(
                 .fillMaxWidth()
                 .aspectRatio(3F / 2F)
         )
-        ScreenTitle(constituency.name)
     }
 }
 

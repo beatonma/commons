@@ -129,7 +129,9 @@ class SocialViewModel @Inject constructor(
             userToken?.snommocToken
         ).first { it.isSuccess }.onSuccess { data ->
             withContext(Dispatchers.Main) {
-                savedStateHandle[SavedSocialContent] = data
+                savedStateHandle[SavedSocialContent] = data.copy(
+                    comments = data.comments.sortedByDescending { it.modified },
+                )
             }
         }
     }

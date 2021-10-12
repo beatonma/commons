@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="bill_sittings">
+        <item quantity="one">%d sitting</item>
+        <item quantity="other">%d sittings</item>
+    </plurals>
+
+    <plurals name="bill_publications">
+        <item quantity="one">%d publication</item>
+        <item quantity="other">%d publications</item>
+    </plurals>
+
+    <plurals name="bill_sponsors">
+        <item quantity="one">%d sponsor</item>
+        <item quantity="other">%d sponsors</item>
+    </plurals>
+
+    <plurals name="bill_stages">
+        <item quantity="one">%d stage</item>
+        <item quantity="other">%d stages</item>
+    </plurals>
+</resources>

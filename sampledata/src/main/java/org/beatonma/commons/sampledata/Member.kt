@@ -48,11 +48,26 @@ import org.beatonma.commons.snommoc.models.ApiWebAddress
 import java.time.LocalDate
 import java.time.Period
 
-val SampleParty =
+val SampleParties = listOf(
     Party(
         parliamentdotuk = 234,
         name = "Sample Party"
+    ),
+    Party(
+        44,
+        "Green Party"
+    ),
+    Party(
+        15,
+        "Labour Party"
+    ),
+    Party(
+        4,
+        "Conservative"
     )
+)
+
+val SampleParty get() = SampleParties.random()
 
 val SampleConstituency =
     Constituency(

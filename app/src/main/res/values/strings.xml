@@ -1,9 +1,4 @@
 <resources>
-    <plurals name="bill_sittings">
-        <item quantity="one">%d sitting</item>
-        <item quantity="other">%d sittings</item>
-    </plurals>
-
     <!-- Commonly used, easily misspelled -->
     <string name="app_name">Commons</string>
     <string name="parliamentdotuk" translatable="false">parliamentdotuk</string>
@@ -69,9 +64,6 @@
 
     <!-- Bills -->
     <string name="bill_publications" translatable="true">Publications</string>
-    <string name="bill_publications_count" translatable="true">%d publications</string>
-    <string name="bill_sponsors_count" translatable="true">%d sponsors</string>
-    <string name="bill_stages_count" translatable="true">%d stages</string>
     <string name="bill_session" translatable="true">%s</string>
 
     <string name="bill_category_consideration" translatable="true">Consideration</string>

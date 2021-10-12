@@ -101,7 +101,7 @@ class SocialActions(
 
 private const val InactiveAlpha = 0.64F
 /**
- * Simple SocialTheme using app surface/content colors.
+ * Default SocialTheme using app surface/content colors.
  */
 @Composable
 fun socialTheme(
@@ -122,6 +122,12 @@ class SocialTheme internal constructor(
     val expandedBackground: Color = Color.Transparent,
     val expandedOnBackground: Color = Color.Transparent,
 ) {
+    fun backgroundColor(expandProgress: Float) =
+        expandProgress.lerpBetween(collapsedBackground, expandedBackground)
+
+    fun contentColor(expandProgress: Float) =
+        expandProgress.lerpBetween(collapsedOnBackground, expandedOnBackground)
+
     @Composable
     fun inactiveColor(expandProgress: Float): Color =
         expandProgress

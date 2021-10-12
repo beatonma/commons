@@ -1,17 +1,22 @@
 package org.beatonma.commons.app.ui.screens.division
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.ListItem
 import androidx.compose.material.MaterialTheme.colors
+import androidx.compose.material.MaterialTheme.shapes
+import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
@@ -19,56 +24,50 @@ import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.RemoveCircle
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.beatonma.commons.R
-import org.beatonma.commons.app.ui.components.LoadingIcon
 import org.beatonma.commons.app.ui.components.charts.ChartItem
 import org.beatonma.commons.app.ui.components.charts.ChartKeyItem
 import org.beatonma.commons.app.ui.components.charts.HorizontalStackedBarChart
+import org.beatonma.commons.app.ui.components.charts.selectionDecoration
+import org.beatonma.commons.app.ui.components.loadingIcon
 import org.beatonma.commons.app.ui.screens.signin.UserAccountViewModel
-import org.beatonma.commons.app.ui.screens.social.HeaderExpansion
 import org.beatonma.commons.app.ui.screens.social.ProvideSocial
+import org.beatonma.commons.app.ui.screens.social.SocialScaffold
 import org.beatonma.commons.app.ui.screens.social.SocialViewModel
-import org.beatonma.commons.app.ui.screens.social.StickySocialScaffold
 import org.beatonma.commons.app.ui.uiDescription
 import org.beatonma.commons.app.ui.util.WithResultData
+import org.beatonma.commons.compose.components.FlowRow
 import org.beatonma.commons.compose.components.text.Quote
 import org.beatonma.commons.compose.components.text.ResourceText
-import org.beatonma.commons.compose.components.text.ScreenTitle
-import org.beatonma.commons.compose.modifiers.wrapContentHeight
+import org.beatonma.commons.compose.layout.stickyHeaderWithInsets
 import org.beatonma.commons.compose.padding.padding
 import org.beatonma.commons.compose.systemui.statusBarsPadding
-import org.beatonma.commons.compose.util.dot
-import org.beatonma.commons.compose.util.mapUpdate
 import org.beatonma.commons.compose.util.rememberBoolean
 import org.beatonma.commons.compose.util.rememberListOf
 import org.beatonma.commons.compose.util.rememberSetOf
 import org.beatonma.commons.compose.util.rememberText
-import org.beatonma.commons.compose.util.toggle
 import org.beatonma.commons.core.House
 import org.beatonma.commons.core.VoteType
 import org.beatonma.commons.core.extensions.allEqualTo
-import org.beatonma.commons.core.extensions.fastForEach
-import org.beatonma.commons.core.extensions.fastForEachIndexed
 import org.beatonma.commons.data.core.room.entities.division.Division
 import org.beatonma.commons.data.core.room.entities.division.DivisionWithVotes
 import org.beatonma.commons.data.core.room.entities.division.VoteWithParty
@@ -77,6 +76,7 @@ import org.beatonma.commons.theme.CommonsPadding
 import org.beatonma.commons.theme.CommonsSize
 import org.beatonma.commons.theme.formatting.formatted
 import org.beatonma.commons.theme.politicalVotes
+import org.beatonma.commons.themed.themedPadding
 
 internal val LocalDivisionActions: ProvidableCompositionLocal<DivisionActions> =
     compositionLocalOf { DivisionActions() }
@@ -100,72 +100,32 @@ fun DivisionDetailLayout(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DivisionDetailLayout(
     divisionWithVotes: DivisionWithVotes,
 ) {
-    val voteTypeFilters = rememberSetOf<VoteType>()
+    var voteTypeFilters by rememberSetOf<VoteType>()
+    var filteredVotes by rememberListOf<VoteWithParty>()
+    var filterQuery by rememberText()
 
-    val coroutineScope = rememberCoroutineScope()
-    val filteredVotes = rememberListOf<VoteWithParty>()
-
-    val applyFilter: (String) -> Unit = { queryText: String ->
-        coroutineScope.launch {
-            val filtered = applyFilter(queryText, voteTypeFilters.value, divisionWithVotes)
-
-            withContext(Dispatchers.Main) {
-                filteredVotes.value = filtered
-            }
+    LaunchedEffect(divisionWithVotes.votes, filterQuery, voteTypeFilters) {
+        val filtered = applyFilter(filterQuery, voteTypeFilters, divisionWithVotes)
+        withContext(Dispatchers.Main) {
+            filteredVotes = filtered
         }
     }
 
     val toggleVoteTypeFilter: (VoteType) -> Unit = { voteType: VoteType ->
-        voteTypeFilters.mapUpdate { filters ->
-            val exists = filters.contains(voteType)
-            if (exists) {
-                filters.filterNot { it == voteType }.toSet()
-            } else {
-                filters + setOf(voteType)
-            }
+        voteTypeFilters = if (voteTypeFilters.contains(voteType)) {
+            voteTypeFilters.filterNot { it == voteType }.toSet()
+        } else {
+            voteTypeFilters + voteType
         }
-        applyFilter("")
     }
-    applyFilter("")
 
-    StickySocialScaffold(
-        aboveSocial = { headerExpansion: HeaderExpansion, headerModifier: Modifier ->
-            HeaderAboveSocial(
-                divisionWithVotes.division,
-                expandProgress = headerExpansion,
-                modifier = headerModifier,
-            )
-        },
-        belowSocial = { headerExpansion: HeaderExpansion, headerModifier: Modifier ->
-            HeaderBelowSocial(
-                division = divisionWithVotes.division,
-                expandProgress = headerExpansion,
-                onVoteTypeClick = toggleVoteTypeFilter,
-                applyFilter = applyFilter,
-                modifier = headerModifier,
-            )
-        },
-        lazyListContent = {
-            voteList(
-                filteredVotes = filteredVotes.value,
-                isLoading = divisionWithVotes.votes.isEmpty()
-            )
-        },
-    )
-}
+    val (division, votes) = divisionWithVotes
 
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-private fun HeaderAboveSocial(
-    division: Division,
-    expandProgress: HeaderExpansion,
-    modifier: Modifier = Modifier,
-) {
     val (title, description) = when (division.house) {
         House.commons -> Pair(stringResource(R.string.division_title), division.title)
         House.lords -> Pair(
@@ -174,26 +134,56 @@ private fun HeaderAboveSocial(
         )
     }
 
-    Column(
-        modifier
-            .padding(CommonsPadding.Screen)
-            .statusBarsPadding()
-            .wrapContentHeight(expandProgress.value)
-            .alpha(expandProgress.value)
-    ) {
-        ScreenTitle(title)
+    val scrollState = rememberLazyListState()
 
-        Text(division.house.uiDescription() dot division.date.formatted())
+    SocialScaffold(
+        title = title,
+        aboveSocial = {},
+        scrollState = scrollState,
+        content = { modifier ->
+            item {
+                HeaderAboveSocial(division, description, modifier)
+            }
+
+            stickyHeaderWithInsets(state = scrollState, key = "search_filters") {
+                HeaderBelowSocial(
+                    division = division,
+                    onVoteTypeClick = toggleVoteTypeFilter,
+                    applyFilter = { filter -> filterQuery = filter },
+                    modifier = modifier
+                )
+            }
+
+            voteList(
+                filteredVotes,
+                isLoading = votes.isEmpty(),
+                modifier = modifier,
+            )
+        }
+    )
+}
+
+@Composable
+private fun HeaderAboveSocial(
+    division: Division,
+    description: String,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier.statusBarsPadding(),
+    ) {
+        Row(verticalAlignment = Alignment.Bottom) {
+            Text(division.house.uiDescription(), style = typography.h5)
+            Text(division.date.formatted())
+        }
 
         Quote(description)
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun HeaderBelowSocial(
     division: Division,
-    expandProgress: HeaderExpansion,
     onVoteTypeClick: (VoteType) -> Unit,
     applyFilter: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -201,7 +191,7 @@ private fun HeaderBelowSocial(
     Column(modifier) {
         Chart(division, Modifier.fillMaxWidth())
 
-        GraphKey(division, onVoteTypeClick)
+        GraphKey(division, onVoteTypeClick, Modifier.padding(themedPadding.VerticalListItem))
 
         SearchField(
             modifier = Modifier
@@ -215,20 +205,13 @@ private fun HeaderBelowSocial(
 private fun LazyListScope.voteList(
     filteredVotes: List<VoteWithParty>,
     isLoading: Boolean,
+    modifier: Modifier = Modifier
 ) {
-    if (isLoading) {
-        item {
-            LoadingIcon(Modifier.fillMaxWidth())
-        }
-        return
-    }
+    loadingIcon(isLoading)
 
-    items(
-        items = filteredVotes,
-        itemContent = { vote ->
-            Vote(vote)
-        }
-    )
+    items(filteredVotes, key = { it.vote.memberId }) { vote ->
+        Vote(vote, modifier)
+    }
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -239,10 +222,10 @@ private fun Vote(
     onMemberClick: MemberVoteAction = LocalDivisionActions.current.onMemberClick,
 ) {
     ListItem(
-        modifier = modifier.clickable(onClick = { onMemberClick(voteWithParty.vote) }),
         icon = { VoteIcon(voteWithParty.vote.voteType) },
         text = { Text(voteWithParty.vote.memberName, maxLines = 2) },
-        trailing = { Text(voteWithParty.party?.name ?: "") }
+        trailing = { Text(voteWithParty.party?.name ?: "") },
+        modifier = modifier.clickable(onClick = { onMemberClick(voteWithParty.vote) }),
     )
 }
 
@@ -251,20 +234,23 @@ private fun SearchField(
     modifier: Modifier = Modifier,
     query: MutableState<String> = rememberText(),
     onQueryChange: (String) -> Unit,
-) =
+) {
     org.beatonma.commons.compose.components.text.SearchField(
         modifier = modifier,
         query = query,
         onQueryChange = onQueryChange,
         hint = R.string.division_search_member_hint,
     )
+}
 
 @Composable
-private fun VoteIcon(voteType: VoteType) = VoteIcon(
-    voteType.icon,
-    voteType.uiDescription(),
-    voteType.color
-)
+private fun VoteIcon(voteType: VoteType) {
+    VoteIcon(
+        voteType.icon,
+        voteType.uiDescription(),
+        voteType.color
+    )
+}
 
 @Composable
 private fun VoteIcon(
@@ -286,107 +272,48 @@ private fun VoteIcon(
 private fun GraphKey(
     division: Division,
     onVoteTypeClick: (VoteType) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     if (division.isEmpty()) return
 
     val keyModifier = Modifier.padding(CommonsPadding.HorizontalListItem)
 
-    // Simple FlowRow
-    Layout(content = {
-        GraphKeyItems(division, onVoteTypeClick, keyModifier)
-    }) { measurables, constraints ->
-        val maxWidth = constraints.maxWidth
+    FlowRow(modifier) {
+        GraphKeyItem(
+            VoteType.AyeVote,
+            division.ayes,
+            onClick = onVoteTypeClick,
+            modifier = keyModifier
+        )
 
-        val rows = mutableListOf<List<Placeable>>()
-        val currentRow = mutableListOf<Placeable>()
-        val rowSizes = mutableListOf<IntSize>()
-        val rowStartY = mutableListOf(0)
+        GraphKeyItem(
+            VoteType.NoVote,
+            division.noes,
+            onClick = onVoteTypeClick,
+            modifier = keyModifier
+        )
 
-        val placeables = measurables.map { it.measure(constraints) }
+        GraphKeyItem(
+            VoteType.Abstains,
+            division.abstentions ?: 0,
+            onClick = onVoteTypeClick,
+            modifier = keyModifier
+        )
 
-        var rowHeight = 0
-        var rowWidth = 0
+        GraphKeyItem(
+            VoteType.DidNotVote,
+            division.didNotVote ?: 0,
+            onClick = onVoteTypeClick,
+            modifier = keyModifier
+        )
 
-        fun storeRowAndReset() {
-            // Remember this row and start a new row
-            rows += currentRow.toList()
-            rowSizes += IntSize(rowWidth, rowHeight)
-            rowStartY += rowHeight
-            rowHeight = 0
-            rowWidth = 0
-            currentRow.clear()
-        }
-
-        placeables.fastForEach {
-            if (rowWidth + it.width > maxWidth) {
-                storeRowAndReset()
-            }
-
-            currentRow += it
-            rowHeight = maxOf(rowHeight, it.height)
-            rowWidth += it.width
-        }
-
-        if (currentRow.isNotEmpty()) {
-            storeRowAndReset()
-        }
-
-        val totalWidth = rowSizes.maxOf(IntSize::width)
-        val totalHeight = rowSizes.sumOf(IntSize::height)
-
-        check(rows.size < rowStartY.size)
-        check(currentRow.isEmpty())
-
-        layout(totalWidth, totalHeight) {
-            rows.fastForEachIndexed { rowIndex, rowItems ->
-                var left = 0
-                val top = rowStartY[rowIndex]
-
-                rowItems.fastForEach { item ->
-                    item.placeRelative(left, top)
-                    left += item.width
-                }
-            }
-        }
+        GraphKeyItem(
+            VoteType.SuspendedOrExpelledVote,
+            division.suspendedOrExpelled ?: 0,
+            onClick = onVoteTypeClick,
+            modifier = keyModifier
+        )
     }
-}
-
-@Composable
-private fun GraphKeyItems(
-    division: Division,
-    onVoteTypeClick: (VoteType) -> Unit,
-    modifier: Modifier,
-) {
-    GraphKeyItem(
-        VoteType.AyeVote,
-        division.ayes,
-        onClick = onVoteTypeClick,
-        modifier = modifier
-    )
-    GraphKeyItem(
-        VoteType.NoVote,
-        division.noes,
-        onClick = onVoteTypeClick,
-        modifier = modifier
-    )
-    GraphKeyItem(
-        VoteType.Abstains,
-        division.abstentions ?: 0,
-        onClick = onVoteTypeClick,
-        modifier = modifier
-    )
-    GraphKeyItem(
-        VoteType.DidNotVote,
-        division.didNotVote ?: 0,
-        onClick = onVoteTypeClick,
-        modifier = modifier
-    )
-    GraphKeyItem(
-        VoteType.SuspendedOrExpelledVote,
-        division.suspendedOrExpelled ?: 0,
-        onClick = onVoteTypeClick,
-        modifier = modifier
-    )
 }
 
 @Composable
@@ -394,24 +321,35 @@ private fun GraphKeyItem(
     voteType: VoteType,
     voteCount: Int,
     modifier: Modifier = Modifier,
-    interactionSource: MutableInteractionSource = remember(::MutableInteractionSource),
     onClick: (VoteType) -> Unit,
 ) {
-    val selected = rememberBoolean(false)
     if (voteCount == 0) return
+    var selected by rememberBoolean(false)
 
     ChartKeyItem(
-        { VoteIcon(voteType.icon, null, voteType.color) },
-        { ResourceText(voteType.descriptionRes, voteCount, withAnnotatedStyle = true) },
-        modifier = modifier.selectable(
-            selected = selected.value,
-            onClick = {
-                selected.toggle()
-                onClick(voteType)
-            },
-            interactionSource = interactionSource,
-            indication = rememberRipple(),
-        ),
+        icon = { VoteIcon(voteType.icon, null, voteType.color) },
+        description = {
+            ResourceText(
+                voteType.descriptionRes,
+                voteCount,
+                withAnnotatedStyle = true
+            )
+        },
+        modifier = modifier
+            .clip(shapes.small)
+            .selectable(
+                selected = selected,
+                interactionSource = remember(::MutableInteractionSource),
+                indication = rememberRipple(color = colors.primary),
+                role = Role.Checkbox,
+                onClick = {
+                    selected = !selected
+                    onClick(voteType)
+                },
+            )
+            .selectionDecoration(selected, color = colors.primary)
+            .padding(4.dp)
+            .padding(end = 8.dp),
     )
 }
 

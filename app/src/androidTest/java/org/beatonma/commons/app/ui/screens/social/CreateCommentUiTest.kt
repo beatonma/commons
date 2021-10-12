@@ -116,8 +116,8 @@ class CreateCommentUiTest : ComposeTest() {
 
         TestTheme {
             CreateCommentUi(
-                userToken,
-                state
+                userToken = userToken,
+                uiState = state,
             )
         }
     }

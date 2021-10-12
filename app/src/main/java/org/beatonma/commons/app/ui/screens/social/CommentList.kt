@@ -61,13 +61,19 @@ internal fun LazyListScope.CommentList(
     modifier: Modifier,
     onClick: (SocialComment) -> Unit,
 ) {
-    itemsIndexed(comments) { i, comment ->
-        themedAnimation.AnimatedItemVisibility(position = i, horizontal = false) {
-            Comment(
-                comment,
-                modifier,
-                onClick,
-            )
+    if (comments.isEmpty()) {
+        item {
+            NoComments(modifier)
+        }
+    } else {
+        itemsIndexed(comments) { i, comment ->
+            themedAnimation.AnimatedItemVisibility(position = i, horizontal = false) {
+                Comment(
+                    comment,
+                    modifier,
+                    onClick,
+                )
+            }
         }
     }
 }

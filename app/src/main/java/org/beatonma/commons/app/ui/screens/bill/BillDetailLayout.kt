@@ -21,7 +21,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.colors.SurfaceTheme
@@ -29,11 +28,11 @@ import org.beatonma.commons.app.ui.colors.houseTheme
 import org.beatonma.commons.app.ui.colors.theme
 import org.beatonma.commons.app.ui.screens.bill.viewmodel.AnnotatedBillStage
 import org.beatonma.commons.app.ui.screens.bill.viewmodel.BillStageCategory
+import org.beatonma.commons.app.ui.screens.frontpage.MemberLayout
 import org.beatonma.commons.app.ui.screens.signin.UserAccountViewModel
-import org.beatonma.commons.app.ui.screens.social.HeaderExpansion
 import org.beatonma.commons.app.ui.screens.social.ProvideSocial
+import org.beatonma.commons.app.ui.screens.social.SocialScaffold
 import org.beatonma.commons.app.ui.screens.social.SocialViewModel
-import org.beatonma.commons.app.ui.screens.social.StickySocialScaffold
 import org.beatonma.commons.app.ui.uiDescription
 import org.beatonma.commons.app.ui.util.WithResultData
 import org.beatonma.commons.compose.components.CollapsedColumn
@@ -41,20 +40,21 @@ import org.beatonma.commons.compose.components.StickyHeaderRow
 import org.beatonma.commons.compose.components.Tag
 import org.beatonma.commons.compose.components.text.Caption
 import org.beatonma.commons.compose.components.text.ComponentTitle
-import org.beatonma.commons.compose.components.text.OptionalText
-import org.beatonma.commons.compose.components.text.PluralText
+import org.beatonma.commons.compose.components.text.PluralResourceText
 import org.beatonma.commons.compose.components.text.Quote
-import org.beatonma.commons.compose.components.text.ResourceText
 import org.beatonma.commons.compose.components.text.ScreenTitle
 import org.beatonma.commons.compose.layout.optionalItem
 import org.beatonma.commons.compose.padding.padding
-import org.beatonma.commons.compose.systemui.statusBarsPadding
 import org.beatonma.commons.compose.util.dot
 import org.beatonma.commons.compose.util.dotted
+import org.beatonma.commons.compose.util.pluralResource
 import org.beatonma.commons.core.House
+import org.beatonma.commons.data.core.room.entities.bill.Bill
 import org.beatonma.commons.data.core.room.entities.bill.BillPublication
 import org.beatonma.commons.data.core.room.entities.bill.BillSponsorWithParty
+import org.beatonma.commons.data.core.room.entities.bill.BillType
 import org.beatonma.commons.data.core.room.entities.bill.CompleteBill
+import org.beatonma.commons.data.core.room.entities.bill.ParliamentarySession
 import org.beatonma.commons.repo.result.IoLoading
 import org.beatonma.commons.theme.CommonsPadding
 import org.beatonma.commons.theme.formatting.formatted
@@ -88,43 +88,32 @@ fun BillDetailLayout(
     bill: CompleteBill,
     onSponsorClick: SponsorAction = LocalBillActions.current.onSponsorClick,
 ) {
-    StickySocialScaffold(
-        aboveSocial = { headerExpansion, modifier ->
-            HeaderAboveSocial(bill, headerExpansion, modifier)
+    SocialScaffold(
+        title = {
+            ScreenTitle(bill.bill.title)
         },
-        lazyListContent = {
-            lazyContent(bill, onSponsorClick)
-        }
-    )
-}
-
-@Composable
-private fun HeaderAboveSocial(
-    completeBill: CompleteBill,
-    expansionProgress: HeaderExpansion,
-    modifier: Modifier,
-) {
-    val bill = completeBill.bill
-
-    Column(
-        modifier
-            .padding(CommonsPadding.Screen)
-            .statusBarsPadding()
-    ) {
-        ScreenTitle(bill.title, autoPadding = false)
-        Caption(completeBill.type.name dot completeBill.session.name)
-        Quote(bill.description)
-        ResourceText(R.string.bill_publications_count, completeBill.publications.size)
+        aboveSocial = { },
+        belowSocial = null,
+    ) { modifier ->
+        lazyContent(bill, onSponsorClick, modifier)
     }
 }
+
 
 @OptIn(ExperimentalFoundationApi::class)
 private fun LazyListScope.lazyContent(
     completeBill: CompleteBill,
     onSponsorClick: SponsorAction,
+    modifier: Modifier = Modifier,
 ) {
-    val sectionModifier = ScreenPaddingModifier.padding(CommonsPadding.VerticalListItemLarge)
+    val sectionModifier = modifier
+        .padding(CommonsPadding.ScreenHorizontal)
+        .padding(CommonsPadding.VerticalListItemLarge)
     val horizontalItemModifier = Modifier.padding(CommonsPadding.HorizontalListItem)
+
+    item {
+        Description(completeBill.type, completeBill.session, completeBill.bill, sectionModifier)
+    }
 
     optionalItem(completeBill.publications) { publications ->
         Publications(publications, sectionModifier)
@@ -134,8 +123,21 @@ private fun LazyListScope.lazyContent(
         Sponsors(sponsors, onSponsorClick, sectionModifier, horizontalItemModifier)
     }
 
-    optionalItem(completeBill.stages) { stages ->
-        Stages(completeBill.getAnnotatedBillStages(), Modifier)
+    optionalItem(completeBill.getAnnotatedBillStages()) { stages ->
+        Stages(stages, sectionModifier)
+    }
+}
+
+@Composable
+private fun Description(
+    type: BillType,
+    session: ParliamentarySession,
+    bill: Bill,
+    modifier: Modifier,
+) {
+    Column(modifier) {
+        Caption(type.name dot session.name)
+        Quote(bill.description)
     }
 }
 
@@ -148,8 +150,7 @@ private fun Publications(
     CollapsedColumn(
         publications,
         headerBlock = CollapsedColumn.simpleHeader(
-            stringResource(R.string.bill_publications),
-            "${publications.size}"
+            pluralResource(R.plurals.bill_publications, publications.size)
         ),
         modifier = modifier,
         scrollable = false,
@@ -168,19 +169,14 @@ private fun Sponsors(
     modifier: Modifier,
     itemModifier: Modifier,
 ) {
-    Text("Sponsors")
     Column(modifier) {
-        ResourceText(R.string.bill_sponsors_count, sponsors.size)
+        PluralResourceText(R.plurals.bill_sponsors, sponsors.size)
         LazyRow {
             items(sponsors) { sponsor ->
-                Column(
-                    itemModifier
-                        .clickable { onSponsorClick(sponsor) }
-                        .padding(CommonsPadding.HorizontalListItem),
-                ) {
-                    Text(sponsor.sponsor.name)
-                    OptionalText(sponsor.party?.name)
-                }
+                MemberLayout(
+                    sponsor,
+                    itemModifier.clickable { onSponsorClick(sponsor) }
+                )
             }
         }
     }
@@ -192,7 +188,7 @@ private fun Stages(
     stages: List<AnnotatedBillStage>,
     modifier: Modifier,
 ) {
-    Text("Stages")
+//    ComponentTitle(pluralResource(R.plurals.bill_stages, stages.size))
 
     StickyHeaderRow(
         items = stages,
@@ -214,7 +210,7 @@ private fun Stages(
                 ) {
                     Text(stage.type)
                     if (sittings.size > 1) {
-                        PluralText(R.plurals.bill_sittings, sittings.size)
+                        PluralResourceText(R.plurals.bill_sittings, sittings.size)
                     }
                     Caption(
                         sittings
@@ -256,5 +252,3 @@ private fun BillStageCategory.theme(): SurfaceTheme = when (this) {
     BillStageCategory.ConsiderationOfAmendments -> houseTheme(colors.house.Parliament)
     BillStageCategory.RoyalAssent -> houseTheme(colors.house.Royal)
 }
-
-private val ScreenPaddingModifier = Modifier.padding(CommonsPadding.ScreenHorizontal)

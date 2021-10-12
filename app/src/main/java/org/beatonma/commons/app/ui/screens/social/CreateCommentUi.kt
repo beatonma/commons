@@ -51,6 +51,7 @@ import org.beatonma.commons.theme.CommonsPadding
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CreateCommentUi(
+    modifier: Modifier = Modifier,
     userToken: UserToken = LocalUserToken.current,
     uiState: MutableState<SocialUiState> = LocalSocialUiState.current,
 ) {
@@ -79,7 +80,8 @@ fun CreateCommentUi(
         },
         bottomSheetContent = { progress ->
             CreateCommentSheetContent(userToken, progress, focusRequester)
-        }
+        },
+        modifier = modifier
     )
 }
 

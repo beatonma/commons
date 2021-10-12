@@ -2,6 +2,7 @@ package org.beatonma.commons.compose.padding
 
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -24,3 +25,9 @@ fun Modifier.endOfContent(orientation: Orientation = Orientation.Vertical) =
             )
         }
     )
+
+fun LazyListScope.endOfContent(orientation: Orientation = Orientation.Vertical) {
+    item {
+        EndOfContent(orientation)
+    }
+}

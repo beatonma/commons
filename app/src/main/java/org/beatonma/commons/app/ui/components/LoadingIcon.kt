@@ -4,6 +4,8 @@ import androidx.compose.animation.core.InfiniteRepeatableSpec
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentColor
@@ -64,5 +66,13 @@ fun LoadingIcon(
 
     LaunchedEffect(Unit) {
         state.value = true // Immediately change state value to start the animation.
+    }
+}
+
+fun LazyListScope.loadingIcon(loading: Boolean, key: Any? = "loading_icon") {
+    if (loading) {
+        item(key = key) {
+            LoadingIcon(Modifier.fillMaxWidth())
+        }
     }
 }

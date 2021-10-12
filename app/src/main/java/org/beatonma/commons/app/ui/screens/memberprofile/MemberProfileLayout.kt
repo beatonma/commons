@@ -49,8 +49,8 @@ import org.beatonma.commons.app.ui.components.party.PartyBackground
 import org.beatonma.commons.app.ui.components.party.partyWithTheme
 import org.beatonma.commons.app.ui.screens.signin.UserAccountViewModel
 import org.beatonma.commons.app.ui.screens.social.LocalSocialTheme
-import org.beatonma.commons.app.ui.screens.social.NewSocialScaffold
 import org.beatonma.commons.app.ui.screens.social.ProvideSocial
+import org.beatonma.commons.app.ui.screens.social.SocialScaffold
 import org.beatonma.commons.app.ui.screens.social.SocialUiState
 import org.beatonma.commons.app.ui.screens.social.SocialViewModel
 import org.beatonma.commons.app.ui.screens.social.asSocialTheme
@@ -130,7 +130,7 @@ fun MemberProfileLayout(
         LocalPartyTheme provides partyData,
         LocalSocialTheme provides socialTheme,
     ) {
-        NewSocialScaffold(
+        SocialScaffold(
             title = { TitleBar(profile) },
             socialUiState = socialState,
             onStateChange = onSocialStateChange,
@@ -182,7 +182,7 @@ private fun MemberProfileImage(
                 member.party,
                 imageModifier,
 //                imageConfig,
-                useCache = false,
+//                useCache = false,
             )
         }
     }

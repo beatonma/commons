@@ -1,9 +1,11 @@
 package org.beatonma.commons.app.ui.screens.social
 
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onChildAt
@@ -103,12 +105,15 @@ class CommentListTest : ComposeTest() {
         onClick: (SocialComment) -> Unit = {},
     ) {
         TestTheme {
-            CommentList(
-                comments = comments,
-                modifier = Modifier,
-                expandProgress = 1F,
-                onClick = onClick,
-            )
+            LazyColumn(
+                Modifier.testTag(SocialTestTag.CommentsList)
+            ) {
+                CommentList(
+                    comments = comments,
+                    modifier = Modifier,
+                    onClick = onClick,
+                )
+            }
         }
     }
 }

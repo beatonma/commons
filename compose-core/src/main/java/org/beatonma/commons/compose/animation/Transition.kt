@@ -42,3 +42,6 @@ fun <T> animateFloat(
         label = "AnimatedFloat",
         targetValueByState = targetValueByState,
     )
+
+
+val Boolean.asFloatAnimationTarget get() = if (this) 1f else 0f

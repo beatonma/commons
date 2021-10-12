@@ -1,7 +1,9 @@
 package org.beatonma.commons.compose.util
 
 import android.util.Patterns
+import androidx.annotation.PluralsRes
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -27,6 +29,16 @@ fun Collection<String?>.dotted(): String =
 @Composable
 infix fun String?.dot(other: String?): String = dotted(this, other)
 
+@Composable
+fun pluralResource(
+    @PluralsRes resId: Int,
+    quantity: Int,
+    formatArgs: Array<out Any> = arrayOf(quantity)
+): String {
+    return LocalContext.current.resources.getQuantityString(resId, quantity, *formatArgs)
+}
+
+
 /**
  * Styles supported by [String.withAnnotatedStyle]
  */
@@ -47,11 +59,17 @@ fun String.withAnnotatedStyle() = withAnnotatedStyle(
 )
 
 /**
- * Render basic asterisk-based markdown-like styling as [AnnotatedString].
- * Currently only handles italic(*) and bold(**) styles.
+ * Render basic markdown-like styling as [AnnotatedString].
+ * See [MarkdownStyle] for supported styles
+ *
+ * Supports:
+ * - *italic* text
+ * - **bold text**
+ * - "quotations"
+ *
  *
  * e.g. It can handle
- *      *this* or **this**
+ *      *this* or **this** or 'this'
  *      or combinations like ***this***
  *      or **nesting *like* this!**
  */
