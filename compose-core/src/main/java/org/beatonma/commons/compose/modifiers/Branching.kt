@@ -2,11 +2,14 @@
 
 package org.beatonma.commons.compose.modifiers
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
-import org.beatonma.commons.compose.util.ModifierBlock
-import org.beatonma.commons.compose.util.TypedModifierBlock
 import org.beatonma.commons.core.extensions.fastForEach
+
+private typealias ModifierBlock = @Composable Modifier.() -> Modifier
+private typealias TypedModifierBlock<T> = @Composable Modifier.(T) -> Modifier
+
 
 inline fun <T> Modifier.forEachOf(
     items: List<T>,

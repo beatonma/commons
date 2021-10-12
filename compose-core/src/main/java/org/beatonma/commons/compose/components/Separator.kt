@@ -22,7 +22,6 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.compose.padding.padding
-import org.beatonma.commons.compose.util.ComposableBlock
 import org.beatonma.commons.compose.util.size
 import org.beatonma.commons.themed.themedPadding
 
@@ -32,7 +31,7 @@ private const val ALPHA = 0.1F
 fun HorizontalSeparator(
     modifier: Modifier = Modifier,
     color: Color = LocalContentColor.current.copy(alpha = ALPHA),
-    text: ComposableBlock? = null,
+    text: (@Composable () -> Unit)? = null,
 ) {
     if (text == null) {
         Box(
