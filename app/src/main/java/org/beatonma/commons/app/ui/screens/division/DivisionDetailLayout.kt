@@ -145,12 +145,15 @@ fun DivisionDetailLayout(
                 HeaderAboveSocial(division, description, modifier)
             }
 
-            stickyHeaderWithInsets(state = scrollState, key = "search_filters") {
+            stickyHeaderWithInsets(
+                state = scrollState,
+                key = "search_filters"
+            ) { _, headerModifier ->
                 HeaderBelowSocial(
                     division = division,
                     onVoteTypeClick = toggleVoteTypeFilter,
                     applyFilter = { filter -> filterQuery = filter },
-                    modifier = modifier
+                    modifier = modifier.then(headerModifier)
                 )
             }
 

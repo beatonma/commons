@@ -172,8 +172,7 @@ fun SocialScaffold(
             stickyHeaderWithInsets(
                 scrollState,
                 "social_header",
-                Modifier.background(theme.backgroundColor(socialExpansion))
-            ) {
+            ) { _, headerModifier ->
                 val headerHeight by themedAnimation.animateIntAsState(
                     if (socialUiState.isCollapsed) metrics.primaryHeaderHeight else metrics.socialHeaderHeight
                 )
@@ -189,6 +188,7 @@ fun SocialScaffold(
                     modifier = Modifier
                         .background(theme.backgroundColor(socialExpansion))
                         .fillMaxWidth()
+                        .then(headerModifier)
                 ) {
                     HeaderContent(
                         socialUiState,

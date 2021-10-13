@@ -1,5 +1,6 @@
 package org.beatonma.commons.app.ui.screens.constituency.electionresults
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -9,8 +10,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.ListItem
@@ -26,14 +29,18 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -44,20 +51,19 @@ import org.beatonma.commons.app.ui.components.Date
 import org.beatonma.commons.app.ui.components.party.LocalPartyTheme
 import org.beatonma.commons.app.ui.components.party.PartyBackground
 import org.beatonma.commons.app.ui.components.party.PartyWithTheme
+import org.beatonma.commons.app.ui.components.party.ProvidePartyImageConfig
 import org.beatonma.commons.app.ui.components.party.partyWithTheme
-import org.beatonma.commons.app.ui.components.party.providePartyImageConfig
 import org.beatonma.commons.app.ui.util.WithResultData
 import org.beatonma.commons.compose.animation.ExpandCollapseState
 import org.beatonma.commons.compose.animation.animateExpansionAsState
 import org.beatonma.commons.compose.animation.rememberExpandCollapseState
 import org.beatonma.commons.compose.components.HorizontalSeparator
-import org.beatonma.commons.compose.components.Tag
-import org.beatonma.commons.compose.components.collapsibleheader.CollapsibleHeaderLayout
 import org.beatonma.commons.compose.components.text.ComponentTitle
 import org.beatonma.commons.compose.components.text.ResourceText
+import org.beatonma.commons.compose.layout.itemWithState
+import org.beatonma.commons.compose.layout.stickyHeaderWithInsets
 import org.beatonma.commons.compose.modifiers.wrapContentHeight
 import org.beatonma.commons.compose.padding.padding
-import org.beatonma.commons.compose.systemui.statusBarsPadding
 import org.beatonma.commons.compose.util.dot
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.core.extensions.reversed
@@ -81,7 +87,7 @@ import java.util.Locale
  * Candidates pay a deposit when they register.
  * Candidates who win less than 5% of the vote lose their deposit.
  */
-private const val VOTE_DEPOSIT_CUTOFF = 0.05F
+private const val VoteDepositCutoff = 0.05F
 
 private const val CandidateVoteBarDelay = 150L
 private val CandidateVoteBarHeight = 6.dp
@@ -89,7 +95,7 @@ private val TrailingSize = 60.dp
 
 @Composable
 fun ConstituencyResultsLayout(
-    viewmodel: ConstituencyResultsViewModel,
+    viewmodel: ConstituencyResultsViewModel = hiltViewModel(),
 ) {
     val resultState by viewmodel.livedata.observeAsState(IoLoading)
 
@@ -98,55 +104,76 @@ fun ConstituencyResultsLayout(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ConstituencyResultsLayout(
     data: ConstituencyElectionDetailsWithExtras,
 ) {
-    CompositionLocalProvider(
-        *providePartyImageConfig(),
-    ) {
-        CollapsibleHeaderLayout(
-            collapsingHeader = { Header(data, it) },
-            lazyListContent = {
-                Candidates(details = data.details, candidates = data.candidates)
+    ProvidePartyImageConfig {
+        var depositLostPosition by remember { mutableStateOf(-1) }
+        val state = rememberLazyListState()
+
+        LazyColumn(state = state) {
+            stickyHeaderWithInsets(state, "header") { headerState, headerModifier ->
+                Header(
+                    data,
+                    Modifier
+                        .shadow(
+                            if (headerState.isAtTop) 8.dp else 0.dp
+                        )
+                        .background(colors.background)
+                        .then(headerModifier)
+                )
             }
-        )
+
+            itemWithState(state, "collapsing") { itemState ->
+                Column(
+                    Modifier
+                        .padding(themedPadding.ScreenHorizontal)
+                        .alpha(itemState.visibility)
+                ) {
+                    ResourceText(
+                        R.string.constituency_election_turnout,
+                        data.details.turnoutPercent(),
+                        data.details.turnout.formatted(),
+                        data.details.electorate.formatted(),
+                        withAnnotatedStyle = true,
+                    )
+
+                    Date(data.election.date)
+                }
+            }
+
+            Candidates(
+                details = data.details,
+                candidates = data.candidates,
+                depositLostPosition = depositLostPosition,
+                onDepositionLostPositionChange = { depositLostPosition = it },
+            )
+        }
     }
 }
 
 @Composable
-private fun Header(data: ConstituencyElectionDetailsWithExtras, expanded: Float) {
-    Column(
-        Modifier.statusBarsPadding()
-    ) {
+private fun Header(data: ConstituencyElectionDetailsWithExtras, modifier: Modifier = Modifier) {
+    Column(modifier) {
         ComponentTitle(
-            stringResource(R.string.constituency_election_header, data.election.name) dot
-                    data.constituency.name,
+            stringResource(
+                R.string.constituency_election_header,
+                data.election.name
+            )
         )
 
-        Column(
-            Modifier
-                .padding(themedPadding.ScreenHorizontal)
-                .wrapContentHeight(expanded.progressIn(0.7F, 1F))
-                .alpha(expanded.progressIn(.7F, 1F))
-        ) {
-            ResourceText(
-                R.string.constituency_election_turnout,
-                data.details.turnoutPercent(),
-                data.details.turnout.formatted(),
-                data.details.electorate.formatted(),
-                withAnnotatedStyle = true,
-            )
-            Date(data.election.date)
-        }
+        ComponentTitle(data.constituency.name)
     }
 }
 
 private fun LazyListScope.Candidates(
     details: ConstituencyElectionDetails,
-    candidates: List<ConstituencyCandidate>
+    candidates: List<ConstituencyCandidate>,
+    depositLostPosition: Int,
+    onDepositionLostPositionChange: (Int) -> Unit,
 ) {
-    var lostDepositDisplayed = false
     itemsIndexed(candidates) { index, candidate ->
         // Party lookup using (probably) abbreviated name - may be inaccurate but worst case
         // will have an invalid ID and use name as given, giving the default party theme.
@@ -155,17 +182,20 @@ private fun LazyListScope.Candidates(
             parliamentdotuk = PartyResolution.getPartyId(candidate.partyName)
         )
 
-        CompositionLocalProvider(LocalPartyTheme provides partyWithTheme(fuzzyParty)) {
-            val votePercentage = candidate.votePercentage(details.turnout)
+        val votePercentage = candidate.votePercentage(details.turnout)
 
+        if (depositLostPosition < 0 && votePercentage < VoteDepositCutoff) {
+            onDepositionLostPositionChange(index)
+        }
+
+        CompositionLocalProvider(LocalPartyTheme provides partyWithTheme(fuzzyParty)) {
             if (index == 0) {
                 WinningCandidate(candidate, details, votePercentage)
                 return@CompositionLocalProvider
             }
 
-            if (!lostDepositDisplayed && votePercentage < VOTE_DEPOSIT_CUTOFF) {
+            if (index == depositLostPosition) {
                 DepositLostMarker()
-                lostDepositDisplayed = true
             }
 
             LosingCandidate(candidate, votePercentage)
@@ -191,7 +221,7 @@ private fun WinningCandidate(
             secondaryText = {
                 Column(Modifier.fillMaxWidth()) {
                     Row(
-                        verticalAlignment = Alignment.Bottom
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
                             candidate.votes.formatted() dot votePercentage.formatPercent(),
@@ -239,12 +269,12 @@ private fun LosingCandidate(
  */
 @Composable
 private fun DepositLostMarker() {
-    val state by rememberExpandCollapseState(ExpandCollapseState.Collapsed)
+    var state by rememberExpandCollapseState(ExpandCollapseState.Collapsed)
     val expandedness by state.animateExpansionAsState()
 
     Box(
         Modifier
-            .clickable { state.toggle() }
+            .clickable { state = state.toggle() }
             .fillMaxWidth(),
         contentAlignment = Alignment.Center
     ) {
@@ -355,12 +385,14 @@ private fun ResultSummary(
         else -> null
     } ?: return
 
-    Box(
-        modifier,
-        contentAlignment = Alignment.Center
-    ) {
-        Tag(resultText, color = theme.accent, contentColor = theme.onAccent)
-    }
+    Text(resultText, color = theme.onPrimary)
+
+//    Box(
+//        modifier,
+//        contentAlignment = Alignment.Center
+//    ) {
+//        Tag(resultText, color = theme.accent, contentColor = theme.onAccent)
+//    }
 }
 
 @Composable
@@ -368,3 +400,49 @@ private fun formattedName(fuzzyName: String) = PartyResolution.getPartyName(fuzz
 
 private fun ConstituencyCandidate.votePercentage(turnout: Int): Float =
     this.votes.toFloat() / turnout.toFloat()
+
+private val ConstituencyCandidate.isWinner get() = this.order == 1
+
+
+//@Preview
+//@Composable
+//private fun LazyListReactiveItemsPreview() {
+//    val state = rememberLazyListState()
+//
+//    @Composable
+//    fun Item(content: @Composable BoxScope.() -> Unit = {}) {
+//        Box(
+//            Modifier
+//                .height(128.dp)
+//                .fillMaxWidth()
+//                .colorize(),
+//            content = content
+//        )
+//    }
+//
+//    InAppPreview {
+//        LazyColumn(state = state) {
+//            item {
+//                Item()
+//            }
+//
+//            stickyHeaderWithInsets(state, "sticky") {
+//                Item { Text("sticky") }
+//            }
+//
+//            item {
+//                Item()
+//            }
+//
+//            itemWithState(state, "reactive") {
+//                Item { Text("reactive $it") }
+//            }
+//
+//            repeat(5) {
+//                item {
+//                    Item()
+//                }
+//            }
+//        }
+//    }
+//}
