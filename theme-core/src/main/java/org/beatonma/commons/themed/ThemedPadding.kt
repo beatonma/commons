@@ -48,9 +48,6 @@ interface ThemedPadding {
     val CardButton: Padding
     val EndOfContent: Padding
     val EndOfContentHorizontal: Padding
-
-//    val LinkItem: Padding
-//    val Links: Padding
 }
 
 class Padding(
@@ -67,6 +64,13 @@ class Padding(
     )
 
     fun asPaddingValues() = PaddingValues(start, top, end, bottom)
+
+    operator fun times(scale: Float) = Padding(
+        start = start * scale,
+        top = top * scale,
+        end = end * scale,
+        bottom = bottom * scale
+    )
 
     override fun hashCode(): Int {
         return Objects.hash(start, top, end, bottom)
