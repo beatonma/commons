@@ -11,7 +11,7 @@ import androidx.compose.ui.platform.InspectorValueInfo
 import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntSize
-import org.beatonma.commons.core.extensions.lerpTo
+import org.beatonma.commons.core.extensions.lerpBetween
 
 /**
  * Helper for animating width between zero and the content width, based on progress.
@@ -143,10 +143,10 @@ private fun Constraints.lerpTo(
     horizontalProgress: Float,
     verticalProgress: Float,
 ): Constraints {
-    val minW = minWidth.lerpTo(other.minWidth, horizontalProgress)
-    val maxW = maxWidth.lerpTo(other.maxWidth, horizontalProgress).coerceAtLeast(minW)
-    val minH = minHeight.lerpTo(other.minHeight, verticalProgress)
-    val maxH = maxHeight.lerpTo(other.maxHeight, verticalProgress).coerceAtLeast(minH)
+    val minW = horizontalProgress.lerpBetween(minWidth, other.minWidth)
+    val maxW = horizontalProgress.lerpBetween(maxWidth, other.maxWidth).coerceAtLeast(minW)
+    val minH = verticalProgress.lerpBetween(minHeight, other.minHeight)
+    val maxH = verticalProgress.lerpBetween(maxHeight, other.maxHeight).coerceAtLeast(minH)
 
     return Constraints(
         minWidth = minW,

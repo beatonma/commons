@@ -7,17 +7,17 @@ class IntTest {
     @Test
     fun int_lerp_isCorrect() {
         // Upwards
-        0.lerpTo(2, 0.5F) shouldbe 1
-        9.lerpTo(15, 0.5F) shouldbe 12
+        0.5F.lerpBetween(0, 2) shouldbe 1
+        0.5F.lerpBetween(9, 15) shouldbe 12
 
         // With negative numbers
-        (-1).lerpTo(4, 0.8F) shouldbe 3
-        (-10).lerpTo(-5, 0.2F) shouldbe -9
+        0.8F.lerpBetween((-1), 4) shouldbe 3
+        0.2F.lerpBetween((-10), -5) shouldbe -9
 
         // Downwards
-        3.lerpTo(-2, 0.8F) shouldbe -1
-        (-10).lerpTo(-5, 0.2F) shouldbe -9
-        (-5).lerpTo(-10, 0.2F) shouldbe -6
+        0.8F.lerpBetween(3, -2) shouldbe -1
+        0.2F.lerpBetween(-10, -5) shouldbe -9
+        0.2F.lerpBetween(-5, -10) shouldbe -6
     }
 
     @Test

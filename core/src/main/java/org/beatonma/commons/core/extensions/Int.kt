@@ -1,8 +1,11 @@
 package org.beatonma.commons.core.extensions
 
+import androidx.annotation.FloatRange
 import kotlin.math.roundToInt
 
-fun Int.lerpTo(end: Int, progress: Float): Int = this + ((end - this) * progress).roundToInt()
+/**
+ * Linear interpolation between [start] and [end], using the receiver Float as current progress.
+ */
 fun Float.lerpBetween(start: Int, end: Int): Int = start + ((end - start) * this).roundToInt()
 
 /**
@@ -10,6 +13,11 @@ fun Float.lerpBetween(start: Int, end: Int): Int = start + ((end - start) * this
  */
 fun Int.normalizeIn(min: Int, max: Int): Float = toFloat().normalizeIn(min.toFloat(), max.toFloat())
 
+/**
+ * Return the normalized value of the receiver in the given [min]..[max] range.
+ */
+@FloatRange(from = 0.0, to = 1.0)
+fun Int.progressIn(min: Int, max: Int): Float = coerceIn(min, max).normalizeIn(min, max)
 
 /**
  * Get the closest multiple of [nearest] AFTER the receiver.
