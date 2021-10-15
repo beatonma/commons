@@ -118,6 +118,17 @@ interface ThemedAnimation {
     )
 
     @Composable
+    fun animateIntAsState(
+        targetValue: Int,
+        animationSpec: FiniteAnimationSpec<Int> = spec(),
+        finishedListener: ((Int) -> Unit)? = null,
+    ): State<Int> = androidx.compose.animation.core.animateIntAsState(
+        targetValue = targetValue,
+        animationSpec = animationSpec,
+        finishedListener = finishedListener,
+    )
+
+    @Composable
     fun animateColorAsState(
         targetValue: Color,
         animationSpec: AnimationSpec<Color> = spec(),
