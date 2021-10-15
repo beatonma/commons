@@ -24,7 +24,7 @@ internal object CommonsAnimation : ThemedAnimation {
     override fun <T> fast(): FiniteAnimationSpec<T> = CommonsSpring(stiffness = 2500F)
 
     override fun <T> spring(): SpringSpec<T> = CommonsSpring()
-    override fun <T> tween(duration: Int): TweenSpec<T> = CommonsTween()
+    override fun <T> tween(duration: Int): TweenSpec<T> = CommonsTween(duration)
 
     override fun <T> repeatable(
         iterations: Int,
@@ -46,7 +46,6 @@ internal object CommonsAnimation : ThemedAnimation {
 
     private fun <T> CommonsSpring(
         dampingRatio: Float = Spring.DampingRatioNoBouncy,
-//        stiffness: Float = 60F,
         stiffness: Float = 200F,
     ) = spring<T>(dampingRatio = dampingRatio, stiffness = stiffness)
 
