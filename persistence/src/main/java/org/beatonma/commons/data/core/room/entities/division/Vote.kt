@@ -9,13 +9,6 @@ import org.beatonma.commons.core.PARLIAMENTDOTUK
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.core.VoteType
 
-//enum class VoteType {
-//    AyeVote,
-//    NoVote,
-//    Abstains,
-//    DidNotVote,
-//    SuspendedOrExpelledVote,
-//}
 
 @Entity(
     foreignKeys = [
