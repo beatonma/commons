@@ -66,11 +66,15 @@ fun Any?.assertNotInstanceOf(cls: KClass<*>, message: String? = "$this should no
 /**
  * Assert that the receiver is not an instance of the given Java class
  */
-fun Any?.assertNotInstanceOf(cls: Class<*>, message: String? = "$this should not be an instance of $cls") {
+fun Any?.assertNotInstanceOf(
+    cls: Class<*>,
+    message: String? = "$this should not be an instance of $cls"
+) {
     JUnit.assertFalse(message, cls.isInstance(this))
 }
 
 
-infix fun <T> T.shouldbe(other: T?) = JUnit.assertEquals(other, this)
-infix fun <T> T.shouldNotBe(other: T?) = JUnit.assertNotEquals(other, this)
+infix fun <T> T.shouldbe(expected: T?) = JUnit.assertEquals(expected, this)
+infix fun <T> Array<T>.shouldbe(expected: Array<T>) = JUnit.assertArrayEquals(expected, this)
+infix fun <T> T.shouldNotBe(expected: T?) = JUnit.assertNotEquals(expected, this)
 infix fun <T> T.shouldBeInstanceOf(cls: KClass<*>) = JUnit.assertTrue(cls.isInstance(this))
