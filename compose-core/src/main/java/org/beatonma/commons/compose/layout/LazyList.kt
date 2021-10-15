@@ -96,33 +96,58 @@ private fun ItemStateLayout(
         }
     }
 
-    var itemState by remember { mutableStateOf(ItemState(false, 0, 1f)) }
+    var itemState by remember {
+        mutableStateOf(
+            ItemState(
+                isFirst = false,
+                offset = 0,
+                visibility = 1f,
+                overlapsPrevious = false,
+                overlapsNext = false
+            )
+        )
+    }
 
     LaunchedEffect(state.firstVisibleItemScrollOffset) {
         state.layoutInfo.visibleItemsInfo.find { it.key == key }
             ?.let { item ->
+                val itemTop = item.offset
+                val itemBottom = itemTop + item.size
+
                 val previousItemBottom =
                     state.layoutInfo.visibleItemsInfo.find { it.index == item.index - 1 }
                         ?.let { previous ->
                             previous.offset + previous.size
                         }
 
-                itemState = if (previousItemBottom != null && previousItemBottom > item.offset) {
+                val nextItemTop =
+                    state.layoutInfo.visibleItemsInfo.find { it.index > item.index }?.offset
+
+                val overlapsPrevious = previousItemBottom != null && previousItemBottom > itemTop
+                val overlapsNext = nextItemTop != null && nextItemTop < itemBottom
+
+                itemState = if (overlapsPrevious) {
+                    check(previousItemBottom != null) { "Null check already performed in overlapsAbove assignment" }
+
                     // Previous item is a stickyHeader so we need to adjust offset.
-                    val offset = item.offset - previousItemBottom
+                    val offset = itemTop - previousItemBottom
                     ItemState(
                         isFirst = item.index == state.firstVisibleItemIndex,
-                        offset = item.offset - previousItemBottom,
+                        offset = itemTop - previousItemBottom,
                         visibility = ((item.size + offset).toFloat() / item.size.toFloat())
-                            .coerceIn(0f, 1f)
+                            .coerceIn(0f, 1f),
+                        overlapsPrevious = overlapsPrevious,
+                        overlapsNext = overlapsNext,
                     )
                 } else {
                     ItemState(
                         isFirst = item.index == state.firstVisibleItemIndex,
-                        offset = item.offset,
-                        visibility = ((item.size - item.offset).toFloat() / item.size.toFloat())
+                        offset = itemTop,
+                        visibility = ((item.size - itemTop).toFloat() / item.size.toFloat())
                             .coerceIn(0f, 1f)
-                            .reversed()
+                            .reversed(),
+                        overlapsPrevious = overlapsPrevious,
+                        overlapsNext = overlapsNext,
                     )
                 }
             }
@@ -136,6 +161,8 @@ class ItemState internal constructor(
     val isFirst: Boolean,
     val offset: Int,
     val visibility: Float,
+    val overlapsPrevious: Boolean,
+    val overlapsNext: Boolean,
 ) {
     val isAtTop: Boolean get() = offset == 0
 
@@ -148,6 +175,8 @@ class ItemState internal constructor(
         if (isFirst != other.isFirst) return false
         if (offset != other.offset) return false
         if (visibility != other.visibility) return false
+        if (overlapsNext != other.overlapsNext) return false
+        if (overlapsPrevious != other.overlapsPrevious) return false
 
         return true
     }
@@ -156,6 +185,8 @@ class ItemState internal constructor(
         var result = isFirst.hashCode()
         result = 31 * result + offset
         result = 31 * result + visibility.hashCode()
+        result = 31 * result + overlapsPrevious.hashCode()
+        result = 31 * result + overlapsNext.hashCode()
         return result
     }
 }
