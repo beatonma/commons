@@ -123,6 +123,7 @@ private object TestButtons : ThemedButtons {
 
 private object TestElevation : ThemedElevation {
     override val Card: Dp = 4.dp
+    override val Toolbar: Dp = 6.dp
     override val ModalSurface: Dp = 32.dp
 }
 

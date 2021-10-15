@@ -1,4 +1,4 @@
-package org.beatonma.commons.compose.components.newcollapsibleheader
+package org.beatonma.commons.compose.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,19 +11,31 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.platform.testTag
+import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.compose.util.math.Matrix2x2
 import kotlin.math.roundToInt
 
 private const val DefaultMin = Int.MAX_VALUE
 private const val DefaultMax = Int.MIN_VALUE
 
+/**
+ * Deprecated. Use [org.beatonma.commons.compose.layout.stickyHeaderWithInsets] and/or
+ * [org.beatonma.commons.compose.layout.stickyHeaderWithState] and/or
+ * [org.beatonma.commons.compose.layout.itemWithState].
+ */
+@Deprecated(
+    "Same effect can be achieved reliably with multiple items instead of putting" +
+            "everything inside one 'smart' item. See LazyListScope.stickyHeaderWithState.",
+)
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun NewCollapsibleHeaderLayout(
+fun CollapsibleHeaderLayout(
     header: @Composable (Float) -> Unit,
-    content: LazyListScope.() -> Unit,
     state: LazyListState = rememberLazyListState(),
+    content: LazyListScope.() -> Unit,
 ) {
     var expansion by remember { mutableStateOf(1f) }
 
@@ -57,12 +69,16 @@ fun NewCollapsibleHeaderLayout(
         }
     }
 
-    LazyColumn(state = state) {
+    LazyColumn(
+        state = state,
+        modifier = Modifier.testTag(TestTag.LazyList),
+    ) {
         stickyHeader {
             Layout(
                 content = {
                     header(expansion)
                 },
+                Modifier.testTag(TestTag.CollapsingHeader)
             ) { measurables, constraints ->
                 check(measurables.size == 1) {
                     "CollapsibleHeaderLayout only supports one child layout (got ${measurables.size})"

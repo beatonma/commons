@@ -7,7 +7,7 @@ private const val size = 2
 
 /**
  * A simple fixed-size 2x2 matrix, currently used to predict minimum scrolling size for
- * [org.beatonma.commons.compose.components.newcollapsibleheader.NewCollapsibleHeaderLayout].
+ * [org.beatonma.commons.compose.components.CollapsibleHeaderLayout].
  *
  * The insight of how to use a matrix to solve a system of linear equations this came from this
  * excellent article by Dion Saputra:
