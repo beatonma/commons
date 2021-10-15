@@ -13,5 +13,6 @@ val themedElevation: ThemedElevation
 
 interface ThemedElevation {
     val Card: Dp
+    val Toolbar: Dp
     val ModalSurface: Dp
 }
