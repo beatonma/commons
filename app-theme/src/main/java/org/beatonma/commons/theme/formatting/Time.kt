@@ -132,5 +132,9 @@ private fun LocalDate.chooseDateFormatter(today: LocalDate = LocalDate.now()): C
 }
 
 @Composable
-fun pluralResource(@PluralsRes resId: Int, quantity: Int, vararg formatArgs: Any = arrayOf(quantity)): String =
+private fun pluralResource(
+    @PluralsRes resId: Int,
+    quantity: Int,
+    vararg formatArgs: Any = arrayOf(quantity)
+): String =
     LocalContext.current.resources.getQuantityString(resId, quantity, *formatArgs)
