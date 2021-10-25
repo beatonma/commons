@@ -3,18 +3,18 @@ package org.beatonma.commons.sampledata
 import org.beatonma.commons.data.core.room.entities.bill.Bill
 import org.beatonma.commons.data.core.room.entities.bill.BillPublication
 import org.beatonma.commons.data.core.room.entities.bill.BillSponsor
-import org.beatonma.commons.data.core.room.entities.bill.BillSponsorWithParty
+import org.beatonma.commons.data.core.room.entities.bill.BillSponsorWithProfile
 import org.beatonma.commons.data.core.room.entities.bill.BillStage
 import org.beatonma.commons.data.core.room.entities.bill.BillStageSitting
 import org.beatonma.commons.data.core.room.entities.bill.BillStageWithSittings
 import org.beatonma.commons.data.core.room.entities.bill.BillType
 import org.beatonma.commons.data.core.room.entities.bill.CompleteBill
 import org.beatonma.commons.data.core.room.entities.bill.ParliamentarySession
-import org.beatonma.commons.data.core.room.entities.member.Party
+import org.beatonma.commons.data.core.room.entities.member.MemberProfileWithPartyConstituency
 import java.time.LocalDate
 
-val SampleBillSponsor: BillSponsor get() = SampleBillSponsorWithParty.sponsor
-val SampleBillSponsorWithParty: BillSponsorWithParty get() = SampleBillSponsors.random()
+val SampleBillSponsor: BillSponsor get() = SampleBillSponsorWithProfile.sponsor
+val SampleBillSponsorWithProfile: BillSponsorWithProfile get() = SampleBillSponsors.random()
 val SampleBillPublication get() = SampleBillPublications.random()
 val SampleSession get() = ParliamentarySession(parliamentdotuk = 377316, name = "2013 - 2014")
 val SampleBillType
@@ -53,26 +53,25 @@ val SampleCompleteBill: CompleteBill
 
 val SampleBillSponsors
     get() = listOf(
-        BillSponsorWithParty(
+        BillSponsorWithProfile(
             sponsor = BillSponsor(
                 name = "Sheryll Murray",
                 billId = 393258,
-                parliamentdotuk = null,
-                partyId = null
+                profile = null,
             ),
-            party = null
+            profile = null,
         ),
-        BillSponsorWithParty(
+        BillSponsorWithProfile(
             sponsor = BillSponsor(
                 name = "Baroness Wilcox",
                 billId = 393258,
-                parliamentdotuk = 1727,
-                partyId = 4
+                profile = null,
             ),
-            party = Party(
-                parliamentdotuk = 4,
-                name = "Conservative"
-            )
+            profile = MemberProfileWithPartyConstituency(
+                SampleMember,
+                SampleParty,
+                SampleConstituency
+            ),
         )
     )
 

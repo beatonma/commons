@@ -15,7 +15,7 @@ import org.beatonma.commons.data.core.room.entities.bill.BillPublication
 import org.beatonma.commons.data.core.room.entities.bill.BillPublicationBasic
 import org.beatonma.commons.data.core.room.entities.bill.BillPublicationDetail
 import org.beatonma.commons.data.core.room.entities.bill.BillSponsor
-import org.beatonma.commons.data.core.room.entities.bill.BillSponsorWithParty
+import org.beatonma.commons.data.core.room.entities.bill.BillSponsorWithProfile
 import org.beatonma.commons.data.core.room.entities.bill.BillStage
 import org.beatonma.commons.data.core.room.entities.bill.BillStageSitting
 import org.beatonma.commons.data.core.room.entities.bill.BillStageWithSittings
@@ -38,7 +38,7 @@ interface BillDao {
     fun getBillPublications(billId: ParliamentID): FlowList<BillPublication>
 
     @Query("""SELECT * FROM bill_sponsors WHERE sponsor_bill_id = :billId""")
-    fun getBillSponsors(billId: ParliamentID): FlowList<BillSponsorWithParty>
+    fun getBillSponsors(billId: ParliamentID): FlowList<BillSponsorWithProfile>
 
     @Transaction
     @Query("""SELECT * FROM bill_stages WHERE billstage_bill_parliamentdotuk = :billId""")

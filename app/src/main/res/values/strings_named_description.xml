@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="named_description_house_membership" translatable="true">House of %s</string>
-    <string name="named_description_constituency_mp" translatable="true">MP, %s</string>
+    <string name="named_description_constituency_former_mp" translatable="true">Former MP for %s</string>
+    <string name="named_description_constituency_mp" translatable="true">MP for %s</string>
     <string name="named_description_party_member" translatable="true">Member, %s</string>
     <string name="named_description_experience" translatable="true">%1$s, %2$s</string>
     <string name="named_description_committee_chairship" translatable="true">Chair, %s</string>

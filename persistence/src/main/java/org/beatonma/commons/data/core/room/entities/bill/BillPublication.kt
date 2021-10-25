@@ -43,7 +43,7 @@ data class BillPublicationBasic(
 data class BillPublicationDetail(
     @ColumnInfo(name = "bill_pub_parliamentdotuk") @PrimaryKey override val parliamentdotuk: ParliamentID,
     @ColumnInfo(name = "bill_pub_bill_id") val billId: ParliamentID,
-    @ColumnInfo(name = "bill_url") val url: String,
+    @ColumnInfo(name = "bill_url") val url: String?,
     @ColumnInfo(name = "bill_content_type") val contentType: String,
     @ColumnInfo(name = "bill_content_length") val contentLength: Int,
 ): Parliamentdotuk

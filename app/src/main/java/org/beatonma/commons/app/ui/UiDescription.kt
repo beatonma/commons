@@ -4,11 +4,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.screens.bill.viewmodel.BillStageCategory
+import org.beatonma.commons.app.util.logWarning
 import org.beatonma.commons.core.House
 import org.beatonma.commons.core.VoteType
-import org.beatonma.commons.core.extensions.dump
 import org.beatonma.commons.core.extensions.withNotNull
 import org.beatonma.commons.data.core.interfaces.Named
+import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import org.beatonma.commons.data.core.room.entities.member.CommitteeMemberWithChairs
 import org.beatonma.commons.data.core.room.entities.member.Experience
 import org.beatonma.commons.data.core.room.entities.member.FinancialInterest
@@ -61,6 +62,10 @@ fun Named.uiDescription(): String = when (this) {
         else stringResource(R.string.named_description_experience, name, castableOrganisation)
     }
     is HistoricalConstituencyWithElection -> stringResource(
+        R.string.named_description_constituency_former_mp,
+        name
+    )
+    is Constituency -> stringResource(
         R.string.named_description_constituency_mp,
         name
     )
@@ -73,7 +78,7 @@ fun Named.uiDescription(): String = when (this) {
     -> name
 
     else -> {
-        this.javaClass.canonicalName.dump("no description for class ($name)")
+        logWarning("No description for class ${this.javaClass.canonicalName}")
         name
     }
 }
@@ -85,7 +90,7 @@ fun MemberProfile.currentPostUiDescription(): String {
     return when {
         active == false -> ""
         isLord == true || constituency == null -> House.lords.uiDescription()
-        isMp == true -> House.commons.uiDescription()
+        isMp == true -> constituency?.uiDescription() ?: House.commons.uiDescription()
         else -> ""
     }
 }

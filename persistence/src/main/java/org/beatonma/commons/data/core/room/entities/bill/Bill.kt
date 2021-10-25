@@ -5,7 +5,6 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
-import androidx.room.Relation
 import org.beatonma.commons.core.PARLIAMENTDOTUK
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.core.extensions.allNotNull
@@ -41,31 +40,12 @@ data class Bill(
     Commentable,
     Votable
 
-
-data class MinimalBill(
-    @ColumnInfo(name = "bill_$PARLIAMENTDOTUK") override val parliamentdotuk: ParliamentID,
-    @ColumnInfo(name = "bill_title") val title: String,
-    @ColumnInfo(name = "bill_description") val description: String?,
-    @ColumnInfo(name = "bill_date") override val date: LocalDate?,
-): Dated, Parliamentdotuk
-
-
-data class BillWithSessionAndType(
-    @Embedded val bill: Bill,
-    @Relation(parentColumn = "bill_session_id", entityColumn = "session_$PARLIAMENTDOTUK")
-    val session: ParliamentarySession,
-
-    @Relation(parentColumn = "bill_type_id", entityColumn = "billtype_name")
-    val type: BillType
-)
-
-
 data class CompleteBill(
     @Embedded val bill: Bill,
     @Ignore val session: ParliamentarySession,
     @Ignore val type: BillType,
     @Ignore val publications: List<BillPublication>,
-    @Ignore val sponsors: List<BillSponsorWithParty>,
+    @Ignore val sponsors: List<BillSponsorWithProfile>,
     @Ignore val stages: List<BillStageWithSittings>,
 )
 
@@ -74,7 +54,7 @@ data class CompleteBillBuilder(
     var session: ParliamentarySession? = null,
     var type: BillType? = null,
     var publications: List<BillPublication>? = null,
-    var sponsors: List<BillSponsorWithParty>? = null,
+    var sponsors: List<BillSponsorWithProfile>? = null,
     var stages: List<BillStageWithSittings>? = null,
 ) {
     val isComplete: Boolean

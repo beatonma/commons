@@ -88,6 +88,7 @@ object Contract {
     const val CHAIR = "chair"
 
     // Member career stuff
+    const val PROFILE = "profile"
     const val ADDRESS = "address"
     const val POSTS = "posts"
     const val COMMITTEES = "committees"

@@ -33,8 +33,7 @@ data class ApiBillStage(
 
 data class ApiBillSponsor(
     @field:Json(name = Contract.NAME) val name: String,
-    @field:Json(name = Contract.PARLIAMENTDOTUK) val parliamentdotuk: ParliamentID?,
-    @field:Json(name = Contract.PARTY) val party: ApiParty?
+    @field:Json(name = Contract.PROFILE) val profile: ApiMemberProfile?,
 )
 
 data class ApiBillType(

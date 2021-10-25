@@ -2,7 +2,6 @@ package org.beatonma.commons.app.ui.screens.bill
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
@@ -51,7 +50,7 @@ import org.beatonma.commons.compose.util.pluralResource
 import org.beatonma.commons.core.House
 import org.beatonma.commons.data.core.room.entities.bill.Bill
 import org.beatonma.commons.data.core.room.entities.bill.BillPublication
-import org.beatonma.commons.data.core.room.entities.bill.BillSponsorWithParty
+import org.beatonma.commons.data.core.room.entities.bill.BillSponsorWithProfile
 import org.beatonma.commons.data.core.room.entities.bill.BillType
 import org.beatonma.commons.data.core.room.entities.bill.CompleteBill
 import org.beatonma.commons.data.core.room.entities.bill.ParliamentarySession
@@ -164,7 +163,7 @@ private fun Publications(
 
 @Composable
 private fun Sponsors(
-    sponsors: List<BillSponsorWithParty>,
+    sponsors: List<BillSponsorWithProfile>,
     onSponsorClick: SponsorAction,
     modifier: Modifier,
     itemModifier: Modifier,
@@ -175,7 +174,8 @@ private fun Sponsors(
             items(sponsors) { sponsor ->
                 MemberLayout(
                     sponsor,
-                    itemModifier.clickable { onSponsorClick(sponsor) }
+                    onClick = { onSponsorClick(sponsor) },
+                    modifier = itemModifier,
                 )
             }
         }
@@ -188,7 +188,7 @@ private fun Stages(
     stages: List<AnnotatedBillStage>,
     modifier: Modifier,
 ) {
-//    ComponentTitle(pluralResource(R.plurals.bill_stages, stages.size))
+    ComponentTitle(pluralResource(R.plurals.bill_stages, stages.size))
 
     StickyHeaderRow(
         items = stages,

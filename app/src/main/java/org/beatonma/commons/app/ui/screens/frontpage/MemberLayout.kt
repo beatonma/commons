@@ -27,17 +27,28 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.app.ui.accessibility.contentDescription
 import org.beatonma.commons.app.ui.components.image.Avatar
 import org.beatonma.commons.app.ui.components.party.LocalPartyTheme
 import org.beatonma.commons.app.ui.components.party.PartyBackground
 import org.beatonma.commons.app.ui.components.party.PartyWithTheme
+import org.beatonma.commons.app.ui.components.party.ProvidePartyImageConfig
 import org.beatonma.commons.app.ui.components.party.partyWithTheme
+import org.beatonma.commons.app.ui.components.party.providePartyImageConfig
 import org.beatonma.commons.app.ui.currentPostUiDescription
+import org.beatonma.commons.app.ui.uiDescription
 import org.beatonma.commons.compose.shape.withSquareTop
 import org.beatonma.commons.data.core.MinimalMember
+import org.beatonma.commons.data.core.room.entities.bill.BillSponsorWithProfile
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
+import org.beatonma.commons.preview.InAppPreview
+import org.beatonma.commons.preview.PreviewProviders
+import org.beatonma.commons.sampledata.SampleBillSponsorWithProfile
+import org.beatonma.commons.sampledata.SampleConstituency
+import org.beatonma.commons.sampledata.SampleMember
+import org.beatonma.commons.sampledata.SampleParty
 import org.beatonma.commons.theme.invertedColors
 import org.beatonma.commons.themed.themedElevation
 
@@ -80,6 +91,92 @@ fun MemberLayout(
             }
         }
     }
+}
+
+@Composable
+fun MemberLayout(
+    profile: MemberProfile,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    decoration: @Composable () -> Unit = {},
+) {
+    val partyWithTheme = partyWithTheme(profile.party)
+
+    val contentDescription = profile.contentDescription
+
+    CompositionLocalProvider(
+        LocalPartyTheme provides partyWithTheme
+    ) {
+        Surface(
+            modifier
+                .width(CardWidth)
+                .padding(MemberPadding)
+                .semantics(mergeDescendants = true) {
+                    this.contentDescription = contentDescription
+                },
+            color = invertedColors.surface,
+            elevation = themedElevation.Card,
+            shape = shapes.small,
+        ) {
+            if (profile.portraitUrl == null) {
+                MemberWithoutPortrait(profile, onClick, decoration = decoration)
+            } else {
+                MemberWithPortrait(profile, onClick, decoration = decoration)
+            }
+        }
+    }
+}
+
+@Composable
+fun MemberLayout(
+    sponsorWithProfile: BillSponsorWithProfile,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    val (sponsor, profile) = sponsorWithProfile
+    val party = profile?.party
+    val partyWithTheme = partyWithTheme(party)
+    val contentDescription = sponsor.contentDescription
+
+    ProvidePartyImageConfig {
+        CompositionLocalProvider(
+            LocalPartyTheme provides partyWithTheme
+        ) {
+            MemberLayoutCard(contentDescription, modifier.clickable(onClick = onClick)) {
+                PartyBackground {
+                    MemberText(
+                        name = sponsor.name,
+                        party = party?.name ?: "",
+                        currentPost = profile?.constituency?.uiDescription()
+                            ?: profile?.profile?.currentPostUiDescription() ?: "",
+                        textColor = partyWithTheme.theme.onPrimary,
+                        modifier = Modifier,
+                        decoration = {},
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun MemberLayoutCard(
+    contentDescription: String,
+    modifier: Modifier,
+    content: @Composable () -> Unit
+) {
+    Surface(
+        modifier
+            .width(CardWidth)
+            .padding(MemberPadding)
+            .semantics(mergeDescendants = true) {
+                this.contentDescription = contentDescription
+            },
+        color = invertedColors.surface,
+        elevation = themedElevation.Card,
+        shape = shapes.small,
+        content = content,
+    )
 }
 
 @Composable
@@ -130,22 +227,22 @@ private fun MemberText(
 ) {
     MemberText(
         name = profile.name,
-        overline = partyTheme.party.name,
+        party = partyTheme.party.name,
         currentPost = profile.currentPostUiDescription(),
         textColor = partyTheme.theme.onPrimary,
-        decoration = decoration,
         modifier = modifier,
+        decoration = decoration,
     )
 }
 
 @Composable
 private fun MemberText(
     name: String,
-    overline: String,
+    party: String,
     currentPost: String,
     textColor: Color,
-    decoration: @Composable () -> Unit,
     modifier: Modifier,
+    decoration: @Composable () -> Unit,
 ) {
     Column(
         modifier
@@ -160,7 +257,7 @@ private fun MemberText(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                overline,
+                party,
                 style = typography.overline,
                 maxLines = 1,
                 color = textColor,
@@ -213,4 +310,57 @@ private fun MemberDescription(
         overflow = TextOverflow.Ellipsis,
         modifier = Modifier.requiredHeight(captionTextHeight),
     )
+}
+
+
+@Composable
+@Preview("Bill Sponsor")
+private fun MemberLayoutPreview() {
+    PreviewProviders {
+        MemberLayout(
+            SampleBillSponsorWithProfile,
+        ) {}
+    }
+}
+
+@Composable
+@Preview("MemberWithPortrait")
+private fun MemberPreview() {
+    PreviewProviders {
+        val party = remember { SampleParty }
+        CompositionLocalProvider(
+            LocalPartyTheme provides partyWithTheme(party),
+            *providePartyImageConfig()
+        ) {
+            MemberLayout(
+                member = MinimalMember(
+                    SampleMember,
+                    party,
+                    SampleConstituency,
+                ),
+                onClick = {},
+            )
+        }
+    }
+}
+
+@Composable
+@Preview("MemberWithoutPortrait")
+private fun MemberNoPortraitPreview() {
+    InAppPreview {
+        val party = remember { SampleParty }
+        CompositionLocalProvider(
+            LocalPartyTheme provides partyWithTheme(party),
+            *providePartyImageConfig()
+        ) {
+            MemberLayout(
+                member = MinimalMember(
+                    SampleMember,
+                    party,
+                    SampleConstituency
+                ),
+                onClick = {},
+            )
+        }
+    }
 }

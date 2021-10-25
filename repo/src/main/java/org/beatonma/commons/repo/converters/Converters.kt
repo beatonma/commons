@@ -204,8 +204,7 @@ fun ApiBillStage.toBillStage(billId: ParliamentID) = BillStage(
 fun ApiBillSponsor.toBillSponsor(billId: ParliamentID) = BillSponsor(
     name = name,
     billId = billId,
-    parliamentdotuk = parliamentdotuk,
-    partyId = party?.parliamentdotuk
+    profile = profile?.toMemberProfile(),
 )
 
 fun ApiBillPublication.toBillPublication(billId: ParliamentID) = BillPublicationBasic(
