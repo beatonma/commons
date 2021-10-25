@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.Constraints
 import org.beatonma.commons.app.ui.colors.PartyColors
 import org.beatonma.commons.app.ui.colors.partyTheme
 import org.beatonma.commons.app.ui.logos.PartyLogos
+import org.beatonma.commons.app.util.logDebug
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.room.entities.member.Party
 import org.beatonma.commons.svg.ImageConfig
@@ -25,9 +26,10 @@ import org.beatonma.commons.svg.render
 
 
 val LocalImageConfig = compositionLocalOf { ImageConfig() }
-internal val LocalPartyImageCache: ProvidableCompositionLocal<MutableMap<ParliamentID, VectorGraphic>> =
+internal val LocalPartyImageCache: ProvidableCompositionLocal<MutableMap<ParliamentID, VectorGraphic>?> =
     compositionLocalOf {
-        error("No image cache")
+        logDebug("No image cache provided")
+        null
     }
 
 @Composable
@@ -60,14 +62,10 @@ fun PartyBackground(
     modifier: Modifier = Modifier,
     imageConfig: ImageConfig = LocalImageConfig.current,
     theme: PartyColors = partyTheme(partyId),
-    useCache: Boolean = true,
+    cache: MutableMap<ParliamentID, VectorGraphic>? = LocalPartyImageCache.current,
     content: @Composable () -> Unit = {},
 ) {
-    val logo = if (useCache) {
-        getLogo(LocalPartyImageCache.current, partyId)
-    } else {
-        remember { PartyLogos.get(partyId) }
-    }
+    val logo = cache?.let { getLogo(it, partyId) } ?: remember { PartyLogos.get(partyId) }
 
     PartyBackground(
         logo,
@@ -88,9 +86,9 @@ fun PartyBackground(
     modifier: Modifier = Modifier,
     imageConfig: ImageConfig = LocalImageConfig.current,
     theme: PartyColors = party.theme(),
-    useCache: Boolean = true,
+    cache: MutableMap<ParliamentID, VectorGraphic>? = LocalPartyImageCache.current,
     content: @Composable () -> Unit = {},
-) = PartyBackground(party.parliamentdotuk, modifier, imageConfig, theme, useCache, content)
+) = PartyBackground(party.parliamentdotuk, modifier, imageConfig, theme, cache, content)
 
 @Composable
 private fun PartyBackground(
