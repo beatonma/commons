@@ -11,6 +11,7 @@ import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.core.extensions.allNotNull
 import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
 import org.beatonma.commons.data.core.room.entities.election.Election
+import org.beatonma.commons.data.core.room.entities.member.Party
 
 @Entity(
     foreignKeys = [
@@ -64,29 +65,41 @@ data class ConstituencyCandidate(
     @ColumnInfo(name = "c_e_r_id") val resultsId: Int,
     @ColumnInfo(name = "candidate_name") val name: String,
     @ColumnInfo(name = "candidate_party_name") val partyName: String,
+    @ColumnInfo(name = "candidate_party_id") val party: Party?,
     @ColumnInfo(name = "candidate_order") val order: Int,
     @ColumnInfo(name = "candidate_votes") val votes: Int,
+)
+
+data class ConstituencyCandidateWithParty(
+    @Embedded val candidate: ConstituencyCandidate,
+
+    @Relation(parentColumn = "candidate_party_id", entityColumn = "party_$PARLIAMENTDOTUK")
+    val party: Party?
 )
 
 
 data class ConstituencyElectionDetailsWithCandidates(
     @Embedded val details: ConstituencyElectionDetails,
 
-    @Relation(parentColumn = "c_e_r_$PARLIAMENTDOTUK", entityColumn = "c_e_r_id")
-    val candidates: List<ConstituencyCandidate>,
+    @Relation(
+        parentColumn = "c_e_r_$PARLIAMENTDOTUK",
+        entityColumn = "c_e_r_id",
+        entity = ConstituencyCandidate::class
+    )
+    val candidates: List<ConstituencyCandidateWithParty>,
 )
 
 
 data class ConstituencyElectionDetailsWithExtras(
     val details: ConstituencyElectionDetails,
-    val candidates: List<ConstituencyCandidate>,
+    val candidates: List<ConstituencyCandidateWithParty>,
     val election: Election,
     val constituency: Constituency,
 )
 
 data class ConstituencyElectionDetailsBuilder(
     var details: ConstituencyElectionDetails? = null,
-    var candidates: List<ConstituencyCandidate>? = null,
+    var candidates: List<ConstituencyCandidateWithParty>? = null,
     var election: Election? = null,
     var constituency: Constituency? = null,
 ) {

@@ -139,6 +139,7 @@ fun ApiConstituencyCandidate.toConstituencyCandidate(resultsId: Int) = Constitue
     resultsId = resultsId,
     name = name,
     partyName = partyName,
+    party = party?.toParty(),
     order = order,
     votes = votes
 )

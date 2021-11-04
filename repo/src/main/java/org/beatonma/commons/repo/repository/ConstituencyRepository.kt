@@ -21,6 +21,7 @@ import org.beatonma.commons.repo.converters.toConstituencyElectionDetails
 import org.beatonma.commons.repo.converters.toConstituencyResult
 import org.beatonma.commons.repo.converters.toElection
 import org.beatonma.commons.repo.converters.toMemberProfile
+import org.beatonma.commons.repo.converters.toParty
 import org.beatonma.commons.repo.remotesource.api.CommonsApi
 import org.beatonma.commons.repo.result.cachedResultFlow
 import org.beatonma.commons.snommoc.models.ApiConstituency
@@ -38,7 +39,7 @@ class ConstituencyRepository @Inject constructor(
         cachedResultFlow(
             databaseQuery = { getCompleteConstituency(constituencyId) },
             networkCall = { remoteSource.getConstituency(constituencyId) },
-            saveCallResult = { saveConstituency(constituencyDao, memberDao, constituencyId, it) },
+            saveCallResult = { saveConstituency(constituencyId, it) },
             distinctUntilChanged = false
         )
 
@@ -50,7 +51,7 @@ class ConstituencyRepository @Inject constructor(
         networkCall = {
             remoteSource.getConstituencyDetailsForElection(constituencyId, electionId)
         },
-        saveCallResult = { result -> saveResults(constituencyDao, result) }
+        saveCallResult = { result -> saveResults(result) }
     )
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -65,7 +66,7 @@ class ConstituencyRepository @Inject constructor(
                 }
             }
 
-            suspend fun <E, T: Collection<E>> fetchList(
+            suspend fun <E, T : Collection<E>> fetchList(
                 func: ConstituencyDao.(ParliamentID) -> Flow<T>,
                 block: (T) -> Unit,
             ) = launch {
@@ -110,9 +111,6 @@ class ConstituencyRepository @Inject constructor(
                 if (builder.isComplete) {
                     send(builder.toConstituencyElectionDetailsWithExtras())
                 }
-                else {
-                    println(builder)
-                }
             }
 
             suspend fun <T> fetchObject(
@@ -136,8 +134,13 @@ class ConstituencyRepository @Inject constructor(
                 }
             }
 
-            fetchObject(ConstituencyDao::getElection, targetId = electionId) { builder.election = it }
-            fetchObject(ConstituencyDao::getConstituency, targetId = constituencyId) { builder.constituency = it }
+            fetchObject(ConstituencyDao::getElection, targetId = electionId) {
+                builder.election = it
+            }
+            fetchObject(
+                ConstituencyDao::getConstituency,
+                targetId = constituencyId
+            ) { builder.constituency = it }
             fetchObject(ConstituencyDao::getDetailsAndCandidatesForElection) {
                 builder.details = it?.details
                 builder.candidates = it?.candidates
@@ -146,28 +149,38 @@ class ConstituencyRepository @Inject constructor(
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     suspend fun saveConstituency(
-        constituencyDao: ConstituencyDao,
-        memberDao: MemberDao,
         parliamentdotuk: ParliamentID,
         apiConstituency: ApiConstituency,
     ) {
         constituencyDao.insertConstituency(apiConstituency.toConstituency())
-        memberDao.safeInsertProfile(apiConstituency.memberProfile?.toMemberProfile(), ifNotExists = true)
+        memberDao.safeInsertProfile(
+            apiConstituency.memberProfile?.toMemberProfile(),
+            ifNotExists = true
+        )
         apiConstituency.boundary?.also { boundary ->
             constituencyDao.insertBoundary(
                 boundary.toConstituencyBoundary(constituencyId = apiConstituency.parliamentdotuk)
             )
         }
         constituencyDao.insertElections(apiConstituency.results.map { it.election.toElection() })
-        memberDao.safeInsertProfiles(apiConstituency.results.map { it.member.toMemberProfile() }, ifNotExists = true)
+        memberDao.safeInsertProfiles(
+            apiConstituency.results.map { it.member.toMemberProfile() },
+            ifNotExists = true
+        )
         constituencyDao.insertElectionResults(apiConstituency.results.map { result ->
             result.toConstituencyResult(parliamentdotuk)
         })
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    suspend fun saveResults(dao: ConstituencyDao, result: ApiConstituencyElectionDetails) {
-        with (dao) {
+    suspend fun saveResults(
+        result: ApiConstituencyElectionDetails
+    ) {
+        with(memberDao) {
+            insertPartiesIfNotExists(result.candidates.mapNotNull { it.party?.toParty() })
+        }
+
+        with(constituencyDao) {
             safeInsertConstituency(result.constituency.toConstituency(), ifNotExists = true)
             insertElection(result.election.toElection())
             insertConstituencyElectionDetails(result.toConstituencyElectionDetails())

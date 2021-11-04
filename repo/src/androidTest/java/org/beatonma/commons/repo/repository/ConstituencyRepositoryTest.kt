@@ -45,7 +45,6 @@ class ConstituencyRepositoryTest: BaseRoomTest() {
     fun ensureConstituencyElectionDetails_arePersistedCorrectly() {
         runBlocking(Dispatchers.Main) {
             repository.saveResults(
-                dao,
                 expectedApiConstituencyElectionResult()
             )
         }

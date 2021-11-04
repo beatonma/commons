@@ -12,7 +12,6 @@ import org.beatonma.commons.app.data.set
 import org.beatonma.commons.app.ui.base.IoLiveDataViewModel
 import org.beatonma.commons.app.util.BundledConstituencyResult
 import org.beatonma.commons.core.ParliamentID
-import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyCandidate
 import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyElectionDetails
 import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyElectionDetailsWithExtras
 import org.beatonma.commons.repo.repository.ConstituencyRepository
@@ -27,7 +26,7 @@ private val ElectionKey = SavedStateKey("election_id")
 class ConstituencyResultsViewModel @Inject constructor(
     private val repository: ConstituencyRepository,
     private val savedStateHandle: SavedStateHandle,
-): IoLiveDataViewModel<ConstituencyElectionDetailsWithExtras>() {
+) : IoLiveDataViewModel<ConstituencyElectionDetailsWithExtras>() {
     val constituencyID: ParliamentID get() = savedStateHandle[ConstituencyKey]!!
     val electionID: ParliamentID get() = savedStateHandle[ElectionKey]!!
 
@@ -45,7 +44,7 @@ class ConstituencyResultsViewModel @Inject constructor(
                     postValue(
                         result.map {
                             it.copy(
-                                candidates = it.candidates.sortedBy(ConstituencyCandidate::order),
+                                candidates = it.candidates.sortedBy { c -> c.candidate.order }
                             )
                         }
                     )
