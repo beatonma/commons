@@ -64,6 +64,7 @@ import org.beatonma.commons.compose.components.text.ComponentTitle
 import org.beatonma.commons.compose.components.text.ResourceText
 import org.beatonma.commons.compose.layout.itemWithState
 import org.beatonma.commons.compose.layout.stickyHeaderWithInsets
+import org.beatonma.commons.compose.modifiers.onlyWhen
 import org.beatonma.commons.compose.modifiers.wrapContentHeight
 import org.beatonma.commons.compose.padding.endOfContent
 import org.beatonma.commons.compose.padding.padding
