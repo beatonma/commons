@@ -64,4 +64,4 @@ data class CompleteConstituencyBuilder(
         )
 }
 
-val NoConstituency = Constituency(-1, "")
+val NoConstituency = Constituency(-1, "Unknown constituency")

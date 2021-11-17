@@ -4,6 +4,7 @@ import androidx.room.TypeConverter
 import org.beatonma.commons.core.House
 import org.beatonma.commons.core.VoteType
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
+import org.beatonma.commons.data.core.room.entities.constituency.NoConstituency
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 import org.beatonma.commons.data.core.room.entities.member.NoParty
 import org.beatonma.commons.data.core.room.entities.member.Party
@@ -22,11 +23,11 @@ object Converters {
 
     @TypeConverter
     @JvmStatic
-    fun serializeParty(obj: Party): Int = obj.parliamentdotuk
+    fun serializeParty(obj: Party?): Int? = obj?.parliamentdotuk
 
     @TypeConverter
     @JvmStatic
-    fun deserializeParty(key: Int): Party = Party(parliamentdotuk = key, name = "")
+    fun deserializeParty(key: Int?): Party? = key?.let { NoParty.copy(parliamentdotuk = key) }
 
     @TypeConverter
     @JvmStatic
@@ -35,7 +36,7 @@ object Converters {
     @TypeConverter
     @JvmStatic
     fun deserializeConstituency(key: Int?): Constituency? = key?.let {
-        Constituency(parliamentdotuk = key, name = "")
+        NoConstituency.copy(parliamentdotuk = key)
     }
 
     @TypeConverter
