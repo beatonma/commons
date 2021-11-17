@@ -1,5 +1,6 @@
 package org.beatonma.commons.app.ui.screens.constituency.electionresults
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -63,13 +65,16 @@ import org.beatonma.commons.compose.components.text.ResourceText
 import org.beatonma.commons.compose.layout.itemWithState
 import org.beatonma.commons.compose.layout.stickyHeaderWithInsets
 import org.beatonma.commons.compose.modifiers.wrapContentHeight
+import org.beatonma.commons.compose.padding.endOfContent
 import org.beatonma.commons.compose.padding.padding
 import org.beatonma.commons.compose.util.dot
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.core.extensions.reversed
 import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyCandidate
+import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyCandidateWithParty
 import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyElectionDetails
 import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyElectionDetailsWithExtras
+import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 import org.beatonma.commons.data.core.room.entities.member.Party
 import org.beatonma.commons.repo.result.IoLoading
 import org.beatonma.commons.theme.CommonsPadding
@@ -96,11 +101,15 @@ private val TrailingSize = 60.dp
 @Composable
 fun ConstituencyResultsLayout(
     viewmodel: ConstituencyResultsViewModel = hiltViewModel(),
+    onClickCandidate: (name: String, MemberProfile?) -> Unit,
 ) {
     val resultState by viewmodel.livedata.observeAsState(IoLoading)
 
     WithResultData(resultState) { data ->
-        ConstituencyResultsLayout(data)
+        ConstituencyResultsLayout(
+            data,
+            onClickCandidate = onClickCandidate,
+        )
     }
 }
 
@@ -108,6 +117,7 @@ fun ConstituencyResultsLayout(
 @Composable
 fun ConstituencyResultsLayout(
     data: ConstituencyElectionDetailsWithExtras,
+    onClickCandidate: (name: String, MemberProfile?) -> Unit,
 ) {
     ProvidePartyImageConfig {
         var depositLostPosition by remember { mutableStateOf(-1) }
@@ -115,12 +125,15 @@ fun ConstituencyResultsLayout(
 
         LazyColumn(state = state) {
             stickyHeaderWithInsets(state, "header") { headerState, headerModifier ->
+                val elevation by animateDpAsState(targetValue = if (headerState.overlapsNext) 4.dp else 0.dp)
                 Header(
                     data,
                     Modifier
-                        .shadow(
-                            if (headerState.isAtTop) 8.dp else 0.dp
-                        )
+                        .shadow(elevation)
+                        .fillMaxWidth()
+                        .onlyWhen(headerState.overlapsNext) {
+                            shadow(4.dp)
+                        }
                         .background(colors.background)
                         .then(headerModifier)
                 )
@@ -134,6 +147,7 @@ fun ConstituencyResultsLayout(
                 ) {
                     ResourceText(
                         R.string.constituency_election_turnout,
+
                         data.details.turnoutPercent(),
                         data.details.turnout.formatted(),
                         data.details.electorate.formatted(),
@@ -149,7 +163,10 @@ fun ConstituencyResultsLayout(
                 candidates = data.candidates,
                 depositLostPosition = depositLostPosition,
                 onDepositionLostPositionChange = { depositLostPosition = it },
+                onClickCandidate = onClickCandidate,
             )
+
+            endOfContent()
         }
     }
 }
@@ -170,14 +187,19 @@ private fun Header(data: ConstituencyElectionDetailsWithExtras, modifier: Modifi
 
 private fun LazyListScope.Candidates(
     details: ConstituencyElectionDetails,
-    candidates: List<ConstituencyCandidate>,
+    candidates: List<ConstituencyCandidateWithParty>,
     depositLostPosition: Int,
     onDepositionLostPositionChange: (Int) -> Unit,
+    onClickCandidate: (name: String, MemberProfile?) -> Unit,
 ) {
-    itemsIndexed(candidates) { index, candidate ->
+    itemsIndexed(candidates) { index, candidateWithParty ->
+        val (candidate, profile, party) = candidateWithParty
+
+        val onClickModifier =
+            Modifier.clickable { onClickCandidate(candidate.name, profile?.profile) }
         // Party lookup using (probably) abbreviated name - may be inaccurate but worst case
         // will have an invalid ID and use name as given, giving the default party theme.
-        val fuzzyParty = Party(
+        val fuzzyParty = party ?: Party(
             name = PartyResolution.getPartyName(candidate.partyName),
             parliamentdotuk = PartyResolution.getPartyId(candidate.partyName)
         )
@@ -189,16 +211,14 @@ private fun LazyListScope.Candidates(
         }
 
         CompositionLocalProvider(LocalPartyTheme provides partyWithTheme(fuzzyParty)) {
-            if (index == 0) {
-                WinningCandidate(candidate, details, votePercentage)
-                return@CompositionLocalProvider
+            when (index) {
+                0 -> WinningCandidate(candidate, party, details, votePercentage, onClickModifier)
+                depositLostPosition -> {
+                    DepositLostMarker()
+                    LosingCandidate(candidate, party, votePercentage, onClickModifier)
+                }
+                else -> LosingCandidate(candidate, party, votePercentage, onClickModifier)
             }
-
-            if (index == depositLostPosition) {
-                DepositLostMarker()
-            }
-
-            LosingCandidate(candidate, votePercentage)
         }
     }
 }
@@ -207,16 +227,18 @@ private fun LazyListScope.Candidates(
 @Composable
 private fun WinningCandidate(
     candidate: ConstituencyCandidate,
+    party: Party?,
     details: ConstituencyElectionDetails,
     votePercentage: Float,
+    modifier: Modifier,
 ) {
     PartyBackground(
-        modifier = Modifier
+        modifier = modifier
             .padding(themedPadding.VerticalListItemLarge),
     ) {
         ListItem(
             text = {
-                Text(candidate.name dot formattedName(candidate.partyName))
+                Text(candidate.name dot formattedName(party?.name ?: candidate.partyName))
             },
             secondaryText = {
                 Column(Modifier.fillMaxWidth()) {
@@ -237,7 +259,7 @@ private fun WinningCandidate(
                 }
             },
             icon = { CandidatePosition(position = candidate.order, withBackgroundColor = false) },
-            trailing = { ResultSummary(details, Modifier.size(TrailingSize)) },
+            trailing = { ResultSummary(details, Modifier.width(TrailingSize)) },
             modifier = Modifier.padding(themedPadding.VerticalListItemLarge),
         )
     }
@@ -247,11 +269,14 @@ private fun WinningCandidate(
 @Composable
 private fun LosingCandidate(
     candidate: ConstituencyCandidate,
+    party: Party?,
     votePercentage: Float,
+    modifier: Modifier,
 ) {
     ListItem(
+        modifier = modifier,
         text = {
-            Text(candidate.name dot formattedName(candidate.partyName))
+            Text(candidate.name dot formattedName(party?.name ?: candidate.partyName))
         },
         secondaryText = {
             Column(Modifier.fillMaxWidth()) {
@@ -260,7 +285,7 @@ private fun LosingCandidate(
             }
         },
         icon = { CandidatePosition(position = candidate.order) },
-        trailing = { Spacer(Modifier.size(TrailingSize)) }
+        trailing = { Spacer(Modifier.width(TrailingSize)) }
     )
 }
 
@@ -385,14 +410,12 @@ private fun ResultSummary(
         else -> null
     } ?: return
 
-    Text(resultText, color = theme.onPrimary)
-
-//    Box(
-//        modifier,
-//        contentAlignment = Alignment.Center
-//    ) {
-//        Tag(resultText, color = theme.accent, contentColor = theme.onAccent)
-//    }
+    Box(
+        modifier,
+        contentAlignment = Alignment.Center
+    ) {
+        Text(resultText, color = theme.onPrimary)
+    }
 }
 
 @Composable
@@ -400,49 +423,3 @@ private fun formattedName(fuzzyName: String) = PartyResolution.getPartyName(fuzz
 
 private fun ConstituencyCandidate.votePercentage(turnout: Int): Float =
     this.votes.toFloat() / turnout.toFloat()
-
-private val ConstituencyCandidate.isWinner get() = this.order == 1
-
-
-//@Preview
-//@Composable
-//private fun LazyListReactiveItemsPreview() {
-//    val state = rememberLazyListState()
-//
-//    @Composable
-//    fun Item(content: @Composable BoxScope.() -> Unit = {}) {
-//        Box(
-//            Modifier
-//                .height(128.dp)
-//                .fillMaxWidth()
-//                .colorize(),
-//            content = content
-//        )
-//    }
-//
-//    InAppPreview {
-//        LazyColumn(state = state) {
-//            item {
-//                Item()
-//            }
-//
-//            stickyHeaderWithInsets(state, "sticky") {
-//                Item { Text("sticky") }
-//            }
-//
-//            item {
-//                Item()
-//            }
-//
-//            itemWithState(state, "reactive") {
-//                Item { Text("reactive $it") }
-//            }
-//
-//            repeat(5) {
-//                item {
-//                    Item()
-//                }
-//            }
-//        }
-//    }
-//}

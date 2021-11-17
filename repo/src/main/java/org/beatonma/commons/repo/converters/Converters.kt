@@ -138,6 +138,7 @@ fun ApiConstituencyElectionDetails.toConstituencyElectionDetails() = Constituenc
 fun ApiConstituencyCandidate.toConstituencyCandidate(resultsId: Int) = ConstituencyCandidate(
     resultsId = resultsId,
     name = name,
+    profile = profile?.toMemberProfile(),
     partyName = partyName,
     party = party?.toParty(),
     order = order,

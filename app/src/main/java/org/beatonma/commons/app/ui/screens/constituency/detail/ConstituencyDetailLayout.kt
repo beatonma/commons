@@ -219,7 +219,7 @@ private fun LazyListScope.MPs(
             ComponentTitle(stringResource(R.string.constituency_previous_members))
         }
 
-        this.items(previousMembers) { formerMember ->
+        items(previousMembers) { formerMember ->
             ListItem(
                 text = { Text(formerMember.profile.name dot formerMember.party.name) },
                 overlineText = { Text(formerMember.election.name) },

@@ -9,9 +9,11 @@ import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
 import org.beatonma.commons.app.ui.util.composeScreen
 import org.beatonma.commons.app.util.getConstituencyResult
+import org.beatonma.commons.app.util.logWarning
+import org.beatonma.commons.app.util.navigateTo
 
 @AndroidEntryPoint
-class ConstituencyResultsFragment: Fragment() {
+class ConstituencyResultsFragment : Fragment() {
     private val viewmodel: ConstituencyResultsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,9 +25,15 @@ class ConstituencyResultsFragment: Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View = composeScreen(
-        // Providers
-    ) {
-        ConstituencyResultsLayout(viewmodel)
+    ): View = composeScreen {
+        ConstituencyResultsLayout(
+            viewmodel,
+            onClickCandidate = { name, profile ->
+                when (profile) {
+                    null -> logWarning("No profile available - this should trigger a search by candidate name '$name'")
+                    else -> navigateTo(profile)
+                }
+            },
+        )
     }
 }

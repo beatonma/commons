@@ -137,10 +137,11 @@ class ConstituencyRepository @Inject constructor(
             fetchObject(ConstituencyDao::getElection, targetId = electionId) {
                 builder.election = it
             }
-            fetchObject(
-                ConstituencyDao::getConstituency,
-                targetId = constituencyId
-            ) { builder.constituency = it }
+
+            fetchObject(ConstituencyDao::getConstituency, targetId = constituencyId) {
+                builder.constituency = it
+            }
+
             fetchObject(ConstituencyDao::getDetailsAndCandidatesForElection) {
                 builder.details = it?.details
                 builder.candidates = it?.candidates
@@ -178,6 +179,7 @@ class ConstituencyRepository @Inject constructor(
     ) {
         with(memberDao) {
             insertPartiesIfNotExists(result.candidates.mapNotNull { it.party?.toParty() })
+            insertProfilesIfNotExists(result.candidates.mapNotNull { it.profile?.toMemberProfile() })
         }
 
         with(constituencyDao) {

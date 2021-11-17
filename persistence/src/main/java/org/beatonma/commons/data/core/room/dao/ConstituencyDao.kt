@@ -21,24 +21,31 @@ import org.beatonma.commons.data.core.room.entities.election.ConstituencyResultW
 import org.beatonma.commons.data.core.room.entities.election.Election
 
 @Dao
-interface ConstituencyDao: SharedConstituencyDao, SharedElectionDao {
+interface ConstituencyDao : SharedConstituencyDao, SharedElectionDao {
     // Get operations
     @Transaction
     @Query("""SELECT * FROM constituencies WHERE constituency_parliamentdotuk = :constituencyId""")
     fun getConstituencyWithBoundary(constituencyId: ParliamentID): Flow<ConstituencyWithBoundary>
 
     @Transaction
-    @Query("""SELECT * FROM constituency_results
+    @Query(
+        """
+        SELECT * FROM constituency_results
         INNER JOIN member_profiles ON member_profiles.parliamentdotuk = constituency_results.result_member_id
         INNER JOIN elections ON elections.election_parliamentdotuk = constituency_results.result_election_id
         INNER JOIN parties ON parties.party_parliamentdotuk = member_profiles.party_id
-        WHERE constituency_results.result_constituency_id = :constituencyId""")
+        WHERE constituency_results.result_constituency_id = :constituencyId
+        ORDER BY elections.election_date DESC
+        """
+    )
     fun getElectionResults(constituencyId: ParliamentID): FlowList<ConstituencyResultWithDetails>
 
     @Transaction
-    @Query("""SELECT * FROM constituency_election_results
+    @Query(
+        """SELECT * FROM constituency_election_results
         WHERE c_e_r_constituency_id = :constituencyId
-        AND c_e_r_election_id = :electionId""")
+        AND c_e_r_election_id = :electionId"""
+    )
     fun getDetailsAndCandidatesForElection(
         constituencyId: ParliamentID,
         electionId: ParliamentID,
@@ -75,17 +82,18 @@ interface ConstituencyDao: SharedConstituencyDao, SharedElectionDao {
 
         if (ifNotExists) {
             insertConstituencyIfNotExists(constituency)
-        }
-        else {
+        } else {
             insertConstituency(constituency)
         }
     }
 
-    suspend fun safeInsertConstituencies(constituencies: List<Constituency>, ifNotExists: Boolean = false) {
+    suspend fun safeInsertConstituencies(
+        constituencies: List<Constituency>,
+        ifNotExists: Boolean = false
+    ) {
         if (ifNotExists) {
             insertConstituenciesIfNotExists(constituencies)
-        }
-        else {
+        } else {
             insertConstituencies(constituencies)
         }
     }

@@ -48,6 +48,7 @@ data class ApiConstituencyElectionDetails(
 
 data class ApiConstituencyCandidate(
     @field:Json(name = Contract.NAME) val name: String,
+    @field:Json(name = Contract.PROFILE) val profile: ApiMemberProfile?,
     @field:Json(name = Contract.PARTY_NAME) val partyName: String,
     @field:Json(name = Contract.PARTY) val party: ApiParty?,
     @field:Json(name = Contract.ORDER) val order: Int,

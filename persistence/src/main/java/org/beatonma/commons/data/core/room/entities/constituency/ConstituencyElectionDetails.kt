@@ -11,6 +11,8 @@ import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.core.extensions.allNotNull
 import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
 import org.beatonma.commons.data.core.room.entities.election.Election
+import org.beatonma.commons.data.core.room.entities.member.MemberProfile
+import org.beatonma.commons.data.core.room.entities.member.MemberProfileWithPartyConstituency
 import org.beatonma.commons.data.core.room.entities.member.Party
 
 @Entity(
@@ -64,6 +66,7 @@ data class ConstituencyElectionDetails(
 data class ConstituencyCandidate(
     @ColumnInfo(name = "c_e_r_id") val resultsId: Int,
     @ColumnInfo(name = "candidate_name") val name: String,
+    @ColumnInfo(name = "candidate_profile_id") val profile: MemberProfile?,
     @ColumnInfo(name = "candidate_party_name") val partyName: String,
     @ColumnInfo(name = "candidate_party_id") val party: Party?,
     @ColumnInfo(name = "candidate_order") val order: Int,
@@ -72,6 +75,13 @@ data class ConstituencyCandidate(
 
 data class ConstituencyCandidateWithParty(
     @Embedded val candidate: ConstituencyCandidate,
+
+    @Relation(
+        parentColumn = "candidate_profile_id",
+        entityColumn = PARLIAMENTDOTUK,
+        entity = MemberProfile::class
+    )
+    val person: MemberProfileWithPartyConstituency?,
 
     @Relation(parentColumn = "candidate_party_id", entityColumn = "party_$PARLIAMENTDOTUK")
     val party: Party?
