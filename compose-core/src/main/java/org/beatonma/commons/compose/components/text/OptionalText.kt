@@ -1,6 +1,7 @@
 package org.beatonma.commons.compose.components.text
 
 import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -24,7 +25,7 @@ import androidx.compose.ui.unit.TextUnit
 fun OptionalText(
     text: String?,
     modifier: Modifier = Modifier,
-    color: Color = Color.Unspecified,
+    color: Color = LocalContentColor.current,
     fontSize: TextUnit = TextUnit.Unspecified,
     fontStyle: FontStyle? = null,
     fontWeight: FontWeight? = null,
@@ -68,7 +69,7 @@ fun OptionalText(
 fun OptionalText(
     text: AnnotatedString?,
     modifier: Modifier = Modifier,
-    color: Color = Color.Unspecified,
+    color: Color = LocalContentColor.current,
     fontSize: TextUnit = TextUnit.Unspecified,
     fontStyle: FontStyle? = null,
     fontWeight: FontWeight? = null,

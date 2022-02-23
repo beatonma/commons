@@ -2,6 +2,7 @@ package org.beatonma.commons.compose.components.text
 
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -30,7 +31,7 @@ import org.beatonma.commons.themed.themedSpanStyle
 fun LinkedText(
     text: String,
     modifier: Modifier = Modifier,
-    color: Color = Color.Unspecified,
+    color: Color = LocalContentColor.current,
     linkStyle: SpanStyle = themedSpanStyle.hyperlink,
     fontSize: TextUnit = TextUnit.Unspecified,
     fontStyle: FontStyle? = null,

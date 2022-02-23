@@ -2,6 +2,7 @@ package org.beatonma.commons.compose.components.text
 
 import androidx.annotation.PluralsRes
 import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -25,7 +26,7 @@ fun PluralResourceText(
     quantity: Int,
     modifier: Modifier = Modifier,
     formatArgs: Array<out Any> = arrayOf(quantity),
-    color: Color = Color.Unspecified,
+    color: Color = LocalContentColor.current,
     fontSize: TextUnit = TextUnit.Unspecified,
     fontStyle: FontStyle? = null,
     fontWeight: FontWeight? = null,

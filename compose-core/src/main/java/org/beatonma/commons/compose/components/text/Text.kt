@@ -20,7 +20,7 @@ import org.beatonma.commons.themed.themedPadding
 fun ScreenTitle(
     text: String,
     modifier: Modifier = Modifier,
-    color: Color = Color.Unspecified,
+    color: Color = LocalContentColor.current,
     maxLines: Int = 3,
     textAlign: TextAlign? = null,
     autoPadding: Boolean = true,
@@ -43,7 +43,7 @@ fun ScreenTitle(
 fun ComponentTitle(
     text: String,
     modifier: Modifier = Modifier,
-    color: Color = Color.Unspecified,
+    color: Color = LocalContentColor.current,
     maxLines: Int = 3,
     autoPadding: Boolean = true,
 ) {
