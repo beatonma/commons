@@ -1,4 +1,6 @@
+import org.beatonma.commons.buildsrc.config.Commons
 import org.beatonma.commons.buildsrc.gradle.buildConfigStrings
+import org.beatonma.commons.buildsrc.gradle.injectStrings
 import org.beatonma.commons.buildsrc.gradle.main
 import org.beatonma.commons.buildsrc.gradle.project
 import org.beatonma.commons.buildsrc.gradle.unitTest
@@ -13,7 +15,13 @@ plugins {
 android {
     defaultConfig {
         buildConfigStrings(
-            "COMMONS_API_KEY" to LocalConfig.Api.Commons.API_KEY
+            "COMMONS_API_KEY" to LocalConfig.Api.Commons.API_KEY,
+        )
+
+        injectStrings(
+            "BASE_URL" to Commons.BASE_URL,
+            asBuildConfig = true,
+            asResValue = true,
         )
     }
 }

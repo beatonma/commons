@@ -2,6 +2,7 @@ package org.beatonma.commons.buildsrc.config
 
 object Commons {
     const val APPLICATION_ID = "org.beatonma.commons"
+    const val BASE_URL = "https://snommoc.org"
 
     object Sdk {
         const val MIN = 26

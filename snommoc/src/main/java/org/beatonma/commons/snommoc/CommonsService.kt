@@ -78,8 +78,7 @@ private object Endpoints {
 
 interface CommonsService: SnommocService, CommonsDataService, CommonsSocialService {
     companion object {
-        const val BASE_URL = "https://snommoc.org"
-        const val SERVICE_NAME = "snommoc.org"
+        const val BASE_URL = BuildConfig.BASE_URL
 
         private fun getUrl(path: String) = "$BASE_URL$path"
 
