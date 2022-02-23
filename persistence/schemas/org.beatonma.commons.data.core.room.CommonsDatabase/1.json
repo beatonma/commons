@@ -1,0 +1,1923 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "720c643fbddcfebad253f6d42f2927f1",
+    "entities": [
+      {
+        "tableName": "member_profiles",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`parliamentdotuk` INTEGER NOT NULL, `name` TEXT NOT NULL, `party_id` INTEGER NOT NULL, `constituency_id` INTEGER, `active` INTEGER, `is_mp` INTEGER, `is_lord` INTEGER, `age` INTEGER, `date_of_birth` INTEGER, `date_of_death` INTEGER, `gender` TEXT, `portrait_url` TEXT, `current_post` TEXT, `accessed_at` INTEGER NOT NULL, `created_at` INTEGER NOT NULL, `birth_town_name` TEXT, `birth_country_name` TEXT, PRIMARY KEY(`parliamentdotuk`), FOREIGN KEY(`party_id`) REFERENCES `parties`(`party_parliamentdotuk`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`constituency_id`) REFERENCES `constituencies`(`constituency_parliamentdotuk`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "parliamentdotuk",
+            "columnName": "parliamentdotuk",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "party",
+            "columnName": "party_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "constituency",
+            "columnName": "constituency_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "active",
+            "columnName": "active",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "isMp",
+            "columnName": "is_mp",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "isLord",
+            "columnName": "is_lord",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "age",
+            "columnName": "age",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "dateOfBirth",
+            "columnName": "date_of_birth",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "dateOfDeath",
+            "columnName": "date_of_death",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "gender",
+            "columnName": "gender",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "portraitUrl",
+            "columnName": "portrait_url",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "currentPost",
+            "columnName": "current_post",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "accessedAt",
+            "columnName": "accessed_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "placeOfBirth.town",
+            "columnName": "birth_town_name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "placeOfBirth.country",
+            "columnName": "birth_country_name",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "parliamentdotuk"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_member_profiles_party_id",
+            "unique": false,
+            "columnNames": [
+              "party_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_member_profiles_party_id` ON `${TABLE_NAME}` (`party_id`)"
+          },
+          {
+            "name": "index_member_profiles_constituency_id",
+            "unique": false,
+            "columnNames": [
+              "constituency_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_member_profiles_constituency_id` ON `${TABLE_NAME}` (`constituency_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "parties",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "party_id"
+            ],
+            "referencedColumns": [
+              "party_parliamentdotuk"
+            ]
+          },
+          {
+            "table": "constituencies",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "constituency_id"
+            ],
+            "referencedColumns": [
+              "constituency_parliamentdotuk"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "committee_chairships",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`committee_id` INTEGER NOT NULL, `chair_member_id` INTEGER NOT NULL, `chair_start` INTEGER NOT NULL, `chair_end` INTEGER, PRIMARY KEY(`chair_start`, `committee_id`, `chair_member_id`), FOREIGN KEY(`committee_id`, `chair_member_id`) REFERENCES `committee_memberships`(`committee_parliamentdotuk`, `committee_member_id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "committeeId",
+            "columnName": "committee_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "memberId",
+            "columnName": "chair_member_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "start",
+            "columnName": "chair_start",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "end",
+            "columnName": "chair_end",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "chair_start",
+            "committee_id",
+            "chair_member_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_committee_chairships_committee_id_chair_member_id",
+            "unique": false,
+            "columnNames": [
+              "committee_id",
+              "chair_member_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_committee_chairships_committee_id_chair_member_id` ON `${TABLE_NAME}` (`committee_id`, `chair_member_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "committee_memberships",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "committee_id",
+              "chair_member_id"
+            ],
+            "referencedColumns": [
+              "committee_parliamentdotuk",
+              "committee_member_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "committee_memberships",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`committee_parliamentdotuk` INTEGER NOT NULL, `committee_member_id` INTEGER NOT NULL, `committee_name` TEXT NOT NULL, `committee_start` INTEGER, `committee_end` INTEGER, PRIMARY KEY(`committee_parliamentdotuk`, `committee_member_id`))",
+        "fields": [
+          {
+            "fieldPath": "parliamentdotuk",
+            "columnName": "committee_parliamentdotuk",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "memberId",
+            "columnName": "committee_member_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "committee_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "start",
+            "columnName": "committee_start",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "end",
+            "columnName": "committee_end",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "committee_parliamentdotuk",
+            "committee_member_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "experiences",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`experience_member_id` INTEGER NOT NULL, `experience_category` TEXT NOT NULL, `organisation` TEXT, `title` TEXT NOT NULL, `start` INTEGER, `end` INTEGER, PRIMARY KEY(`experience_member_id`, `title`))",
+        "fields": [
+          {
+            "fieldPath": "memberId",
+            "columnName": "experience_member_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "category",
+            "columnName": "experience_category",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "organisation",
+            "columnName": "organisation",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "start",
+            "columnName": "start",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "end",
+            "columnName": "end",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "experience_member_id",
+            "title"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "financial_interests",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`interest_member_id` INTEGER NOT NULL, `interest_id` INTEGER NOT NULL, `interest_category` TEXT NOT NULL, `interest_description` TEXT NOT NULL, `interest_created` INTEGER, `interest_amended` INTEGER, `interest_deleted` INTEGER, `interest_registered_late` INTEGER NOT NULL, PRIMARY KEY(`interest_member_id`, `interest_id`), FOREIGN KEY(`interest_member_id`) REFERENCES `member_profiles`(`parliamentdotuk`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "memberId",
+            "columnName": "interest_member_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "parliamentdotuk",
+            "columnName": "interest_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "category",
+            "columnName": "interest_category",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "interest_description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dateCreated",
+            "columnName": "interest_created",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "dateAmended",
+            "columnName": "interest_amended",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "dateDeleted",
+            "columnName": "interest_deleted",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "registeredLate",
+            "columnName": "interest_registered_late",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "interest_member_id",
+            "interest_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "member_profiles",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "interest_member_id"
+            ],
+            "referencedColumns": [
+              "parliamentdotuk"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "historic_constituencies",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`memberfor_member_id` INTEGER NOT NULL, `memberfor_constituency_id` INTEGER NOT NULL, `memberfor_start` INTEGER NOT NULL, `memberfor_end` INTEGER, `memberfor_election_id` INTEGER NOT NULL, PRIMARY KEY(`memberfor_election_id`, `memberfor_member_id`), FOREIGN KEY(`memberfor_member_id`) REFERENCES `member_profiles`(`parliamentdotuk`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`memberfor_election_id`) REFERENCES `elections`(`election_parliamentdotuk`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "memberId",
+            "columnName": "memberfor_member_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "constituencyId",
+            "columnName": "memberfor_constituency_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "start",
+            "columnName": "memberfor_start",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "end",
+            "columnName": "memberfor_end",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "electionId",
+            "columnName": "memberfor_election_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "memberfor_election_id",
+            "memberfor_member_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_historic_constituencies_memberfor_election_id_memberfor_member_id",
+            "unique": false,
+            "columnNames": [
+              "memberfor_election_id",
+              "memberfor_member_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_historic_constituencies_memberfor_election_id_memberfor_member_id` ON `${TABLE_NAME}` (`memberfor_election_id`, `memberfor_member_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "member_profiles",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "memberfor_member_id"
+            ],
+            "referencedColumns": [
+              "parliamentdotuk"
+            ]
+          },
+          {
+            "table": "elections",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "memberfor_election_id"
+            ],
+            "referencedColumns": [
+              "election_parliamentdotuk"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "house_memberships",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`house` INTEGER NOT NULL, `house_member_id` INTEGER NOT NULL, `house_start` INTEGER NOT NULL, `house_end` INTEGER, PRIMARY KEY(`house`, `house_start`, `house_member_id`), FOREIGN KEY(`house_member_id`) REFERENCES `member_profiles`(`parliamentdotuk`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "house",
+            "columnName": "house",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "memberId",
+            "columnName": "house_member_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "start",
+            "columnName": "house_start",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "end",
+            "columnName": "house_end",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "house",
+            "house_start",
+            "house_member_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_house_memberships_house_member_id",
+            "unique": false,
+            "columnNames": [
+              "house_member_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_house_memberships_house_member_id` ON `${TABLE_NAME}` (`house_member_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "member_profiles",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "house_member_id"
+            ],
+            "referencedColumns": [
+              "parliamentdotuk"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "parties",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`party_parliamentdotuk` INTEGER NOT NULL, `party_name` TEXT NOT NULL, PRIMARY KEY(`party_parliamentdotuk`))",
+        "fields": [
+          {
+            "fieldPath": "parliamentdotuk",
+            "columnName": "party_parliamentdotuk",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "party_name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "party_parliamentdotuk"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "party_associations",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`partyacc_member_id` INTEGER NOT NULL, `partyacc_party_id` INTEGER NOT NULL, `partyacc_start` INTEGER NOT NULL, `partyacc_end` INTEGER, PRIMARY KEY(`partyacc_member_id`, `partyacc_party_id`, `partyacc_start`), FOREIGN KEY(`partyacc_member_id`) REFERENCES `member_profiles`(`parliamentdotuk`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`partyacc_party_id`) REFERENCES `parties`(`party_parliamentdotuk`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "memberId",
+            "columnName": "partyacc_member_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "partyId",
+            "columnName": "partyacc_party_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "start",
+            "columnName": "partyacc_start",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "end",
+            "columnName": "partyacc_end",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "partyacc_member_id",
+            "partyacc_party_id",
+            "partyacc_start"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "member_profiles",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "partyacc_member_id"
+            ],
+            "referencedColumns": [
+              "parliamentdotuk"
+            ]
+          },
+          {
+            "table": "parties",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "partyacc_party_id"
+            ],
+            "referencedColumns": [
+              "party_parliamentdotuk"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "physical_addresses",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`paddr_address` TEXT NOT NULL, `paddr_description` TEXT NOT NULL, `paddr_postcode` TEXT, `paddr_phone` TEXT, `paddr_fax` TEXT, `paddr_email` TEXT, `paddr_member_id` INTEGER NOT NULL, PRIMARY KEY(`paddr_member_id`, `paddr_address`), FOREIGN KEY(`paddr_member_id`) REFERENCES `member_profiles`(`parliamentdotuk`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "address",
+            "columnName": "paddr_address",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "paddr_description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "postcode",
+            "columnName": "paddr_postcode",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "phone",
+            "columnName": "paddr_phone",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "fax",
+            "columnName": "paddr_fax",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "email",
+            "columnName": "paddr_email",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "memberId",
+            "columnName": "paddr_member_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "paddr_member_id",
+            "paddr_address"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_physical_addresses_paddr_member_id",
+            "unique": false,
+            "columnNames": [
+              "paddr_member_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_physical_addresses_paddr_member_id` ON `${TABLE_NAME}` (`paddr_member_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "member_profiles",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "paddr_member_id"
+            ],
+            "referencedColumns": [
+              "parliamentdotuk"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "posts",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`post_parliamentdotuk` INTEGER NOT NULL, `post_member_id` INTEGER NOT NULL, `post_name` TEXT NOT NULL, `post_type` INTEGER NOT NULL, `start` INTEGER, `end` INTEGER, PRIMARY KEY(`post_parliamentdotuk`, `post_member_id`), FOREIGN KEY(`post_member_id`) REFERENCES `member_profiles`(`parliamentdotuk`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "parliamentdotuk",
+            "columnName": "post_parliamentdotuk",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "memberId",
+            "columnName": "post_member_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "post_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "postType",
+            "columnName": "post_type",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "start",
+            "columnName": "start",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "end",
+            "columnName": "end",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "post_parliamentdotuk",
+            "post_member_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_posts_post_member_id",
+            "unique": false,
+            "columnNames": [
+              "post_member_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_posts_post_member_id` ON `${TABLE_NAME}` (`post_member_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "member_profiles",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "post_member_id"
+            ],
+            "referencedColumns": [
+              "parliamentdotuk"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "topics_of_interest",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`topic_member_id` INTEGER NOT NULL, `topic_category` TEXT NOT NULL, `topic` TEXT NOT NULL, PRIMARY KEY(`topic_member_id`, `topic`), FOREIGN KEY(`topic_member_id`) REFERENCES `member_profiles`(`parliamentdotuk`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "memberId",
+            "columnName": "topic_member_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "category",
+            "columnName": "topic_category",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "topic",
+            "columnName": "topic",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "topic_member_id",
+            "topic"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "member_profiles",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "topic_member_id"
+            ],
+            "referencedColumns": [
+              "parliamentdotuk"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "towns",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`town_name` TEXT NOT NULL, `country_name` TEXT NOT NULL, PRIMARY KEY(`town_name`, `country_name`))",
+        "fields": [
+          {
+            "fieldPath": "town",
+            "columnName": "town_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "country",
+            "columnName": "country_name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "town_name",
+            "country_name"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "weblinks",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`waddr_url` TEXT NOT NULL, `waddr_description` TEXT NOT NULL, `waddr_member_id` INTEGER NOT NULL, PRIMARY KEY(`waddr_url`, `waddr_member_id`), FOREIGN KEY(`waddr_member_id`) REFERENCES `member_profiles`(`parliamentdotuk`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "url",
+            "columnName": "waddr_url",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "waddr_description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "memberId",
+            "columnName": "waddr_member_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "waddr_url",
+            "waddr_member_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_weblinks_waddr_member_id",
+            "unique": false,
+            "columnNames": [
+              "waddr_member_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_weblinks_waddr_member_id` ON `${TABLE_NAME}` (`waddr_member_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "member_profiles",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "waddr_member_id"
+            ],
+            "referencedColumns": [
+              "parliamentdotuk"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "zeitgeist_members",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`zeitgeist_member_id` INTEGER NOT NULL, `zeitgeist_member_reason` TEXT, `zeitgeist_member_priority` INTEGER NOT NULL, PRIMARY KEY(`zeitgeist_member_id`), FOREIGN KEY(`zeitgeist_member_id`) REFERENCES `member_profiles`(`parliamentdotuk`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "zeitgeist_member_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reason",
+            "columnName": "zeitgeist_member_reason",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "priority",
+            "columnName": "zeitgeist_member_priority",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "zeitgeist_member_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "member_profiles",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "zeitgeist_member_id"
+            ],
+            "referencedColumns": [
+              "parliamentdotuk"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "bills",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`bill_parliamentdotuk` INTEGER NOT NULL, `bill_title` TEXT NOT NULL, `bill_description` TEXT, `bill_act_name` TEXT, `bill_label` TEXT, `bill_homepage` TEXT, `bill_date` INTEGER NOT NULL, `bill_ballot_number` INTEGER, `bill_bill_chapter` TEXT, `bill_private` INTEGER NOT NULL, `bill_money_bill` INTEGER NOT NULL, `bill_public_involvement_allowed` INTEGER NOT NULL, `bill_session_id` INTEGER, `bill_type_id` TEXT, PRIMARY KEY(`bill_parliamentdotuk`))",
+        "fields": [
+          {
+            "fieldPath": "parliamentdotuk",
+            "columnName": "bill_parliamentdotuk",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "bill_title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "bill_description",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "actName",
+            "columnName": "bill_act_name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "label",
+            "columnName": "bill_label",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "homepage",
+            "columnName": "bill_homepage",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "bill_date",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ballotNumber",
+            "columnName": "bill_ballot_number",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "billChapter",
+            "columnName": "bill_bill_chapter",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "isPrivate",
+            "columnName": "bill_private",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isMoneyBill",
+            "columnName": "bill_money_bill",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "publicInvolvementAllowed",
+            "columnName": "bill_public_involvement_allowed",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sessionId",
+            "columnName": "bill_session_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "typeId",
+            "columnName": "bill_type_id",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "bill_parliamentdotuk"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "bill_publications",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`bill_pub_parliamentdotuk` INTEGER NOT NULL, `bill_pub_bill_id` INTEGER NOT NULL, `bill_pub_title` TEXT NOT NULL, `bill_url` TEXT, `bill_content_type` TEXT, `bill_content_length` INTEGER, PRIMARY KEY(`bill_pub_parliamentdotuk`), FOREIGN KEY(`bill_pub_bill_id`) REFERENCES `bills`(`bill_parliamentdotuk`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "parliamentdotuk",
+            "columnName": "bill_pub_parliamentdotuk",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "billId",
+            "columnName": "bill_pub_bill_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "bill_pub_title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "url",
+            "columnName": "bill_url",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "contentType",
+            "columnName": "bill_content_type",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "contentLength",
+            "columnName": "bill_content_length",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "bill_pub_parliamentdotuk"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "bills",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "bill_pub_bill_id"
+            ],
+            "referencedColumns": [
+              "bill_parliamentdotuk"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "bill_sponsors",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`sponsor_name` TEXT NOT NULL, `sponsor_bill_id` INTEGER NOT NULL, `sponsor_profile_id` INTEGER, PRIMARY KEY(`sponsor_name`))",
+        "fields": [
+          {
+            "fieldPath": "name",
+            "columnName": "sponsor_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "billId",
+            "columnName": "sponsor_bill_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "profile",
+            "columnName": "sponsor_profile_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "sponsor_name"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "bill_stages",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`billstage_parliamentdotuk` INTEGER NOT NULL, `billstage_bill_parliamentdotuk` INTEGER NOT NULL, `billstage_type` TEXT NOT NULL, PRIMARY KEY(`billstage_parliamentdotuk`), FOREIGN KEY(`billstage_bill_parliamentdotuk`) REFERENCES `bills`(`bill_parliamentdotuk`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "parliamentdotuk",
+            "columnName": "billstage_parliamentdotuk",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "billId",
+            "columnName": "billstage_bill_parliamentdotuk",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "billstage_type",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "billstage_parliamentdotuk"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "bills",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "billstage_bill_parliamentdotuk"
+            ],
+            "referencedColumns": [
+              "bill_parliamentdotuk"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "bill_stage_sittings",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`billstagesitting_parliamentdotuk` INTEGER NOT NULL, `billstagesitting_bill_stage_id` INTEGER NOT NULL, `billstagesitting_date` INTEGER NOT NULL, `billstagesitting_formal` INTEGER NOT NULL, `billstagesitting_provisional` INTEGER NOT NULL, PRIMARY KEY(`billstagesitting_parliamentdotuk`), FOREIGN KEY(`billstagesitting_bill_stage_id`) REFERENCES `bill_stages`(`billstage_parliamentdotuk`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "parliamentdotuk",
+            "columnName": "billstagesitting_parliamentdotuk",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "billStageId",
+            "columnName": "billstagesitting_bill_stage_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "billstagesitting_date",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isFormal",
+            "columnName": "billstagesitting_formal",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isProvisional",
+            "columnName": "billstagesitting_provisional",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "billstagesitting_parliamentdotuk"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "bill_stages",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "billstagesitting_bill_stage_id"
+            ],
+            "referencedColumns": [
+              "billstage_parliamentdotuk"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "bill_types",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`billtype_name` TEXT NOT NULL, `billtype_description` TEXT, PRIMARY KEY(`billtype_name`))",
+        "fields": [
+          {
+            "fieldPath": "name",
+            "columnName": "billtype_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "billtype_description",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "billtype_name"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "zeitgeist_bills",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`zeitgeist_bill_id` INTEGER NOT NULL, `zeitgeist_bill_reason` TEXT, `zeitgeist_bill_priority` INTEGER NOT NULL, PRIMARY KEY(`zeitgeist_bill_id`), FOREIGN KEY(`zeitgeist_bill_id`) REFERENCES `bills`(`bill_parliamentdotuk`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "zeitgeist_bill_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reason",
+            "columnName": "zeitgeist_bill_reason",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "priority",
+            "columnName": "zeitgeist_bill_priority",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "zeitgeist_bill_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "bills",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "zeitgeist_bill_id"
+            ],
+            "referencedColumns": [
+              "bill_parliamentdotuk"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "constituencies",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`constituency_parliamentdotuk` INTEGER NOT NULL, `constituency_name` TEXT NOT NULL, `constituency_start` INTEGER, `constituency_end` INTEGER, PRIMARY KEY(`constituency_parliamentdotuk`))",
+        "fields": [
+          {
+            "fieldPath": "parliamentdotuk",
+            "columnName": "constituency_parliamentdotuk",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "constituency_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "start",
+            "columnName": "constituency_start",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "end",
+            "columnName": "constituency_end",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "constituency_parliamentdotuk"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "constituency_boundaries",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`boundary_constituency_id` INTEGER NOT NULL, `boundary_kml` TEXT NOT NULL, `boundary_area` TEXT, `boundary_length` TEXT, `boundary_center_lat` TEXT, `boundary_center_long` TEXT, PRIMARY KEY(`boundary_constituency_id`), FOREIGN KEY(`boundary_constituency_id`) REFERENCES `constituencies`(`constituency_parliamentdotuk`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "parliamentdotuk",
+            "columnName": "boundary_constituency_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "kml",
+            "columnName": "boundary_kml",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "area",
+            "columnName": "boundary_area",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "boundaryLength",
+            "columnName": "boundary_length",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "centerLat",
+            "columnName": "boundary_center_lat",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "centerLong",
+            "columnName": "boundary_center_long",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "boundary_constituency_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "constituencies",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "boundary_constituency_id"
+            ],
+            "referencedColumns": [
+              "constituency_parliamentdotuk"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "constituency_election_results",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`c_e_r_parliamentdotuk` INTEGER NOT NULL, `c_e_r_constituency_id` INTEGER NOT NULL, `c_e_r_election_id` INTEGER NOT NULL, `c_e_r_electorate` INTEGER NOT NULL, `c_e_r_turnout` INTEGER NOT NULL, `c_e_r_turnout_fraction` TEXT NOT NULL, `c_e_r_result` TEXT NOT NULL, `c_e_r_majority` INTEGER NOT NULL, PRIMARY KEY(`c_e_r_parliamentdotuk`), FOREIGN KEY(`c_e_r_constituency_id`) REFERENCES `constituencies`(`constituency_parliamentdotuk`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`c_e_r_election_id`) REFERENCES `elections`(`election_parliamentdotuk`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "parliamentdotuk",
+            "columnName": "c_e_r_parliamentdotuk",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "constituencyId",
+            "columnName": "c_e_r_constituency_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "electionId",
+            "columnName": "c_e_r_election_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "electorate",
+            "columnName": "c_e_r_electorate",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "turnout",
+            "columnName": "c_e_r_turnout",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "turnoutFraction",
+            "columnName": "c_e_r_turnout_fraction",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "result",
+            "columnName": "c_e_r_result",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "majority",
+            "columnName": "c_e_r_majority",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "c_e_r_parliamentdotuk"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "constituencies",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "c_e_r_constituency_id"
+            ],
+            "referencedColumns": [
+              "constituency_parliamentdotuk"
+            ]
+          },
+          {
+            "table": "elections",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "c_e_r_election_id"
+            ],
+            "referencedColumns": [
+              "election_parliamentdotuk"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "constituency_candidates",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`c_e_r_id` INTEGER NOT NULL, `candidate_name` TEXT NOT NULL, `candidate_profile_id` INTEGER, `candidate_party_name` TEXT NOT NULL, `candidate_party_id` INTEGER, `candidate_order` INTEGER NOT NULL, `candidate_votes` INTEGER NOT NULL, PRIMARY KEY(`c_e_r_id`, `candidate_name`), FOREIGN KEY(`c_e_r_id`) REFERENCES `constituency_election_results`(`c_e_r_parliamentdotuk`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "resultsId",
+            "columnName": "c_e_r_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "candidate_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "profile",
+            "columnName": "candidate_profile_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "partyName",
+            "columnName": "candidate_party_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "party",
+            "columnName": "candidate_party_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "order",
+            "columnName": "candidate_order",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "votes",
+            "columnName": "candidate_votes",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "c_e_r_id",
+            "candidate_name"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "constituency_election_results",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "c_e_r_id"
+            ],
+            "referencedColumns": [
+              "c_e_r_parliamentdotuk"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "elections",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`election_parliamentdotuk` INTEGER NOT NULL, `election_name` TEXT NOT NULL, `election_date` INTEGER NOT NULL, `election_type` TEXT NOT NULL, PRIMARY KEY(`election_parliamentdotuk`))",
+        "fields": [
+          {
+            "fieldPath": "parliamentdotuk",
+            "columnName": "election_parliamentdotuk",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "election_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "election_date",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "electionType",
+            "columnName": "election_type",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "election_parliamentdotuk"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "constituency_results",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`result_member_id` INTEGER NOT NULL, `result_election_id` INTEGER NOT NULL, `result_constituency_id` INTEGER NOT NULL, PRIMARY KEY(`result_member_id`, `result_election_id`, `result_constituency_id`))",
+        "fields": [
+          {
+            "fieldPath": "memberId",
+            "columnName": "result_member_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "electionId",
+            "columnName": "result_election_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "constituencyId",
+            "columnName": "result_constituency_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "result_member_id",
+            "result_election_id",
+            "result_constituency_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "divisions",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`division_parliamentdotuk` INTEGER NOT NULL, `title` TEXT NOT NULL, `description` TEXT, `date` INTEGER NOT NULL, `house` INTEGER NOT NULL, `passed` INTEGER NOT NULL, `ayes` INTEGER NOT NULL, `noes` INTEGER NOT NULL, `abstentions` INTEGER, `did_not_vote` INTEGER, `non_eligible` INTEGER, `suspended_or_expelled` INTEGER, `errors` INTEGER, `deferred_vote` INTEGER NOT NULL, `whipped_vote` INTEGER, PRIMARY KEY(`division_parliamentdotuk`))",
+        "fields": [
+          {
+            "fieldPath": "parliamentdotuk",
+            "columnName": "division_parliamentdotuk",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "house",
+            "columnName": "house",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "passed",
+            "columnName": "passed",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ayes",
+            "columnName": "ayes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "noes",
+            "columnName": "noes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "abstentions",
+            "columnName": "abstentions",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "didNotVote",
+            "columnName": "did_not_vote",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nonEligible",
+            "columnName": "non_eligible",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "suspendedOrExpelled",
+            "columnName": "suspended_or_expelled",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "errors",
+            "columnName": "errors",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "deferredVote",
+            "columnName": "deferred_vote",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "whippedVote",
+            "columnName": "whipped_vote",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "division_parliamentdotuk"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "zeitgeist_divisions",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`zeitgeist_division_id` INTEGER NOT NULL, `zeitgeist_division_reason` TEXT, `zeitgeist_division_priority` INTEGER NOT NULL, PRIMARY KEY(`zeitgeist_division_id`), FOREIGN KEY(`zeitgeist_division_id`) REFERENCES `divisions`(`division_parliamentdotuk`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "zeitgeist_division_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reason",
+            "columnName": "zeitgeist_division_reason",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "priority",
+            "columnName": "zeitgeist_division_priority",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "zeitgeist_division_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "divisions",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "zeitgeist_division_id"
+            ],
+            "referencedColumns": [
+              "division_parliamentdotuk"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "division_votes",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`dvote_division_id` INTEGER NOT NULL, `dvote_member_id` INTEGER NOT NULL, `member_name` TEXT NOT NULL, `vote` INTEGER NOT NULL, `party_id` INTEGER, PRIMARY KEY(`dvote_division_id`, `dvote_member_id`), FOREIGN KEY(`dvote_division_id`) REFERENCES `divisions`(`division_parliamentdotuk`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "divisionId",
+            "columnName": "dvote_division_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "memberId",
+            "columnName": "dvote_member_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "memberName",
+            "columnName": "member_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "voteType",
+            "columnName": "vote",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "partyId",
+            "columnName": "party_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "dvote_division_id",
+            "dvote_member_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "divisions",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "dvote_division_id"
+            ],
+            "referencedColumns": [
+              "division_parliamentdotuk"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "parliamentary_sessions",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`session_parliamentdotuk` INTEGER NOT NULL, `session_name` TEXT NOT NULL, PRIMARY KEY(`session_parliamentdotuk`))",
+        "fields": [
+          {
+            "fieldPath": "parliamentdotuk",
+            "columnName": "session_parliamentdotuk",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "session_name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "session_parliamentdotuk"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "user_tokens",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT, `photo_url` TEXT, `email` TEXT, `snommoc_token` TEXT NOT NULL, `google_id` TEXT NOT NULL, `username` TEXT NOT NULL, PRIMARY KEY(`google_id`, `snommoc_token`))",
+        "fields": [
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "photoUrl",
+            "columnName": "photo_url",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "email",
+            "columnName": "email",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "snommocToken",
+            "columnName": "snommoc_token",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "googleId",
+            "columnName": "google_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "username",
+            "columnName": "username",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "google_id",
+            "snommoc_token"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '720c643fbddcfebad253f6d42f2927f1')"
+    ]
+  }
+}
