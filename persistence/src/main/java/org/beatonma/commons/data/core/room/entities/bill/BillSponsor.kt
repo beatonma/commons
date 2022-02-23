@@ -32,7 +32,7 @@ data class BillSponsorWithProfile(
         entityColumn = PARLIAMENTDOTUK,
         entity = MemberProfile::class
     )
-    val profile: MemberProfileWithPartyConstituency?,
+    val profileWithPartyConstituency: MemberProfileWithPartyConstituency?,
 ) : Named {
     override val name: String get() = sponsor.name
 }

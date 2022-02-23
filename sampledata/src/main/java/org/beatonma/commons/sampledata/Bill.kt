@@ -59,7 +59,7 @@ val SampleBillSponsors
                 billId = 393258,
                 profile = null,
             ),
-            profile = null,
+            profileWithPartyConstituency = null,
         ),
         BillSponsorWithProfile(
             sponsor = BillSponsor(
@@ -67,7 +67,7 @@ val SampleBillSponsors
                 billId = 393258,
                 profile = null,
             ),
-            profile = MemberProfileWithPartyConstituency(
+            profileWithPartyConstituency = MemberProfileWithPartyConstituency(
                 SampleMember,
                 SampleParty,
                 SampleConstituency
