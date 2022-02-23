@@ -16,7 +16,7 @@ object CommonsPadding : ThemedPadding {
     override val Spacer = paddingValues(bottom = 16.dp)
 
     override val VerticalListItem = paddingValues(bottom = 8.dp)
-    override val VerticalListItemLarge = paddingValues(top = 8.dp, bottom = 8.dp)
+    override val VerticalListItemLarge = paddingValues(vertical = 8.dp)
     override val HorizontalListItem = paddingValues(end = 12.dp)
 
     override val HorizontalSeparator = paddingValues(vertical = 8.dp)
@@ -26,7 +26,7 @@ object CommonsPadding : ThemedPadding {
 
     // For rows of Weblink, EmailLink, PhoneLink
     val LinkItem = paddingValues(end = 4.dp)
-    val Links = paddingValues(vertical = 8.dp)
+    val Links = paddingValues(vertical = 12.dp)
 
     override val IconSmall = paddingValues(8.dp)
     override val IconLarge = paddingValues(16.dp)
@@ -42,6 +42,6 @@ object CommonsPadding : ThemedPadding {
     override val Snackbar = paddingValues(16.dp)
 
     override val CardButton = paddingValues(top = 24.dp)
-    override val EndOfContent = paddingValues(bottom = 160.dp)
+    override val EndOfContent = paddingValues(bottom = 220.dp)
     override val EndOfContentHorizontal = paddingValues(end = 220.dp)
 }

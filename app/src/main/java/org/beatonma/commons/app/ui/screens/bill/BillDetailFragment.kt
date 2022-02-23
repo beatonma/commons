@@ -8,7 +8,8 @@ import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
 import org.beatonma.commons.app.ui.base.SocialFragment
 import org.beatonma.commons.app.ui.util.composeScreen
-import org.beatonma.commons.app.util.navigateToMember
+import org.beatonma.commons.app.util.logWarning
+import org.beatonma.commons.app.util.navigateTo
 import org.beatonma.commons.app.util.parliamentID
 import org.beatonma.commons.core.ParliamentID
 
@@ -30,11 +31,9 @@ class BillDetailFragment : SocialFragment() {
     ): View = composeScreen(
         LocalBillActions provides BillActions(
             onSponsorClick = { sponsor ->
-                val sponsorId = sponsor.sponsor.parliamentdotuk
-                if (sponsorId == null) {
-                    TODO("This should show a message and/or initiate a search..?")
-                } else {
-                    navigateToMember(sponsorId)
+                when (val profile = sponsor.profileWithPartyConstituency?.profile) {
+                    null -> logWarning("No profile available - this should trigger a search by candidate name '${sponsor.name}'")
+                    else -> navigateTo(profile)
                 }
             }
         ),

@@ -63,12 +63,12 @@ import org.beatonma.commons.compose.util.rememberListOf
 import org.beatonma.commons.core.extensions.lerpBetween
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.core.extensions.reversed
+import org.beatonma.commons.preview.InAppPreview
 import org.beatonma.commons.sampledata.SampleSearchResults
 import org.beatonma.commons.snommoc.models.search.MemberSearchResult
 import org.beatonma.commons.snommoc.models.search.SearchResult
 import org.beatonma.commons.theme.CommonsElevation
 import org.beatonma.commons.theme.CommonsPadding
-import org.beatonma.commons.theme.CommonsTheme
 import org.beatonma.commons.theme.onSearchBar
 import org.beatonma.commons.theme.searchBar
 import org.beatonma.commons.theme.searchBarColors
@@ -337,8 +337,7 @@ fun SearchTestLayout() {
             onClickMember = onClickMember,
         )
     }
-
-    CommonsTheme {
+    InAppPreview {
         CompositionLocalProvider(
             LocalSearchActions provides searchActions,
         ) {
