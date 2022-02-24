@@ -102,7 +102,6 @@ object Dependencies {
             val TESTING = hilt("com.google.dagger:hilt-android-testing")
 
             val KAPT_JETPACK = hiltJetpack("androidx.hilt:hilt-compiler")
-            val LIFECYCLE_VIEWMODEL = hiltJetpack("androidx.hilt:hilt-lifecycle-viewmodel")
             val NAV_COMPOSE = hiltJetpack("androidx.hilt:hilt-navigation-compose")
             val WORK = hiltJetpack("androidx.hilt:hilt-work")
 

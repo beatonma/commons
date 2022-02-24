@@ -14,6 +14,7 @@ import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import org.beatonma.commons.app.ui.components.ErrorUi
 import org.beatonma.commons.app.ui.components.LoadingIcon
+import org.beatonma.commons.app.util.logDebug
 
 internal const val AvatarTestTag = "avatar"
 
@@ -33,6 +34,7 @@ fun Avatar(
     },
     fallback: @Composable BoxScope.() -> Unit = {},
 ) {
+    logDebug("Avatar: $source")
     @Composable
     fun Boxed(content: @Composable BoxScope.() -> Unit) {
         Box(modifier, contentAlignment = alignment, content = content)
@@ -56,15 +58,16 @@ fun Avatar(
             is ImagePainter.State.Error -> {
                 Boxed { error(state.throwable) }
             }
+            else -> {
+                Image(
+                    painter = painter,
+                    contentDescription = contentDescription,
+                    modifier = modifier.testTag(AvatarTestTag),
+                    alignment = alignment,
+                    contentScale = contentScale,
+                )
+            }
         }
-
-        Image(
-            painter = painter,
-            contentDescription = contentDescription,
-            modifier = modifier.testTag(AvatarTestTag),
-            alignment = alignment,
-            contentScale = contentScale,
-        )
     }
 }
 

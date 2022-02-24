@@ -6,7 +6,6 @@ plugins {
 
 android {
     kotlinOptions {
-        useIR = true
         jvmTarget = Versions.JAVA.toString()
         freeCompilerArgs = freeCompilerArgs + listOf(
             "-Xskip-prerelease-check"

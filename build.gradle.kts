@@ -6,7 +6,7 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        maven("https://dl.bintray.com/kotlin/kotlin-eap")
+        gradlePluginPortal()
     }
 
     dependencies {
@@ -14,6 +14,7 @@ buildscript {
         classpath(Dependencies.Build.KOTLIN)
         classpath(Dependencies.Build.HILT)
         classpath(Dependencies.Build.VERSIONS)
+        classpath("com.squareup:javapoet:1.13.0")  // Fix for Dagger 2.41
     }
 }
 
@@ -21,7 +22,6 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        maven("https://dl.bintray.com/kotlin/kotlin-eap")
         jcenter() // Required for Volley 1.1.1 (required by Google Maps)
     }
 }

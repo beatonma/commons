@@ -11,7 +11,6 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.plugins.PluginContainer
 import org.gradle.kotlin.dsl.DependencyHandlerScope
-import org.gradle.kotlin.dsl.maven
 import org.gradle.kotlin.dsl.project
 
 interface CommonsAndroidPlugin<T : BaseExtension> : AndroidProjectPlugin<T> {
@@ -98,7 +97,6 @@ interface CommonsAndroidPlugin<T : BaseExtension> : AndroidProjectPlugin<T> {
 
     override fun applyRepositories(repositories: RepositoryHandler) {
         with(repositories) {
-            maven("https://dl.bintray.com/kotlin/kotlin-eap")
             mavenCentral()
         }
     }

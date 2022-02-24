@@ -1,9 +1,9 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 // Versions object is not accessible here.
-val gradleVersion = "7.1.1"
-val kotlinVersion = "1.5.21"
-val kotlinLanguageVersion = "1.5"
+val gradleVersion = "7.1.2"
+val kotlinVersion = "1.6.10"
+val kotlinLanguageVersion = "1.6"
 val javaVersion = "1.8"
 
 plugins {
@@ -13,12 +13,14 @@ plugins {
 dependencies {
     implementation("com.android.tools.build:gradle:$gradleVersion")
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+
+    implementation("com.squareup:javapoet:1.13.0")  // Fix for Dagger 2.41
 }
 
 repositories {
     google()
+    gradlePluginPortal()
     mavenCentral()
-    maven("https://dl.bintray.com/kotlin/kotlin-eap")
 }
 
 val compileKotlin: KotlinCompile by tasks

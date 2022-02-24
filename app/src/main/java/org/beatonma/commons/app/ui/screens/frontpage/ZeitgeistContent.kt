@@ -23,6 +23,7 @@ import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.components.image.AppIcon
 import org.beatonma.commons.app.ui.components.party.ProvidePartyImageConfig
 import org.beatonma.commons.app.ui.uiDescription
+import org.beatonma.commons.app.util.logDebug
 import org.beatonma.commons.compose.components.text.OptionalText
 import org.beatonma.commons.compose.padding.endOfContent
 import org.beatonma.commons.compose.systemui.navigationBarsPadding
@@ -38,7 +39,9 @@ import org.beatonma.commons.repo.models.Zeitgeist
 import org.beatonma.commons.snommoc.models.ZeitgeistReason
 import org.beatonma.commons.theme.formatting.formatted
 
-private fun String?.reason(): ZeitgeistReason? = this?.let { ZeitgeistReason.valueOf(it) }
+private fun String?.reason(): ZeitgeistReason =
+    this?.let { ZeitgeistReason.valueOf(it) } ?: ZeitgeistReason.unspecified
+
 private fun ResolvedZeitgeistMember.reason() = this.zeitgeistContent.reason.reason()
 private fun ResolvedZeitgeistDivision.reason() = this.zeitgeistContent.reason.reason()
 private fun ResolvedZeitgeistBill.reason() = this.zeitgeistContent.reason.reason()
@@ -149,7 +152,7 @@ private fun ZeitgeistMembers(
 private fun ZeitgeistDivision(
     item: ResolvedZeitgeistDivision,
     onClick: DivisionAction,
-    reason: ZeitgeistReason?,
+    reason: ZeitgeistReason,
     modifier: Modifier = Modifier,
 ) {
     val division = item.division
@@ -166,7 +169,7 @@ private fun ZeitgeistDivision(
 private fun ZeitgeistBill(
     item: ResolvedZeitgeistBill,
     onClick: BillAction,
-    reason: ZeitgeistReason?,
+    reason: ZeitgeistReason,
     modifier: Modifier = Modifier,
 ) {
     val bill = item.bill
@@ -179,10 +182,13 @@ private fun ZeitgeistBill(
 }
 
 @Composable
-private fun ReasonIcon(reason: ZeitgeistReason?, modifier: Modifier = Modifier) {
+private fun ReasonIcon(reason: ZeitgeistReason, modifier: Modifier = Modifier) {
     when (reason) {
         ZeitgeistReason.feature -> FeaturedReasonIcon(modifier)
         ZeitgeistReason.social -> TrendingReasonIcon(modifier)
+        ZeitgeistReason.unspecified -> {
+            logDebug("ZeitgeistReason is unspecified")
+        }
     }
 }
 

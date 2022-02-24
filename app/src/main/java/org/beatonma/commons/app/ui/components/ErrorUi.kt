@@ -36,7 +36,7 @@ fun ErrorUi(
     Box(modifier.systemBarsPadding(), contentAlignment = Alignment.Center) {
         Text(
             message ?: "Error",
-            style = typography.h3,
+            style = typography.h5,
             color = colors.error,
             textAlign = TextAlign.Center,
         )

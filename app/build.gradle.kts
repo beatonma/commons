@@ -97,7 +97,6 @@ dependencies {
             Dependencies.Kotlin.Coroutines.PLAY,
 
             Dependencies.Dagger.Hilt.NAV_COMPOSE,
-            Dependencies.Dagger.Hilt.LIFECYCLE_VIEWMODEL,
             Dependencies.Dagger.Hilt.WORK,
 
             Dependencies.Room.RUNTIME,

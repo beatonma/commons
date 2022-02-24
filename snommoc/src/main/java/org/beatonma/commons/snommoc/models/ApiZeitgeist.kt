@@ -14,9 +14,9 @@ data class ApiZeitgeist(
 
 @Suppress("EnumEntryName") // Lowercase names to match API values
 enum class ZeitgeistReason {
-
     feature,
     social,
+    unspecified,
     ;
 }
 

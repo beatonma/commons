@@ -9,7 +9,6 @@ import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
@@ -179,6 +178,11 @@ private suspend inline fun <E, N> ProducerScope<IoResult<E>>.makeNetworkCall(
         is Success -> withResult(response.data)
         is Failure -> sendError(response, response.error, closeFlowOnError)
         is ErrorCode -> sendError(response)
+        else -> {
+            throw UnsupportedOperationException(
+                "makeNetworkCall expects one of (Success|Failure|ErrorCode), got: $response"
+            )
+        }
     }
     return true
 }
@@ -206,7 +210,7 @@ private suspend fun <E> ProducerScope<E>.sendError(
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
 suspend fun makeNetworkCalls(
     vararg calls: NetworkCall<*>,
-    strategy: NetworkCallStrategy
+    strategy: NetworkCallStrategy,
 ): Flow<Int> =
     when (strategy) {
         NetworkCallStrategy.Serial -> makeSerialNetworkCalls(calls)
@@ -215,7 +219,7 @@ suspend fun makeNetworkCalls(
 
 @OptIn(ExperimentalCoroutinesApi::class)
 private suspend fun makeSerialNetworkCalls(
-    calls: Array<out NetworkCall<*>>
+    calls: Array<out NetworkCall<*>>,
 ) =
     flow<Int> {
         calls.fastForEachIndexed { index, c ->
@@ -226,7 +230,7 @@ private suspend fun makeSerialNetworkCalls(
 
 @OptIn(ExperimentalCoroutinesApi::class)
 private suspend fun makeParallelNetworkCalls(
-    calls: Array<out NetworkCall<*>>
+    calls: Array<out NetworkCall<*>>,
 ) = channelFlow {
     var complete = 0
     calls
