@@ -17,9 +17,6 @@
         <action
             android:id="@+id/action_frontPageFragment_to_divisionProfileFragment"
             app:destination="@id/divisionProfileFragment" />
-        <argument
-            android:name="@string/parliamentdotuk"
-            app:argType="integer" />
         <deepLink
             android:id="@+id/deeplink_frontpage"
             android:autoVerify="true"

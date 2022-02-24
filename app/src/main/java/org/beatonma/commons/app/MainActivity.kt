@@ -5,7 +5,7 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.navigation.NavController
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import dagger.hilt.android.AndroidEntryPoint
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.base.DayNightActivity
@@ -32,7 +32,9 @@ class MainActivity : DayNightActivity() {
         setContentView(R.layout.activity_main)
         setDecorFitsSystemWindows(false)
 
-        navController = findNavController(R.id.nav_host_fragment)
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        navController = navHostFragment.navController
 
         handleIntent(intent)
     }
