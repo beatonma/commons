@@ -133,8 +133,8 @@ private fun SearchFieldLayout(
         trailingIcon = {
             AnimatedVisibility(
                 visible = query.isNotEmpty(),
-                enter = fadeIn() + expandIn(Alignment.Center),
-                exit = fadeOut() + shrinkOut(Alignment.Center),
+                enter = fadeIn() + expandIn(expandFrom = Alignment.Center),
+                exit = fadeOut() + shrinkOut(shrinkTowards = Alignment.Center),
             ) {
                 IconButton(
                     onClick = { onQueryChange("") },
