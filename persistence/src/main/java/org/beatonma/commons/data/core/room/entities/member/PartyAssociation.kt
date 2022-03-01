@@ -5,7 +5,6 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Relation
-import org.beatonma.commons.core.PARLIAMENTDOTUK
 import org.beatonma.commons.data.core.interfaces.Named
 import org.beatonma.commons.data.core.interfaces.Periodic
 import java.time.LocalDate
@@ -14,14 +13,14 @@ import java.time.LocalDate
     foreignKeys = [
         ForeignKey(
             entity = MemberProfile::class,
-            parentColumns = [PARLIAMENTDOTUK],
+            parentColumns = ["member_id"],
             childColumns = ["partyacc_member_id"],
             onUpdate = ForeignKey.CASCADE,
             onDelete = ForeignKey.CASCADE
         ),
         ForeignKey(
             entity = Party::class,
-            parentColumns = ["party_$PARLIAMENTDOTUK"],
+            parentColumns = ["party_id"],
             childColumns = ["partyacc_party_id"],
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE
@@ -45,8 +44,8 @@ data class PartyAssociation(
 data class PartyAssociationWithParty(
     @Embedded val partyAssocation: PartyAssociation,
 
-    @Relation(parentColumn = "partyacc_party_id", entityColumn = "party_$PARLIAMENTDOTUK")
-    val party: Party
+    @Relation(parentColumn = "partyacc_party_id", entityColumn = "party_id")
+    val party: Party,
 ): Named,
     Periodic {
     override val name: String get() = party.name

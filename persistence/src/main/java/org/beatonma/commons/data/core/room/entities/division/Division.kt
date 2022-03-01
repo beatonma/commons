@@ -6,7 +6,6 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 import org.beatonma.commons.core.House
-import org.beatonma.commons.core.PARLIAMENTDOTUK
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.interfaces.Commentable
 import org.beatonma.commons.data.core.interfaces.Dated
@@ -19,7 +18,7 @@ import java.time.LocalDate
     tableName = "divisions",
 )
 data class Division(
-    @ColumnInfo(name = "division_$PARLIAMENTDOTUK") @PrimaryKey override val parliamentdotuk: ParliamentID,
+    @ColumnInfo(name = "division_id") @PrimaryKey override val parliamentdotuk: ParliamentID,
     @ColumnInfo(name = "title") val title: String,
     @ColumnInfo(name = "description") val description: String?, // Lords only
     @ColumnInfo(name = "date") override val date: LocalDate,
@@ -42,13 +41,15 @@ data class Division(
 
 data class DivisionWithVotes(
     @Embedded val division: Division,
-    @Relation(parentColumn = "division_$PARLIAMENTDOTUK", entityColumn = "dvote_division_id", entity = Vote::class)
-    val votes: List<VoteWithParty>
+    @Relation(parentColumn = "division_id",
+        entityColumn = "dvote_division_id",
+        entity = Vote::class)
+    val votes: List<VoteWithParty>,
 )
 
 
 data class VoteWithParty(
     @Embedded val vote: Vote,
-    @Relation(parentColumn = "party_id", entityColumn = "party_$PARLIAMENTDOTUK")
-    val party: Party?
+    @Relation(parentColumn = "party_id", entityColumn = "party_id")
+    val party: Party?,
 )

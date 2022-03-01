@@ -77,14 +77,14 @@ data class MinimalMember(
     @Embedded val profile: MemberProfile,
 
     @Relation(
-        parentColumn = "party_id",
-        entityColumn = "party_parliamentdotuk",
+        parentColumn = "member_party_id",
+        entityColumn = "party_id",
         entity = Party::class)
     val party: Party,
 
     @Relation(
-        parentColumn = "constituency_id",
-        entityColumn = "constituency_parliamentdotuk",
+        parentColumn = "member_constituency_id",
+        entityColumn = "constituency_id",
         entity = Constituency::class)
     val constituency: Constituency?,
 ): Parliamentdotuk {

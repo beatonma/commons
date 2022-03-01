@@ -4,7 +4,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import org.beatonma.commons.core.PARLIAMENTDOTUK
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
 
@@ -14,7 +13,7 @@ private const val TAG = "ConstituencyBoundary"
     foreignKeys = [
         ForeignKey(
             entity = Constituency::class,
-            parentColumns = ["constituency_$PARLIAMENTDOTUK"],
+            parentColumns = ["constituency_id"],
             childColumns = ["boundary_constituency_id"],
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE

@@ -3,13 +3,12 @@ package org.beatonma.commons.data.core.room.entities.member
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import org.beatonma.commons.core.PARLIAMENTDOTUK
 
 @Entity(
     foreignKeys = [
         ForeignKey(
             entity = MemberProfile::class,
-            parentColumns = [PARLIAMENTDOTUK],
+            parentColumns = ["member_id"],
             childColumns = ["topic_member_id"],
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE

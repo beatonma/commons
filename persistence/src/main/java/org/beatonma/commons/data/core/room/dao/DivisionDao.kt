@@ -23,7 +23,7 @@ interface DivisionDao: SharedPartyDao {
     fun getZeitgeistDivisions(): FlowList<ResolvedZeitgeistDivision>
 
     @Transaction
-    @Query("""SELECT * FROM divisions WHERE division_parliamentdotuk = :parliamentdotuk""")
+    @Query("""SELECT * FROM divisions WHERE division_id = :parliamentdotuk""")
     fun getDivisionWithVotes(parliamentdotuk: ParliamentID): Flow<DivisionWithVotes>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

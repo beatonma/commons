@@ -6,7 +6,6 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.Relation
-import org.beatonma.commons.core.PARLIAMENTDOTUK
 import org.beatonma.commons.data.core.interfaces.Named
 import org.beatonma.commons.data.core.interfaces.Periodic
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
@@ -20,14 +19,14 @@ import java.time.LocalDate
     foreignKeys = [
         ForeignKey(
             entity = MemberProfile::class,
-            parentColumns = [PARLIAMENTDOTUK],
+            parentColumns = ["member_id"],
             childColumns = ["memberfor_member_id"],
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE
         ),
         ForeignKey(
             entity = Election::class,
-            parentColumns = ["election_$PARLIAMENTDOTUK"],
+            parentColumns = ["election_id"],
             childColumns = ["memberfor_election_id"],
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE
@@ -51,11 +50,11 @@ data class HistoricalConstituency(
 data class HistoricalConstituencyWithElection(
     @Embedded val historicalConstituency: HistoricalConstituency,
 
-    @Relation(parentColumn = "memberfor_constituency_id", entityColumn = "constituency_$PARLIAMENTDOTUK")
+    @Relation(parentColumn = "memberfor_constituency_id", entityColumn = "constituency_id")
     val constituency: Constituency,
 
-    @Relation(parentColumn = "memberfor_election_id", entityColumn = "election_$PARLIAMENTDOTUK")
-    val election: Election
+    @Relation(parentColumn = "memberfor_election_id", entityColumn = "election_id")
+    val election: Election,
 ): Named,
     Periodic {
     override val start: LocalDate? get() = historicalConstituency.start

@@ -3,7 +3,6 @@ package org.beatonma.commons.data.core.room.entities.member
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import org.beatonma.commons.core.PARLIAMENTDOTUK
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.interfaces.Named
 import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
@@ -14,25 +13,25 @@ import java.time.LocalDate
     foreignKeys = [
         ForeignKey(
             entity = MemberProfile::class,
-            parentColumns = [PARLIAMENTDOTUK],
+            parentColumns = ["member_id"],
             childColumns = ["post_member_id"],
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE
         )
     ],
     primaryKeys = [
-        "post_$PARLIAMENTDOTUK",
+        "post_id",
         "post_member_id"
     ],
     tableName = "posts"
 )
 data class Post(
-    @ColumnInfo(name = "post_$PARLIAMENTDOTUK") override val parliamentdotuk: ParliamentID,
+    @ColumnInfo(name = "post_id") override val parliamentdotuk: ParliamentID,
     @ColumnInfo(name = "post_member_id", index = true) val memberId: ParliamentID,
     @ColumnInfo(name = "post_name") override val name: String,
     @ColumnInfo(name = "post_type") val postType: PostType,
     @ColumnInfo(name = "start") override val start: LocalDate?,
-    @ColumnInfo(name = "end") override val end: LocalDate?
+    @ColumnInfo(name = "end") override val end: LocalDate?,
 ): Parliamentdotuk,
     Named,
     Periodic {

@@ -6,7 +6,6 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.Relation
-import org.beatonma.commons.core.PARLIAMENTDOTUK
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.interfaces.Named
 import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
@@ -15,13 +14,13 @@ import java.time.LocalDate
 
 @Entity(
     primaryKeys = [
-        "committee_$PARLIAMENTDOTUK",
+        "committee_id",
         "committee_member_id"
     ],
     tableName = "committee_memberships"
 )
 data class CommitteeMembership(
-    @ColumnInfo(name = "committee_$PARLIAMENTDOTUK") override val parliamentdotuk: ParliamentID,
+    @ColumnInfo(name = "committee_id") override val parliamentdotuk: ParliamentID,
     @ColumnInfo(name = "committee_member_id") val memberId: ParliamentID,
     @ColumnInfo(name = "committee_name") override val name: String,
     @ColumnInfo(name = "committee_start") override val start: LocalDate?,
@@ -38,7 +37,7 @@ data class CommitteeMembership(
     foreignKeys = [
         ForeignKey(
             entity = CommitteeMembership::class,
-            parentColumns = ["committee_$PARLIAMENTDOTUK", "committee_member_id"],
+            parentColumns = ["committee_id", "committee_member_id"],
             childColumns = ["committee_id", "chair_member_id"],
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE
@@ -64,7 +63,7 @@ data class CommitteeMemberWithChairs(
     @Embedded val membership: CommitteeMembership,
 
     @Relation(
-        parentColumn = "committee_parliamentdotuk",
+        parentColumn = "committee_id",
         entityColumn = "committee_id"
     )
     val chairs: List<CommitteeChairship>,

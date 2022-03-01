@@ -5,7 +5,6 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Relation
-import org.beatonma.commons.core.PARLIAMENTDOTUK
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.core.VoteType
 
@@ -14,7 +13,7 @@ import org.beatonma.commons.core.VoteType
     foreignKeys = [
         ForeignKey(
             entity = Division::class,
-            parentColumns = ["division_$PARLIAMENTDOTUK"],
+            parentColumns = ["division_id"],
             childColumns = ["dvote_division_id"],
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE
@@ -37,6 +36,8 @@ data class Vote(
 
 data class VoteWithDivision(
     @Embedded val vote: Vote,
-    @Relation(parentColumn = "dvote_division_id", entityColumn = "division_$PARLIAMENTDOTUK", entity = Division::class)
-    val division: Division
+    @Relation(parentColumn = "dvote_division_id",
+        entityColumn = "division_id",
+        entity = Division::class)
+    val division: Division,
 )

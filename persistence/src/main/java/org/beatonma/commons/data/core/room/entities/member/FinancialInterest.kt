@@ -3,7 +3,6 @@ package org.beatonma.commons.data.core.room.entities.member
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import org.beatonma.commons.core.PARLIAMENTDOTUK
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.interfaces.Dated
 import org.beatonma.commons.data.core.interfaces.Named
@@ -15,7 +14,7 @@ import java.time.LocalDate
     foreignKeys = [
         ForeignKey(
             entity = MemberProfile::class,
-            parentColumns = [PARLIAMENTDOTUK],
+            parentColumns = ["member_id"],
             childColumns = ["interest_member_id"],
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE

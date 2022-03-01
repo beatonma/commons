@@ -24,16 +24,16 @@ import org.beatonma.commons.data.core.room.entities.election.Election
 interface ConstituencyDao : SharedConstituencyDao, SharedElectionDao {
     // Get operations
     @Transaction
-    @Query("""SELECT * FROM constituencies WHERE constituency_parliamentdotuk = :constituencyId""")
+    @Query("""SELECT * FROM constituencies WHERE constituency_id = :constituencyId""")
     fun getConstituencyWithBoundary(constituencyId: ParliamentID): Flow<ConstituencyWithBoundary>
 
     @Transaction
     @Query(
         """
         SELECT * FROM constituency_results
-        INNER JOIN member_profiles ON member_profiles.parliamentdotuk = constituency_results.result_member_id
-        INNER JOIN elections ON elections.election_parliamentdotuk = constituency_results.result_election_id
-        INNER JOIN parties ON parties.party_parliamentdotuk = member_profiles.party_id
+        INNER JOIN member_profiles ON member_profiles.member_id = constituency_results.result_member_id
+        INNER JOIN elections ON elections.election_id = constituency_results.result_election_id
+        INNER JOIN parties ON parties.party_id = member_party_id
         WHERE constituency_results.result_constituency_id = :constituencyId
         ORDER BY elections.election_date DESC
         """
@@ -51,10 +51,10 @@ interface ConstituencyDao : SharedConstituencyDao, SharedElectionDao {
         electionId: ParliamentID,
     ): Flow<ConstituencyElectionDetailsWithCandidates>
 
-    @Query("""SELECT * FROM constituencies WHERE constituency_parliamentdotuk = :constituencyId""")
+    @Query("""SELECT * FROM constituencies WHERE constituency_id = :constituencyId""")
     fun getConstituency(constituencyId: ParliamentID): Flow<Constituency>
 
-    @Query("""SELECT * FROM elections WHERE election_parliamentdotuk = :electionId""")
+    @Query("""SELECT * FROM elections WHERE election_id = :electionId""")
     fun getElection(electionId: ParliamentID): Flow<Election>
 
 

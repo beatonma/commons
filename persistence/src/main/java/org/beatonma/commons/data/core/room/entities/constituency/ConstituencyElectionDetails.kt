@@ -6,7 +6,6 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import androidx.room.Relation
-import org.beatonma.commons.core.PARLIAMENTDOTUK
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.core.extensions.allNotNull
 import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
@@ -19,14 +18,14 @@ import org.beatonma.commons.data.core.room.entities.member.Party
     foreignKeys = [
         ForeignKey(
             entity = Constituency::class,
-            parentColumns = ["constituency_$PARLIAMENTDOTUK"],
+            parentColumns = ["constituency_id"],
             childColumns = ["c_e_r_constituency_id"],
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE
         ),
         ForeignKey(
             entity = Election::class,
-            parentColumns = ["election_$PARLIAMENTDOTUK"],
+            parentColumns = ["election_id"],
             childColumns = ["c_e_r_election_id"],
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE
@@ -35,7 +34,7 @@ import org.beatonma.commons.data.core.room.entities.member.Party
     tableName = "constituency_election_results"
 )
 data class ConstituencyElectionDetails(
-    @PrimaryKey @ColumnInfo(name = "c_e_r_$PARLIAMENTDOTUK") override val parliamentdotuk: ParliamentID,
+    @PrimaryKey @ColumnInfo(name = "c_e_r_id") override val parliamentdotuk: ParliamentID,
     @ColumnInfo(name = "c_e_r_constituency_id") val constituencyId: ParliamentID,
     @ColumnInfo(name = "c_e_r_election_id") val electionId: ParliamentID,
     @ColumnInfo(name = "c_e_r_electorate") val electorate: Int,
@@ -51,7 +50,7 @@ data class ConstituencyElectionDetails(
     foreignKeys = [
         ForeignKey(
             entity = ConstituencyElectionDetails::class,
-            parentColumns = ["c_e_r_$PARLIAMENTDOTUK"],
+            parentColumns = ["c_e_r_id"],
             childColumns = ["c_e_r_id"],
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE
@@ -78,13 +77,13 @@ data class ConstituencyCandidateWithParty(
 
     @Relation(
         parentColumn = "candidate_profile_id",
-        entityColumn = PARLIAMENTDOTUK,
+        entityColumn = "member_id",
         entity = MemberProfile::class
     )
     val person: MemberProfileWithPartyConstituency?,
 
-    @Relation(parentColumn = "candidate_party_id", entityColumn = "party_$PARLIAMENTDOTUK")
-    val party: Party?
+    @Relation(parentColumn = "candidate_party_id", entityColumn = "party_id")
+    val party: Party?,
 )
 
 
@@ -92,7 +91,7 @@ data class ConstituencyElectionDetailsWithCandidates(
     @Embedded val details: ConstituencyElectionDetails,
 
     @Relation(
-        parentColumn = "c_e_r_$PARLIAMENTDOTUK",
+        parentColumn = "c_e_r_id",
         entityColumn = "c_e_r_id",
         entity = ConstituencyCandidate::class
     )

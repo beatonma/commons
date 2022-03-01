@@ -5,7 +5,6 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.Relation
-import org.beatonma.commons.core.PARLIAMENTDOTUK
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.core.extensions.allNotNull
 import org.beatonma.commons.data.core.interfaces.Named
@@ -18,7 +17,7 @@ import java.time.LocalDate
     tableName = "constituencies"
 )
 data class Constituency(
-    @ColumnInfo(name = "constituency_$PARLIAMENTDOTUK") @PrimaryKey override val parliamentdotuk: ParliamentID,
+    @ColumnInfo(name = "constituency_id") @PrimaryKey override val parliamentdotuk: ParliamentID,
     @ColumnInfo(name = "constituency_name") override val name: String,
     @ColumnInfo(name = "constituency_start") override val start: LocalDate? = null,
     @ColumnInfo(name = "constituency_end") override val end: LocalDate? = null,
@@ -30,7 +29,7 @@ data class ConstituencyWithBoundary(
     @Embedded
     val constituency: Constituency,
 
-    @Relation(parentColumn = "constituency_$PARLIAMENTDOTUK",
+    @Relation(parentColumn = "constituency_id",
         entityColumn = "boundary_constituency_id")
     val boundary: ConstituencyBoundary?,
 )

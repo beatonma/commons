@@ -7,7 +7,6 @@ import androidx.room.ForeignKey
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import androidx.room.Relation
-import org.beatonma.commons.core.PARLIAMENTDOTUK
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.interfaces.Commentable
 import org.beatonma.commons.data.core.interfaces.Named
@@ -22,15 +21,15 @@ import java.time.LocalDate
     foreignKeys = [
         ForeignKey(
             entity = Party::class,
-            parentColumns = ["party_$PARLIAMENTDOTUK"],
-            childColumns = ["party_id"],
+            parentColumns = ["party_id"],
+            childColumns = ["member_party_id"],
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE
         ),
         ForeignKey(
             entity = Constituency::class,
-            parentColumns = ["constituency_$PARLIAMENTDOTUK"],
-            childColumns = ["constituency_id"],
+            parentColumns = ["constituency_id"],
+            childColumns = ["member_constituency_id"],
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE
         )
@@ -38,10 +37,12 @@ import java.time.LocalDate
     tableName = "member_profiles"
 )
 data class MemberProfile(
-    @PrimaryKey @ColumnInfo(name = PARLIAMENTDOTUK) override val parliamentdotuk: ParliamentID,
+    @PrimaryKey @ColumnInfo(name = "member_id") override val parliamentdotuk: ParliamentID,
     @ColumnInfo(name = "name") override val name: String,
-    @ColumnInfo(name = "party_id", index = true) val party: Party,  // Use Party object for api response, serialized to id for storage
-    @ColumnInfo(name = "constituency_id", index = true) val constituency: Constituency?,  // Use Constituency object for api response, serialized to id for storage
+    @ColumnInfo(name = "member_party_id",
+        index = true) val party: Party,  // Use Party object for api response, serialized to id for storage
+    @ColumnInfo(name = "member_constituency_id",
+        index = true) val constituency: Constituency?,  // Use Constituency object for api response, serialized to id for storage
     @ColumnInfo(name = "active") val active: Boolean? = null,
     @ColumnInfo(name = "is_mp") val isMp: Boolean? = null,
     @ColumnInfo(name = "is_lord") val isLord: Boolean? = null,
@@ -68,18 +69,18 @@ data class MemberProfile(
 }
 
 data class BasicProfile(
-    @ColumnInfo(name = PARLIAMENTDOTUK) override val parliamentdotuk: ParliamentID,
+    @ColumnInfo(name = "member_id") override val parliamentdotuk: ParliamentID,
     @ColumnInfo(name = "name") override val name: String,
     @ColumnInfo(name = "portrait_url") val portraitUrl: String? = null,
     @ColumnInfo(name = "current_post") val currentPost: String? = null,
     @ColumnInfo(
-        name = "party_id",
+        name = "member_party_id",
         index = true
     ) val party: Party,  // Use Party object for api response, serialized to id for storage
     @ColumnInfo(
-        name = "constituency_id",
+        name = "member_constituency_id",
         index = true
-    ) val constituency: Constituency?  // Use Constituency object for api response, serialized to id for storage
+    ) val constituency: Constituency?,  // Use Constituency object for api response, serialized to id for storage
 ) : Parliamentdotuk,
     Named
 
@@ -87,9 +88,9 @@ data class BasicProfile(
 data class MemberProfileWithPartyConstituency(
     @Embedded val profile: MemberProfile,
 
-    @Relation(parentColumn = "party_id", entityColumn = "party_$PARLIAMENTDOTUK")
+    @Relation(parentColumn = "member_party_id", entityColumn = "party_id")
     val party: Party?,
 
-    @Relation(parentColumn = "constituency_id", entityColumn = "constituency_$PARLIAMENTDOTUK")
+    @Relation(parentColumn = "member_constituency_id", entityColumn = "constituency_id")
     val constituency: Constituency?,
 )

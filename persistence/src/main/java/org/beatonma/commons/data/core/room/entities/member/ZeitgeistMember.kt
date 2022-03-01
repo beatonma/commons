@@ -6,7 +6,6 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import androidx.room.Relation
-import org.beatonma.commons.core.PARLIAMENTDOTUK
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.MinimalMember
 import org.beatonma.commons.data.core.room.entities.ResolvedZeitgeistContent
@@ -16,7 +15,7 @@ import org.beatonma.commons.data.core.room.entities.ZeitgeistContent
     foreignKeys = [
         ForeignKey(
             entity = MemberProfile::class,
-            parentColumns = [PARLIAMENTDOTUK],
+            parentColumns = ["member_id"],
             childColumns = ["zeitgeist_member_id"],
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE
@@ -34,7 +33,7 @@ data class ResolvedZeitgeistMember(
     @Embedded override val zeitgeistContent: ZeitgeistMember,
     @Relation(
         parentColumn = "zeitgeist_member_id",
-        entityColumn = PARLIAMENTDOTUK,
+        entityColumn = "member_id",
         entity = MemberProfile::class
     )
     val member: MinimalMember,

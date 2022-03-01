@@ -42,17 +42,17 @@ interface MemberDao: SharedPartyDao, SharedConstituencyDao, SharedElectionDao {
     @Query("""SELECT * FROM zeitgeist_members""")
     fun getZeitgeistMembers(): FlowList<ResolvedZeitgeistMember>
 
-    @Query("""SELECT * FROM member_profiles WHERE member_profiles.parliamentdotuk = :memberId""")
+    @Query("""SELECT * FROM member_profiles WHERE member_id = :memberId""")
     fun getMemberProfile(memberId: ParliamentID): Flow<MemberProfile>
 
     @Query("""SELECT * FROM constituencies
-        LEFT JOIN member_profiles ON constituency_id = constituency_parliamentdotuk 
-        WHERE parliamentdotuk = :memberId""")
+        LEFT JOIN member_profiles ON member_constituency_id = constituency_id
+        WHERE member_id = :memberId""")
     fun getConstituency(memberId: ParliamentID): Flow<Constituency>
 
     @Query("""SELECT * FROM parties
-        LEFT JOIN member_profiles ON party_id = party_parliamentdotuk 
-        WHERE parliamentdotuk = :memberId""")
+        LEFT JOIN member_profiles ON member_party_id = party_id 
+        WHERE member_id = :memberId""")
     fun getParty(memberId: ParliamentID): Flow<Party>
 
     @Query("""SELECT * FROM physical_addresses WHERE physical_addresses.paddr_member_id = :memberId""")
@@ -98,14 +98,23 @@ interface MemberDao: SharedPartyDao, SharedConstituencyDao, SharedElectionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertZeitgeistMembers(zeitgeistMembers: List<ZeitgeistMember>)
 
+    /**
+     * Private use only - use [safeInsertProfile] instead.
+     */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertProfile(profile: MemberProfile)
+    suspend fun riskyInsertProfile(profile: MemberProfile)
 
+    /**
+     * Private use only - use [safeInsertProfile] instead.
+     */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertProfileIfNotExists(profile: MemberProfile)
+    suspend fun riskyInsertProfileIfNotExists(profile: MemberProfile)
 
+    /**
+     * Private use only - use [safeInsertProfiles] instead.
+     */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertProfiles(people: List<MemberProfile>)
+    suspend fun riskyInsertProfiles(people: List<MemberProfile>)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertProfilesIfNotExists(people: List<MemberProfile>)
@@ -157,10 +166,10 @@ interface MemberDao: SharedPartyDao, SharedConstituencyDao, SharedElectionDao {
         insertPartyIfNotExists(profile.party)
 
         if (ifNotExists) {
-            insertProfileIfNotExists(profile.markAccessed())
+            riskyInsertProfileIfNotExists(profile.markAccessed())
         }
         else {
-            insertProfile(profile.markAccessed())
+            riskyInsertProfile(profile.markAccessed())
         }
     }
 
@@ -173,7 +182,7 @@ interface MemberDao: SharedPartyDao, SharedConstituencyDao, SharedElectionDao {
             insertProfilesIfNotExists(profiles.markAllAccessed())
         }
         else {
-            insertProfiles(profiles.markAllAccessed())
+            riskyInsertProfiles(profiles.markAllAccessed())
         }
     }
 }
