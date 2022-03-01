@@ -1,49 +1,41 @@
 package org.beatonma.commons.data.core.room.entities.bill
 
 import androidx.room.ColumnInfo
+import androidx.room.Embedded
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import org.beatonma.commons.core.PARLIAMENTDOTUK
+import androidx.room.Relation
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
+import java.time.LocalDateTime
 
-@Entity(
-    foreignKeys = [
-        ForeignKey(
-            entity = Bill::class,
-            parentColumns = ["bill_$PARLIAMENTDOTUK"],
-            childColumns = ["bill_pub_bill_id"],
-            onDelete = ForeignKey.CASCADE,
-            onUpdate = ForeignKey.CASCADE
-        )
-    ],
-    tableName = "bill_publications"
+
+@Entity(tableName = "bill_publications")
+data class BillPublicationData(
+    @ColumnInfo(name = "billpub_id") @PrimaryKey override val parliamentdotuk: ParliamentID,
+    @ColumnInfo(name = "billpub_title") val title: String,
+    @ColumnInfo(name = "billpub_date") val date: LocalDateTime,
+    @ColumnInfo(name = "billpub_type") val type: String,
+) : Parliamentdotuk
+
+
+@Entity(tableName = "bill_publication_links")
+data class BillPublicationLink(
+    @ColumnInfo(name = "billpublink_publication_id") @PrimaryKey val publicationId: ParliamentID,
+    @ColumnInfo(name = "billpublink_title") val title: String,
+    @ColumnInfo(name = "billpublink_url") val url: String,
+    @ColumnInfo(name = "billpublink_content_type") val contentType: String,
 )
+
 data class BillPublication(
-    @ColumnInfo(name = "bill_pub_parliamentdotuk") @PrimaryKey override val parliamentdotuk: ParliamentID,
-    @ColumnInfo(name = "bill_pub_bill_id") val billId: ParliamentID,
-    @ColumnInfo(name = "bill_pub_title") val title: String,
-    @ColumnInfo(name = "bill_url") val url: String? = null,
-    @ColumnInfo(name = "bill_content_type") val contentType: String? = null,
-    @ColumnInfo(name = "bill_content_length") val contentLength: Int? = null,
-) : Parliamentdotuk
+    @Embedded val publication: BillPublicationData,
+    @Relation(parentColumn = "billpub_id", entityColumn = "billpublink_publication_id")
+    val links: List<BillPublicationLink>,
+)
 
 
-data class BillPublicationBasic(
-    @ColumnInfo(name = "bill_pub_parliamentdotuk") @PrimaryKey override val parliamentdotuk: ParliamentID,
-    @ColumnInfo(name = "bill_pub_bill_id") val billId: ParliamentID,
-    @ColumnInfo(name = "bill_pub_title") val title: String,
-) : Parliamentdotuk
-
-/**
- * Additional detail for a [BillPublication], currently retrieved separately from remote sources.
- */
-@Entity
-data class BillPublicationDetail(
-    @ColumnInfo(name = "bill_pub_parliamentdotuk") @PrimaryKey override val parliamentdotuk: ParliamentID,
-    @ColumnInfo(name = "bill_pub_bill_id") val billId: ParliamentID,
-    @ColumnInfo(name = "bill_url") val url: String?,
-    @ColumnInfo(name = "bill_content_type") val contentType: String,
-    @ColumnInfo(name = "bill_content_length") val contentLength: Int,
-): Parliamentdotuk
+@Entity(tableName = "bills_x_publications", primaryKeys = ["billId", "publicationId"])
+data class BillXPublication(
+    val billId: ParliamentID,
+    val publicationId: ParliamentID,
+)

@@ -5,99 +5,236 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.beatonma.commons.core.ParliamentID
-import org.beatonma.commons.core.extensions.fastForEachIndexed
+import org.beatonma.commons.core.extensions.allNotNull
+import org.beatonma.commons.core.extensions.withNotNull
 import org.beatonma.commons.data.FlowList
 import org.beatonma.commons.data.core.room.entities.bill.Bill
+import org.beatonma.commons.data.core.room.entities.bill.BillData
 import org.beatonma.commons.data.core.room.entities.bill.BillPublication
-import org.beatonma.commons.data.core.room.entities.bill.BillPublicationBasic
-import org.beatonma.commons.data.core.room.entities.bill.BillPublicationDetail
+import org.beatonma.commons.data.core.room.entities.bill.BillPublicationData
+import org.beatonma.commons.data.core.room.entities.bill.BillPublicationLink
 import org.beatonma.commons.data.core.room.entities.bill.BillSponsor
-import org.beatonma.commons.data.core.room.entities.bill.BillSponsorWithProfile
+import org.beatonma.commons.data.core.room.entities.bill.BillSponsorData
 import org.beatonma.commons.data.core.room.entities.bill.BillStage
-import org.beatonma.commons.data.core.room.entities.bill.BillStageSitting
-import org.beatonma.commons.data.core.room.entities.bill.BillStageWithSittings
 import org.beatonma.commons.data.core.room.entities.bill.BillType
+import org.beatonma.commons.data.core.room.entities.bill.BillXPublication
+import org.beatonma.commons.data.core.room.entities.bill.BillXSession
+import org.beatonma.commons.data.core.room.entities.bill.BillXStage
 import org.beatonma.commons.data.core.room.entities.bill.ParliamentarySession
-import org.beatonma.commons.data.core.room.entities.bill.ResolvedZeitgeistBill
-import org.beatonma.commons.data.core.room.entities.bill.ZeitgeistBill
+
 
 @Dao
 interface BillDao {
+    @Query("""SELECT * FROM bills WHERE billdata_id = :billId""")
+    fun getBillData(billId: ParliamentID): Flow<BillData>
+
+    @Query("""SELECT * FROM bill_types WHERE billtype_id = :typeId""")
+    fun getBillType(typeId: ParliamentID): Flow<BillType>
+
+    @Query("""SELECT * FROM bill_stages WHERE billstage_id = :stageId""")
+    fun getStage(stageId: ParliamentID): Flow<BillStage>
+
+    @Query("""
+        SELECT * FROM parliamentary_sessions
+        WHERE session_id = :sessionId""")
+    fun getSession(sessionId: ParliamentID): Flow<ParliamentarySession>
+
+    @Query("""
+        SELECT * FROM bills_x_sessions
+        INNER JOIN parliamentary_sessions ON bills_x_sessions.sessionId = parliamentary_sessions.session_id
+        WHERE billId = :billId
+    """)
+    fun getSessionsForBill(billId: ParliamentID): FlowList<ParliamentarySession>
+
+    @Query("""
+        SELECT * FROM bills_x_stages
+        INNER JOIN bill_stages ON bills_x_stages.stageId = bill_stages.billstage_id
+        WHERE billId = :billId
+    """)
+    fun getStagesForBill(billId: ParliamentID): FlowList<BillStage>
 
     @Transaction
-    @Query("""SELECT * FROM zeitgeist_bills""")
-    fun getZeitgeistBills(): FlowList<ResolvedZeitgeistBill>
+    @Query("""
+        SELECT * FROM bills_x_publications
+        INNER JOIN bill_publications ON bills_x_publications.publicationId = bill_publications.billpub_id
+        WHERE billId = :billId
+    """)
+    fun getPublicationsForBill(billId: ParliamentID): FlowList<BillPublication>
 
-    @Query("""SELECT * FROM bills WHERE bill_parliamentdotuk = :billId""")
-    fun getBill(billId: ParliamentID): Flow<Bill>
+    @Query("""
+        SELECT * FROM bill_sponsors
+        LEFT JOIN member_profiles ON bill_sponsors.billsponsor_member_id = member_id
+        WHERE billsponsor_bill_id = :billId""")
+    fun getSponsorsForBill(billId: ParliamentID): FlowList<BillSponsor>
 
-    @Query("""SELECT * FROM bill_publications WHERE bill_pub_bill_id = :billId""")
-    fun getBillPublications(billId: ParliamentID): FlowList<BillPublication>
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertBillData(bill: BillData)
 
-    @Query("""SELECT * FROM bill_sponsors WHERE sponsor_bill_id = :billId""")
-    fun getBillSponsors(billId: ParliamentID): FlowList<BillSponsorWithProfile>
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertBillType(type: BillType)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertBillStages(stages: List<BillStage>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertSessions(sessions: List<ParliamentarySession>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertBillXSessions(sessions: List<BillXSession>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertBillXStages(stages: List<BillXStage>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertBillXPublications(publications: List<BillXPublication>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertBillPublications(publications: List<BillPublicationData>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertBillPublicationLinks(links: List<BillPublicationLink>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertBillSponsorData(data: List<BillSponsorData>)
 
     @Transaction
-    @Query("""SELECT * FROM bill_stages WHERE billstage_bill_parliamentdotuk = :billId""")
-    fun getBillStages(billId: ParliamentID): FlowList<BillStageWithSittings>
+    fun insertBill(
+        data: BillData,
+        type: BillType,
+        stages: List<BillStage>,
+        sessions: List<ParliamentarySession>,
+        publications: List<BillPublicationData>,
+        pubLinks: List<BillPublicationLink>,
+        sponsorData: List<BillSponsorData>,
+    ) {
+        insertBillType(type)
+        insertSessions(sessions)
+        insertBillData(data);
+        insertBillStages(stages)
+        insertBillPublications(publications)
+        insertBillPublicationLinks(pubLinks)
+        insertBillSponsorData(sponsorData)
 
-    @Query("""SELECT * FROM parliamentary_sessions
-        LEFT JOIN bills ON bills.bill_session_id = parliamentary_sessions.session_parliamentdotuk
-        WHERE bills.bill_parliamentdotuk = :billId""")
-    fun getBillSession(billId: ParliamentID): Flow<ParliamentarySession>
+        insertBillXSessions(sessions.map { session ->
+            BillXSession(
+                billId = data.id,
+                sessionId = session.id
+            )
+        })
 
-    @Query("""SELECT * FROM bill_types
-        LEFT JOIN bills ON bills.bill_type_id = bill_types.billtype_name
-        WHERE bills.bill_parliamentdotuk = :billId""")
-    fun getBillType(billId: ParliamentID): Flow<BillType>
+        insertBillXStages(stages.map { stage ->
+            BillXStage(
+                billId = data.id,
+                stageId = stage.parliamentdotuk
+            )
+        })
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertBills(bills: List<Bill>)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertBill(bill: Bill)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertBillStages(billStages: List<BillStage>)
-//
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertBillStageSittings(billStageSittings: List<BillStageSitting>)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertBillSponsors(billSponsors: List<BillSponsor>)
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE, entity = BillPublication::class)
-    suspend fun insertBillPublications(billPublications: List<BillPublicationBasic>): List<Long>
-
-    @Update(entity = BillPublication::class)
-    suspend fun updateBillPublications(billPublications: List<BillPublicationBasic>)
-
-    @Update(entity = BillPublication::class)
-    suspend fun updateBillPublicationDetail(publications: List<BillPublicationDetail>): Int
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertBillType(billType: BillType)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertParliamentarySession(parliamentarySession: ParliamentarySession)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertZeitgeistBills(zeitgeistBills: List<ZeitgeistBill>)
+        insertBillXPublications(publications.map { pub ->
+            BillXPublication(
+                billId = data.id,
+                publicationId = pub.parliamentdotuk
+            )
+        })
+    }
 
     @Transaction
-    suspend fun insertOrUpdateBillPublications(publications: List<BillPublicationBasic>) {
-        val results = insertBillPublications(publications)
+    fun getBill(billId: ParliamentID): Flow<Bill> = channelFlow {
+        val builder = BillBuilder()
 
-        val runAsUpdate = mutableListOf<BillPublicationBasic>()
-        results.fastForEachIndexed { index, result ->
-            if (result < 0) {
-                runAsUpdate += publications[index]
+        suspend fun submit() {
+            if (builder.isComplete) {
+                send(builder.toBill())
             }
         }
 
-        updateBillPublications(runAsUpdate)
+        suspend fun <E, T : Collection<E>> fetch(
+            id: ParliamentID,
+            func: (ParliamentID) -> Flow<T>,
+            block: (T) -> Unit,
+        ) = launch {
+            func(id).collectLatest {
+                block(it)
+                submit()
+            }
+        }
+
+        suspend fun <T> fetchObject(
+            id: ParliamentID,
+            func: (ParliamentID) -> Flow<T>,
+            block: suspend (T?) -> Unit,
+        ) = launch {
+            func(id).collectLatest {
+                block(it)
+                submit()
+            }
+        }
+
+        fetchObject(billId, ::getBillData) { billdata ->
+            builder.data = billdata
+
+            withNotNull(billdata) { data ->
+                fetchObject(data.billTypeId, ::getBillType) {
+                    builder.type = it
+                }
+                fetchObject(data.currentStageId, ::getStage) {
+                    builder.currentStage = it
+                }
+                fetchObject(data.sessionIntroducedId, ::getSession) {
+                    builder.sessionIntroduced = it
+                }
+                fetch(data.id, ::getSessionsForBill) {
+                    builder.sessions = it
+                }
+                fetch(data.id, ::getStagesForBill) {
+                    builder.stages = it
+                }
+                fetch(data.id, ::getPublicationsForBill) {
+                    builder.publications = it
+                }
+                fetch(data.id, ::getSponsorsForBill) {
+                    println(it)
+                    builder.sponsors = it
+                }
+            }
+        }
+    }
+
+    private class BillBuilder {
+        var data: BillData? = null
+        var type: BillType? = null
+        var currentStage: BillStage? = null
+        var sessionIntroduced: ParliamentarySession? = null
+        var sessions: List<ParliamentarySession>? = null
+        var stages: List<BillStage>? = null
+        var publications: List<BillPublication>? = null
+        var sponsors: List<BillSponsor>? = null
+
+        val isComplete: Boolean
+            get() = allNotNull(
+                data,
+                type,
+                currentStage,
+                sessionIntroduced,
+                sessions,
+                stages,
+                publications,
+                sponsors,
+            )
+
+        fun toBill(): Bill = Bill(
+            data = data!!,
+            type = type!!,
+            currentStage = currentStage!!,
+            sessionIntroduced = sessionIntroduced!!,
+            sessions = sessions!!,
+            stages = stages!!,
+            publications = publications!!,
+            sponsors = sponsors!!,
+        )
     }
 }

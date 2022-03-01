@@ -10,12 +10,15 @@ import org.beatonma.commons.data.core.room.dao.DivisionDao
 import org.beatonma.commons.data.core.room.dao.MemberCleanupDao
 import org.beatonma.commons.data.core.room.dao.MemberDao
 import org.beatonma.commons.data.core.room.dao.UserDao
-import org.beatonma.commons.data.core.room.entities.bill.Bill
-import org.beatonma.commons.data.core.room.entities.bill.BillPublication
-import org.beatonma.commons.data.core.room.entities.bill.BillSponsor
+import org.beatonma.commons.data.core.room.entities.bill.BillData
+import org.beatonma.commons.data.core.room.entities.bill.BillPublicationData
+import org.beatonma.commons.data.core.room.entities.bill.BillPublicationLink
+import org.beatonma.commons.data.core.room.entities.bill.BillSponsorData
 import org.beatonma.commons.data.core.room.entities.bill.BillStage
-import org.beatonma.commons.data.core.room.entities.bill.BillStageSitting
 import org.beatonma.commons.data.core.room.entities.bill.BillType
+import org.beatonma.commons.data.core.room.entities.bill.BillXPublication
+import org.beatonma.commons.data.core.room.entities.bill.BillXSession
+import org.beatonma.commons.data.core.room.entities.bill.BillXStage
 import org.beatonma.commons.data.core.room.entities.bill.ParliamentarySession
 import org.beatonma.commons.data.core.room.entities.bill.ZeitgeistBill
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
@@ -64,12 +67,16 @@ import org.beatonma.commons.data.core.room.entities.user.UserToken
         ZeitgeistMember::class,
 
         // Bills
-        Bill::class,
-        BillPublication::class,
-        BillSponsor::class,
+        BillData::class,
+        BillPublicationData::class,
+        BillPublicationLink::class,
+        BillXPublication::class,
+        BillXSession::class,
+        BillXStage::class,
+        BillSponsorData::class,
         BillStage::class,
-        BillStageSitting::class,
         BillType::class,
+        ParliamentarySession::class,
         ZeitgeistBill::class,
 
         // Constituency
@@ -87,13 +94,10 @@ import org.beatonma.commons.data.core.room.entities.user.UserToken
         ZeitgeistDivision::class,
         Vote::class,
 
-        // Common/Generic
-        ParliamentarySession::class,
-
         // User
         UserToken::class,
     ],
-    version = 1
+    version = 1,
 )
 @TypeConverters(Converters::class)
 abstract class CommonsDatabase : RoomDatabase() {

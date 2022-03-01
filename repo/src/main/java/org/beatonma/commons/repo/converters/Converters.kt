@@ -1,13 +1,13 @@
 package org.beatonma.commons.repo.converters
 
 import org.beatonma.commons.core.ParliamentID
-import org.beatonma.commons.data.core.room.entities.bill.Bill
-import org.beatonma.commons.data.core.room.entities.bill.BillPublicationBasic
-import org.beatonma.commons.data.core.room.entities.bill.BillPublicationDetail
-import org.beatonma.commons.data.core.room.entities.bill.BillSponsor
+import org.beatonma.commons.data.core.room.entities.bill.BillData
+import org.beatonma.commons.data.core.room.entities.bill.BillPublicationData
+import org.beatonma.commons.data.core.room.entities.bill.BillPublicationLink
+import org.beatonma.commons.data.core.room.entities.bill.BillSponsorData
 import org.beatonma.commons.data.core.room.entities.bill.BillStage
-import org.beatonma.commons.data.core.room.entities.bill.BillStageSitting
 import org.beatonma.commons.data.core.room.entities.bill.BillType
+import org.beatonma.commons.data.core.room.entities.bill.Organisation
 import org.beatonma.commons.data.core.room.entities.bill.ParliamentarySession
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyBoundary
@@ -34,11 +34,6 @@ import org.beatonma.commons.data.core.room.entities.member.WebAddress
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.repo.repository.GoogleAccount
 import org.beatonma.commons.snommoc.models.ApiBill
-import org.beatonma.commons.snommoc.models.ApiBillPublication
-import org.beatonma.commons.snommoc.models.ApiBillSponsor
-import org.beatonma.commons.snommoc.models.ApiBillStage
-import org.beatonma.commons.snommoc.models.ApiBillStageSitting
-import org.beatonma.commons.snommoc.models.ApiBillType
 import org.beatonma.commons.snommoc.models.ApiCommittee
 import org.beatonma.commons.snommoc.models.ApiCommitteeChairship
 import org.beatonma.commons.snommoc.models.ApiConstituency
@@ -55,17 +50,18 @@ import org.beatonma.commons.snommoc.models.ApiHistoricalConstituency
 import org.beatonma.commons.snommoc.models.ApiHouseMembership
 import org.beatonma.commons.snommoc.models.ApiMemberProfile
 import org.beatonma.commons.snommoc.models.ApiMemberVote
-import org.beatonma.commons.snommoc.models.ApiParliamentarySession
+import org.beatonma.commons.snommoc.models.ApiOrganisation
 import org.beatonma.commons.snommoc.models.ApiParty
 import org.beatonma.commons.snommoc.models.ApiPartyAssociation
 import org.beatonma.commons.snommoc.models.ApiPhysicalAddress
 import org.beatonma.commons.snommoc.models.ApiPost
+import org.beatonma.commons.snommoc.models.ApiSession
 import org.beatonma.commons.snommoc.models.ApiTopicOfInterest
 import org.beatonma.commons.snommoc.models.ApiTown
 import org.beatonma.commons.snommoc.models.ApiVote
 import org.beatonma.commons.snommoc.models.ApiWebAddress
 import org.beatonma.commons.snommoc.models.social.ApiUserToken
-import org.beatonma.commons.ukparliament.models.UkApiBillPublication
+
 
 fun ApiUserToken.composeToUserToken(account: GoogleAccount) = UserToken(
     name = account.name,
@@ -97,19 +93,20 @@ fun ApiConstituency.toConstituency(): Constituency {
     )
 }
 
-fun ApiConstituencyMinimal.toConstituency():Constituency = Constituency(
+fun ApiConstituencyMinimal.toConstituency(): Constituency = Constituency(
     parliamentdotuk = parliamentdotuk,
     name = name
 )
 
-fun ApiConstituencyBoundary.toConstituencyBoundary(constituencyId: ParliamentID) = ConstituencyBoundary(
-    parliamentdotuk = constituencyId,
-    kml = kml,
-    area = area,
-    boundaryLength = boundaryLength,
-    centerLat = centerLat,
-    centerLong = centerLong
-)
+fun ApiConstituencyBoundary.toConstituencyBoundary(constituencyId: ParliamentID) =
+    ConstituencyBoundary(
+        parliamentdotuk = constituencyId,
+        kml = kml,
+        area = area,
+        boundaryLength = boundaryLength,
+        centerLat = centerLat,
+        centerLong = centerLong
+    )
 
 fun ApiConstituencyResult.toConstituencyResult(constituencyId: Int) = ConstituencyResult(
     memberId = member.parliamentdotuk,
@@ -143,23 +140,6 @@ fun ApiConstituencyCandidate.toConstituencyCandidate(resultsId: Int) = Constitue
     party = party?.toParty(),
     order = order,
     votes = votes
-)
-
-fun ApiBill.toBill() = Bill(
-    parliamentdotuk = parliamentdotuk,
-    title = title,
-    description = description,
-    actName = actName,
-    label = label,
-    homepage = homepage,
-    date = date,
-    ballotNumber = ballotNumber,
-    billChapter = billChapter,
-    isPrivate = isPrivate,
-    isMoneyBill = isMoneyBill,
-    publicInvolvementAllowed = publicInvolvementAllowed,
-    sessionId = session?.parliamentdotuk,
-    typeId = type?.name
 )
 
 fun ApiDivision.toDivision() = Division(
@@ -197,48 +177,79 @@ fun ApiVote.toVote(divisionId: ParliamentID) = Vote(
     partyId = party?.parliamentdotuk
 )
 
-fun ApiBillStage.toBillStage(billId: ParliamentID) = BillStage(
-    parliamentdotuk = parliamentdotuk,
-    billId = billId,
-    type = type,
-)
-
-fun ApiBillSponsor.toBillSponsor(billId: ParliamentID) = BillSponsor(
-    name = name,
-    billId = billId,
-    profile = profile?.toMemberProfile(),
-)
-
-fun ApiBillPublication.toBillPublication(billId: ParliamentID) = BillPublicationBasic(
-    parliamentdotuk = parliamentdotuk,
+fun ApiBill.getBillData() = BillData(
+    id = parliamentdotuk,
     title = title,
-    billId = billId
-)
-
-fun UkApiBillPublication.toBillPublicationDetail(billId: ParliamentID) = BillPublicationDetail(
-    parliamentdotuk = parliamentdotuk,
-    billId = billId,
-    url = url,
-    contentType = contentType,
-    contentLength = contentLength,
-)
-
-fun ApiBillStageSitting.toBillStageSitting(billStageId: ParliamentID) = BillStageSitting(
-    parliamentdotuk = parliamentdotuk,
-    billStageId = billStageId,
-    date = date,
-    isFormal = isFormal,
-    isProvisional = isProvisional
-)
-
-fun ApiBillType.toBillType() = BillType(
-    name = name,
     description = description,
+    billTypeId = type.parliamentdotuk,
+    currentStageId = currentStage.parliamentdotuk,
+    isAct = isAct,
+    isDefeated = isDefeated,
+    lastUpdate = lastUpdate,
+    sessionIntroducedId = sessionIntroduced.parliamentdotuk,
+    withdrawnAt = withdrawnAt,
 )
 
-fun ApiParliamentarySession.toParliamentarySession() = ParliamentarySession(
-    parliamentdotuk = parliamentdotuk,
-    name = name
+fun ApiBill.getPublicationData(): List<BillPublicationData> = publications.map { pub ->
+    BillPublicationData(
+        parliamentdotuk = pub.parliamentdotuk,
+        title = pub.title,
+        date = pub.date,
+        type = pub.type
+    )
+}
+
+fun ApiBill.getPublicationLinks(): List<BillPublicationLink> = publications.map { pub ->
+    pub.links.map { link ->
+        BillPublicationLink(
+            publicationId = pub.parliamentdotuk,
+            title = link.title,
+            url = link.url,
+            contentType = link.contentType,
+        )
+    }
+}.flatten()
+
+fun ApiBill.getSessions(): List<ParliamentarySession> =
+    (listOf(sessionIntroduced) + sessions).map(ApiSession::toParliamentarySession)
+
+fun ApiBill.getBillType(): BillType = BillType(
+    parliamentdotuk = type.parliamentdotuk,
+    name = type.name,
+    description = type.description,
+    category = type.category,
+)
+
+fun ApiBill.getStages(): List<BillStage> = (listOf(currentStage) + stages).map { stage ->
+    BillStage(
+        parliamentdotuk = stage.parliamentdotuk,
+        description = stage.description,
+        house = stage.house,
+        sessionId = stage.session.parliamentdotuk,
+        sittings = stage.sittings,
+    )
+}
+
+fun ApiBill.getSponsorMembers(): List<MemberProfile> =
+    sponsors.mapNotNull { it.member?.toMemberProfile() }
+
+fun ApiBill.getSponsorData(): List<BillSponsorData> = sponsors.map {
+    BillSponsorData(
+        id = it.hashCode(),
+        billId = this.parliamentdotuk,
+        memberId = it.member?.parliamentdotuk,
+        organisation = it.organisation?.toOrganisation(),
+    )
+}
+
+fun ApiOrganisation.toOrganisation() = Organisation(
+    name = name,
+    url = url,
+)
+
+private fun ApiSession.toParliamentarySession() = ParliamentarySession(
+    id = parliamentdotuk,
+    name = name,
 )
 
 fun ApiPhysicalAddress.toPhysicalAddress(memberId: ParliamentID) = PhysicalAddress(
@@ -274,12 +285,13 @@ fun ApiCommittee.toCommitteeMembership(member: ParliamentID) = CommitteeMembersh
     end = end
 )
 
-fun ApiCommitteeChairship.toCommitteeChairship(committeeId: ParliamentID, memberId: ParliamentID) = CommitteeChairship(
-    committeeId = committeeId,
-    memberId = memberId,
-    start = start,
-    end = end
-)
+fun ApiCommitteeChairship.toCommitteeChairship(committeeId: ParliamentID, memberId: ParliamentID) =
+    CommitteeChairship(
+        committeeId = committeeId,
+        memberId = memberId,
+        start = start,
+        end = end
+    )
 
 fun ApiPartyAssociation.toPartyAssociation(member: Int) = PartyAssociation(
     memberId = member,

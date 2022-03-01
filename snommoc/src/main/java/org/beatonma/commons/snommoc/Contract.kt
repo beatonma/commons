@@ -13,6 +13,10 @@ object Contract {
     const val TITLE = "title"
     const val DESCRIPTION = "description"
     const val URL = "url"
+    const val CATEGORY = "category"
+    const val ORGANISATION = "organisation"
+    const val CONTENT_TYPE = "content_type"
+    const val LINKS = "links"
 
     // Time
     const val DATE = "date"
@@ -100,8 +104,6 @@ object Contract {
     const val PARTIES = "parties"
 
     // Member experience
-    const val CATEGORY = "category"
-    const val ORGANISATION = "organisation"
 
     // Member financial interest
     const val CREATED = "created"
@@ -118,22 +120,19 @@ object Contract {
     const val WEB = "web"
 
     // Bills
-    const val ACT_NAME = "act_name"
-    const val LABEL = "label"
-    const val HOMEPAGE = "homepage"
-    const val BALLOT_NUMBER = "ballot_number"
-    const val BILL_CHAPTER = "bill_chapter"
-    const val IS_PRIVATE = "is_private"
-    const val IS_MONEY_BILL = "is_money_bill"
-    const val PUBLIC_INVOLVEMENT_ALLOWED = "public_involvement_allowed"
+    const val LAST_UPDATE = "last_update"
+    const val IS_ACT = "is_act"
+    const val IS_DEFEATED = "is_defeated"
+    const val WITHDRAWN_AT = "withdrawn_at"
+    const val SESSION_INTRODUCED = "session_introduced"
+    const val SESSIONS = "sessions"
     const val PUBLICATIONS = "publications"
     const val SESSION = "session"
     const val TYPE = "type"
     const val SPONSORS = "sponsors"
+    const val CURRENT_STAGE = "current_stage"
     const val STAGES = "stages"
     const val SITTINGS = "sittings"
-    const val FORMAL = "formal"
-    const val PROVISIONAL = "provisional"
 
     /* Social */
     const val SNOMMOC_TOKEN = "token"

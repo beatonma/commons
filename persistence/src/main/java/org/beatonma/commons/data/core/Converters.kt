@@ -10,6 +10,7 @@ import org.beatonma.commons.data.core.room.entities.member.NoParty
 import org.beatonma.commons.data.core.room.entities.member.Party
 import org.beatonma.commons.data.core.room.entities.member.Post
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 object Converters {
 
@@ -69,6 +70,32 @@ object Converters {
     @TypeConverter
     @JvmStatic
     fun deserializeDivisionVoteType(ordinal: Int): VoteType = ordinal.toEnum()
+
+    @TypeConverter
+    @JvmStatic
+    fun serializeDates(dates: List<LocalDate>) = dates.joinToString(",")
+
+    @TypeConverter
+    @JvmStatic
+    fun deserializeDates(csv: String): List<LocalDate> =
+        csv.split(",").map(LocalDate::parse)
+
+    @TypeConverter
+    @JvmStatic
+    fun serializeDateTime(dt: LocalDateTime?): String? = dt?.toString()
+
+    @TypeConverter
+    @JvmStatic
+    fun deserializeDateTime(value: String?): LocalDateTime? = value?.let(LocalDateTime::parse)
+
+    @TypeConverter
+    @JvmStatic
+    fun serializeDateTimes(datetimes: List<LocalDateTime>) = datetimes.joinToString(",")
+
+    @TypeConverter
+    @JvmStatic
+    fun deserializeDateTimes(csv: String): List<LocalDateTime> =
+        csv.split(",").map(LocalDateTime::parse)
 
     private inline fun <reified E : Enum<E>> Int.toEnum(): E = enumValues<E>()[this]
 }
