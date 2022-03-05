@@ -227,6 +227,7 @@ fun ApiBill.getStages(): List<BillStage> = (listOf(currentStage) + stages).map {
         house = stage.house,
         sessionId = stage.session.parliamentdotuk,
         sittings = stage.sittings,
+        latestSitting = stage.latestSitting,
     )
 }
 
@@ -235,7 +236,7 @@ fun ApiBill.getSponsorMembers(): List<MemberProfile> =
 
 fun ApiBill.getSponsorData(): List<BillSponsorData> = sponsors.map {
     BillSponsorData(
-        id = it.hashCode(),
+        id = it.id,
         billId = this.parliamentdotuk,
         memberId = it.member?.parliamentdotuk,
         organisation = it.organisation?.toOrganisation(),

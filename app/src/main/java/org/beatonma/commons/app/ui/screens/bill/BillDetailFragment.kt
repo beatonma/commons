@@ -8,7 +8,6 @@ import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
 import org.beatonma.commons.app.ui.base.SocialFragment
 import org.beatonma.commons.app.ui.util.composeScreen
-import org.beatonma.commons.app.util.logWarning
 import org.beatonma.commons.app.util.navigateTo
 import org.beatonma.commons.app.util.parliamentID
 import org.beatonma.commons.core.ParliamentID
@@ -30,12 +29,7 @@ class BillDetailFragment : SocialFragment() {
         savedInstanceState: Bundle?,
     ): View = composeScreen(
         LocalBillActions provides BillActions(
-            onSponsorClick = { sponsor ->
-                when (val profile = sponsor.profileWithPartyConstituency?.profile) {
-                    null -> logWarning("No profile available - this should trigger a search by candidate name '${sponsor.name}'")
-                    else -> navigateTo(profile)
-                }
-            }
+            onClickProfile = ::navigateTo
         ),
     ) {
         BillDetailLayout(viewmodel, socialViewModel, userAccountViewModel)

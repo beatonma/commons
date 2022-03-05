@@ -24,6 +24,7 @@ import org.beatonma.commons.data.core.room.entities.member.Post
 fun House.uiDescription(): String = when (this) {
     House.commons -> stringResource(R.string.house_of_commons)
     House.lords -> stringResource(R.string.house_of_lords)
+    House.unassigned -> stringResource(R.string.house_of_unassigned)
 }
 
 @Composable

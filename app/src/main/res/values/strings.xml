@@ -42,9 +42,10 @@
     <string name="constituency_candidate_deposit_lost" translatable="true">Deposit lost</string>
     <string name="house_of_generic">House of %s</string>
     <string name="house_of_lords">House of Lords</string>
+    <string name="house_of_commons">House of Commons</string>
+    <string name="house_of_unassigned">Unassigned</string>
 
     <!-- Divisions -->
-    <string name="house_of_commons">House of Commons</string>
     <string name="division_title" translatable="true">Division results</string>
     <string name="division_no_description" translatable="true">Description unavailable</string>
 

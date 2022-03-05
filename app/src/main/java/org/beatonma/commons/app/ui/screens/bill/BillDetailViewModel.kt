@@ -1,6 +1,5 @@
 package org.beatonma.commons.app.ui.screens.bill
 
-import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,15 +12,8 @@ import org.beatonma.commons.app.data.get
 import org.beatonma.commons.app.data.set
 import org.beatonma.commons.app.ui.base.IoLiveDataViewModel
 import org.beatonma.commons.app.ui.base.SocialTargetProvider
-import org.beatonma.commons.app.ui.screens.bill.viewmodel.AnnotatedBillStage
-import org.beatonma.commons.app.ui.screens.bill.viewmodel.BillStageProgress
-import org.beatonma.commons.app.ui.screens.bill.viewmodel.classifyProgress
-import org.beatonma.commons.app.ui.screens.bill.viewmodel.getCategory
-import org.beatonma.commons.core.House
 import org.beatonma.commons.core.ParliamentID
-import org.beatonma.commons.data.core.room.entities.bill.BillStageWithSittings
-import org.beatonma.commons.data.core.room.entities.bill.CompleteBill
-import org.beatonma.commons.data.extensions.startedIn
+import org.beatonma.commons.data.core.room.entities.bill.Bill
 import org.beatonma.commons.repo.repository.BillRepository
 import org.beatonma.commons.snommoc.models.social.SocialTarget
 import org.beatonma.commons.snommoc.models.social.SocialTargetType
@@ -34,12 +26,12 @@ private val BillKey = SavedStateKey("bill_id")
 class BillDetailViewModel @Inject constructor(
     private val repository: BillRepository,
     private val savedStateHandle: SavedStateHandle,
-) : IoLiveDataViewModel<CompleteBill>(), SocialTargetProvider {
+) : IoLiveDataViewModel<Bill>(), SocialTargetProvider {
 
-    val billID: ParliamentID get() = savedStateHandle[BillKey]!!
+    val billId: ParliamentID get() = savedStateHandle[BillKey]!!
 
     override val socialTarget: SocialTarget
-        get() = SocialTarget(SocialTargetType.bill, billID)
+        get() = SocialTarget(SocialTargetType.bill, billId)
 
     init {
         forSavedBill()
@@ -55,39 +47,8 @@ class BillDetailViewModel @Inject constructor(
     fun forBill(billId: ParliamentID) {
         savedStateHandle[BillKey] = billId
 
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.getBill(billId).collectLatest { result -> postValue(result) }
+        viewModelScope.launch(Dispatchers.Default) {
+            repository.getBill(billId).collectLatest(::postValue)
         }
-    }
-}
-
-/**
- * Resolve House and BillStageProgress data for each BillStage.
- */
-internal fun CompleteBill.getAnnotatedBillStages(): List<AnnotatedBillStage> {
-    val originatingHouse = bill.startedIn()
-
-    return getAnnotatedStages(originatingHouse, stages)
-}
-
-
-@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-internal fun getAnnotatedStages(
-    originatingHouse: House,
-    stagesWithSittings: List<BillStageWithSittings>
-): List<AnnotatedBillStage> {
-    val orderedStages = stagesWithSittings.sortedBy { stage ->
-        stage.sittings.maxByOrNull { sitting -> sitting.date }?.date
-    }
-
-    var progress: BillStageProgress = BillStageProgress.FirstFirstReading
-    return orderedStages.map { stageWithSittings ->
-        val type = stageWithSittings.stage.type
-        progress = classifyProgress(type, previous = progress)
-        AnnotatedBillStage(
-            stageWithSittings,
-            progress.getCategory(originatingHouse),
-            progress
-        )
     }
 }

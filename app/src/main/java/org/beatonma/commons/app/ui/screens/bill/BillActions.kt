@@ -1,9 +1,9 @@
 package org.beatonma.commons.app.ui.screens.bill
 
-import org.beatonma.commons.data.core.room.entities.bill.BillSponsorWithProfile
+import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 
-internal typealias SponsorAction = (BillSponsorWithProfile) -> Unit
+internal typealias SponsorAction = (MemberProfile) -> Unit
 
 class BillActions(
-    val onSponsorClick: SponsorAction = {},
+    val onClickProfile: SponsorAction = {},
 )

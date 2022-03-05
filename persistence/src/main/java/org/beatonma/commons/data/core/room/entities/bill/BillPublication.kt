@@ -7,14 +7,14 @@ import androidx.room.PrimaryKey
 import androidx.room.Relation
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.interfaces.Parliamentdotuk
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 
 @Entity(tableName = "bill_publications")
 data class BillPublicationData(
     @ColumnInfo(name = "billpub_id") @PrimaryKey override val parliamentdotuk: ParliamentID,
     @ColumnInfo(name = "billpub_title") val title: String,
-    @ColumnInfo(name = "billpub_date") val date: LocalDateTime,
+    @ColumnInfo(name = "billpub_date") val date: LocalDate,
     @ColumnInfo(name = "billpub_type") val type: String,
 ) : Parliamentdotuk
 
@@ -28,7 +28,7 @@ data class BillPublicationLink(
 )
 
 data class BillPublication(
-    @Embedded val publication: BillPublicationData,
+    @Embedded val data: BillPublicationData,
     @Relation(parentColumn = "billpub_id", entityColumn = "billpublink_publication_id")
     val links: List<BillPublicationLink>,
 )

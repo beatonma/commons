@@ -3,7 +3,7 @@ package org.beatonma.commons.repo.repository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.beatonma.commons.data.core.room.dao.BillDao
 import org.beatonma.commons.data.core.room.dao.DivisionDao
@@ -12,7 +12,6 @@ import org.beatonma.commons.data.core.room.entities.bill.ZeitgeistBill
 import org.beatonma.commons.data.core.room.entities.division.ZeitgeistDivision
 import org.beatonma.commons.data.core.room.entities.member.ZeitgeistMember
 import org.beatonma.commons.repo.ResultFlow
-import org.beatonma.commons.repo.converters.toBill
 import org.beatonma.commons.repo.converters.toDivision
 import org.beatonma.commons.repo.converters.toMemberProfile
 import org.beatonma.commons.repo.models.Zeitgeist
@@ -40,9 +39,15 @@ class ZeitgeistRepository @Inject constructor(
     suspend fun saveZeitgeist(zeitgeist: ApiZeitgeist) {
         with(billDao) {
             val bills = zeitgeist.bills
-            insertBills(bills.map { it.target.toBill() })
-            insertZeitgeistBills(bills.map {
-                ZeitgeistBill(it.target.parliamentdotuk, it.reason?.name, it.priority)
+            insertZeitgeistBills(bills.map { bill ->
+                val target = bill.target
+                ZeitgeistBill(
+                    id = target.parliamentdotuk,
+                    reason = bill.reason?.name,
+                    priority = bill.priority,
+                    title = target.title,
+                    lastUpdate = target.lastUpdate
+                )
             })
         }
 
@@ -68,21 +73,21 @@ class ZeitgeistRepository @Inject constructor(
         val zeitgeist = Zeitgeist()
 
         launch {
-            billDao.getZeitgeistBills().collect {
+            billDao.getZeitgeistBills().collectLatest {
                 zeitgeist.bills = it
                 send(zeitgeist)
             }
         }
 
         launch {
-            divisionDao.getZeitgeistDivisions().collect {
+            divisionDao.getZeitgeistDivisions().collectLatest {
                 zeitgeist.divisions = it
                 send(zeitgeist)
             }
         }
 
         launch {
-            memberDao.getZeitgeistMembers().collect {
+            memberDao.getZeitgeistMembers().collectLatest {
                 zeitgeist.members = it
                 send(zeitgeist)
             }

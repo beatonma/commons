@@ -13,11 +13,13 @@ typealias SnommocToken = String
 enum class House {
     commons,
     lords,
+    unassigned,
     ;
 
     fun otherPlace() = when (this) {
         lords -> commons
         commons -> lords
+        unassigned -> unassigned
     }
 }
 
@@ -29,4 +31,3 @@ enum class VoteType {
     DidNotVote,
     SuspendedOrExpelledVote,
 }
-

@@ -8,7 +8,7 @@ import androidx.navigation.Navigation
 import org.beatonma.commons.core.House
 import org.beatonma.commons.core.PARLIAMENTDOTUK
 import org.beatonma.commons.core.ParliamentID
-import org.beatonma.commons.data.core.room.entities.bill.Bill
+import org.beatonma.commons.data.core.room.entities.bill.ZeitgeistBill
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import org.beatonma.commons.data.core.room.entities.division.Division
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
@@ -36,8 +36,8 @@ fun Fragment.navigateTo(constituency: Constituency) =
 fun Fragment.navigateTo(division: Division) =
     navigateTo(CommonsService.getDivisionUrl(division.house, division.parliamentdotuk).toUri())
 
-fun Fragment.navigateTo(bill: Bill) =
-    navigateTo(CommonsService.getBillUrl(bill.parliamentdotuk).toUri())
+fun Fragment.navigateTo(bill: ZeitgeistBill) =
+    navigateTo(CommonsService.getBillUrl(bill.id).toUri())
 
 
 val Bundle?.parliamentID: ParliamentID

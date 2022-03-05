@@ -13,7 +13,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 object Converters {
-
     @TypeConverter
     @JvmStatic
     fun serializeDate(date: LocalDate?): Long? = date?.toEpochDay()
@@ -57,19 +56,19 @@ object Converters {
 
     @TypeConverter
     @JvmStatic
-    fun serializeEnum(type: Enum<*>): Int = type.ordinal
+    fun serializeEnum(type: Enum<*>): String = type.name
 
     @TypeConverter
     @JvmStatic
-    fun deserializePostType(ordinal: Int): Post.PostType = ordinal.toEnum()
+    fun deserializePostType(name: String): Post.PostType = name.toEnum()
 
     @TypeConverter
     @JvmStatic
-    fun deserializeHouse(ordinal: Int): House = ordinal.toEnum()
+    fun deserializeHouse(name: String): House = name.toEnum()
 
     @TypeConverter
     @JvmStatic
-    fun deserializeDivisionVoteType(ordinal: Int): VoteType = ordinal.toEnum()
+    fun deserializeDivisionVoteType(name: String): VoteType = name.toEnum()
 
     @TypeConverter
     @JvmStatic
@@ -97,5 +96,5 @@ object Converters {
     fun deserializeDateTimes(csv: String): List<LocalDateTime> =
         csv.split(",").map(LocalDateTime::parse)
 
-    private inline fun <reified E : Enum<E>> Int.toEnum(): E = enumValues<E>()[this]
+    private inline fun <reified E : Enum<E>> String.toEnum(): E = enumValueOf(this)
 }

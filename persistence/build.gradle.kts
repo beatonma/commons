@@ -30,6 +30,8 @@ dependencies {
     instrumentationTest {
         implementations(
             Dependencies.Test.Jetpack.ARCH_CORE,
+
+            project(Modules.SampleData)
         )
     }
 

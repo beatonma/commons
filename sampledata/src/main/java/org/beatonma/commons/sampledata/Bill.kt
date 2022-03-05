@@ -1,338 +1,113 @@
 package org.beatonma.commons.sampledata
 
+import org.beatonma.commons.core.House
 import org.beatonma.commons.data.core.room.entities.bill.Bill
+import org.beatonma.commons.data.core.room.entities.bill.BillData
 import org.beatonma.commons.data.core.room.entities.bill.BillPublication
+import org.beatonma.commons.data.core.room.entities.bill.BillPublicationData
+import org.beatonma.commons.data.core.room.entities.bill.BillPublicationLink
 import org.beatonma.commons.data.core.room.entities.bill.BillSponsor
-import org.beatonma.commons.data.core.room.entities.bill.BillSponsorWithProfile
 import org.beatonma.commons.data.core.room.entities.bill.BillStage
-import org.beatonma.commons.data.core.room.entities.bill.BillStageSitting
-import org.beatonma.commons.data.core.room.entities.bill.BillStageWithSittings
 import org.beatonma.commons.data.core.room.entities.bill.BillType
-import org.beatonma.commons.data.core.room.entities.bill.CompleteBill
+import org.beatonma.commons.data.core.room.entities.bill.Organisation
 import org.beatonma.commons.data.core.room.entities.bill.ParliamentarySession
-import org.beatonma.commons.data.core.room.entities.member.MemberProfileWithPartyConstituency
 import java.time.LocalDate
+import java.time.LocalDateTime
 
-val SampleBillSponsor: BillSponsor get() = SampleBillSponsorWithProfile.sponsor
-val SampleBillSponsorWithProfile: BillSponsorWithProfile get() = SampleBillSponsors.random()
-val SampleBillPublication get() = SampleBillPublications.random()
-val SampleSession get() = ParliamentarySession(parliamentdotuk = 377316, name = "2013 - 2014")
-val SampleBillType
-    get() = BillType(
-        name = "Ballot",
-        description = "Private Members' Bill (Ballot Bill))",
-    )
 
-val SampleBill: Bill
-    get() = Bill(
-        parliamentdotuk = 393258,
-        title = "Deep Sea Mining",
-        description = "A Bill to make provision about deep sea mining; and for connected purposes.",
-        actName = "Deep Sea Mining Act",
-        label = "Deep Sea Mining",
-        homepage = "http://services.parliament.uk/bills/deepseamining.html",
-        date = LocalDate.of(2014, 5, 15),
-        ballotNumber = 4,
-        billChapter = "15",
-        isPrivate = false,
-        isMoneyBill = false,
-        publicInvolvementAllowed = false,
-        sessionId = 377316,
-        typeId = "Ballot"
-    )
+val SampleOrganisation = Organisation(
+    name = "HM Treasury",
+    url = "https://www.gov.uk/government/organisations/hm-treasury"
+)
 
-val SampleCompleteBill: CompleteBill
-    get() = CompleteBill(
-        bill = SampleBill,
-        session = SampleSession,
-        type = SampleBillType,
-        publications = SampleBillPublications,
-        sponsors = SampleBillSponsors,
-        stages = SampleBillStages,
-    )
-
-val SampleBillSponsors
-    get() = listOf(
-        BillSponsorWithProfile(
-            sponsor = BillSponsor(
-                name = "Sheryll Murray",
-                billId = 393258,
-                profile = null,
-            ),
-            profileWithPartyConstituency = null,
+val SampleBill = Bill(
+    data = BillData(
+        id = 2835,
+        title = "Finance Act 2021",
+        lastUpdate = LocalDateTime.parse("2021 - 06 - 15 T00 :09:41.254035"),
+        description = null,
+        isAct = true,
+        isDefeated = false,
+        withdrawnAt = null,
+        billTypeId = 1,
+        sessionIntroducedId = 35,
+        currentStageId = 15321
+    ),
+    type = BillType(
+        parliamentdotuk = 1,
+        name = "Government Bill",
+        description = """Government Bills are a type of Public Bill,
+            introduced by government ministers . A Government Bill is a formal proposal for a new law,
+            or a change in the law,
+            that is put
+            forward by the Government for consideration by Parliament.The Queen 's Speech normally lists the Bills that the Government are intending to put forward during the parliamentary year. Government Bills are normally Public Bills.<div><a href='https ://erskinemay.parliament.uk/section/4972/government-and-private-members-bills/'>Find out more about Government Bills</a></div><div><a href='https://www.parliament.uk/about/how/laws/bills/public/'>Find out more about Public Bills</a></div>""",
+        category = "Public"),
+    currentStage = BillStage(
+        parliamentdotuk = 15321,
+        description = "Royal Assent",
+        house = House.unassigned,
+        sessionId = 36,
+        sittings = listOf(LocalDate.parse("2021-06-10T00:00")),
+        latestSitting = LocalDate.parse("2021-06-10T00:00"),
+    ),
+    stages = listOf(
+        BillStage(
+            parliamentdotuk = 12752,
+            description = "1st reading",
+            house = House.commons,
+            sessionId = 35,
+            sittings = listOf(LocalDate.parse("2021-03-09T00:00")),
+            latestSitting = LocalDate.parse("2021-03-09T00:00"),
         ),
-        BillSponsorWithProfile(
-            sponsor = BillSponsor(
-                name = "Baroness Wilcox",
-                billId = 393258,
-                profile = null,
+        BillStage(
+            parliamentdotuk = 12827,
+            description = "2nd reading",
+            house = House.commons,
+            sessionId = 35,
+            sittings = listOf(LocalDate.parse("2021-04-13T00:00")),
+            latestSitting = LocalDate.parse("2021-04-13T00:00"),
+        ),
+    ),
+    sessionIntroduced = ParliamentarySession(id = 35, name = "2019 - 2021"),
+    sessions = listOf(
+        ParliamentarySession(id = 36, name = "2021 - 2022"),
+        ParliamentarySession(id = 35, name = "2019 - 2021")
+    ),
+    publications = listOf(
+        BillPublication(
+            data = BillPublicationData(parliamentdotuk = 40653,
+                title = "Budget Resolutions",
+                date = LocalDate.parse("2021-03-03"),
+                type = "Relevant documents"),
+            links = listOf(
+                BillPublicationLink(
+                    publicationId = 40653,
+                    title = "Budget Resolutions",
+                    url = "https://publications.parliament.uk/pa/bills/cbill/58-01/FinanceDocuments/BudgetResos0321.pdf",
+                    contentType = "application/pdf")
+            )
+        ),
+        BillPublication(
+            data = BillPublicationData(
+                parliamentdotuk = 40654,
+                title = "Explanatory Notes to the Budget Resolutions",
+                date = LocalDate.parse("2021-03-03"),
+                type = "Relevant documents"
             ),
-            profileWithPartyConstituency = MemberProfileWithPartyConstituency(
-                SampleMember,
-                SampleParty,
-                SampleConstituency
-            ),
+            links = listOf(
+                BillPublicationLink(
+                    publicationId = 40654,
+                    title = "Explanatory Notes to the Budget Resolutions",
+                    url = "https://publications.parliament.uk/pa/bills/cbill/58-01/FinanceDocuments/BudgetResosNotes0321.pdf",
+                    contentType = "application/pdf")
+            )
+        ),
+    ),
+    sponsors = listOf(
+        BillSponsor(
+            1,
+            member = SampleMember,
+            organisation = SampleOrganisation,
         )
-    )
-
-val SampleBillPublications
-    get() = listOf(
-        BillPublication(
-            parliamentdotuk = 410376,
-            billId = 393258,
-            title = "Bill 14 2013 - 14, as introduced",
-            url = null, contentType = null, contentLength = null
-        ),
-        BillPublication(
-            parliamentdotuk = 410377,
-            billId = 393258,
-            title = "Bill 14 EN 2013 - 14, explanatory notes to the Bill",
-            url = null,
-            contentType = null,
-            contentLength = null
-        ),
-        BillPublication(
-            parliamentdotuk = 410415,
-            billId = 393258,
-            title = "Briefing Paper on Second Reading",
-            url = null,
-            contentType = null,
-            contentLength = null
-        ),
-        BillPublication(
-            parliamentdotuk = 410449,
-            billId = 393258,
-            title = "Impact Assessment",
-            url = null,
-            contentType = null,
-            contentLength = null
-        ),
-        BillPublication(
-            parliamentdotuk = 411520,
-            billId = 393258,
-            title = "Provisional Notices of Amendments and Added Names as at23 January 2014",
-            url = "http://www.publications.parliament.uk/pa/bills/cbill/2013-2014/0014/amend/deepseaaddednames.pdf",
-            contentType = "application/pdf",
-            contentLength = 119946
-        ),
-        BillPublication(
-            parliamentdotuk = 411521,
-            billId = 393258,
-            title = "Notices of Amendments given on 8 January 2014",
-            url = null,
-            contentType = null,
-            contentLength = null
-        ),
-        BillPublication(
-            parliamentdotuk = 411571,
-            billId = 393258,
-            title = "Notices of Amendments given up to and including 13 January 2014",
-            url = null,
-            contentType = null,
-            contentLength = null
-        ),
-        BillPublication(
-            parliamentdotuk = 411577,
-            billId = 393258,
-            title = "Consideration in Committee:Selection 1",
-            url = null,
-            contentType = null,
-            contentLength = null
-        ),
-        BillPublication(
-            parliamentdotuk = 411583,
-            billId = 393258,
-            title = "Public Bill Committee Amendments as at 15 January 2014",
-            url = null,
-            contentType = null,
-            contentLength = null
-        ),
-        BillPublication(
-            parliamentdotuk = 411603,
-            billId = 393258,
-            title = "Public Bill Committee Proceedings as at 15 January 2014",
-            url = "http://www.publications.parliament.uk/pa/bills/cbill/2013-2014/0014/pro0141501p.1-6.html",
-            contentType = "text/html",
-            contentLength = 93174
-        ),
-    )
-
-val SampleBillStages
-    get() = listOf(
-        BillStageWithSittings(
-            stage = BillStage(
-                parliamentdotuk = 6031,
-                billId = 393258,
-                type = "1st reading"
-            ),
-            sittings = listOf(
-                BillStageSitting(
-                    parliamentdotuk = 7687,
-                    billStageId = 6031,
-                    date = LocalDate.of(2013, 6, 19),
-                    isFormal = true,
-                    isProvisional = false
-                )
-            )
-        ),
-        BillStageWithSittings(
-            stage = BillStage(
-                parliamentdotuk = 6032,
-                billId = 393258,
-                type = "2nd reading"
-            ),
-            sittings = listOf(
-                BillStageSitting(
-                    parliamentdotuk = 7688,
-                    billStageId = 6032,
-                    date = LocalDate.of(2013, 9, 6),
-                    isFormal = false,
-                    isProvisional = false
-                )
-            )
-        ),
-        BillStageWithSittings(
-            stage = BillStage(
-                parliamentdotuk = 6294,
-                billId = 393258,
-                type = "Committee stage"
-            ),
-            sittings = listOf(
-                BillStageSitting(
-                    parliamentdotuk = 7996,
-                    billStageId = 6294,
-                    date = LocalDate.of(2014, 1, 15),
-                    isFormal = false,
-                    isProvisional = false
-                )
-            )
-        ),
-        BillStageWithSittings(
-            stage = BillStage(
-                parliamentdotuk = 6338,
-                billId = 393258,
-                type = "Ways and Means resolution"
-            ),
-            sittings = listOf(
-                BillStageSitting(
-                    parliamentdotuk = 8059,
-                    billStageId = 6338,
-                    date = LocalDate.of(2013, 10, 15),
-                    isFormal = false,
-                    isProvisional = false
-                )
-            )
-        ),
-        BillStageWithSittings(
-            stage = BillStage(
-                parliamentdotuk = 6547,
-                billId = 393258,
-                type = "Report stage"
-            ),
-            sittings = listOf(
-                BillStageSitting(
-                    parliamentdotuk = 8341,
-                    billStageId = 6547,
-                    date = LocalDate.of(2014, 1, 24),
-                    isFormal = false,
-                    isProvisional = false
-                )
-            )
-        ),
-        BillStageWithSittings(
-            stage = BillStage(
-                parliamentdotuk = 6581,
-                billId = 393258,
-                type = "3rd reading"
-            ),
-            sittings = listOf(
-                BillStageSitting(
-                    parliamentdotuk = 8389,
-                    billStageId = 6581,
-                    date = LocalDate.of(2014, 1, 24),
-                    isFormal = false,
-                    isProvisional = false
-                )
-            )
-        ),
-        BillStageWithSittings(
-            stage = BillStage(
-                parliamentdotuk = 6583,
-                billId = 393258,
-                type = "1st reading"
-            ),
-            sittings = listOf(
-                BillStageSitting(
-                    parliamentdotuk = 8392,
-                    billStageId = 6583,
-                    date = LocalDate.of(2014, 1, 24),
-                    isFormal = false,
-                    isProvisional = false
-                )
-            )
-        ),
-        BillStageWithSittings(
-            stage = BillStage(
-                parliamentdotuk = 6608,
-                billId = 393258,
-                type = "2nd reading"
-            ),
-            sittings = listOf(
-                BillStageSitting(
-                    parliamentdotuk = 8421,
-                    billStageId = 6608,
-                    date = LocalDate.of(2014, 2, 7),
-                    isFormal = false,
-                    isProvisional = false
-                )
-            )
-        ),
-        BillStageWithSittings(
-            stage = BillStage(
-                parliamentdotuk = 6645,
-                billId = 393258,
-                type = "Order of Commitment discharged"
-            ),
-            sittings = listOf(
-                BillStageSitting(
-                    parliamentdotuk = 8462,
-                    billStageId = 6645,
-                    date = LocalDate.of(2014, 2, 25),
-                    isFormal = false,
-                    isProvisional = false
-                )
-            )
-        ),
-        BillStageWithSittings(
-            stage = BillStage(
-                parliamentdotuk = 6697,
-                billId = 393258,
-                type = "3rd reading"
-            ),
-            sittings = listOf(
-                BillStageSitting(
-                    parliamentdotuk = 8532,
-                    billStageId = 6697,
-                    date = LocalDate.of(2014, 3, 18),
-                    isFormal = false,
-                    isProvisional = false
-                )
-            )
-        ),
-        BillStageWithSittings(
-            stage = BillStage(
-                parliamentdotuk = 6825,
-                billId = 393258,
-                type = "Royal Assent"
-            ),
-            sittings = listOf(
-                BillStageSitting(
-                    parliamentdotuk = 8684,
-                    billStageId = 6825,
-                    date = LocalDate.of(2014, 5, 14),
-                    isFormal = false,
-                    isProvisional = false
-                )
-            )
-        )
-    )
+    ),
+)

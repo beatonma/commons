@@ -26,6 +26,7 @@ import org.beatonma.commons.data.core.room.entities.bill.BillXPublication
 import org.beatonma.commons.data.core.room.entities.bill.BillXSession
 import org.beatonma.commons.data.core.room.entities.bill.BillXStage
 import org.beatonma.commons.data.core.room.entities.bill.ParliamentarySession
+import org.beatonma.commons.data.core.room.entities.bill.ZeitgeistBill
 
 
 @Dao
@@ -48,6 +49,7 @@ interface BillDao {
         SELECT * FROM bills_x_sessions
         INNER JOIN parliamentary_sessions ON bills_x_sessions.sessionId = parliamentary_sessions.session_id
         WHERE billId = :billId
+        ORDER BY parliamentary_sessions.session_name
     """)
     fun getSessionsForBill(billId: ParliamentID): FlowList<ParliamentarySession>
 
@@ -63,17 +65,26 @@ interface BillDao {
         SELECT * FROM bills_x_publications
         INNER JOIN bill_publications ON bills_x_publications.publicationId = bill_publications.billpub_id
         WHERE billId = :billId
+        ORDER BY bill_publications.billpub_date DESC
     """)
     fun getPublicationsForBill(billId: ParliamentID): FlowList<BillPublication>
 
     @Query("""
         SELECT * FROM bill_sponsors
         LEFT JOIN member_profiles ON bill_sponsors.billsponsor_member_id = member_id
-        WHERE billsponsor_bill_id = :billId""")
+        WHERE billsponsor_bill_id = :billId
+    """)
     fun getSponsorsForBill(billId: ParliamentID): FlowList<BillSponsor>
+
+    @Transaction
+    @Query("""SELECT * FROM zeitgeist_bills""")
+    fun getZeitgeistBills(): FlowList<ZeitgeistBill>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertBillData(bill: BillData)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertBillData(bills: List<BillData>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertBillType(type: BillType)
@@ -101,6 +112,10 @@ interface BillDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertBillSponsorData(data: List<BillSponsorData>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertZeitgeistBills(zeitgeistBills: List<ZeitgeistBill>)
+
 
     @Transaction
     fun insertBill(
@@ -140,6 +155,28 @@ interface BillDao {
                 publicationId = pub.parliamentdotuk
             )
         })
+    }
+
+    @Transaction
+    fun insertBill(bill: Bill) {
+        with(bill) {
+            insertBill(
+                data = data,
+                type = type,
+                stages = stages,
+                sessions = sessions,
+                publications = publications.map(BillPublication::data),
+                pubLinks = publications.map(BillPublication::links).flatten(),
+                sponsorData = sponsors.map { sponsor ->
+                    BillSponsorData(
+                        id = sponsor.id,
+                        billId = this.parliamentdotuk,
+                        memberId = sponsor.member?.parliamentdotuk,
+                        organisation = sponsor.organisation,
+                    )
+                }
+            )
+        }
     }
 
     @Transaction
@@ -197,7 +234,6 @@ interface BillDao {
                     builder.publications = it
                 }
                 fetch(data.id, ::getSponsorsForBill) {
-                    println(it)
                     builder.sponsors = it
                 }
             }
