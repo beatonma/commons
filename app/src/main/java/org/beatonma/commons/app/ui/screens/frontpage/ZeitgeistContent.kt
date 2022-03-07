@@ -21,16 +21,16 @@ import androidx.compose.ui.unit.dp
 import org.beatonma.commons.BuildConfig
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.components.image.AppIcon
+import org.beatonma.commons.app.ui.components.members.MemberLayout
+import org.beatonma.commons.app.ui.components.members.MembersLayout
 import org.beatonma.commons.app.ui.components.party.ProvidePartyImageConfig
 import org.beatonma.commons.app.ui.uiDescription
 import org.beatonma.commons.app.util.logDebug
-import org.beatonma.commons.compose.components.text.OptionalText
 import org.beatonma.commons.compose.padding.endOfContent
 import org.beatonma.commons.compose.systemui.navigationBarsPadding
 import org.beatonma.commons.compose.util.dot
 import org.beatonma.commons.core.extensions.fastForEach
-import org.beatonma.commons.data.core.room.entities.bill.Bill
-import org.beatonma.commons.data.core.room.entities.bill.ResolvedZeitgeistBill
+import org.beatonma.commons.data.core.room.entities.bill.ZeitgeistBill
 import org.beatonma.commons.data.core.room.entities.division.Division
 import org.beatonma.commons.data.core.room.entities.division.ResolvedZeitgeistDivision
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
@@ -44,14 +44,14 @@ private fun String?.reason(): ZeitgeistReason =
 
 private fun ResolvedZeitgeistMember.reason() = this.zeitgeistContent.reason.reason()
 private fun ResolvedZeitgeistDivision.reason() = this.zeitgeistContent.reason.reason()
-private fun ResolvedZeitgeistBill.reason() = this.zeitgeistContent.reason.reason()
+private fun ZeitgeistBill.reason() = this.zeitgeistContent.reason.reason()
 
 val LocalZeitgeistActions: ProvidableCompositionLocal<ZeitgeistActions> =
     compositionLocalOf { error("ZeitgeistActions have not been provided") }
 
 internal typealias MemberAction = (MemberProfile) -> Unit
 internal typealias DivisionAction = (Division) -> Unit
-internal typealias BillAction = (Bill) -> Unit
+internal typealias BillAction = (ZeitgeistBill) -> Unit
 
 class ZeitgeistActions(
     val onMemberClick: MemberAction,
@@ -158,6 +158,7 @@ private fun ZeitgeistDivision(
     val division = item.division
     ListItem(
         modifier.clickable(onClick = { onClick(division) }),
+        icon = { Icon(AppIcon.Division, null) },
         overlineText = { Text(division.house.uiDescription() dot division.date.formatted()) },
         trailing = { Text(division.passed.toString()) },
         text = { Text(division.description ?: division.title) },
@@ -167,16 +168,15 @@ private fun ZeitgeistDivision(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun ZeitgeistBill(
-    item: ResolvedZeitgeistBill,
+    bill: ZeitgeistBill,
     onClick: BillAction,
     reason: ZeitgeistReason,
     modifier: Modifier = Modifier,
 ) {
-    val bill = item.bill
     ListItem(
         modifier.clickable(onClick = { onClick(bill) }),
-        overlineText = { Text(bill.date.formatted()) },
-        secondaryText = { OptionalText(bill.description) },
+        icon = { Icon(AppIcon.Bill, null) },
+        overlineText = { Text(bill.lastUpdate.formatted()) },
         text = { Text(bill.title) },
     )
 }
