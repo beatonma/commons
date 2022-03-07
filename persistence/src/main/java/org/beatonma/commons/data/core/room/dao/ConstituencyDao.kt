@@ -89,12 +89,25 @@ interface ConstituencyDao : SharedConstituencyDao, SharedElectionDao {
 
     suspend fun safeInsertConstituencies(
         constituencies: List<Constituency>,
-        ifNotExists: Boolean = false
+        ifNotExists: Boolean = false,
     ) {
         if (ifNotExists) {
             insertConstituenciesIfNotExists(constituencies)
         } else {
             insertConstituencies(constituencies)
         }
+    }
+
+    @Transaction
+    suspend fun safeInsertElectionResults(
+        constituency: Constituency,
+        election: Election,
+        results: ConstituencyElectionDetails,
+        candidates: List<ConstituencyCandidate>,
+    ) {
+        safeInsertConstituency(constituency, ifNotExists = true)
+        insertElection(election)
+        insertConstituencyElectionDetails(results)
+        insertCandidates(candidates)
     }
 }

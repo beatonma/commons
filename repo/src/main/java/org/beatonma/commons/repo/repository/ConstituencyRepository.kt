@@ -4,7 +4,7 @@ import androidx.annotation.VisibleForTesting
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.room.dao.ConstituencyDao
@@ -21,7 +21,6 @@ import org.beatonma.commons.repo.converters.toConstituencyElectionDetails
 import org.beatonma.commons.repo.converters.toConstituencyResult
 import org.beatonma.commons.repo.converters.toElection
 import org.beatonma.commons.repo.converters.toMemberProfile
-import org.beatonma.commons.repo.converters.toParty
 import org.beatonma.commons.repo.remotesource.api.CommonsApi
 import org.beatonma.commons.repo.result.cachedResultFlow
 import org.beatonma.commons.snommoc.models.ApiConstituency
@@ -51,7 +50,7 @@ class ConstituencyRepository @Inject constructor(
         networkCall = {
             remoteSource.getConstituencyDetailsForElection(constituencyId, electionId)
         },
-        saveCallResult = { result -> saveResults(result) }
+        saveCallResult = ::saveResults
     )
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -63,6 +62,7 @@ class ConstituencyRepository @Inject constructor(
             suspend fun submitCompleteConstituency() {
                 if (builder.isComplete) {
                     send(builder.toCompleteConstituency())
+                    close()
                 }
             }
 
@@ -80,7 +80,7 @@ class ConstituencyRepository @Inject constructor(
                 func: ConstituencyDao.(ParliamentID) -> Flow<T?>,
                 block: (T?) -> Unit,
             ) = launch {
-                constituencyDao.func(constituencyId).collect {
+                constituencyDao.func(constituencyId).collectLatest {
                     block(it)
                     submitCompleteConstituency()
                 }
@@ -117,7 +117,7 @@ class ConstituencyRepository @Inject constructor(
                 func: ConstituencyDao.(ParliamentID, ParliamentID) -> Flow<T?>,
                 block: (T?) -> Unit,
             ) = launch {
-                constituencyDao.func(constituencyId, electionId).collect {
+                constituencyDao.func(constituencyId, electionId).collectLatest {
                     block(it)
                     submitCompleteConstituency()
                 }
@@ -128,7 +128,7 @@ class ConstituencyRepository @Inject constructor(
                 targetId: ParliamentID,
                 block: (T?) -> Unit,
             ) = launch {
-                constituencyDao.func(targetId).collect {
+                constituencyDao.func(targetId).collectLatest {
                     block(it)
                     submitCompleteConstituency()
                 }
@@ -177,20 +177,16 @@ class ConstituencyRepository @Inject constructor(
     suspend fun saveResults(
         result: ApiConstituencyElectionDetails
     ) {
-        with(memberDao) {
-            insertPartiesIfNotExists(result.candidates.mapNotNull { it.party?.toParty() })
-            insertProfilesIfNotExists(result.candidates.mapNotNull { it.profile?.toMemberProfile() })
-        }
+        memberDao.safeInsertProfiles(
+            result.candidates.mapNotNull { it.profile?.toMemberProfile() },
+            ifNotExists = true
+        )
 
-        with(constituencyDao) {
-            safeInsertConstituency(result.constituency.toConstituency(), ifNotExists = true)
-            insertElection(result.election.toElection())
-            insertConstituencyElectionDetails(result.toConstituencyElectionDetails())
-            insertCandidates(
-                result.candidates.map { apiCandidate ->
-                    apiCandidate.toConstituencyCandidate(result.parliamentdotuk)
-                }
-            )
-        }
+        constituencyDao.safeInsertElectionResults(
+            result.constituency.toConstituency(),
+            result.election.toElection(),
+            result.toConstituencyElectionDetails(),
+            result.candidates.map { it.toConstituencyCandidate(result.parliamentdotuk) }
+        )
     }
 }

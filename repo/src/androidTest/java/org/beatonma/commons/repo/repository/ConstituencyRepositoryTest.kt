@@ -2,16 +2,13 @@ package org.beatonma.commons.repo.repository
 
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 import org.beatonma.commons.data.core.room.dao.ConstituencyDao
 import org.beatonma.commons.data.core.room.dao.MemberDao
 import org.beatonma.commons.repo.BaseRoomTest
-import org.beatonma.commons.repo.deserialization.api.expected.expectedApiConstituencyElectionResult
 import org.beatonma.commons.repo.remotesource.api.CommonsApi
+import org.beatonma.commons.repo.result.Success
+import org.beatonma.commons.sampledata.SampleApiConstituencyElectionDetails
 import org.beatonma.commons.test.extensions.assertions.shouldbe
-import org.beatonma.commons.test.extensions.util.awaitValue
 import org.beatonma.commons.test.fakeOf
 import org.junit.Before
 import org.junit.Rule
@@ -35,7 +32,11 @@ class ConstituencyRepositoryTest: BaseRoomTest() {
         super.setUp()
 
         repository = ConstituencyRepository(
-            fakeOf(CommonsApi::class, object {  }),
+            @Suppress("RedundantSuspendModifier", "unused", "UNUSED_PARAMETER")
+            fakeOf(CommonsApi::class, object {
+                suspend fun getConstituencyDetailsForElection(cid: Int, eid: Int) =
+                    Success(SampleApiConstituencyElectionDetails)
+            }),
             dao,
             memberDao
         )
@@ -43,22 +44,13 @@ class ConstituencyRepositoryTest: BaseRoomTest() {
 
     @Test
     fun ensureConstituencyElectionDetails_arePersistedCorrectly() {
-        runBlocking(Dispatchers.Main) {
-            repository.saveResults(
-                expectedApiConstituencyElectionResult()
-            )
-        }
-
-        runBlocking {
-            repository.getCachedConstituencyElectionDetails(147277, 19)
-                .awaitValue(1)
-                .first()
-                .run {
-                    candidates.size shouldbe 8
-                    election.name shouldbe "2010 General Election"
-                    constituency.name shouldbe "Uxbridge and South Ruislip"
-                    details.turnout shouldbe 45076
-                }
+        runQuery(
+            { repository.getConstituencyResultsForElection(147277, 19) }
+        ) { data ->
+            data.candidates.size shouldbe 8
+            data.election.name shouldbe "2010 General Election"
+            data.constituency.name shouldbe "Uxbridge and South Ruislip"
+            data.details.turnout shouldbe 45076
         }
     }
 }
