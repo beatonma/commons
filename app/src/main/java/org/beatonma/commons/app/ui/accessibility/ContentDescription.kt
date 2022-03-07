@@ -3,7 +3,6 @@ package org.beatonma.commons.app.ui.accessibility
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import org.beatonma.commons.R
-import org.beatonma.commons.data.core.room.entities.bill.BillSponsor
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.snommoc.models.social.SocialComment
@@ -23,12 +22,6 @@ val MemberProfile.contentDescription
             R.string.content_description_open_member_profile_for,
             this.name
         )
-
-val BillSponsor.contentDescription
-    @Composable get() = stringResource(
-        R.string.content_description_open_member_profile_for,
-        name
-    )
 
 val UserToken.contentDescription
     @Composable get() =
