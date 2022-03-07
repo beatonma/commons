@@ -1,15 +1,35 @@
 package org.beatonma.commons.test.extensions.util
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 
+
+@OptIn(ExperimentalCoroutinesApi::class)
+private fun <T> ProducerScope<T>.timeout(
+    timeout: Long,
+    timeUnit: TimeUnit,
+    timeoutThrows: Boolean = true,
+    onTimeout: suspend () -> Unit,
+): Job = launch {
+    val timeoutMillis = timeUnit.toMillis(timeout)
+    delay(timeoutMillis)
+    if (!isClosedForSend) {
+        onTimeout()
+        if (timeoutThrows) {
+            throw TimeoutException("awaitValue did not complete (timeout=${timeoutMillis}ms)")
+        } else {
+            close()
+        }
+    }
+}
 
 /**
  * Hide flow emissions until [latchCount] emissions have been collected, then emit the final result.
@@ -24,18 +44,8 @@ fun <T> Flow<T>.awaitValue(
     val latch = CountDownLatch(latchCount)
     var latest: T? = null
 
-    val timeoutJob = launch {
-        val timeoutMillis = timeUnit.toMillis(timeout)
-        delay(timeoutMillis)
-        if (!this@channelFlow.isClosedForSend) {
-            latest?.let { send(it) }
-            if (timeoutThrows) {
-                throw TimeoutException("awaitValue did not complete (timeout=${timeoutMillis}ms) [latches remaining: ${latch.count}]")
-            }
-            else {
-                close()
-            }
-        }
+    val timeoutJob = timeout(timeout, timeUnit, timeoutThrows) {
+        latest?.let { send(it) }
     }
 
     launch {
@@ -47,6 +57,33 @@ fun <T> Flow<T>.awaitValue(
                 this@channelFlow.send(it)
                 this@channelFlow.close()
                 timeoutJob.cancel()
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalCoroutinesApi::class)
+fun <T> Flow<T>.awaitValue(
+    timeout: Long = 500,
+    timeUnit: TimeUnit = TimeUnit.MILLISECONDS,
+    timeoutThrows: Boolean = true,
+    condition: (T) -> Boolean,
+) = channelFlow<T> {
+    var latest: T? = null
+
+    val timeoutJob = timeout(timeout, timeUnit, timeoutThrows) {
+        send(latest!!)
+    }
+
+    launch {
+        collect {
+            latest = it
+            if (condition.invoke(it)) {
+                send(it!!)
+                timeoutJob.cancel()
+                close()
+            } else {
+                it.dump("Condition failed")
             }
         }
     }
@@ -65,18 +102,8 @@ fun <T> Flow<T>.awaitValues(
     val latch = CountDownLatch(latchCount)
     val values = mutableListOf<T>()
 
-    val timeoutJob = launch {
-        val timeoutMillis = timeUnit.toMillis(timeout)
-        delay(timeoutMillis)
-        if (!this@channelFlow.isClosedForSend) {
-            send(values)
-            if (timeoutThrows) {
-                throw TimeoutException("awaitValue did not complete (timeout=${timeoutMillis}ms) [latches remaining: ${latch.count}]")
-            }
-            else {
-                close()
-            }
-        }
+    val timeoutJob = timeout(timeout, timeUnit, timeoutThrows) {
+        send(values)
     }
 
     launch {
