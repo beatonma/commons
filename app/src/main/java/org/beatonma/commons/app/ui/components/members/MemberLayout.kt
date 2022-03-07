@@ -1,4 +1,4 @@
-package org.beatonma.commons.app.ui.screens.frontpage
+package org.beatonma.commons.app.ui.components.members
 
 import android.text.TextPaint
 import androidx.compose.foundation.clickable
@@ -34,18 +34,14 @@ import org.beatonma.commons.app.ui.components.image.Avatar
 import org.beatonma.commons.app.ui.components.party.LocalPartyTheme
 import org.beatonma.commons.app.ui.components.party.PartyBackground
 import org.beatonma.commons.app.ui.components.party.PartyWithTheme
-import org.beatonma.commons.app.ui.components.party.ProvidePartyImageConfig
 import org.beatonma.commons.app.ui.components.party.partyWithTheme
 import org.beatonma.commons.app.ui.components.party.providePartyImageConfig
 import org.beatonma.commons.app.ui.currentPostUiDescription
-import org.beatonma.commons.app.ui.uiDescription
 import org.beatonma.commons.compose.shape.withSquareTop
 import org.beatonma.commons.data.core.MinimalMember
-import org.beatonma.commons.data.core.room.entities.bill.BillSponsorWithProfile
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 import org.beatonma.commons.preview.InAppPreview
 import org.beatonma.commons.preview.PreviewProviders
-import org.beatonma.commons.sampledata.SampleBillSponsorWithProfile
 import org.beatonma.commons.sampledata.SampleConstituency
 import org.beatonma.commons.sampledata.SampleMember
 import org.beatonma.commons.sampledata.SampleParty
@@ -63,7 +59,7 @@ fun MemberLayout(
     member: MinimalMember,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    decoration: @Composable () -> Unit = {},
+    decoration: (@Composable () -> Unit)? = null,
 ) {
     val profile = member.profile
     val partyWithTheme = partyWithTheme(member.party)
@@ -98,62 +94,20 @@ fun MemberLayout(
     profile: MemberProfile,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    decoration: @Composable () -> Unit = {},
+    showImages: Boolean = true,
+    decoration: (@Composable () -> Unit)? = null,
 ) {
     val partyWithTheme = partyWithTheme(profile.party)
-
     val contentDescription = profile.contentDescription
 
     CompositionLocalProvider(
         LocalPartyTheme provides partyWithTheme
     ) {
-        Surface(
-            modifier
-                .width(CardWidth)
-                .padding(MemberPadding)
-                .semantics(mergeDescendants = true) {
-                    this.contentDescription = contentDescription
-                },
-            color = invertedColors.surface,
-            elevation = themedElevation.Card,
-            shape = shapes.small,
-        ) {
-            if (profile.portraitUrl == null) {
-                MemberWithoutPortrait(profile, onClick, decoration = decoration)
-            } else {
+        MemberLayoutCard(contentDescription, modifier) {
+            if (showImages && profile.portraitUrl != null) {
                 MemberWithPortrait(profile, onClick, decoration = decoration)
-            }
-        }
-    }
-}
-
-@Composable
-fun MemberLayout(
-    sponsorWithProfile: BillSponsorWithProfile,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit,
-) {
-    val (sponsor, profile) = sponsorWithProfile
-    val party = profile?.party
-    val partyWithTheme = partyWithTheme(party)
-    val contentDescription = sponsor.contentDescription
-
-    ProvidePartyImageConfig {
-        CompositionLocalProvider(
-            LocalPartyTheme provides partyWithTheme
-        ) {
-            MemberLayoutCard(contentDescription, modifier.clickable(onClick = onClick)) {
-                PartyBackground {
-                    MemberText(
-                        name = sponsor.name,
-                        party = party?.name ?: "",
-                        currentPost = profile?.constituency?.uiDescription()
-                            ?: profile?.profile?.currentPostUiDescription() ?: "",
-                        textColor = partyWithTheme.theme.onPrimary,
-                        modifier = Modifier,
-                        decoration = {},
-                    )
-                }
+            } else {
+                MemberWithoutPortrait(profile, onClick, decoration = decoration)
             }
         }
     }
@@ -163,7 +117,7 @@ fun MemberLayout(
 private fun MemberLayoutCard(
     contentDescription: String,
     modifier: Modifier,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     Surface(
         modifier
@@ -184,7 +138,7 @@ private fun MemberWithoutPortrait(
     profile: MemberProfile,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    decoration: @Composable () -> Unit,
+    decoration: (@Composable () -> Unit)?,
 ) {
     PartyBackground(
         modifier.clickable(onClick = onClick)
@@ -198,7 +152,7 @@ private fun MemberWithPortrait(
     profile: MemberProfile,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    decoration: @Composable () -> Unit,
+    decoration: (@Composable () -> Unit)?,
 ) {
     Column(
         modifier.clickable(onClick = onClick)
@@ -221,7 +175,7 @@ private fun MemberWithPortrait(
 @Composable
 private fun MemberText(
     profile: MemberProfile,
-    decoration: @Composable () -> Unit,
+    decoration: (@Composable () -> Unit)?,
     modifier: Modifier = Modifier,
     partyTheme: PartyWithTheme = LocalPartyTheme.current,
 ) {
@@ -242,7 +196,7 @@ private fun MemberText(
     currentPost: String,
     textColor: Color,
     modifier: Modifier,
-    decoration: @Composable () -> Unit,
+    decoration: (@Composable () -> Unit)?,
 ) {
     Column(
         modifier
@@ -263,7 +217,7 @@ private fun MemberText(
                 color = textColor,
             )
 
-            decoration()
+            decoration?.invoke()
         }
 
         Text(
@@ -310,17 +264,6 @@ private fun MemberDescription(
         overflow = TextOverflow.Ellipsis,
         modifier = Modifier.requiredHeight(captionTextHeight),
     )
-}
-
-
-@Composable
-@Preview("Bill Sponsor")
-private fun MemberLayoutPreview() {
-    PreviewProviders {
-        MemberLayout(
-            SampleBillSponsorWithProfile,
-        ) {}
-    }
 }
 
 @Composable

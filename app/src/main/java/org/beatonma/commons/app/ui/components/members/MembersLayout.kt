@@ -1,4 +1,4 @@
-package org.beatonma.commons.app.ui.screens.frontpage
+package org.beatonma.commons.app.ui.components.members
 
 import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.ScrollState
@@ -14,10 +14,41 @@ import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.unit.dp
+import org.beatonma.commons.app.ui.components.party.ProvidePartyImageConfig
 import org.beatonma.commons.compose.util.size
 import org.beatonma.commons.core.extensions.fastForEach
+import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 import kotlin.math.ceil
 import kotlin.math.roundToInt
+
+@Composable
+fun MembersLayout(
+    profiles: List<MemberProfile>,
+    modifier: Modifier = Modifier,
+    itemModifier: Modifier = Modifier,
+    showImages: Boolean = true,
+    decoration: (@Composable (MemberProfile) -> Unit)? = null,
+    onClick: (MemberProfile) -> Unit,
+) {
+    ProvidePartyImageConfig {
+        MembersLayout(modifier) {
+            profiles.fastForEach { profile ->
+                val resolvedOnClick = { onClick(profile) }
+                val resolvedDecoration: (@Composable () -> Unit)? = decoration?.let { func ->
+                    { func(profile) }
+                }
+
+                MemberLayout(
+                    profile,
+                    onClick = resolvedOnClick,
+                    modifier = itemModifier,
+                    showImages = showImages,
+                    decoration = resolvedDecoration,
+                )
+            }
+        }
+    }
+}
 
 /**
  * TODO cannot browse with accessibility
@@ -31,22 +62,8 @@ import kotlin.math.roundToInt
  *  | | === | |
  *  --- === ---
  */
-@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
 @Composable
-private fun MembersLayout(
-    modifier: Modifier,
-    wrapHeight: Int,
-    content: @Composable () -> Unit,
-) {
-    Layout(content, modifier) { measurables, constraints ->
-        val placeables = measurables.map { it.measure(constraints) }
-
-        buildProfilesLayout(placeables, wrapHeight)
-    }
-}
-
-@Composable
-internal fun MembersLayout(
+fun MembersLayout(
     modifier: Modifier = Modifier,
     scrollState: ScrollState = rememberScrollState(0),
     isScrollEnabled: Boolean = true,
@@ -66,6 +83,21 @@ internal fun MembersLayout(
         wrapHeight = 240.dp.value.toInt(),
         content = content
     )
+}
+
+
+@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+@Composable
+private fun MembersLayout(
+    modifier: Modifier,
+    wrapHeight: Int,
+    content: @Composable () -> Unit,
+) {
+    Layout(content, modifier) { measurables, constraints ->
+        val placeables = measurables.map { it.measure(constraints) }
+
+        buildProfilesLayout(placeables, wrapHeight)
+    }
 }
 
 /**
