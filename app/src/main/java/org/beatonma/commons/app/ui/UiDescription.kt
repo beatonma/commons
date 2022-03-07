@@ -3,7 +3,6 @@ package org.beatonma.commons.app.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import org.beatonma.commons.R
-import org.beatonma.commons.app.ui.screens.bill.viewmodel.BillStageCategory
 import org.beatonma.commons.app.util.logWarning
 import org.beatonma.commons.core.House
 import org.beatonma.commons.core.VoteType
@@ -25,14 +24,6 @@ fun House.uiDescription(): String = when (this) {
     House.commons -> stringResource(R.string.house_of_commons)
     House.lords -> stringResource(R.string.house_of_lords)
     House.unassigned -> stringResource(R.string.house_of_unassigned)
-}
-
-@Composable
-fun BillStageCategory.uiDescription(): String = when (this) {
-    BillStageCategory.Commons -> House.commons.uiDescription()
-    BillStageCategory.Lords -> House.lords.uiDescription()
-    BillStageCategory.ConsiderationOfAmendments -> stringResource(R.string.bill_category_consideration)
-    BillStageCategory.RoyalAssent -> stringResource(R.string.bill_category_royal_assent)
 }
 
 @Composable
