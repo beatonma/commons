@@ -34,7 +34,7 @@ class BillRepository @Inject constructor(
     )
 
     @VisibleForTesting
-    suspend internal fun saveApiBill(apiBill: ApiBill) {
+    internal suspend fun saveApiBill(apiBill: ApiBill) {
         memberDao.safeInsertProfiles(apiBill.getSponsorMembers(), ifNotExists = true)
 
         billDao.insertBill(

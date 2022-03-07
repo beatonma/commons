@@ -1,7 +1,5 @@
 package org.beatonma.commons.repo.repository
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 import org.beatonma.commons.data.core.room.dao.BillDao
 import org.beatonma.commons.data.core.room.dao.MemberDao
 import org.beatonma.commons.repo.BaseRoomTest
@@ -38,10 +36,6 @@ class BillRepositoryTest : BaseRoomTest() {
             billDao,
             memberDao,
         )
-
-        runBlocking(Dispatchers.Main) {
-            repository.saveApiBill(SampleApiBill)
-        }
     }
 
     @Test
