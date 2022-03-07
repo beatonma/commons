@@ -55,7 +55,7 @@ data class Bill(
 
 @Entity(tableName = "bill_types")
 data class BillType(
-    @ColumnInfo(name = "billtype_id") @PrimaryKey val parliamentdotuk: ParliamentID,
+    @ColumnInfo(name = "billtype_id") @PrimaryKey val id: ParliamentID,
     @ColumnInfo(name = "billtype_name") val name: String,
     @ColumnInfo(name = "billtype_description") val description: String,
     @ColumnInfo(name = "billtype_category") val category: String,

@@ -1,5 +1,6 @@
 package org.beatonma.commons.repo.repository
 
+import androidx.annotation.VisibleForTesting
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.room.dao.BillDao
 import org.beatonma.commons.data.core.room.dao.MemberDao
@@ -15,6 +16,7 @@ import org.beatonma.commons.repo.converters.getSponsorMembers
 import org.beatonma.commons.repo.converters.getStages
 import org.beatonma.commons.repo.remotesource.api.CommonsApi
 import org.beatonma.commons.repo.result.cachedResultFlow
+import org.beatonma.commons.snommoc.models.ApiBill
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -28,18 +30,21 @@ class BillRepository @Inject constructor(
     fun getBill(billId: ParliamentID): ResultFlow<Bill> = cachedResultFlow(
         databaseQuery = { billDao.getBill(billId) },
         networkCall = { commonsApi.getBill(billId) },
-        saveCallResult = { apiBill ->
-            memberDao.safeInsertProfiles(apiBill.getSponsorMembers(), ifNotExists = true)
-
-            billDao.insertBill(
-                apiBill.getBillData(),
-                apiBill.getBillType(),
-                apiBill.getStages(),
-                apiBill.getSessions(),
-                apiBill.getPublicationData(),
-                apiBill.getPublicationLinks(),
-                apiBill.getSponsorData(),
-            )
-        }
+        saveCallResult = ::saveApiBill,
     )
+
+    @VisibleForTesting
+    suspend internal fun saveApiBill(apiBill: ApiBill) {
+        memberDao.safeInsertProfiles(apiBill.getSponsorMembers(), ifNotExists = true)
+
+        billDao.insertBill(
+            apiBill.getBillData(),
+            apiBill.getBillType(),
+            apiBill.getStages(),
+            apiBill.getSessions(),
+            apiBill.getPublicationData(),
+            apiBill.getPublicationLinks(),
+            apiBill.getSponsorData(),
+        )
+    }
 }

@@ -1,101 +1,125 @@
 package org.beatonma.commons.repo.repository
 
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.runBlocking
 import org.beatonma.commons.data.core.room.dao.BillDao
+import org.beatonma.commons.data.core.room.dao.MemberDao
 import org.beatonma.commons.repo.BaseRoomTest
 import org.beatonma.commons.repo.remotesource.api.CommonsApi
-import org.beatonma.commons.repo.remotesource.api.UkParliamentApi
-import org.beatonma.commons.repo.testdata.API_BILL
-import org.beatonma.commons.repo.testdata.BILL_PUK
+import org.beatonma.commons.repo.result.Success
+import org.beatonma.commons.sampledata.SampleApiBill
+import org.beatonma.commons.sampledata.SampleApiBillPublication
+import org.beatonma.commons.sampledata.SampleApiBillPublicationLink
+import org.beatonma.commons.sampledata.SampleApiBillSponsor
+import org.beatonma.commons.sampledata.SampleApiBillStage
+import org.beatonma.commons.sampledata.SampleApiBillType
+import org.beatonma.commons.sampledata.SampleApiSession
 import org.beatonma.commons.test.extensions.assertions.shouldbe
-import org.beatonma.commons.test.extensions.util.asDate
-import org.beatonma.commons.test.extensions.util.awaitValue
 import org.beatonma.commons.test.fakeOf
 import org.junit.Before
 import org.junit.Test
 
 class BillRepositoryTest : BaseRoomTest() {
-
     lateinit var repository: BillRepository
-    private val dao: BillDao
+
+    private val billDao: BillDao
         get() = db.billDao()
+    private val memberDao: MemberDao
+        get() = db.memberDao()
 
     @Before
     override fun setUp() {
         super.setUp()
         repository = BillRepository(
-            fakeOf(CommonsApi::class, object {  }),
-            fakeOf(UkParliamentApi::class, object {  }),
-            db.billDao()
+            @Suppress("RedundantSuspendModifier", "unused", "UNUSED_PARAMETER")
+            fakeOf(CommonsApi::class, object {
+                suspend fun getBill(id: Int) = Success(SampleApiBill)
+            }),
+            billDao,
+            memberDao,
         )
 
         runBlocking(Dispatchers.Main) {
-            repository.saveBill(dao, BILL_PUK, API_BILL)
+            repository.saveApiBill(SampleApiBill)
         }
     }
 
     @Test
-    fun ensure_getCompleteBill_is_constructed_correctly() {
-        runBlocking(Dispatchers.Main) {
-            repository.getCompleteBill(BILL_PUK)
-                .awaitValue(latchCount = 6)
-                .single()
-                .run {
-                    with(bill) {
-                        parliamentdotuk shouldbe 392545
-                        title shouldbe "Presumption of Death"
-                        description shouldbe "A Bill to make provision in relation to the presumed deaths of missing persons; and for connected purposes."
-                        actName shouldbe "Deep Sea Mining Act"
-                        label shouldbe "Presumption of Death"
-                        homepage shouldbe "http://services.parliament.uk/bills/presumptionofdeath.html"
-                        date shouldbe "2009-06-25".asDate()
-                        ballotNumber shouldbe 4
-                        billChapter shouldbe "15"
-                        isPrivate shouldbe false
-                        isMoneyBill shouldbe false
-                        publicInvolvementAllowed shouldbe true
-                    }
+    fun bill_is_saved_and_retrieved_correctly() {
+        runQuery(
+            { repository.getBill(SampleApiBill.parliamentdotuk) }
+        ) { bill ->
+            with(bill.data) {
+                val expected = SampleApiBill
+                id shouldbe expected.parliamentdotuk
+                title shouldbe expected.title
+                lastUpdate shouldbe expected.lastUpdate
+                description shouldbe expected.description
+                isAct shouldbe expected.isAct
+                isDefeated shouldbe expected.isDefeated
+                withdrawnAt shouldbe expected.withdrawnAt
+            }
 
-                    with(publications) {
-                        size shouldbe 1
-                        first().run {
-                            parliamentdotuk shouldbe 397898
-                            title shouldbe "Bill as introduced"
-                        }
-                    }
+            with(bill.type) {
+                val expected = SampleApiBillType
+                id shouldbe expected.parliamentdotuk
+                name shouldbe expected.name
+                description shouldbe expected.description
+                category shouldbe expected.category
+            }
 
-                    with(session) {
-                        name shouldbe "2008-2009"
-                        parliamentdotuk shouldbe 377312
-                    }
+            with(bill.currentStage) {
+                val expected = SampleApiBillStage
+                parliamentdotuk shouldbe expected.parliamentdotuk
+                description shouldbe expected.description
+                house shouldbe expected.house
+                sittings shouldbe expected.sittings
+                latestSitting shouldbe expected.latestSitting
+            }
 
-                    with(sponsors) {
-                        size shouldbe 1
-                        first().sponsor.run {
-                            parliamentdotuk shouldbe 1727
-                            name shouldbe "Baroness Wilcox"
-                        }
-                    }
+            with(bill.sessionIntroduced) {
+                val expected = SampleApiSession
+                id shouldbe expected.parliamentdotuk
+                name shouldbe expected.name
+            }
 
-                    with(stages) {
-                        size shouldbe 1
-                        first().run {
-                            stage.run {
-                                parliamentdotuk shouldbe 6697
-                                type shouldbe "Order of Commitment discharged"
-                            }
-                            sittings.first().run {
-                                billStageId shouldbe 6697
-                                parliamentdotuk shouldbe 8684
-                                date shouldbe "2014-05-14".asDate()
-                                isFormal shouldbe false
-                                isProvisional shouldbe true
-                            }
-                        }
-                    }
+            with(bill.sessions.first()) {
+                val expected = SampleApiSession
+                id shouldbe expected.parliamentdotuk
+                name shouldbe expected.name
+            }
+
+            with(bill.publications.first()) {
+                val expected = SampleApiBillPublication
+                data.parliamentdotuk shouldbe expected.parliamentdotuk
+                data.type shouldbe expected.type
+                data.title shouldbe expected.title
+                data.date shouldbe expected.date
+
+                with(links.first()) {
+                    val _expected = SampleApiBillPublicationLink
+                    title shouldbe _expected.title
+                    contentType shouldbe _expected.contentType
+                    url shouldbe _expected.url
                 }
+            }
+
+            with(bill.stages.first()) {
+                val expected = SampleApiBillStage
+                parliamentdotuk shouldbe expected.parliamentdotuk
+                description shouldbe expected.description
+                house shouldbe expected.house
+                sittings shouldbe expected.sittings
+                latestSitting shouldbe expected.latestSitting
+            }
+
+            with(bill.sponsors.first()) {
+                val expected = SampleApiBillSponsor
+                id shouldbe expected.id
+
+                member!!.name shouldbe expected.member!!.name
+                organisation!!.name shouldbe expected.organisation!!.name
+            }
         }
     }
 }

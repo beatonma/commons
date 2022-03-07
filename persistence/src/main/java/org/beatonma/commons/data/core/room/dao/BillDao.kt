@@ -49,7 +49,7 @@ interface BillDao {
         SELECT * FROM bills_x_sessions
         INNER JOIN parliamentary_sessions ON bills_x_sessions.sessionId = parliamentary_sessions.session_id
         WHERE billId = :billId
-        ORDER BY parliamentary_sessions.session_name
+        ORDER BY parliamentary_sessions.session_name DESC
     """)
     fun getSessionsForBill(billId: ParliamentID): FlowList<ParliamentarySession>
 
@@ -186,6 +186,7 @@ interface BillDao {
         suspend fun submit() {
             if (builder.isComplete) {
                 send(builder.toBill())
+                close()
             }
         }
 

@@ -90,16 +90,35 @@ val SampleMember =
         currentPost = "Prime Minister, First Lord of the Treasury and Minister for the Civil Service"
     )
 
+val SampleApiParty = ApiParty(
+    name = "Conservative",
+    parliamentdotuk = 4,
+)
+
+val SampleApiConstituencyMinimal = ApiConstituencyMinimal(
+    name = "Uxbridge and South Ruislip",
+    parliamentdotuk = 147277,
+)
+
+val SampleApiProfile = ApiMemberProfile(
+    parliamentdotuk = 65,
+    name = "MemberName",
+    party = SampleApiParty,
+    constituency = SampleApiConstituencyMinimal,
+    portraitUrl = DEV_AVATAR,
+    active = true,
+    isMp = true,
+    isLord = false,
+    placeOfBirth = ApiTown("TownName"),
+    currentPost = "Prime Minister, First Lord of the Treasury and Minister for the Civil Service"
+)
 
 private const val MEMBER_PUK_BORIS_JOHNSON = 1423
 val SampleApiMemberBorisJohnson = ApiCompleteMember(
     profile = ApiMemberProfile(
         parliamentdotuk = MEMBER_PUK_BORIS_JOHNSON,
         name = "FAKE Boris Johnson",
-        party = ApiParty(
-            name = "Conservative",
-            parliamentdotuk = 4,
-        ),
+        party = SampleApiParty,
         constituency = ApiConstituencyMinimal(
             name = "Uxbridge and South Ruislip",
             parliamentdotuk = 147277,

@@ -214,7 +214,7 @@ fun ApiBill.getSessions(): List<ParliamentarySession> =
     (listOf(sessionIntroduced) + sessions).map(ApiSession::toParliamentarySession)
 
 fun ApiBill.getBillType(): BillType = BillType(
-    parliamentdotuk = type.parliamentdotuk,
+    id = type.parliamentdotuk,
     name = type.name,
     description = type.description,
     category = type.category,

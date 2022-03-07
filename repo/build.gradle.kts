@@ -28,6 +28,7 @@ dependencies {
         implementations(
             project(Modules.Test),
             project(Modules.TestHilt),
+            project(Modules.SampleData),
             Dependencies.Dagger.Hilt.TESTING,
             Dependencies.Room.RUNTIME,
             Dependencies.Test.Jetpack.ARCH_CORE,
