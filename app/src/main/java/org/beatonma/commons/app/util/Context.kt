@@ -6,6 +6,8 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import org.beatonma.commons.core.extensions.autotag
 
 private const val DEFAULT_PREFS = "prefs"
@@ -25,6 +27,12 @@ fun Context?.openUrl(url: String) {
             data = Uri.parse(url)
         }
     ) ?: Log.d(autotag, "openUrl failed: Context is null!")
+}
+
+@Composable
+fun openUrl(url: String): () -> Unit {
+    val context = LocalContext.current
+    return { context.openUrl(url) }
 }
 
 fun Context?.dial(phoneNumber: String) {
