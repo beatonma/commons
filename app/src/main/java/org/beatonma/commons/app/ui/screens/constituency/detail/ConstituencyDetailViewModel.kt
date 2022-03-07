@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.beatonma.commons.app.data.SavedStateKey
 import org.beatonma.commons.app.data.get
@@ -40,7 +40,7 @@ class ConstituencyDetailViewModel @Inject constructor(
 
         viewModelScope.launch(Dispatchers.IO) {
             repository.getConstituency(constituencyID)
-                .collect { result -> postValue(result) }
+                .collectLatest(::postValue)
         }
     }
 }

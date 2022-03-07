@@ -53,9 +53,7 @@ class MemberRepositoryImpl @Inject constructor(
             networkCall = { remoteSource.getMember(parliamentdotuk) },
             saveCallResult = { member -> saveMember(memberDao, parliamentdotuk, member) },
             distinctUntilChanged = true
-        ).catch {
-            println("getMember ERROR $it")
-        }
+        )
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

@@ -65,7 +65,7 @@ class MemberProfileViewModel @Inject constructor(
                 addEvents(member.committees)
                 addEvents(member.financialInterests)
 
-                sortBy { it.startOf() }
+                sortBy(Temporal::startOf)
             }
             emit(events)
         }

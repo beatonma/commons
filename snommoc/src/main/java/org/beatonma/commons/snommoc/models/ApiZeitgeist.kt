@@ -29,5 +29,5 @@ data class ZeitgeistItem<T>(
 data class MessageOfTheDay(
     @field:Json(name = Contract.TITLE) val title: String,
     @field:Json(name = Contract.DESCRIPTION) val description: String?,
-    @field:Json(name = Contract.URL) val url: String?,  // Optional link
+    @field:Json(name = Contract.URL) val url: String?,
 )
