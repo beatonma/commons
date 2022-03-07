@@ -18,4 +18,5 @@ fun houseTheme(
 fun House.theme(): SurfaceTheme = when(this) {
     House.commons -> houseTheme(colors.house.Commons)
     House.lords -> houseTheme(colors.house.Lords)
+    House.unassigned -> houseTheme(colors.house.Parliament)
 }

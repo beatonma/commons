@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.beatonma.commons.app.data.SavedStateKey
 import org.beatonma.commons.app.data.get
@@ -40,6 +39,7 @@ class DivisionDetailViewModel @Inject constructor(
             targetType = when(house) {
                 House.commons -> SocialTargetType.division_commons
                 House.lords -> SocialTargetType.division_lords
+                House.unassigned -> throw Exception("Unhandled house ${house}")
             },
             parliamentdotuk = divisionID,
         )

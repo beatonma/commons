@@ -15,6 +15,7 @@ fun Sociable.getSocialContentTarget(): SocialTargetType = when(this) {
     is Division -> when(house) {
         House.commons -> SocialTargetType.division_commons
         House.lords -> SocialTargetType.division_lords
+        House.unassigned -> throw Exception("getSocialContentTarget has unexpected house=$house (target=$this))")
     }
     else -> throw Exception("Unregistered Sociable implementation - getSocialContentTarget()")
 }
