@@ -1,6 +1,7 @@
 import org.beatonma.commons.buildsrc.config.Commons
 import org.beatonma.commons.buildsrc.gradle.buildConfigStrings
 import org.beatonma.commons.buildsrc.gradle.injectStrings
+import org.beatonma.commons.buildsrc.gradle.instrumentationTest
 import org.beatonma.commons.buildsrc.gradle.main
 import org.beatonma.commons.buildsrc.gradle.project
 import org.beatonma.commons.buildsrc.gradle.unitTest
@@ -14,6 +15,8 @@ plugins {
 
 android {
     defaultConfig {
+        testInstrumentationRunner = "org.beatonma.commons.testhilt.HiltTestRunner"
+
         buildConfigStrings(
             "COMMONS_API_KEY" to LocalConfig.Api.Commons.API_KEY,
         )
@@ -28,6 +31,21 @@ android {
 
 
 dependencies {
+
+    instrumentationTest {
+        annotationProcessors(
+            Dependencies.Dagger.AP_COMPILER,
+            Dependencies.Dagger.AP_ANDROID,
+        )
+
+        implementations(
+            project(Modules.Test),
+            project(Modules.TestHilt),
+            Dependencies.Dagger.Hilt.TESTING,
+            Dependencies.Test.Jetpack.RUNNER,
+        )
+    }
+
     unitTest {
         implementations(
             Dependencies.Test.OKHTTP_MOCK_SERVER
