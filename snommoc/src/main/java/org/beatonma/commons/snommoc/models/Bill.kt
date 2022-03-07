@@ -59,7 +59,7 @@ data class ApiBillSponsor(
 data class ApiBillPublication(
     @field:Json(name = Contract.PARLIAMENTDOTUK) val parliamentdotuk: ParliamentID,
     @field:Json(name = Contract.TITLE) val title: String,
-    @field:Json(name = Contract.DATE) val date: LocalDateTime,
+    @field:Json(name = Contract.DATE) val date: LocalDate,
     @field:Json(name = Contract.LINKS) val links: List<ApiBillPublicationLink>,
     @field:Json(name = Contract.TYPE) val type: String,
 )
