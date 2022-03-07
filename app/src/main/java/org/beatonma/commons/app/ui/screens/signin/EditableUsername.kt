@@ -9,10 +9,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme.typography
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Undo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -42,6 +38,7 @@ import kotlinx.coroutines.withContext
 import org.beatonma.commons.BuildConfig
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.components.LoadingIcon
+import org.beatonma.commons.app.ui.components.image.AppIcon
 import org.beatonma.commons.app.ui.components.image.ClickableIcon
 import org.beatonma.commons.app.ui.screens.social.Username
 import org.beatonma.commons.compose.animation.AnimatedVisibility
@@ -127,7 +124,7 @@ private fun ReadOnlyUsernameLayout(
             )
 
             ClickableIcon(
-                Icons.Default.Edit,
+                AppIcon.Edit,
                 contentDescription = contentDescription,
                 onClick = makeEditable,
                 testTag = UserAccountTestTag.UsernameEdit,
@@ -275,14 +272,14 @@ private fun EditableUsernameLayout(
             trailingIcon = {
                 Row {
                     ClickableIcon(
-                        Icons.Default.Done,
+                        AppIcon.Check,
                         contentDescription = stringResource(R.string.account_submit_new_username),
                         onClick = onSubmitName,
                         testTag = UserAccountTestTag.UsernameRequestRename
                     )
 
                     ClickableIcon(
-                        Icons.Default.Undo,
+                        AppIcon.Undo,
                         contentDescription = stringResource(R.string.content_description_edit_username),
                         testTag = UserAccountTestTag.UsernameCancelRename,
                     ) { onStateChange(EditableState.ReadOnly) }

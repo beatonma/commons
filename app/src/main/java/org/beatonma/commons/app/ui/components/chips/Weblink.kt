@@ -8,9 +8,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Facebook
-import androidx.compose.material.icons.filled.Link
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,6 +18,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.R
+import org.beatonma.commons.app.ui.components.image.AppIcon
 import org.beatonma.commons.app.util.openUrl
 import org.beatonma.commons.compose.components.CollapsibleChip
 import org.beatonma.commons.data.core.room.entities.member.WebAddress
@@ -53,7 +51,7 @@ fun Weblink(
                 displayText = AnnotatedString(getGenericDisplayUrl(uri)),
                 url = weblink.url,
                 contentDescription = stringResource(R.string.action_open_url, weblink.url),
-                icon = Icons.Default.Link,
+                icon = AppIcon.Link,
                 modifier = modifier,
             )
         }
@@ -69,7 +67,7 @@ private fun FacebookWeblink(
         displayText = AnnotatedString(username),
         url = "https://facebook.com/$username/",
         contentDescription = stringResource(R.string.action_open_facebook_user, username),
-        icon = Icons.Default.Facebook,
+        icon = AppIcon.Facebook,
         modifier = modifier
     )
 }

@@ -18,8 +18,6 @@ import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
@@ -45,6 +43,7 @@ import androidx.compose.ui.zIndex
 import com.google.accompanist.insets.ProvideWindowInsets
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.components.Todo
+import org.beatonma.commons.app.ui.components.image.AppIcon
 import org.beatonma.commons.app.ui.components.party.PartyDot
 import org.beatonma.commons.compose.Layer
 import org.beatonma.commons.compose.TestTag
@@ -226,7 +225,7 @@ private fun SearchIcon(
         modifier = modifier.testTag(SearchTestTag.Icon)
     ) {
         Icon(
-            Icons.Default.Search,
+            AppIcon.Search,
             contentDescription = contentDescription,
         )
     }

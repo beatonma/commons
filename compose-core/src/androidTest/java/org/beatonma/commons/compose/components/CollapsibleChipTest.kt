@@ -2,8 +2,6 @@ package org.beatonma.commons.compose.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -22,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.test.filters.MediumTest
 import org.beatonma.commons.compose.TestLayout
 import org.beatonma.commons.compose.TestTag
+import org.beatonma.commons.compose.UiIcon
 import org.beatonma.commons.compose.ambient.LocalAccessibility
 import org.beatonma.commons.testcompose.assertSizeIsSquare
 import org.beatonma.commons.testcompose.assertSizeIsTouchable
@@ -144,7 +143,7 @@ class CollapsibleChipTest : ComposeTest() {
                 CollapsibleChip(
                     text = AnnotatedString(chipText),
                     contentDescription = contentDescription,
-                    icon = Icons.Default.Email,
+                    icon = UiIcon.EllipsisVertical,
                 ) {
                     counter += 1
                 }

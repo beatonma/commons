@@ -18,10 +18,6 @@ import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.MaterialTheme.shapes
 import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material.icons.filled.Cancel
-import androidx.compose.material.icons.filled.RemoveCircle
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -48,6 +44,7 @@ import org.beatonma.commons.app.ui.components.charts.ChartItem
 import org.beatonma.commons.app.ui.components.charts.ChartKeyItem
 import org.beatonma.commons.app.ui.components.charts.HorizontalStackedBarChart
 import org.beatonma.commons.app.ui.components.charts.selectionDecoration
+import org.beatonma.commons.app.ui.components.image.AppIcon
 import org.beatonma.commons.app.ui.components.loadingIcon
 import org.beatonma.commons.app.ui.screens.signin.UserAccountViewModel
 import org.beatonma.commons.app.ui.screens.social.ProvideSocial
@@ -132,6 +129,7 @@ fun DivisionDetailLayout(
             division.title,
             division.description ?: stringResource(R.string.division_no_description)
         )
+        House.unassigned -> throw Exception("Unhandled house ${division.house}")
     }
 
     val scrollState = rememberLazyListState()
@@ -384,9 +382,9 @@ private val VoteType.color
 
 private val VoteType.icon
     @Composable get() = when (this) {
-        VoteType.AyeVote -> Icons.Default.AddCircle
-        VoteType.NoVote -> Icons.Default.RemoveCircle
-        else -> Icons.Default.Cancel
+        VoteType.AyeVote -> AppIcon.VoteAye
+        VoteType.NoVote -> AppIcon.VoteNo
+        else -> AppIcon.CloseCircle
     }
 
 private val VoteType.descriptionRes

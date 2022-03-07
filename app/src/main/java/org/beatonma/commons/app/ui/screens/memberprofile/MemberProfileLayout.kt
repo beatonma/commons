@@ -22,8 +22,6 @@ import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ProvidableCompositionLocal
@@ -43,6 +41,7 @@ import org.beatonma.commons.app.ui.components.LoadingIcon
 import org.beatonma.commons.app.ui.components.chips.EmailLink
 import org.beatonma.commons.app.ui.components.chips.PhoneLink
 import org.beatonma.commons.app.ui.components.chips.Weblink
+import org.beatonma.commons.app.ui.components.image.AppIcon
 import org.beatonma.commons.app.ui.components.image.Avatar
 import org.beatonma.commons.app.ui.components.party.LocalPartyTheme
 import org.beatonma.commons.app.ui.components.party.PartyBackground
@@ -334,7 +333,7 @@ private fun ConstituencyLink(
             withAnnotatedStyle = true,
         )
 
-        Icon(Icons.Default.KeyboardArrowRight, null)
+        Icon(AppIcon.ArrowRight, null)
     }
 }
 

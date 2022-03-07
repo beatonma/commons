@@ -9,8 +9,6 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentColor
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.HdrWeak
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -20,6 +18,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import org.beatonma.commons.app.ui.accessibility.ContentDescription
+import org.beatonma.commons.app.ui.components.image.AppIcon
 import org.beatonma.commons.compose.util.rememberBoolean
 import org.beatonma.commons.themed.themedAnimation
 
@@ -48,7 +47,7 @@ fun LoadingIcon(
 
     if (onClick == null) {
         Icon(
-            Icons.Default.HdrWeak,
+            AppIcon.Loading,
             contentDescription = ContentDescription.Loading,
             tint = tint,
             modifier = iconModifier
@@ -56,7 +55,7 @@ fun LoadingIcon(
     } else {
         IconButton(onClick = onClick) {
             Icon(
-                Icons.Default.HdrWeak,
+                AppIcon.Loading,
                 contentDescription = ContentDescription.Loading,
                 tint = tint,
                 modifier = iconModifier

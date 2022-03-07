@@ -24,8 +24,6 @@ import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.MaterialTheme.shapes
 import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -50,6 +48,7 @@ import org.beatonma.commons.R
 import org.beatonma.commons.app.data.resolution.PartyResolution
 import org.beatonma.commons.app.ui.colors.PartyColors
 import org.beatonma.commons.app.ui.components.Date
+import org.beatonma.commons.app.ui.components.image.AppIcon
 import org.beatonma.commons.app.ui.components.party.LocalPartyTheme
 import org.beatonma.commons.app.ui.components.party.PartyBackground
 import org.beatonma.commons.app.ui.components.party.PartyWithTheme
@@ -311,9 +310,9 @@ private fun DepositLostMarker() {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(Icons.Default.ArrowDropDown, contentDescription = "TODO")
+                Icon(AppIcon.DropDown, contentDescription = "TODO")
                 ResourceText(R.string.constituency_candidate_deposit_lost)
-                Icon(Icons.Default.ArrowDropDown, contentDescription = "TODO")
+                Icon(AppIcon.DropDown, contentDescription = "TODO")
             }
         }
 

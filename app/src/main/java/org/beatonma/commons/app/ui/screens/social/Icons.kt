@@ -7,10 +7,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme.shapes
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Comment
-import androidx.compose.material.icons.filled.ThumbDown
-import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
@@ -30,6 +26,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.accessibility.contentDescription
+import org.beatonma.commons.app.ui.components.image.AppIcon
 import org.beatonma.commons.compose.animation.lerpBetween
 import org.beatonma.commons.compose.modifiers.onlyWhen
 import org.beatonma.commons.compose.modifiers.withNotNull
@@ -124,7 +121,7 @@ private fun SocialIconsLayout(
             size = iconStyle.size,
             padding = iconStyle.padding,
             count = socialContent.commentCount,
-            icon = Icons.Default.Comment,
+            icon = AppIcon.Comment,
             tint = inactiveTint,
             onClick = when (expandProgress) {
                 1F -> onCommentIconClick
@@ -142,7 +139,7 @@ private fun SocialIconsLayout(
             size = iconStyle.size,
             padding = iconStyle.padding,
             count = socialContent.ayeVotes,
-            icon = Icons.Default.ThumbUp,
+            icon = AppIcon.ThumbUp,
             tint = voteColors[0].value,
             onClick = when (expandProgress) {
                 1F -> onVoteUpIconClick
@@ -163,7 +160,7 @@ private fun SocialIconsLayout(
             size = iconStyle.size,
             padding = iconStyle.padding,
             count = socialContent.noVotes,
-            icon = Icons.Default.ThumbDown,
+            icon = AppIcon.ThumbDown,
             tint = voteColors[1].value,
             onClick = when (expandProgress) {
                 1F -> onVoteDownIconClick

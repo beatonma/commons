@@ -14,9 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Icon
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -31,6 +28,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import org.beatonma.commons.compose.R
 import org.beatonma.commons.compose.TestTag
+import org.beatonma.commons.compose.UiIcon
 import org.beatonma.commons.compose.animation.AnimatedItemVisibility
 import org.beatonma.commons.compose.animation.ExpandCollapseState
 import org.beatonma.commons.compose.animation.animateExpansion
@@ -273,7 +271,7 @@ private fun MoreContentIndication(
         contentAlignment = Alignment.Center
     ) {
         Icon(
-            Icons.Default.MoreVert, // MoreHoriz not available..?
+            UiIcon.EllipsisVertical,
             contentDescription = contentDescription,
             Modifier
                 .padding(themedPadding.IconSmall)

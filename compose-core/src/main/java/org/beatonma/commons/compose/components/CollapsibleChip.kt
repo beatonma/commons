@@ -15,8 +15,6 @@ import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +44,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.beatonma.commons.compose.R
 import org.beatonma.commons.compose.TestTag
+import org.beatonma.commons.compose.UiIcon
 import org.beatonma.commons.compose.ambient.LocalAccessibility
 import org.beatonma.commons.compose.animation.AutoCollapse
 import org.beatonma.commons.compose.animation.ExpandCollapseState
@@ -66,7 +65,7 @@ fun CollapsibleChip(
     contentDescription: String?,
     @DrawableRes drawableId: Int,
     modifier: Modifier = Modifier,
-    cancelIcon: ImageVector = Icons.Default.Close,
+    cancelIcon: ImageVector = UiIcon.Close,
     tint: Color = colors.onSurface.copy(alpha = ContentAlpha.medium),
     autoCollapse: Long = AutoCollapse.Default,
     confirmAction: () -> Unit,
@@ -89,7 +88,7 @@ fun CollapsibleChip(
     contentDescription: String?,
     icon: ImageVector,
     modifier: Modifier = Modifier,
-    cancelIcon: ImageVector = Icons.Default.Close,
+    cancelIcon: ImageVector = UiIcon.Close,
     tint: Color = colors.onSurface.copy(alpha = ContentAlpha.medium),
     autoCollapse: Long = AutoCollapse.Default,
     confirmAction: () -> Unit,
@@ -112,7 +111,7 @@ fun CollapsibleChip(
     contentDescription: String?,
     icon: ImageVector,
     modifier: Modifier = Modifier,
-    cancelIcon: ImageVector = Icons.Default.Close,
+    cancelIcon: ImageVector = UiIcon.Close,
     tint: Color = colors.onSurface.copy(alpha = ContentAlpha.medium),
     autoCollapse: Long = AutoCollapse.Default,
     confirmAction: () -> Unit,

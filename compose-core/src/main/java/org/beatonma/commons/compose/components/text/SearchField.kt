@@ -15,8 +15,6 @@ import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldColors
 import androidx.compose.material.TextFieldDefaults
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
@@ -28,6 +26,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import org.beatonma.commons.compose.R
 import org.beatonma.commons.compose.TestTag
+import org.beatonma.commons.compose.UiIcon
 import org.beatonma.commons.compose.util.rememberText
 
 @Composable
@@ -141,7 +140,7 @@ private fun SearchFieldLayout(
                     Modifier.testTag(TestTag.Clear)
                 ) {
                     Icon(
-                        Icons.Default.Clear,
+                        UiIcon.Clear,
                         contentDescription = stringResource(R.string.content_description_clear_search_query),
                     )
                 }
