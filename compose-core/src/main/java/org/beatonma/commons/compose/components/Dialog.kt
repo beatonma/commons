@@ -4,15 +4,21 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CornerBasedShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme.shapes
+import androidx.compose.material.rememberSwipeableState
+import androidx.compose.material.swipeable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -29,6 +35,7 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.compose.animation.ExpandCollapseState
 import org.beatonma.commons.compose.animation.animateExpansionAsState
@@ -41,6 +48,7 @@ import org.beatonma.commons.compose.modifiers.wrapContentHeight
 import org.beatonma.commons.compose.shape.BottomSheetShape
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.themed.themedAnimation
+import kotlin.math.roundToInt
 
 
 private val LocalDialogState: ProvidableCompositionLocal<MutableState<ExpandCollapseState>> =
@@ -84,10 +92,12 @@ fun DialogScaffold(
  *
  * Must be called within the tree of DialogScaffold.
  */
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun Dialog(
     state: ExpandCollapseState,
     onStateChange: (ExpandCollapseState) -> Unit,
+    swipeToDismiss: Boolean = true,
     alignment: Alignment = Alignment.Center,
     parentShape: CornerBasedShape = shapes.medium,
     content: DialogContent,
@@ -102,27 +112,51 @@ fun Dialog(
     LaunchedEffect(state) {
         dialogState.value = state
         dialogContent.value = { progress ->
-            Card(
-                Modifier
-                    .dialogHeight()
-                    .dialogWidth()
-                    .align(alignment)
-                    .consumePointerInput(),
-                shape = getDialogShape(alignment, parentShape, progress),
-            ) {
-                Box(
+            val swipeState = rememberSwipeableState(initialValue = state)
+
+            BoxWithConstraints(Modifier.align(alignment)) {
+                val height = constraints.maxHeight.toFloat()
+
+                Card(
                     Modifier
-                        .wrapContentHeight(
-                            progress
-                                .progressIn(0f, .7f)
-                                .withEasing(FastOutSlowInEasing))
-                        .onlyWhen(progress == 1f) {
-                            animateContentSize(themedAnimation.spec())
+                        .onlyWhen(swipeToDismiss) {
+                            swipeable(
+                                state = swipeState,
+                                orientation = Orientation.Vertical,
+                                anchors = mapOf(
+                                    0f to ExpandCollapseState.Expanded,
+                                    height to ExpandCollapseState.Collapsed,
+                                ),
+                            ).offset {
+                                IntOffset(0, swipeState.offset.value.roundToInt())
+                            }
                         }
-                        .alpha(progress.progressIn(.6f, 1f))
+                        .dialogHeight()
+                        .dialogWidth()
+                        .align(alignment)
+                        .consumePointerInput(),
+                    shape = getDialogShape(alignment, parentShape, progress),
                 ) {
-                    content(progress)
+                    Box(
+                        Modifier
+                            // Enter/exit animation
+                            .wrapContentHeight(
+                                progress
+                                    .progressIn(0f, .7f)
+                                    .withEasing(FastOutSlowInEasing))
+                            // Animate changes in content once the dialog is fully visible.
+                            .onlyWhen(progress == 1f) {
+                                animateContentSize(themedAnimation.spec())
+                            }
+                            .alpha(progress.progressIn(.6f, 1f))
+                    ) {
+                        content(progress)
+                    }
                 }
+            }
+
+            LaunchedEffect(swipeState.currentValue) {
+                onStateChange(swipeState.currentValue)
             }
         }
     }
