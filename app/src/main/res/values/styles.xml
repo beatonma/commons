@@ -1,11 +1,5 @@
 <resources>
-
     <style name="Commons" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="android:windowContentTransitions">true</item>
-        <item name="android:windowAllowEnterTransitionOverlap">true</item>
-        <item name="android:windowAllowReturnTransitionOverlap">true</item>
-        <item name="android:windowSharedElementsUseOverlay">false</item>
-
         <item name="android:fitsSystemWindows">false</item>
         <item name="android:windowBackground">@color/Tabletop</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
