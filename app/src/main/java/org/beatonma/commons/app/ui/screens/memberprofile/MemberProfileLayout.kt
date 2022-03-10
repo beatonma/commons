@@ -447,7 +447,7 @@ private fun FinancialInterests(
                     stringResource(R.string.member_financial_interests),
                     autoPadding = false,
                 ),
-                scrollable = false,
+                lazy = false,
             ) { interest ->
                 Column(
                     Modifier.padding(CommonsPadding.VerticalListItem)
