@@ -2,6 +2,7 @@ package org.beatonma.commons.app.ui.components.image
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Assignment
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Comment
@@ -27,6 +28,7 @@ import org.beatonma.commons.compose.UiIcon
 object AppIcon {
     // Generic UI
     val ArrowRight get() = Icons.Default.KeyboardArrowRight
+    val Back get() = Icons.Default.ArrowBack
     val Close get() = UiIcon.Close
     val CloseCircle get() = Icons.Default.Cancel
     val Check get() = Icons.Default.Done

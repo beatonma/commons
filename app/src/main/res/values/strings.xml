@@ -70,6 +70,8 @@
     <string name="bill_category_consideration" translatable="true">Consideration</string>
     <string name="bill_category_royal_assent" translatable="true">Royal assent</string>
 
+    <string name="bill_publication_links_empty" translatable="true">No links available</string>
+
     <!-- Snippets -->
     <string name="snippet_birth_date" translatable="true">Born %s</string>
     <string name="snippet_birth_age" translatable="true">%d years</string>

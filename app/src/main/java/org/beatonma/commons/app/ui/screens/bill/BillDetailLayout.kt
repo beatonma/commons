@@ -2,15 +2,10 @@ package org.beatonma.commons.app.ui.screens.bill
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.material.AlertDialog
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ListItem
 import androidx.compose.material.LocalContentColor
-import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.MaterialTheme.shapes
 import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.Text
@@ -22,27 +17,22 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.colors.theme
 import org.beatonma.commons.app.ui.components.Todo
 import org.beatonma.commons.app.ui.components.members.MembersLayout
+import org.beatonma.commons.app.ui.screens.bill.components.Publications
 import org.beatonma.commons.app.ui.screens.signin.UserAccountViewModel
 import org.beatonma.commons.app.ui.screens.social.ProvideSocial
 import org.beatonma.commons.app.ui.screens.social.SocialScaffold
 import org.beatonma.commons.app.ui.screens.social.SocialViewModel
 import org.beatonma.commons.app.ui.uiDescription
 import org.beatonma.commons.app.ui.util.WithResultData
-import org.beatonma.commons.app.util.openUrl
-import org.beatonma.commons.compose.components.CollapsedColumn
+import org.beatonma.commons.compose.components.DialogScaffold
 import org.beatonma.commons.compose.components.StickyHeaderRow
-import org.beatonma.commons.compose.components.Tag
 import org.beatonma.commons.compose.components.text.Caption
 import org.beatonma.commons.compose.components.text.PluralResourceText
 import org.beatonma.commons.compose.components.text.Quote
@@ -52,13 +42,10 @@ import org.beatonma.commons.compose.padding.padding
 import org.beatonma.commons.compose.systemui.statusBarsPadding
 import org.beatonma.commons.compose.util.dot
 import org.beatonma.commons.compose.util.dotted
-import org.beatonma.commons.compose.util.pluralResource
 import org.beatonma.commons.core.House
 import org.beatonma.commons.core.extensions.fastForEach
 import org.beatonma.commons.core.extensions.withNotNull
 import org.beatonma.commons.data.core.room.entities.bill.Bill
-import org.beatonma.commons.data.core.room.entities.bill.BillPublication
-import org.beatonma.commons.data.core.room.entities.bill.BillPublicationLink
 import org.beatonma.commons.data.core.room.entities.bill.BillSponsor
 import org.beatonma.commons.data.core.room.entities.bill.BillStage
 import org.beatonma.commons.data.core.room.entities.bill.BillType
@@ -67,7 +54,6 @@ import org.beatonma.commons.repo.result.IoLoading
 import org.beatonma.commons.theme.CommonsPadding
 import org.beatonma.commons.theme.formatting.formatted
 import org.beatonma.commons.themed.paddingValues
-import org.beatonma.commons.themed.themedPadding
 import java.time.LocalDate
 
 internal val LocalBillActions: ProvidableCompositionLocal<BillActions> =
@@ -83,12 +69,14 @@ fun BillDetailLayout(
     val resultState by viewmodel.livedata.observeAsState(IoLoading)
 
     WithResultData(resultState) { bill: Bill ->
-        ProvideSocial(
-            viewmodel,
-            socialViewModel,
-            userAccountViewModel
-        ) {
-            BillDetailLayout(bill)
+        DialogScaffold {
+            ProvideSocial(
+                viewmodel,
+                socialViewModel,
+                userAccountViewModel
+            ) {
+                BillDetailLayout(bill)
+            }
         }
     }
 }
@@ -107,8 +95,7 @@ fun BillDetailLayout(
     }
 }
 
-
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
 private fun LazyListScope.lazyContent(
     bill: Bill,
     onSponsorClick: SponsorAction,
@@ -121,16 +108,17 @@ private fun LazyListScope.lazyContent(
         Description(bill.type, bill.sessions, bill, sectionModifier)
     }
 
-    optionalItem(bill.publications) { publications ->
-        Publications(publications, sectionModifier)
-    }
-
     optionalItem(bill.sponsors) { sponsors ->
         Sponsors(sponsors, onSponsorClick, sectionModifier)
     }
 
     optionalItem(bill.stages) { stages ->
         Stages(stages, sectionModifier)
+    }
+
+//    Publications(publicationState)
+    optionalItem(bill.publications) { publications ->
+        Publications(publications, sectionModifier)
     }
 }
 
@@ -147,39 +135,119 @@ private fun Description(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
-@Composable
-private fun Publications(
-    publications: List<BillPublication>,
-    modifier: Modifier,
-) {
-    var focussed: BillPublication? by remember { mutableStateOf(null) }
+//@OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
+//private fun LazyListScope.Publications(
+//    publicationState: CollapsedColumnState<BillPublication>,
+////    modifier: Modifier,
+//) {
+//    CollapsedColumn(
+//        publicationState,
+//        headerBlock = CollapsedColumn.simpleHeader("BILLS"
+////            pluralResource(R.plurals.bill_publications, bill.publications.size)
+//        ),
+////        modifier = modifier,
+////        lazy = false,
+//    ) { publication ->
+//        ListItem(
+//            text = { Text(publication.data.title) },
+//            secondaryText = { Text(publication.data.type dot publication.data.date.formatted()) },
+////            modifier = Modifier.clickable { focussed = publication }
+//        )
+//    }
+////    var focussed: BillPublication? by remember { mutableStateOf(null) }
+////
+////    CollapsedColumn(
+////        publications,
+////        headerBlock = CollapsedColumn.simpleHeader(
+////            pluralResource(R.plurals.bill_publications, publications.size)
+////        ),
+////        modifier = modifier,
+////        lazy = false,
+////    ) { publication ->
+////        ListItem(
+////            text = { Text(publication.data.title) },
+////            secondaryText = { Text(publication.data.type dot publication.data.date.formatted()) },
+////            modifier = Modifier.clickable { focussed = publication }
+////        )
+////    }
+////
+////    withNotNull(focussed) { pub ->
+////        AlertDialog(
+////            onDismissRequest = { focussed = null },
+////            title = { Text(pub.data.type) },
+////            text = { Publication(pub) },
+////            buttons = {},
+////            properties = DialogProperties(usePlatformDefaultWidth = false)
+////        )
+////    }
+//}
 
-    CollapsedColumn(
-        publications,
-        headerBlock = CollapsedColumn.simpleHeader(
-            pluralResource(R.plurals.bill_publications, publications.size)
-        ),
-        modifier = modifier,
-        scrollable = false,
-    ) { publication ->
-        ListItem(
-            text = { Text(publication.data.title) },
-            secondaryText = { Text(publication.data.type dot publication.data.date.formatted()) },
-            modifier = Modifier.clickable { focussed = publication }
-        )
-    }
+//@OptIn(ExperimentalMaterialApi::class)
+//@Composable
+//private fun Publications(
+//    publications: List<BillPublication>,
+//    modifier: Modifier,
+//) {
+//    var focussed: BillPublication? by remember { mutableStateOf(null) }
+//    var state by rememberExpandCollapseState()
+//    val collapsedItemCount = 3
+//    CollapsedColumn(
+//        publications,
+//        CollapsedColumn.simpleHeader("title"),
+//        state,
+//        { state = it },
+//        collapsedItemCount = collapsedItemCount,
+//    ) { displayItems ->
+//        displayItems.take(collapsedItemCount).forEach { publication ->
+//            ListItem(
+//                text = { Text(publication.data.title) },
+//                secondaryText = { Text(publication.data.type dot publication.data.date.formatted()) },
+//                modifier = Modifier.clickable { focussed = publication }
+//            )
+//        }
+//    }
+//
+//    if (focussed != null || state.isExpanded) {
+//        FocussedPublications(
+//            publications,
+//            focussed,
+//            onClose = {
+//                focussed = null
+//                state = ExpandCollapseState.Collapsed
+//            }
+//        )
+////        AlertDialog(
+////            onDismissRequest = { focussed = null },
+////            title = { Text(pub.data.type) },
+////            text = { Publication(pub) },
+////            buttons = {},
+////            properties = DialogProperties(usePlatformDefaultWidth = false)
+////        )
+//    }
+//}
+//
+//@OptIn(ExperimentalComposeUiApi::class)
+//@Composable
+//private fun FocussedPublications(
+//    publications: List<BillPublication>,
+//    focussed: BillPublication?,
+//    onClose: () -> Unit,
+//) {
+//    Dialog(
+//        onClose,
+//        properties = DialogProperties(usePlatformDefaultWidth = false)
+//    ) {
+//        if (focussed == null) {
+//            LazyColumn(
+//
+//            )
+//        }
+//        else {
+//
+//        }
+//    }
+//}
 
-    withNotNull(focussed) { pub ->
-        AlertDialog(
-            onDismissRequest = { focussed = null },
-            title = { Text(pub.data.type) },
-            text = { Publication(pub) },
-            buttons = {},
-            properties = DialogProperties(usePlatformDefaultWidth = false)
-        )
-    }
-}
 
 @Composable
 private fun Sponsors(
@@ -204,7 +272,6 @@ private fun Stages(
     stages: List<BillStage>,
     modifier: Modifier,
 ) {
-//    ComponentTitle(pluralResource(R.plurals.bill_stages, stages.size))
     val groupedStages by remember(stages) { mutableStateOf(buildStageGroups(stages)) }
 
     StickyHeaderRow(
@@ -224,7 +291,7 @@ private fun Stages(
                             .background(theme.onSurface.copy(alpha = .1F))
                             .padding(8.dp)
                     ) {
-                        Text(stage.description, style = typography.h5)
+                        Text(stage.description, style = typography.h6)
                         Text(stage.sittings.map(LocalDate::formatted).dotted(),
                             style = typography.caption)
                     }
@@ -255,46 +322,46 @@ private fun Stages(
     )
 }
 
-@Composable
-private fun Publication(publication: BillPublication) {
-    Column {
-        publication.links.forEach { link ->
-            PublicationLink(link)
-        }
-    }
-}
-
-@Composable
-private fun PublicationLink(link: BillPublicationLink) {
-    val onClick = openUrl(link.url)
-
-    val label = when (link.contentType) {
-        "application/pdf" -> "PDF"
-        else -> null
-    }
-
-    Column(
-        Modifier
-            .clickable(onClick = onClick)
-            .padding(themedPadding.VerticalListItem)
-    ) {
-        Text(link.title, style = typography.h5)
-
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            withNotNull(label) {
-                Tag(it, color = colors.error, contentColor = colors.onError)
-            }
-            Text(link.url)
-        }
-    }
-}
+//@Composable
+//private fun Publication(publication: BillPublication) {
+//    Column {
+//        publication.links.forEach { link ->
+//            PublicationLink(link)
+//        }
+//    }
+//}
+//
+//@Composable
+//private fun PublicationLink(link: BillPublicationLink) {
+//    val onClick = openUrl(link.url)
+//
+//    val label = when (link.contentType) {
+//        "application/pdf" -> "PDF"
+//        else -> null
+//    }
+//
+//    Column(
+//        Modifier
+//            .clickable(onClick = onClick)
+//            .padding(themedPadding.VerticalListItem)
+//    ) {
+//        Text(link.title, style = typography.h5)
+//
+//        Row(verticalAlignment = Alignment.CenterVertically) {
+//            withNotNull(label) {
+//                Tag(it, color = colors.error, contentColor = colors.onError)
+//            }
+//            Text(link.url)
+//        }
+//    }
+//}
 
 private fun buildStageGroups(stages: List<BillStage>): List<StageGroup> {
     val groups = mutableListOf<StageGroup>()
     var house: House? = null
     val currentGroup = mutableListOf<BillStage>()
 
-    stages.fastForEach { stage ->
+    stages.reversed().fastForEach { stage ->
         when {
             house == null -> {
                 house = stage.house
