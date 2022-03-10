@@ -8,7 +8,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme.colors
-import androidx.compose.material.MaterialTheme.shapes
 import androidx.compose.material.Surface
 import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
@@ -28,7 +27,7 @@ import org.beatonma.commons.compose.animation.withEasing
 import org.beatonma.commons.compose.components.ModalScrim
 import org.beatonma.commons.compose.modifiers.consumePointerInput
 import org.beatonma.commons.compose.padding.padding
-import org.beatonma.commons.compose.shape.withSquareBottom
+import org.beatonma.commons.compose.shape.BottomSheetShape
 import org.beatonma.commons.compose.systemui.navigationBarsPadding
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.core.extensions.reversed
@@ -182,7 +181,7 @@ private fun getSurfaceColor(progress: Float) =
 @Composable
 private fun getSurfaceShape(progress: Float): CornerBasedShape {
     val fabShape = CircleShape
-    val expandedShape = shapes.medium.withSquareBottom()
+    val expandedShape = BottomSheetShape
 
     val eased = progress.withEasing(LinearOutSlowInEasing)
 

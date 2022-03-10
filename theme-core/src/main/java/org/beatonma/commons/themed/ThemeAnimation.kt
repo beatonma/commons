@@ -43,6 +43,7 @@ interface ThemedAnimation {
     fun <T> fast(): FiniteAnimationSpec<T>
 
     fun <T> spring(): SpringSpec<T>
+    fun <T> stiffSpring(): SpringSpec<T> = spring()
     fun <T> tween(duration: Int): TweenSpec<T>
 
     fun <T> repeatable(

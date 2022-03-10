@@ -13,6 +13,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import org.beatonma.commons.compose.padding.padding
 import org.beatonma.commons.themed.Padding
 import org.beatonma.commons.themed.themedElevation
@@ -49,4 +50,12 @@ inline fun CardText(
     crossinline content: @Composable BoxScope.() -> Unit,
 ) {
     Box(modifier.padding(padding), content = content)
+}
+
+@Composable
+inline fun BottomCardText(
+    modifier: Modifier = Modifier,
+    crossinline content: @Composable BoxScope.() -> Unit,
+) {
+    CardText(modifier, themedPadding.Card.copy(bottom = 0.dp), content)
 }

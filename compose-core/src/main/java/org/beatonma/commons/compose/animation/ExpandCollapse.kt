@@ -1,5 +1,6 @@
 package org.beatonma.commons.compose.animation
 
+import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.runtime.Composable
@@ -35,21 +36,16 @@ fun Transition<ExpandCollapseState>.animateExpansion(): State<Float> =
     animateFloat(
         transitionSpec = { themedAnimation.spec() },
         label = "AnimatedExpandCollapse",
-    ) { state ->
-        when (state) {
-            ExpandCollapseState.Collapsed -> 0F
-            ExpandCollapseState.Expanded -> 1F
-        }
-    }
+    ) { state -> state.progress }
 
 
 @Composable
-fun ExpandCollapseState.animateExpansionAsState(): State<Float> =
+fun ExpandCollapseState.animateExpansionAsState(
+    animationSpec: FiniteAnimationSpec<Float> = themedAnimation.spec(),
+): State<Float> =
     themedAnimation.animateFloatAsState(
-        when (this) {
-            ExpandCollapseState.Collapsed -> 0F
-            ExpandCollapseState.Expanded -> 1F
-        }
+        progress,
+        animationSpec = animationSpec
     )
 
 
@@ -65,4 +61,10 @@ enum class ExpandCollapseState : TwoState<ExpandCollapseState> {
 
     val isCollapsed: Boolean get() = this == Collapsed
     val isExpanded: Boolean get() = this == Expanded
+
+    val progress: Float
+        get() = when (this) {
+            Collapsed -> 0f
+            Expanded -> 1f
+        }
 }

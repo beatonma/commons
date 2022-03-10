@@ -20,10 +20,11 @@ private const val DURATION_DEFAULT = 300
 internal object CommonsAnimation : ThemedAnimation {
     override val itemDelay: Long = 30L
 
-    override fun <T> spec(): FiniteAnimationSpec<T> = CommonsSpring()
+    override fun <T> spec(): FiniteAnimationSpec<T> = spring()
     override fun <T> fast(): FiniteAnimationSpec<T> = CommonsSpring(stiffness = 2500F)
 
     override fun <T> spring(): SpringSpec<T> = CommonsSpring()
+    override fun <T> stiffSpring(): SpringSpec<T> = CommonsSpring(stiffness = 100F)
     override fun <T> tween(duration: Int): TweenSpec<T> = CommonsTween(duration)
 
     override fun <T> repeatable(

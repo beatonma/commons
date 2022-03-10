@@ -11,6 +11,7 @@ dependencies {
         implementations(
             Dependencies.Kotlin.STDLIB,
             Dependencies.Jetpack.CORE_KTX,
+            Dependencies.Jetpack.ACTIVITY_COMPOSE,
             Dependencies.Accompanist.INSETS,
             project(Modules.Core),
             project(Modules.ThemeCore),
