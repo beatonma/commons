@@ -73,8 +73,9 @@ fun Modifier.statusBarsPadding(scale: Float = 1F) = composed {
  */
 fun Modifier.navigationBarsPadding(
     bottom: Boolean = true,
-    left: Boolean = true,
-    right: Boolean = true,
+    horizontal: Boolean = true,
+    left: Boolean = horizontal,
+    right: Boolean = horizontal,
     scale: Float = 1F,
 ) = composed {
     InsetsPaddingModifier(
@@ -85,39 +86,13 @@ fun Modifier.navigationBarsPadding(
     )
 }
 
-//fun Modifier.imePadding(scale: Float = 1F) = composed {
-//    InsetsPaddingModifier(
-//        insets = LocalWindowInsets.current.ime * scale,
-//        applyBottom = true,
-//    )
-//}
-
-///**
-// * Scaling is applied only to navigationBars padding.
-// */
-//fun Modifier.imeOrNavigationBarsPadding(
-//    bottom: Boolean = true,
-//    left: Boolean = true,
-//    right: Boolean = true,
-//    scale: Float = 1F,
-//) = composed {
-//    println("IME ${LocalWindowInsets.current.ime.toPaddingValues()}")
-//    val insets = LocalWindowInsets.current.ime
-//        .coerceAtLeast(LocalWindowInsets.current.navigationBars * scale)
-//
-//    InsetsPaddingModifier(
-//        insets,
-//        applyLeft = left,
-//        applyRight = right,
-//        applyBottom = bottom,
-//    )
-//}
 fun Modifier.imeOrNavigationBarsPadding(
     bottom: Boolean = true,
-    left: Boolean = true,
-    right: Boolean = true,
-    scale: Float = 1F
-) = navigationBarsPadding(bottom, left, right, scale)
+    horizontal: Boolean = true,
+    left: Boolean = horizontal,
+    right: Boolean = horizontal,
+    scale: Float = 1F,
+) = navigationBarsPadding(bottom, left = left, right = right, scale = scale)
     .imePadding()
 
 fun Insets.coerceAtLeast(
