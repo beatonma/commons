@@ -63,6 +63,18 @@ class Padding(
         bottom = bottom + other.bottom
     )
 
+    fun copy(
+        start: Dp? = null,
+        top: Dp? = null,
+        end: Dp? = null,
+        bottom: Dp? = null,
+    ): Padding = Padding(
+        start = start ?: this.start,
+        top = top ?: this.top,
+        end = end ?: this.end,
+        bottom = bottom ?: this.bottom,
+    )
+
     fun asPaddingValues() = PaddingValues(start, top, end, bottom)
 
     operator fun times(scale: Float) = Padding(
