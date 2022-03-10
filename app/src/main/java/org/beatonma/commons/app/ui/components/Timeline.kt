@@ -183,6 +183,8 @@ private fun TimelineLayout(
             }
         }
     ) { measurables, constraints ->
+        if (measurables.isEmpty()) return@Layout layout(0, 0) {}
+
         val placeables = measurables.map { it.measure(constraints) }
         val xPositions = groups.map { it.startDp.roundToPx() }
 
