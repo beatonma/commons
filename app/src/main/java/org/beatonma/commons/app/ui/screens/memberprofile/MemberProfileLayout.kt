@@ -473,13 +473,17 @@ private fun EmptyMessage(resource: Int) {
 
 @Composable
 private fun Links(modifier: Modifier = Modifier, content: LazyListScope.() -> Unit) {
-    LazyRow(
-        Modifier
-            .fillMaxWidth()
-            .padding(CommonsPadding.Links)
-            .then(modifier),
-        content = content
-    )
+    CompositionLocalProvider(
+        LocalContentColor provides colors.onSurface
+    ) {
+        LazyRow(
+            Modifier
+                .fillMaxWidth()
+                .padding(CommonsPadding.Links)
+                .then(modifier),
+            content = content
+        )
+    }
 }
 
 @Composable

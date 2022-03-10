@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -66,7 +67,7 @@ fun CollapsibleChip(
     @DrawableRes drawableId: Int,
     modifier: Modifier = Modifier,
     cancelIcon: ImageVector = UiIcon.Close,
-    tint: Color = colors.onSurface.copy(alpha = ContentAlpha.medium),
+    tint: Color = LocalContentColor.current.copy(alpha = ContentAlpha.medium),
     autoCollapse: Long = AutoCollapse.Default,
     confirmAction: () -> Unit,
 ) {
@@ -89,7 +90,7 @@ fun CollapsibleChip(
     icon: ImageVector,
     modifier: Modifier = Modifier,
     cancelIcon: ImageVector = UiIcon.Close,
-    tint: Color = colors.onSurface.copy(alpha = ContentAlpha.medium),
+    tint: Color = LocalContentColor.current.copy(alpha = ContentAlpha.medium),
     autoCollapse: Long = AutoCollapse.Default,
     confirmAction: () -> Unit,
 ) {
@@ -112,7 +113,7 @@ fun CollapsibleChip(
     icon: ImageVector,
     modifier: Modifier = Modifier,
     cancelIcon: ImageVector = UiIcon.Close,
-    tint: Color = colors.onSurface.copy(alpha = ContentAlpha.medium),
+    tint: Color = LocalContentColor.current.copy(alpha = ContentAlpha.medium),
     autoCollapse: Long = AutoCollapse.Default,
     confirmAction: () -> Unit,
 ) {

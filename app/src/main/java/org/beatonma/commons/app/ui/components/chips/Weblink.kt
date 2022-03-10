@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
@@ -109,16 +108,14 @@ private fun Weblink(
     modifier: Modifier = Modifier,
     autoCollapse: Long = 2500,
 ) {
-    val context = LocalContext.current
     CollapsibleChip(
         text = displayText,
         contentDescription = contentDescription,
         drawableId = drawableId,
         modifier = modifier,
-        autoCollapse = autoCollapse
-    ) {
-        context.openUrl(url)
-    }
+        autoCollapse = autoCollapse,
+        confirmAction = openUrl(url),
+    )
 }
 
 @Composable
@@ -130,16 +127,14 @@ private fun Weblink(
     modifier: Modifier = Modifier,
     autoCollapse: Long = 2500,
 ) {
-    val context = LocalContext.current
     CollapsibleChip(
         text = displayText,
         contentDescription = contentDescription,
         icon = icon,
         modifier = modifier,
-        autoCollapse = autoCollapse
-    ) {
-        context.openUrl(url)
-    }
+        autoCollapse = autoCollapse,
+        confirmAction = openUrl(url)
+    )
 }
 
 private fun getTwitterUsername(uri: Uri): String = "${uri.path ?: uri}".replace("/", "")

@@ -43,6 +43,12 @@ fun Context?.dial(phoneNumber: String) {
     ) ?: Log.d(autotag, "dial failed: Context is null!")
 }
 
+@Composable
+fun dial(phoneNumber: String): () -> Unit {
+    val context = LocalContext.current
+    return { context.dial(phoneNumber) }
+}
+
 fun Context?.sendMail(emailAddress: String) {
     this?.tryStartActivity(
         Intent(Intent.ACTION_SENDTO).apply {
@@ -52,10 +58,16 @@ fun Context?.sendMail(emailAddress: String) {
     ) ?: Log.d(autotag, "sendMail failed: Context is null")
 }
 
+@Composable
+fun sendMail(emailAddress: String): () -> Unit {
+    val context = LocalContext.current
+    return { context.sendMail(emailAddress) }
+}
+
 
 fun Context.tryStartActivity(
     intent: Intent,
-    otherwise: (() -> Unit)? = { println("Failed to resolve activity for intent $intent") }
+    otherwise: (() -> Unit)? = { println("Failed to resolve activity for intent $intent") },
 ) {
     try {
         toast(intent.dataString ?: "NO DATA", Toast.LENGTH_SHORT)
