@@ -17,10 +17,10 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.R
-import org.beatonma.commons.app.ui.components.image.AppIcon
 import org.beatonma.commons.app.util.openUrl
 import org.beatonma.commons.compose.components.CollapsibleChip
 import org.beatonma.commons.data.core.room.entities.member.WebAddress
+import org.beatonma.commons.theme.AppIcon
 
 private const val WIKIPEDIA_PATH_DESCRIPTION = "wikipedia_path"
 

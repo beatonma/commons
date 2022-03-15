@@ -9,7 +9,11 @@ plugins {
 dependencies {
     main {
         implementations(
+            Dependencies.Jetpack.Compose.MATERIAL_ICONS_CORE,
+            Dependencies.Jetpack.Compose.MATERIAL_ICONS_EXTENDED,
+            project(Modules.ComposeCore),
             project(Modules.ThemeCore),
+            project(Modules.Core),
         )
     }
 }

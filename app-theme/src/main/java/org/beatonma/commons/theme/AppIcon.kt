@@ -1,4 +1,4 @@
-package org.beatonma.commons.app.ui.components.image
+package org.beatonma.commons.theme
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
@@ -23,7 +23,11 @@ import androidx.compose.material.icons.filled.ThumbDown
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.filled.Undo
 import androidx.compose.material.icons.filled.Whatshot
+import androidx.compose.ui.graphics.vector.ImageVector
 import org.beatonma.commons.compose.UiIcon
+import org.beatonma.commons.core.DivisionVoteType
+import org.beatonma.commons.core.LordsVoteType
+import org.beatonma.commons.core.VoteType
 
 object AppIcon {
     // Generic UI
@@ -56,3 +60,23 @@ object AppIcon {
     val VoteAye get() = Icons.Default.AddCircle
     val VoteNo get() = Icons.Default.RemoveCircle
 }
+
+
+val DivisionVoteType.icon: ImageVector
+    get() = when (this) {
+        is LordsVoteType -> icon
+        is VoteType -> icon
+    }
+
+val LordsVoteType.icon
+    get() = when (this) {
+        LordsVoteType.content -> AppIcon.VoteAye
+        LordsVoteType.not_content -> AppIcon.VoteNo
+    }
+
+val VoteType.icon
+    get() = when (this) {
+        VoteType.AyeVote -> AppIcon.VoteAye
+        VoteType.NoVote -> AppIcon.VoteNo
+        else -> AppIcon.CloseCircle
+    }

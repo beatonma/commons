@@ -48,7 +48,6 @@ import org.beatonma.commons.R
 import org.beatonma.commons.app.data.resolution.PartyResolution
 import org.beatonma.commons.app.ui.colors.PartyColors
 import org.beatonma.commons.app.ui.components.Date
-import org.beatonma.commons.app.ui.components.image.AppIcon
 import org.beatonma.commons.app.ui.components.party.LocalPartyTheme
 import org.beatonma.commons.app.ui.components.party.PartyBackground
 import org.beatonma.commons.app.ui.components.party.PartyWithTheme
@@ -77,6 +76,7 @@ import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyEle
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 import org.beatonma.commons.data.core.room.entities.member.Party
 import org.beatonma.commons.repo.result.IoLoading
+import org.beatonma.commons.theme.AppIcon
 import org.beatonma.commons.theme.CommonsPadding
 import org.beatonma.commons.theme.CommonsSize
 import org.beatonma.commons.theme.componentTitle

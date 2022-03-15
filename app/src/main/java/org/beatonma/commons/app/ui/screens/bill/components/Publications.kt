@@ -25,7 +25,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.R
-import org.beatonma.commons.app.ui.components.image.AppIcon
 import org.beatonma.commons.app.util.openUrl
 import org.beatonma.commons.compose.animation.ExpandCollapseState
 import org.beatonma.commons.compose.animation.rememberExpandCollapseState
@@ -43,6 +42,7 @@ import org.beatonma.commons.compose.util.pluralResource
 import org.beatonma.commons.core.extensions.withNotNull
 import org.beatonma.commons.data.core.room.entities.bill.BillPublication
 import org.beatonma.commons.data.core.room.entities.bill.BillPublicationLink
+import org.beatonma.commons.theme.AppIcon
 import org.beatonma.commons.theme.formatting.formatted
 import org.beatonma.commons.themed.themedPadding
 import org.beatonma.commons.themed.titleMedium

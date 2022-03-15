@@ -18,8 +18,8 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import org.beatonma.commons.app.ui.accessibility.ContentDescription
-import org.beatonma.commons.app.ui.components.image.AppIcon
 import org.beatonma.commons.compose.util.rememberBoolean
+import org.beatonma.commons.theme.AppIcon
 import org.beatonma.commons.themed.themedAnimation
 
 internal const val LoadingTestTag = "loading_icon"

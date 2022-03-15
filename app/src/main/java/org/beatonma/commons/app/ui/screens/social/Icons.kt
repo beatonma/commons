@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.accessibility.contentDescription
-import org.beatonma.commons.app.ui.components.image.AppIcon
 import org.beatonma.commons.compose.animation.lerpBetween
 import org.beatonma.commons.compose.modifiers.onlyWhen
 import org.beatonma.commons.compose.modifiers.withNotNull
@@ -35,6 +34,7 @@ import org.beatonma.commons.core.extensions.lerpBetween
 import org.beatonma.commons.core.extensions.triangle
 import org.beatonma.commons.snommoc.models.social.SocialContent
 import org.beatonma.commons.snommoc.models.social.SocialVoteType
+import org.beatonma.commons.theme.AppIcon
 import org.beatonma.commons.themed.Padding
 import org.beatonma.commons.themed.themedAnimation
 import org.beatonma.commons.themed.themedPadding

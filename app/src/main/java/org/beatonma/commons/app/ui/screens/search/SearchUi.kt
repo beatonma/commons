@@ -43,7 +43,6 @@ import androidx.compose.ui.zIndex
 import com.google.accompanist.insets.ProvideWindowInsets
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.components.Todo
-import org.beatonma.commons.app.ui.components.image.AppIcon
 import org.beatonma.commons.app.ui.components.party.PartyDot
 import org.beatonma.commons.compose.Layer
 import org.beatonma.commons.compose.TestTag
@@ -66,6 +65,7 @@ import org.beatonma.commons.preview.InAppPreview
 import org.beatonma.commons.sampledata.SampleSearchResults
 import org.beatonma.commons.snommoc.models.search.MemberSearchResult
 import org.beatonma.commons.snommoc.models.search.SearchResult
+import org.beatonma.commons.theme.AppIcon
 import org.beatonma.commons.theme.CommonsElevation
 import org.beatonma.commons.theme.CommonsPadding
 import org.beatonma.commons.theme.onSearchBar

@@ -41,7 +41,6 @@ import org.beatonma.commons.app.ui.components.LoadingIcon
 import org.beatonma.commons.app.ui.components.chips.EmailLink
 import org.beatonma.commons.app.ui.components.chips.PhoneLink
 import org.beatonma.commons.app.ui.components.chips.Weblink
-import org.beatonma.commons.app.ui.components.image.AppIcon
 import org.beatonma.commons.app.ui.components.image.Avatar
 import org.beatonma.commons.app.ui.components.party.LocalPartyTheme
 import org.beatonma.commons.app.ui.components.party.PartyBackground
@@ -80,6 +79,7 @@ import org.beatonma.commons.data.core.room.entities.member.Party
 import org.beatonma.commons.data.core.room.entities.member.PhysicalAddress
 import org.beatonma.commons.data.core.room.entities.member.WebAddress
 import org.beatonma.commons.repo.result.IoLoading
+import org.beatonma.commons.theme.AppIcon
 import org.beatonma.commons.theme.CommonsPadding
 import org.beatonma.commons.theme.formatting.dateRange
 import org.beatonma.commons.themed.themedElevation

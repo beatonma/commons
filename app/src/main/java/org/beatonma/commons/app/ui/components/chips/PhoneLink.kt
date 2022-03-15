@@ -5,10 +5,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import org.beatonma.commons.R
-import org.beatonma.commons.app.ui.components.image.AppIcon
 import org.beatonma.commons.app.util.dial
 import org.beatonma.commons.compose.animation.AutoCollapse
 import org.beatonma.commons.compose.components.CollapsibleChip
+import org.beatonma.commons.theme.AppIcon
 
 @Composable
 fun PhoneLink(

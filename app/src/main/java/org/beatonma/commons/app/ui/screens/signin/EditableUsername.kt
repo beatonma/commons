@@ -38,7 +38,6 @@ import kotlinx.coroutines.withContext
 import org.beatonma.commons.BuildConfig
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.components.LoadingIcon
-import org.beatonma.commons.app.ui.components.image.AppIcon
 import org.beatonma.commons.app.ui.components.image.ClickableIcon
 import org.beatonma.commons.app.ui.screens.social.Username
 import org.beatonma.commons.compose.animation.AnimatedVisibility
@@ -56,6 +55,7 @@ import org.beatonma.commons.compose.util.testTag
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.preview.InAppPreview
 import org.beatonma.commons.sampledata.SampleUserToken
+import org.beatonma.commons.theme.AppIcon
 import org.beatonma.commons.theme.CommonsPadding
 import org.beatonma.commons.themed.themedAnimation
 
