@@ -68,13 +68,13 @@ val DivisionVoteType.icon: ImageVector
         is VoteType -> icon
     }
 
-val LordsVoteType.icon
+val LordsVoteType.icon: ImageVector
     get() = when (this) {
         LordsVoteType.content -> AppIcon.VoteAye
         LordsVoteType.not_content -> AppIcon.VoteNo
     }
 
-val VoteType.icon
+val VoteType.icon: ImageVector
     get() = when (this) {
         VoteType.AyeVote -> AppIcon.VoteAye
         VoteType.NoVote -> AppIcon.VoteNo
