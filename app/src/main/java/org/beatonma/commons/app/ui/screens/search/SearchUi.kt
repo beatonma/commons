@@ -58,6 +58,7 @@ import org.beatonma.commons.compose.padding.padding
 import org.beatonma.commons.compose.systemui.statusBarsPadding
 import org.beatonma.commons.compose.util.RequestFocusWhen
 import org.beatonma.commons.compose.util.rememberListOf
+import org.beatonma.commons.compose.util.rememberText
 import org.beatonma.commons.core.extensions.lerpBetween
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.core.extensions.reversed
@@ -203,9 +204,15 @@ private fun SearchField(
     modifier: Modifier = Modifier,
     onSubmit: (String) -> Unit = LocalSearchActions.current.onSubmit,
 ) {
+    var query by rememberText()
+
     org.beatonma.commons.compose.components.text.SearchField(
+        query,
+        {
+            query = it
+            onSubmit(it)
+        },
         hint = hint,
-        onQueryChange = onSubmit,
         modifier = modifier
             .focusRequester(focusRequester)
             .testTag(SearchTestTag.Field),

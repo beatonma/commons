@@ -117,16 +117,16 @@ class SearchFieldTest: ComposeTest() {
         queryText: MutableState<String> = rememberText(),
         submittedText: MutableState<String> = rememberText(),
     ) {
-        val query = rememberText()
+//        val query by rememberText()
 
         TestLayout {
             SearchField(
-                hintText,
-                Modifier.testTag(tag),
-                query = query,
+                query = queryText.value,
                 onQueryChange = { q ->
                     queryText.value = q
                 },
+                hint = hintText,
+                modifier = Modifier.testTag(tag),
                 onSubmit = { _, q ->
                     submittedText.value = q
                 }

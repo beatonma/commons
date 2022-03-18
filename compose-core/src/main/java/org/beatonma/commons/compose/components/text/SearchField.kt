@@ -1,6 +1,5 @@
 package org.beatonma.commons.compose.components.text
 
-import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.expandIn
@@ -16,7 +15,6 @@ import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldColors
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -27,52 +25,13 @@ import androidx.compose.ui.text.input.VisualTransformation
 import org.beatonma.commons.compose.R
 import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.compose.UiIcon
-import org.beatonma.commons.compose.util.rememberText
 
 @Composable
 fun SearchField(
-    @StringRes hint: Int,
-    modifier: Modifier = Modifier,
-    query: MutableState<String> = rememberText(),
-    onQueryChange: (String) -> Unit = {},
-    onSubmit: (ImeAction, String) -> Unit = { _, _ -> },
-    enabled: Boolean = true,
-    label: @Composable (() -> Unit)? = null,
-    leadingIcon: @Composable (() -> Unit)? = null,
-    maxLines: Int = 1,
-    singleLine: Boolean = true,
-    isError: Boolean = false,
-    visualTransformation: VisualTransformation = VisualTransformation.None,
-    colors: TextFieldColors = TextFieldDefaults.textFieldColors(),
-    textStyle: TextStyle = LocalTextStyle.current,
-) {
-    SearchFieldLayout(
-        hint = stringResource(hint),
-        modifier = modifier,
-        query = query.value,
-        onQueryChange = { queryText ->
-            query.value = queryText
-            onQueryChange(queryText)
-        },
-        onSubmit = onSubmit,
-        textStyle = textStyle,
-        maxLines = maxLines,
-        isError = isError,
-        singleLine = singleLine,
-        enabled = enabled,
-        label = label,
-        leadingIcon = leadingIcon,
-        visualTransformation = visualTransformation,
-        colors = colors,
-    )
-}
-
-@Composable
-fun SearchField(
+    query: String,
+    onQueryChange: (String) -> Unit,
     hint: String,
     modifier: Modifier = Modifier,
-    query: MutableState<String> = rememberText(),
-    onQueryChange: (String) -> Unit = {},
     onSubmit: (ImeAction, String) -> Unit = { _, _ -> },
     enabled: Boolean = true,
     label: @Composable (() -> Unit)? = null,
@@ -87,9 +46,8 @@ fun SearchField(
     SearchFieldLayout(
         hint = hint,
         modifier = modifier,
-        query = query.value,
+        query = query,
         onQueryChange = { queryText ->
-            query.value = queryText
             onQueryChange(queryText)
         },
         onSubmit = onSubmit,
