@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "7bc97e16d1eac618ad572c530c2fc623",
+    "identityHash": "fd53c9b3d91f5b5140b825a700b110d8",
     "entities": [
       {
         "tableName": "member_profiles",
@@ -901,7 +901,7 @@
       },
       {
         "tableName": "zeitgeist_members",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`zeitgeist_member_id` INTEGER NOT NULL, `zeitgeist_member_reason` TEXT, `zeitgeist_member_priority` INTEGER NOT NULL, PRIMARY KEY(`zeitgeist_member_id`), FOREIGN KEY(`zeitgeist_member_id`) REFERENCES `member_profiles`(`member_id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`zeitgeist_member_id` INTEGER NOT NULL, `zeitgeist_member_reason` TEXT NOT NULL, `zeitgeist_member_priority` INTEGER NOT NULL, `zeitgeist_member_name` TEXT NOT NULL, `zeitgeist_member_portrait_url` TEXT, `zeitgeist_member_party_id` INTEGER NOT NULL, `zeitgeist_member_constituency_id` INTEGER, `zeitgeist_member_current_post` TEXT, PRIMARY KEY(`zeitgeist_member_id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -913,13 +913,43 @@
             "fieldPath": "reason",
             "columnName": "zeitgeist_member_reason",
             "affinity": "TEXT",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "priority",
             "columnName": "zeitgeist_member_priority",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "zeitgeist_member_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "portraitUrl",
+            "columnName": "zeitgeist_member_portrait_url",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "partyId",
+            "columnName": "zeitgeist_member_party_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "constituencyId",
+            "columnName": "zeitgeist_member_constituency_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "currentPost",
+            "columnName": "zeitgeist_member_current_post",
+            "affinity": "TEXT",
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -929,19 +959,7 @@
           "autoGenerate": false
         },
         "indices": [],
-        "foreignKeys": [
-          {
-            "table": "member_profiles",
-            "onDelete": "CASCADE",
-            "onUpdate": "CASCADE",
-            "columns": [
-              "zeitgeist_member_id"
-            ],
-            "referencedColumns": [
-              "member_id"
-            ]
-          }
-        ]
+        "foreignKeys": []
       },
       {
         "tableName": "bills",
@@ -1273,7 +1291,7 @@
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`billtype_id` INTEGER NOT NULL, `billtype_name` TEXT NOT NULL, `billtype_description` TEXT NOT NULL, `billtype_category` TEXT NOT NULL, PRIMARY KEY(`billtype_id`))",
         "fields": [
           {
-            "fieldPath": "parliamentdotuk",
+            "fieldPath": "id",
             "columnName": "billtype_id",
             "affinity": "INTEGER",
             "notNull": true
@@ -1334,7 +1352,7 @@
       },
       {
         "tableName": "zeitgeist_bills",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`zeitgeist_bill_id` INTEGER NOT NULL, `zeitgeist_bill_reason` TEXT, `zeitgeist_bill_priority` INTEGER NOT NULL, `zeitgeist_bill_title` TEXT NOT NULL, `zeitgeist_bill_lastupdate` TEXT NOT NULL, PRIMARY KEY(`zeitgeist_bill_id`), FOREIGN KEY(`zeitgeist_bill_id`) REFERENCES `bills`(`billdata_id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`zeitgeist_bill_id` INTEGER NOT NULL, `zeitgeist_bill_reason` TEXT NOT NULL, `zeitgeist_bill_priority` INTEGER NOT NULL, `zeitgeist_bill_title` TEXT NOT NULL, `zeitgeist_bill_lastupdate` TEXT NOT NULL, PRIMARY KEY(`zeitgeist_bill_id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -1346,7 +1364,7 @@
             "fieldPath": "reason",
             "columnName": "zeitgeist_bill_reason",
             "affinity": "TEXT",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "priority",
@@ -1374,19 +1392,7 @@
           "autoGenerate": false
         },
         "indices": [],
-        "foreignKeys": [
-          {
-            "table": "bills",
-            "onDelete": "CASCADE",
-            "onUpdate": "CASCADE",
-            "columns": [
-              "zeitgeist_bill_id"
-            ],
-            "referencedColumns": [
-              "billdata_id"
-            ]
-          }
-        ]
+        "foreignKeys": []
       },
       {
         "tableName": "constituencies",
@@ -1715,8 +1721,8 @@
         "foreignKeys": []
       },
       {
-        "tableName": "divisions",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`division_id` INTEGER NOT NULL, `title` TEXT NOT NULL, `description` TEXT, `date` INTEGER NOT NULL, `house` TEXT NOT NULL, `passed` INTEGER NOT NULL, `ayes` INTEGER NOT NULL, `noes` INTEGER NOT NULL, `abstentions` INTEGER, `did_not_vote` INTEGER, `non_eligible` INTEGER, `suspended_or_expelled` INTEGER, `errors` INTEGER, `deferred_vote` INTEGER NOT NULL, `whipped_vote` INTEGER, PRIMARY KEY(`division_id`))",
+        "tableName": "commons_divisions",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`division_id` INTEGER NOT NULL, `title` TEXT NOT NULL, `date` INTEGER NOT NULL, `house` TEXT NOT NULL, `passed` INTEGER NOT NULL, `ayes` INTEGER NOT NULL, `noes` INTEGER NOT NULL, `abstentions` INTEGER NOT NULL, `did_not_vote` INTEGER NOT NULL, `non_eligible` INTEGER NOT NULL, `suspended_or_expelled` INTEGER NOT NULL, `errors` INTEGER NOT NULL, `deferred_vote` INTEGER NOT NULL, PRIMARY KEY(`division_id`))",
         "fields": [
           {
             "fieldPath": "parliamentdotuk",
@@ -1729,12 +1735,6 @@
             "columnName": "title",
             "affinity": "TEXT",
             "notNull": true
-          },
-          {
-            "fieldPath": "description",
-            "columnName": "description",
-            "affinity": "TEXT",
-            "notNull": false
           },
           {
             "fieldPath": "date",
@@ -1770,43 +1770,37 @@
             "fieldPath": "abstentions",
             "columnName": "abstentions",
             "affinity": "INTEGER",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "didNotVote",
             "columnName": "did_not_vote",
             "affinity": "INTEGER",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "nonEligible",
             "columnName": "non_eligible",
             "affinity": "INTEGER",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "suspendedOrExpelled",
             "columnName": "suspended_or_expelled",
             "affinity": "INTEGER",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "errors",
             "columnName": "errors",
             "affinity": "INTEGER",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "deferredVote",
             "columnName": "deferred_vote",
             "affinity": "INTEGER",
             "notNull": true
-          },
-          {
-            "fieldPath": "whippedVote",
-            "columnName": "whipped_vote",
-            "affinity": "INTEGER",
-            "notNull": false
           }
         ],
         "primaryKey": {
@@ -1819,8 +1813,151 @@
         "foreignKeys": []
       },
       {
+        "tableName": "lords_divisions",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`ldivision_id` INTEGER NOT NULL, `ldivision_title` TEXT NOT NULL, `ldivision_date` INTEGER NOT NULL, `ldivision_description` TEXT NOT NULL, `ldivision_house` TEXT NOT NULL, `ldivision_sponsor_id` INTEGER, `ldivision_passed` INTEGER NOT NULL, `ldivision_whipped_vote` INTEGER NOT NULL, `ldivision_ayes` INTEGER NOT NULL, `ldivision_noes` INTEGER NOT NULL, PRIMARY KEY(`ldivision_id`), FOREIGN KEY(`ldivision_sponsor_id`) REFERENCES `member_profiles`(`member_id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "parliamentdotuk",
+            "columnName": "ldivision_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "ldivision_title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "ldivision_date",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "ldivision_description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "house",
+            "columnName": "ldivision_house",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sponsorId",
+            "columnName": "ldivision_sponsor_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "passed",
+            "columnName": "ldivision_passed",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "whippedVote",
+            "columnName": "ldivision_whipped_vote",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ayes",
+            "columnName": "ldivision_ayes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "noes",
+            "columnName": "ldivision_noes",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "ldivision_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "member_profiles",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "ldivision_sponsor_id"
+            ],
+            "referencedColumns": [
+              "member_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "lords_division_votes",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`ldivision_vote_division_id` INTEGER NOT NULL, `ldivision_vote_member_id` INTEGER NOT NULL, `ldivision_vote_member_name` TEXT NOT NULL, `ldivision_vote_party_id` INTEGER NOT NULL, `ldivision_vote_type` TEXT NOT NULL, PRIMARY KEY(`ldivision_vote_division_id`, `ldivision_vote_member_id`), FOREIGN KEY(`ldivision_vote_division_id`) REFERENCES `lords_divisions`(`ldivision_id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "divisionId",
+            "columnName": "ldivision_vote_division_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "memberId",
+            "columnName": "ldivision_vote_member_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "memberName",
+            "columnName": "ldivision_vote_member_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "partyId",
+            "columnName": "ldivision_vote_party_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "vote",
+            "columnName": "ldivision_vote_type",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "ldivision_vote_division_id",
+            "ldivision_vote_member_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "lords_divisions",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "ldivision_vote_division_id"
+            ],
+            "referencedColumns": [
+              "ldivision_id"
+            ]
+          }
+        ]
+      },
+      {
         "tableName": "zeitgeist_divisions",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`zeitgeist_division_id` INTEGER NOT NULL, `zeitgeist_division_reason` TEXT, `zeitgeist_division_priority` INTEGER NOT NULL, PRIMARY KEY(`zeitgeist_division_id`), FOREIGN KEY(`zeitgeist_division_id`) REFERENCES `divisions`(`division_id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`zeitgeist_division_id` INTEGER NOT NULL, `zeitgeist_division_reason` TEXT NOT NULL, `zeitgeist_division_priority` INTEGER NOT NULL, `zeitgeist_division_title` TEXT NOT NULL, `zeitgeist_division_date` INTEGER NOT NULL, `zeitgeist_division_passed` INTEGER NOT NULL, `zeitgeist_division_house` TEXT NOT NULL, PRIMARY KEY(`zeitgeist_division_id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -1832,12 +1969,36 @@
             "fieldPath": "reason",
             "columnName": "zeitgeist_division_reason",
             "affinity": "TEXT",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "priority",
             "columnName": "zeitgeist_division_priority",
             "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "zeitgeist_division_title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "zeitgeist_division_date",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "passed",
+            "columnName": "zeitgeist_division_passed",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "house",
+            "columnName": "zeitgeist_division_house",
+            "affinity": "TEXT",
             "notNull": true
           }
         ],
@@ -1848,23 +2009,11 @@
           "autoGenerate": false
         },
         "indices": [],
-        "foreignKeys": [
-          {
-            "table": "divisions",
-            "onDelete": "CASCADE",
-            "onUpdate": "CASCADE",
-            "columns": [
-              "zeitgeist_division_id"
-            ],
-            "referencedColumns": [
-              "division_id"
-            ]
-          }
-        ]
+        "foreignKeys": []
       },
       {
         "tableName": "division_votes",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`dvote_division_id` INTEGER NOT NULL, `dvote_member_id` INTEGER NOT NULL, `member_name` TEXT NOT NULL, `vote` TEXT NOT NULL, `party_id` INTEGER, PRIMARY KEY(`dvote_division_id`, `dvote_member_id`), FOREIGN KEY(`dvote_division_id`) REFERENCES `divisions`(`division_id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`dvote_division_id` INTEGER NOT NULL, `dvote_member_id` INTEGER NOT NULL, `dvote_member_name` TEXT NOT NULL, `dvote_vote` TEXT NOT NULL, `dvote_party_id` INTEGER NOT NULL, PRIMARY KEY(`dvote_division_id`, `dvote_member_id`), FOREIGN KEY(`dvote_division_id`) REFERENCES `commons_divisions`(`division_id`) ON UPDATE CASCADE ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "divisionId",
@@ -1880,21 +2029,21 @@
           },
           {
             "fieldPath": "memberName",
-            "columnName": "member_name",
+            "columnName": "dvote_member_name",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "voteType",
-            "columnName": "vote",
+            "fieldPath": "vote",
+            "columnName": "dvote_vote",
             "affinity": "TEXT",
             "notNull": true
           },
           {
             "fieldPath": "partyId",
-            "columnName": "party_id",
+            "columnName": "dvote_party_id",
             "affinity": "INTEGER",
-            "notNull": false
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -1907,7 +2056,7 @@
         "indices": [],
         "foreignKeys": [
           {
-            "table": "divisions",
+            "table": "commons_divisions",
             "onDelete": "CASCADE",
             "onUpdate": "CASCADE",
             "columns": [
@@ -1974,7 +2123,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7bc97e16d1eac618ad572c530c2fc623')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fd53c9b3d91f5b5140b825a700b110d8')"
     ]
   }
 }
