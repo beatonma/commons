@@ -9,13 +9,11 @@ import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.Surface
-import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.testTag
@@ -51,6 +49,7 @@ fun FabBottomSheet(
     bottomSheetContent: @Composable (progress: Float) -> Unit,
 ) {
     val progress by state.value.animateExpansionAsState()
+    val resolvedContentColor = contentColor ?: getContentColor(progress)
     val resolvedSurfaceColor = surfaceColor ?: getSurfaceColor(progress)
 
     FabBottomSheetLayout(
@@ -62,7 +61,7 @@ fun FabBottomSheet(
         bottomSheetContent = bottomSheetContent,
         modifier = modifier,
         surfaceColor = resolvedSurfaceColor,
-        contentColor = contentColor ?: contentColorFor(resolvedSurfaceColor),
+        contentColor = resolvedContentColor,
         onDismiss = onDismiss,
     )
 }
@@ -125,12 +124,10 @@ private fun Fab(
     modifier: Modifier,
     content: @Composable BoxScope.() -> Unit,
 ) {
-
     Surface(
         modifier
             .padding(themedPadding.Fab)
             .navigationBarsPadding() // The bottom sheet should extend behind navigation bar as it expands.
-            .shadow(themedElevation.ModalSurface, surfaceShape)
             .testTag(TestTag.Fab)
             .clickable(
                 onClickLabel = onClickLabel,
@@ -139,6 +136,7 @@ private fun Fab(
         shape = surfaceShape,
         color = surfaceColor,
         contentColor = contentColor,
+        elevation = themedElevation.ModalSurface,
     ) {
         Box(content = content)
     }
@@ -158,12 +156,12 @@ private fun BottomSheet(
         modifier
             .padding(progress.lerpBetween(themedPadding.Fab, themedPadding.Zero))
             .navigationBarsPadding(scale = progress.reversed()) // The bottom sheet should extend behind navigation bar as it expands.
-            .shadow(themedElevation.ModalSurface, surfaceShape)
             .consumePointerInput()
             .testTag(TestTag.FabBottomSheet),
         shape = surfaceShape,
         color = surfaceColor,
         contentColor = contentColor,
+        elevation = themedElevation.ModalSurface,
     ) {
         Box {
             if (progress != 1F) {
@@ -175,8 +173,16 @@ private fun BottomSheet(
 }
 
 @Composable
-private fun getSurfaceColor(progress: Float) =
-    progress.progressIn(0F, 0.4F).lerpBetween(colors.primary, colors.surface)
+private fun getSurfaceColor(progress: Float): Color =
+    progress
+        .progressIn(0F, 0.4F)
+        .lerpBetween(colors.primary, colors.surface)
+
+@Composable
+private fun getContentColor(progress: Float): Color =
+    progress
+        .progressIn(0F, 0.4F)
+        .lerpBetween(colors.onPrimary, colors.onSurface)
 
 @Composable
 private fun getSurfaceShape(progress: Float): CornerBasedShape {
