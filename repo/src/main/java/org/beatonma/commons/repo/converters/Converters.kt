@@ -1,6 +1,7 @@
 package org.beatonma.commons.repo.converters
 
 import org.beatonma.commons.core.ParliamentID
+import org.beatonma.commons.core.ZeitgeistReason
 import org.beatonma.commons.data.core.room.entities.bill.BillData
 import org.beatonma.commons.data.core.room.entities.bill.BillPublicationData
 import org.beatonma.commons.data.core.room.entities.bill.BillPublicationLink
@@ -35,7 +36,7 @@ import org.beatonma.commons.data.core.room.entities.member.Post
 import org.beatonma.commons.data.core.room.entities.member.TopicOfInterest
 import org.beatonma.commons.data.core.room.entities.member.Town
 import org.beatonma.commons.data.core.room.entities.member.WebAddress
-import org.beatonma.commons.data.core.room.entities.member.ZeitgeistMember
+import org.beatonma.commons.data.core.room.entities.member.ZeitgeistMemberData
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.repo.repository.GoogleAccount
 import org.beatonma.commons.snommoc.models.ApiBill
@@ -385,3 +386,45 @@ fun ApiMemberProfile.toMemberProfile(): MemberProfile = MemberProfile(
     portraitUrl = portraitUrl,
     currentPost = currentPost
 )
+
+
+fun ApiZeitgeist.getZeitgeistBills(): List<ZeitgeistBill> =
+    bills.map { item ->
+        val bill = item.target
+        ZeitgeistBill(
+            id = bill.parliamentdotuk,
+            reason = item.reason ?: ZeitgeistReason.unspecified,
+            priority = item.priority,
+            title = bill.title,
+            lastUpdate = bill.lastUpdate,
+        )
+    }
+
+fun ApiZeitgeist.getZeitgeistDivisions(): List<ZeitgeistDivision> =
+    divisions.map { item ->
+        val division = item.target
+        ZeitgeistDivision(
+            id = division.parliamentdotuk,
+            reason = item.reason ?: ZeitgeistReason.unspecified,
+            priority = item.priority,
+            title = division.title,
+            date = division.date,
+            passed = division.passed,
+            house = division.house,
+        )
+    }
+
+fun ApiZeitgeist.getZeitgeistMembers(): List<ZeitgeistMemberData> =
+    people.map { item ->
+        val member = item.target
+        ZeitgeistMemberData(
+            id = member.parliamentdotuk,
+            reason = item.reason ?: ZeitgeistReason.unspecified,
+            priority = item.priority,
+            name = member.name,
+            partyId = member.party.parliamentdotuk,
+            constituencyId = member.constituency?.parliamentdotuk,
+            currentPost = member.currentPost,
+            portraitUrl = member.portraitUrl,
+        )
+    }

@@ -8,11 +8,10 @@ import kotlinx.coroutines.launch
 import org.beatonma.commons.data.core.room.dao.BillDao
 import org.beatonma.commons.data.core.room.dao.DivisionDao
 import org.beatonma.commons.data.core.room.dao.MemberDao
-import org.beatonma.commons.data.core.room.entities.bill.ZeitgeistBill
-import org.beatonma.commons.data.core.room.entities.division.ZeitgeistDivision
-import org.beatonma.commons.data.core.room.entities.member.ZeitgeistMember
 import org.beatonma.commons.repo.ResultFlow
-import org.beatonma.commons.repo.converters.toDivision
+import org.beatonma.commons.repo.converters.getZeitgeistBills
+import org.beatonma.commons.repo.converters.getZeitgeistDivisions
+import org.beatonma.commons.repo.converters.getZeitgeistMembers
 import org.beatonma.commons.repo.converters.toMemberProfile
 import org.beatonma.commons.repo.models.Zeitgeist
 import org.beatonma.commons.repo.remotesource.api.CommonsApi
@@ -22,7 +21,6 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-@Suppress("unused")
 class ZeitgeistRepository @Inject constructor(
     private val remoteSource: CommonsApi,
     private val memberDao: MemberDao,
@@ -36,35 +34,19 @@ class ZeitgeistRepository @Inject constructor(
         saveCallResult = ::saveZeitgeist
     )
 
-    suspend fun saveZeitgeist(zeitgeist: ApiZeitgeist) {
+    private suspend fun saveZeitgeist(zeitgeist: ApiZeitgeist) {
         with(billDao) {
-            val bills = zeitgeist.bills
-            insertZeitgeistBills(bills.map { bill ->
-                val target = bill.target
-                ZeitgeistBill(
-                    id = target.parliamentdotuk,
-                    reason = bill.reason?.name,
-                    priority = bill.priority,
-                    title = target.title,
-                    lastUpdate = target.lastUpdate
-                )
-            })
+            insertZeitgeistBills(zeitgeist.getZeitgeistBills())
         }
 
         with(divisionDao) {
-            val divisions = zeitgeist.divisions
-            insertDivisions(divisions.map { it.target.toDivision() })
-            insertZeitgeistDivisions(divisions.map {
-                ZeitgeistDivision(it.target.parliamentdotuk, it.reason?.name, it.priority)
-            })
+            insertZeitgeistDivisions(zeitgeist.getZeitgeistDivisions())
         }
 
         with(memberDao) {
-            val members = zeitgeist.people
-            safeInsertProfiles(members.map { it.target.toMemberProfile() }, ifNotExists = true)
-            insertZeitgeistMembers(members.map {
-                ZeitgeistMember(it.target.parliamentdotuk, it.reason?.name, it.priority)
-            })
+            safeInsertProfiles(zeitgeist.people.map { it.target.toMemberProfile() },
+                ifNotExists = true)
+            insertZeitgeistMembers(zeitgeist.getZeitgeistMembers())
         }
     }
 

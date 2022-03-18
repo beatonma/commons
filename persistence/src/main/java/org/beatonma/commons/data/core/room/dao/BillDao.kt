@@ -116,6 +116,15 @@ interface BillDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertZeitgeistBills(zeitgeistBills: List<ZeitgeistBill>)
 
+    @Transaction
+    suspend fun safeInsertZeitgeistBills(
+        bills: List<BillData>,
+        zeitgeistBills: List<ZeitgeistBill>,
+    ) {
+        insertBillData(bills)
+        insertZeitgeistBills(zeitgeistBills)
+    }
+
 
     @Transaction
     fun insertBill(

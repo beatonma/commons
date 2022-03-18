@@ -29,10 +29,10 @@ import org.beatonma.commons.data.core.room.entities.member.PartyAssociation
 import org.beatonma.commons.data.core.room.entities.member.PartyAssociationWithParty
 import org.beatonma.commons.data.core.room.entities.member.PhysicalAddress
 import org.beatonma.commons.data.core.room.entities.member.Post
-import org.beatonma.commons.data.core.room.entities.member.ResolvedZeitgeistMember
 import org.beatonma.commons.data.core.room.entities.member.TopicOfInterest
 import org.beatonma.commons.data.core.room.entities.member.WebAddress
 import org.beatonma.commons.data.core.room.entities.member.ZeitgeistMember
+import org.beatonma.commons.data.core.room.entities.member.ZeitgeistMemberData
 
 @Dao
 interface MemberDao: SharedPartyDao, SharedConstituencyDao, SharedElectionDao {
@@ -40,7 +40,7 @@ interface MemberDao: SharedPartyDao, SharedConstituencyDao, SharedElectionDao {
     // Get operations
     @Transaction
     @Query("""SELECT * FROM zeitgeist_members""")
-    fun getZeitgeistMembers(): FlowList<ResolvedZeitgeistMember>
+    fun getZeitgeistMembers(): FlowList<ZeitgeistMember>
 
     @Query("""SELECT * FROM member_profiles WHERE member_id = :memberId""")
     fun getMemberProfile(memberId: ParliamentID): Flow<MemberProfile>
@@ -96,7 +96,7 @@ interface MemberDao: SharedPartyDao, SharedConstituencyDao, SharedElectionDao {
     suspend fun insertWebAddresses(webaddresses: List<WebAddress>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertZeitgeistMembers(zeitgeistMembers: List<ZeitgeistMember>)
+    suspend fun insertZeitgeistMembers(zeitgeistMembers: List<ZeitgeistMemberData>)
 
     /**
      * Private use only - use [safeInsertProfile] instead.

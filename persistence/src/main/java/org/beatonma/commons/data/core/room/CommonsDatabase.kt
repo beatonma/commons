@@ -46,7 +46,7 @@ import org.beatonma.commons.data.core.room.entities.member.Post
 import org.beatonma.commons.data.core.room.entities.member.TopicOfInterest
 import org.beatonma.commons.data.core.room.entities.member.Town
 import org.beatonma.commons.data.core.room.entities.member.WebAddress
-import org.beatonma.commons.data.core.room.entities.member.ZeitgeistMember
+import org.beatonma.commons.data.core.room.entities.member.ZeitgeistMemberData
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 
 @Database(
@@ -66,7 +66,7 @@ import org.beatonma.commons.data.core.room.entities.user.UserToken
         TopicOfInterest::class,
         Town::class,
         WebAddress::class,
-        ZeitgeistMember::class,
+        ZeitgeistMemberData::class,
 
         // Bills
         BillData::class,

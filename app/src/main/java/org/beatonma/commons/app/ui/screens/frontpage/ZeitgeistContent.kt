@@ -20,7 +20,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.BuildConfig
 import org.beatonma.commons.R
-import org.beatonma.commons.app.ui.components.image.AppIcon
 import org.beatonma.commons.app.ui.components.members.MemberLayout
 import org.beatonma.commons.app.ui.components.members.MembersLayout
 import org.beatonma.commons.app.ui.components.party.ProvidePartyImageConfig
@@ -29,28 +28,24 @@ import org.beatonma.commons.app.util.logDebug
 import org.beatonma.commons.compose.padding.endOfContent
 import org.beatonma.commons.compose.systemui.navigationBarsPadding
 import org.beatonma.commons.compose.util.dot
+import org.beatonma.commons.core.House
+import org.beatonma.commons.core.ZeitgeistReason
 import org.beatonma.commons.core.extensions.fastForEach
 import org.beatonma.commons.data.core.room.entities.bill.ZeitgeistBill
-import org.beatonma.commons.data.core.room.entities.division.Division
-import org.beatonma.commons.data.core.room.entities.division.ResolvedZeitgeistDivision
+import org.beatonma.commons.data.core.room.entities.division.ZeitgeistDivision
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
-import org.beatonma.commons.data.core.room.entities.member.ResolvedZeitgeistMember
+import org.beatonma.commons.data.core.room.entities.member.ZeitgeistMember
 import org.beatonma.commons.repo.models.Zeitgeist
-import org.beatonma.commons.snommoc.models.ZeitgeistReason
+import org.beatonma.commons.theme.AppIcon
 import org.beatonma.commons.theme.formatting.formatted
+import org.beatonma.commons.theme.house
 
-private fun String?.reason(): ZeitgeistReason =
-    this?.let { ZeitgeistReason.valueOf(it) } ?: ZeitgeistReason.unspecified
-
-private fun ResolvedZeitgeistMember.reason() = this.zeitgeistContent.reason.reason()
-private fun ResolvedZeitgeistDivision.reason() = this.zeitgeistContent.reason.reason()
-private fun ZeitgeistBill.reason() = this.zeitgeistContent.reason.reason()
 
 val LocalZeitgeistActions: ProvidableCompositionLocal<ZeitgeistActions> =
     compositionLocalOf { error("ZeitgeistActions have not been provided") }
 
 internal typealias MemberAction = (MemberProfile) -> Unit
-internal typealias DivisionAction = (Division) -> Unit
+internal typealias DivisionAction = (ZeitgeistDivision) -> Unit
 internal typealias BillAction = (ZeitgeistBill) -> Unit
 
 class ZeitgeistActions(
@@ -96,11 +91,11 @@ private fun ZeitgeistContent(
             }
 
             items(zeitgeist.divisions) {
-                ZeitgeistDivision(it, onClick = divisionOnClick, reason = it.reason())
+                ZeitgeistDivision(it, onClick = divisionOnClick, reason = it.reason)
             }
 
             items(zeitgeist.bills) {
-                ZeitgeistBill(it, onClick = billOnClick, reason = it.reason())
+                ZeitgeistBill(it, onClick = billOnClick, reason = it.reason)
             }
 
             item {
@@ -129,7 +124,7 @@ private fun MainTitle() {
 
 @Composable
 private fun ZeitgeistMembers(
-    members: List<ResolvedZeitgeistMember>,
+    members: List<ZeitgeistMember>,
     onClick: MemberAction,
 ) {
     ProvidePartyImageConfig {
@@ -139,7 +134,7 @@ private fun ZeitgeistMembers(
                     it.member,
                     onClick = { onClick(it.member.profile) },
                     decoration = {
-                        ReasonIcon(it.reason())
+                        ReasonIcon(it.reason)
                     }
                 )
             }
@@ -150,18 +145,20 @@ private fun ZeitgeistMembers(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun ZeitgeistDivision(
-    item: ResolvedZeitgeistDivision,
+    division: ZeitgeistDivision,
     onClick: DivisionAction,
     reason: ZeitgeistReason,
     modifier: Modifier = Modifier,
 ) {
-    val division = item.division
     ListItem(
         modifier.clickable(onClick = { onClick(division) }),
-        icon = { Icon(AppIcon.Division, null) },
+        icon = {
+            Icon(AppIcon.Division,
+                null,
+                tint = if (division.house == House.lords) colors.house.Lords else colors.house.Commons)
+        },
         overlineText = { Text(division.house.uiDescription() dot division.date.formatted()) },
-        trailing = { Text(division.passed.toString()) },
-        text = { Text(division.description ?: division.title) },
+        text = { Text(division.title) },
     )
 }
 

@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.transform
-import org.beatonma.commons.data.core.room.entities.ResolvedZeitgeistContent
+import org.beatonma.commons.data.core.room.entities.ZeitgeistContent
 import org.beatonma.commons.repo.models.Zeitgeist
 import org.beatonma.commons.repo.repository.ZeitgeistRepository
 import org.beatonma.commons.repo.result.BaseResult
@@ -20,7 +20,6 @@ class ZeitgeistViewModel @Inject constructor(
             when (v) {
                 is Success -> {
                     val zeitgeist = v.data
-
 
                     emit(
                         Success(
@@ -40,6 +39,6 @@ class ZeitgeistViewModel @Inject constructor(
     /**
      * Reorder zeitgeist content lists while respecting priority settings.
      */
-    private fun <T : ResolvedZeitgeistContent<*>> zeitgeistShuffler(content: List<T>): List<T> =
-        content.shuffled().sortedByDescending { it.zeitgeistContent.priority }
+    private fun <T : ZeitgeistContent> zeitgeistShuffler(content: List<T>): List<T> =
+        content.shuffled().sortedByDescending { it.priority }
 }

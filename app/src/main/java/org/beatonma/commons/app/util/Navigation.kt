@@ -9,13 +9,11 @@ import org.beatonma.commons.core.PARLIAMENTDOTUK
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.room.entities.bill.ZeitgeistBill
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
-import org.beatonma.commons.data.core.room.entities.division.CommonsDivisionData
 import org.beatonma.commons.data.core.room.entities.division.ZeitgeistDivision
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 import org.beatonma.commons.snommoc.CommonsService
 import org.beatonma.commons.snommoc.models.search.SearchResult
 
-private const val HOUSE = "house"
 private const val CONSTITUENCY_ID = "constituency_id"
 private const val ELECTION_ID = "election_id"
 
@@ -32,9 +30,6 @@ fun Fragment.navigateTo(memberProfile: MemberProfile) =
 
 fun Fragment.navigateTo(constituency: Constituency) =
     navigateTo(CommonsService.getConstituencyUrl(constituency.parliamentdotuk).toUri())
-
-fun Fragment.navigateTo(division: CommonsDivisionData) =
-    navigateTo(CommonsService.getDivisionUrl(division.house, division.parliamentdotuk).toUri())
 
 fun Fragment.navigateTo(division: ZeitgeistDivision) =
     navigateTo(CommonsService.getDivisionUrl(division.house, division.id).toUri())
@@ -66,14 +61,8 @@ class BundledConstituencyResult(val constituencyId: ParliamentID, val electionId
     )
 }
 
-class BundledDivision(
-//    val house: House,
-    val parliamentdotuk: ParliamentID,
-) {
-    constructor(bundle: Bundle) : this(
-//        house = bundle.getSerializable(HOUSE) as House,
-        parliamentdotuk = bundle.parliamentID
-    )
+class BundledDivision(val parliamentdotuk: ParliamentID) {
+    constructor(bundle: Bundle) : this(parliamentdotuk = bundle.parliamentID)
 }
 
 private fun Fragment.navigateTo(uri: Uri) =

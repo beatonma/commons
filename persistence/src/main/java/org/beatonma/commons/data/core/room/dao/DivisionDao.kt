@@ -22,7 +22,7 @@ interface DivisionDao: SharedPartyDao {
 
     @Transaction
     @Query("""SELECT * FROM zeitgeist_divisions""")
-    fun getZeitgeistDivisions(): FlowList<ResolvedZeitgeistDivision>
+    fun getZeitgeistDivisions(): FlowList<ZeitgeistDivision>
 
     @Transaction
     @Query("""SELECT * FROM commons_divisions WHERE division_id = :parliamentdotuk""")

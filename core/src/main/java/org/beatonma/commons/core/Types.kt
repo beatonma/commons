@@ -5,11 +5,8 @@ import androidx.annotation.Keep
 typealias ParliamentID = Int
 typealias SnommocToken = String
 
-/**
- * Names are lowercase so they can be used with Navigation Components deepLink
- * as part of the URL path.
- */
 @Keep
+@Suppress("EnumEntryName") // Lowercase names to match API values
 enum class House {
     commons,
     lords,
@@ -35,8 +32,18 @@ enum class VoteType : DivisionVoteType {
 }
 
 @Keep
+@Suppress("EnumEntryName") // Lowercase names to match API values
 enum class LordsVoteType : DivisionVoteType {
     content,
     not_content,
+    ;
+}
+
+@Keep
+@Suppress("EnumEntryName") // Lowercase names to match API values
+enum class ZeitgeistReason {
+    feature,
+    social,
+    unspecified,
     ;
 }
