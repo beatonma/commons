@@ -345,6 +345,8 @@ private fun MoreContentIndication(
     onClick: () -> Unit,
 ) {
     val visibility = transition.animateExpansion().value.reversed()
+    if (visibility == 0f) return
+
     val contentDescription = stringResource(R.string.content_description_show_more)
 
     Box(
