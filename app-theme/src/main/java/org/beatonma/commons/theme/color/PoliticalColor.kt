@@ -1,6 +1,9 @@
 package org.beatonma.commons.theme.color
 
 import androidx.compose.ui.graphics.Color
+import org.beatonma.commons.core.DivisionVoteType
+import org.beatonma.commons.core.LordsVoteType
+import org.beatonma.commons.core.VoteType
 
 object PoliticalColor {
     val Parliament = Color(0xff_37_31_51)  // Purple
@@ -88,3 +91,24 @@ object PoliticalColor {
         val SuspendedOrExpelled = MaterialIndigo600
     }
 }
+
+val DivisionVoteType.color: Color
+    get() = when (this) {
+        is LordsVoteType -> color
+        is VoteType -> color
+    }
+
+val LordsVoteType.color
+    get() = when (this) {
+        LordsVoteType.content -> PoliticalColor.Vote.Aye
+        LordsVoteType.not_content -> PoliticalColor.Vote.No
+    }
+
+val VoteType.color
+    get() = when (this) {
+        VoteType.AyeVote -> PoliticalColor.Vote.Aye
+        VoteType.NoVote -> PoliticalColor.Vote.No
+        VoteType.DidNotVote -> PoliticalColor.Vote.DidNotVote
+        VoteType.Abstains -> PoliticalColor.Vote.Abstain
+        VoteType.SuspendedOrExpelledVote -> PoliticalColor.Vote.SuspendedOrExpelled
+    }

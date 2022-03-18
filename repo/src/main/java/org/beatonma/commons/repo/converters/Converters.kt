@@ -9,12 +9,16 @@ import org.beatonma.commons.data.core.room.entities.bill.BillStage
 import org.beatonma.commons.data.core.room.entities.bill.BillType
 import org.beatonma.commons.data.core.room.entities.bill.Organisation
 import org.beatonma.commons.data.core.room.entities.bill.ParliamentarySession
+import org.beatonma.commons.data.core.room.entities.bill.ZeitgeistBill
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyBoundary
 import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyCandidate
 import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyElectionDetails
-import org.beatonma.commons.data.core.room.entities.division.Division
-import org.beatonma.commons.data.core.room.entities.division.Vote
+import org.beatonma.commons.data.core.room.entities.division.CommonsDivisionData
+import org.beatonma.commons.data.core.room.entities.division.CommonsDivisionVoteData
+import org.beatonma.commons.data.core.room.entities.division.LordsDivisionData
+import org.beatonma.commons.data.core.room.entities.division.LordsDivisionVoteData
+import org.beatonma.commons.data.core.room.entities.division.ZeitgeistDivision
 import org.beatonma.commons.data.core.room.entities.election.ConstituencyResult
 import org.beatonma.commons.data.core.room.entities.election.Election
 import org.beatonma.commons.data.core.room.entities.member.CommitteeChairship
@@ -31,23 +35,25 @@ import org.beatonma.commons.data.core.room.entities.member.Post
 import org.beatonma.commons.data.core.room.entities.member.TopicOfInterest
 import org.beatonma.commons.data.core.room.entities.member.Town
 import org.beatonma.commons.data.core.room.entities.member.WebAddress
+import org.beatonma.commons.data.core.room.entities.member.ZeitgeistMember
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.repo.repository.GoogleAccount
 import org.beatonma.commons.snommoc.models.ApiBill
 import org.beatonma.commons.snommoc.models.ApiCommittee
 import org.beatonma.commons.snommoc.models.ApiCommitteeChairship
+import org.beatonma.commons.snommoc.models.ApiCommonsDivision
 import org.beatonma.commons.snommoc.models.ApiConstituency
 import org.beatonma.commons.snommoc.models.ApiConstituencyBoundary
 import org.beatonma.commons.snommoc.models.ApiConstituencyCandidate
 import org.beatonma.commons.snommoc.models.ApiConstituencyElectionDetails
 import org.beatonma.commons.snommoc.models.ApiConstituencyMinimal
 import org.beatonma.commons.snommoc.models.ApiConstituencyResult
-import org.beatonma.commons.snommoc.models.ApiDivision
 import org.beatonma.commons.snommoc.models.ApiElection
 import org.beatonma.commons.snommoc.models.ApiExperience
 import org.beatonma.commons.snommoc.models.ApiFinancialInterest
 import org.beatonma.commons.snommoc.models.ApiHistoricalConstituency
 import org.beatonma.commons.snommoc.models.ApiHouseMembership
+import org.beatonma.commons.snommoc.models.ApiLordsDivision
 import org.beatonma.commons.snommoc.models.ApiMemberProfile
 import org.beatonma.commons.snommoc.models.ApiMemberVote
 import org.beatonma.commons.snommoc.models.ApiOrganisation
@@ -60,6 +66,7 @@ import org.beatonma.commons.snommoc.models.ApiTopicOfInterest
 import org.beatonma.commons.snommoc.models.ApiTown
 import org.beatonma.commons.snommoc.models.ApiVote
 import org.beatonma.commons.snommoc.models.ApiWebAddress
+import org.beatonma.commons.snommoc.models.ApiZeitgeist
 import org.beatonma.commons.snommoc.models.social.ApiUserToken
 
 
@@ -142,10 +149,9 @@ fun ApiConstituencyCandidate.toConstituencyCandidate(resultsId: Int) = Constitue
     votes = votes
 )
 
-fun ApiDivision.toDivision() = Division(
+fun ApiCommonsDivision.toDivision() = CommonsDivisionData(
     parliamentdotuk = parliamentdotuk,
     title = title,
-    description = description,
     date = date,
     passed = passed,
     ayes = ayes,
@@ -157,24 +163,23 @@ fun ApiDivision.toDivision() = Division(
     suspendedOrExpelled = suspendedOrExpelled,
     deferredVote = deferredVote,
     errors = errors,
-    whippedVote = whippedVote,
 )
 
-fun ApiMemberVote.toVote(memberId: ParliamentID) = Vote(
+fun ApiMemberVote.toVote(memberId: ParliamentID) = CommonsDivisionVoteData(
     memberId = memberId,
     divisionId = division.parliamentdotuk,
-    voteType = voteType,
+    vote = voteType,
     memberName = "",
     partyId = 0
 )
 
 
-fun ApiVote.toVote(divisionId: ParliamentID) = Vote(
+fun ApiVote.toVote(divisionId: ParliamentID) = CommonsDivisionVoteData(
     divisionId = divisionId,
     memberId = memberId,
     memberName = memberName,
-    voteType = voteType,
-    partyId = party?.parliamentdotuk
+    vote = voteType,
+    partyId = party.parliamentdotuk
 )
 
 fun ApiBill.getBillData() = BillData(
@@ -240,6 +245,34 @@ fun ApiBill.getSponsorData(): List<BillSponsorData> = sponsors.map {
         billId = this.parliamentdotuk,
         memberId = it.member?.parliamentdotuk,
         organisation = it.organisation?.toOrganisation(),
+    )
+}
+
+
+fun ApiLordsDivision.getLordsDivisionData() = LordsDivisionData(
+    parliamentdotuk = parliamentdotuk,
+    title = title,
+    date = date,
+    description = description,
+    house = house,
+    sponsorId = sponsor?.parliamentdotuk,
+    passed = passed,
+    whippedVote = whippedVote,
+    ayes = ayes,
+    noes = noes,
+)
+
+fun ApiLordsDivision.getSponsor(): MemberProfile? = sponsor?.toMemberProfile()
+fun ApiLordsDivision.getParties(): List<Party> =
+    votes.map { it.party.toParty() }.distinct()
+
+fun ApiLordsDivision.getVotes(): List<LordsDivisionVoteData> = votes.map { vote ->
+    LordsDivisionVoteData(
+        divisionId = this.parliamentdotuk,
+        memberId = vote.memberId,
+        memberName = vote.memberName,
+        partyId = vote.party.parliamentdotuk,
+        vote = vote.voteType,
     )
 }
 
@@ -321,21 +354,22 @@ fun ApiExperience.toExperience(memberId: ParliamentID) = Experience(
     end = end
 )
 
-fun ApiTopicOfInterest.toTopicOfInterest(memberId: ParliamentID) = TopicOfInterest(
+fun ApiTopicOfInterest.toTopicOfInterest(memberId: ParliamentID): TopicOfInterest = TopicOfInterest(
     memberId = memberId,
     category = category,
     topic = topic
 )
 
-fun ApiHistoricalConstituency.toHistoricalConstituency(member: Int) = HistoricalConstituency(
-    memberId = member,
-    constituencyId = constituency.parliamentdotuk,
-    start = start,
-    end = end,
-    electionId = election.parliamentdotuk
-)
+fun ApiHistoricalConstituency.toHistoricalConstituency(member: Int): HistoricalConstituency =
+    HistoricalConstituency(
+        memberId = member,
+        constituencyId = constituency.parliamentdotuk,
+        start = start,
+        end = end,
+        electionId = election.parliamentdotuk
+    )
 
-fun ApiMemberProfile.toMemberProfile() = MemberProfile(
+fun ApiMemberProfile.toMemberProfile(): MemberProfile = MemberProfile(
     parliamentdotuk = parliamentdotuk,
     name = name,
     party = party.toParty(),

@@ -7,10 +7,11 @@ import org.beatonma.commons.network.core.Http
 import org.beatonma.commons.snommoc.annotations.SignInRequired
 import org.beatonma.commons.snommoc.converters.EnvelopePayload
 import org.beatonma.commons.snommoc.models.ApiBill
+import org.beatonma.commons.snommoc.models.ApiCommonsDivision
 import org.beatonma.commons.snommoc.models.ApiCompleteMember
 import org.beatonma.commons.snommoc.models.ApiConstituency
 import org.beatonma.commons.snommoc.models.ApiConstituencyElectionDetails
-import org.beatonma.commons.snommoc.models.ApiDivision
+import org.beatonma.commons.snommoc.models.ApiLordsDivision
 import org.beatonma.commons.snommoc.models.ApiMemberVote
 import org.beatonma.commons.snommoc.models.ApiZeitgeist
 import org.beatonma.commons.snommoc.models.MessageOfTheDay
@@ -45,7 +46,6 @@ private const val SOCIAL_API_PATH = "/social"
 private const val SOCIAL_TARGET_PATH = "$SOCIAL_API_PATH/{target_type}/$ID"
 
 
-
 private object Endpoints {
     const val PING = "$API_PATH/ping/"
     const val SEARCH = "$MEMBER_API_PATH/?page_size=5"
@@ -58,6 +58,8 @@ private object Endpoints {
     const val BILL = "$BILL_API_PATH/$ID/"
 
     const val DIVISION = "$DIVISION_API_PATH/{${Contract.HOUSE}}/$ID/"
+    const val COMMONS_DIVISION = "$DIVISION_API_PATH/commons/$ID/"
+    const val LORDS_DIVISION = "$DIVISION_API_PATH/lords/$ID/"
 
     const val CONSTITUENCY = "$CONSTITUENCY_API_PATH/$ID/"
     const val CONSTITUENCY_ELECTION_RESULTS =
@@ -66,7 +68,6 @@ private object Endpoints {
     const val ZEITGEIST = "$API_PATH/zeitgeist/"
 
     object Social {
-
         const val ACCOUNT = "$SOCIAL_API_PATH/account/"
         const val GAUTH = "$SOCIAL_API_PATH/auth/g/"
         const val ALL = "$SOCIAL_TARGET_PATH/all/"
@@ -76,7 +77,7 @@ private object Endpoints {
 }
 
 
-interface CommonsService: SnommocService, CommonsDataService, CommonsSocialService {
+interface CommonsService : SnommocService, CommonsDataService, CommonsSocialService {
     companion object {
         const val BASE_URL = BuildConfig.BASE_URL
 
@@ -150,11 +151,15 @@ interface CommonsDataService {
         @Path(Contract.PARLIAMENTDOTUK) parliamentdotuk: ParliamentID,
     ): ListResponse<ApiMemberVote>
 
-    @GET(Endpoints.DIVISION)
-    suspend fun getDivision(
-        @Path(Contract.HOUSE) house: House,
+    @GET(Endpoints.COMMONS_DIVISION)
+    suspend fun getCommonsDivision(
         @Path(Contract.PARLIAMENTDOTUK) parliamentdotuk: ParliamentID,
-    ): Response<ApiDivision>
+    ): Response<ApiCommonsDivision>
+
+    @GET(Endpoints.LORDS_DIVISION)
+    suspend fun getLordsDivision(
+        @Path(Contract.PARLIAMENTDOTUK) parliamentdotuk: ParliamentID,
+    ): Response<ApiLordsDivision>
 
     @GET(Endpoints.CONSTITUENCY)
     suspend fun getConstituency(

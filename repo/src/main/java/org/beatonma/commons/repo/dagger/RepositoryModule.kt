@@ -34,7 +34,7 @@ class RepositoryModule {
     fun providesConstituencyRepository(
         remoteSource: CommonsApi,
         constituencyDao: ConstituencyDao,
-        memberDao: MemberDao
+        memberDao: MemberDao,
     ): ConstituencyRepository = ConstituencyRepository(remoteSource, constituencyDao, memberDao)
 
     @Singleton
@@ -42,7 +42,8 @@ class RepositoryModule {
     fun providesDivisionRepository(
         remoteSource: CommonsApi,
         divisionDao: DivisionDao,
-    ): DivisionRepository = DivisionRepository(remoteSource, divisionDao)
+        memberDao: MemberDao,
+    ): DivisionRepository = DivisionRepository(remoteSource, divisionDao, memberDao)
 
     @Singleton
     @Provides

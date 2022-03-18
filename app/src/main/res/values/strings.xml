@@ -145,7 +145,7 @@
     <string name="dotted" translatable="false">%1$s &#183; %2$s</string>
     <string name="integer" translatable="false">%s</string>
     <string name="more" translatable="true">More</string>
-    <string name="empty_list" translatable="true">None</string>
+    <string name="empty_list" translatable="true">No items</string>
     <string name="cancel" translatable="true">Cancel</string>
 
     <!-- Fragment tags -->

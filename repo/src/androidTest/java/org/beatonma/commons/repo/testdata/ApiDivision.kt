@@ -2,7 +2,7 @@ package org.beatonma.commons.repo.testdata
 
 import org.beatonma.commons.core.House
 import org.beatonma.commons.core.VoteType
-import org.beatonma.commons.snommoc.models.ApiDivision
+import org.beatonma.commons.snommoc.models.ApiCommonsDivision
 import org.beatonma.commons.snommoc.models.ApiVote
 import org.beatonma.commons.test.extensions.util.asDate
 
@@ -71,7 +71,7 @@ const val API_DIVISION_JSON = """{
     ]
 }"""
 
-val API_DIVISION = ApiDivision(
+val API_DIVISION = ApiCommonsDivision(
     parliamentdotuk = 229684,
     title = "Statutory Instruments: Motion for Approval. That the draft Infrastructure Planning (Radioactive Waste Geological Disposal Facilities) Order 2015, which was laid before this House on 12 January, be approved. Q acc agreed to.",
     date = "2015-03-25".asDate(),

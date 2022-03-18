@@ -31,12 +31,17 @@ class CommonsRemoteSource @Inject constructor(
         service.getBill(parliamentdotuk)
     }
 
-    override suspend fun getVotesForMember(house: House, parliamentdotuk: ParliamentID) = getResult {
-        service.getVotesForMember(house, parliamentdotuk)
+    override suspend fun getVotesForMember(house: House, parliamentdotuk: ParliamentID) =
+        getResult {
+            service.getVotesForMember(house, parliamentdotuk)
+        }
+
+    override suspend fun getCommonsDivision(parliamentdotuk: ParliamentID) = getResult {
+        service.getCommonsDivision(parliamentdotuk)
     }
 
-    override suspend fun getDivision(house: House, parliamentdotuk: ParliamentID) = getResult {
-        service.getDivision(house, parliamentdotuk)
+    override suspend fun getLordsDivision(parliamentdotuk: ParliamentID) = getResult {
+        service.getLordsDivision(parliamentdotuk)
     }
 
     override suspend fun getConstituency(parliamentdotuk: ParliamentID) = getResult {

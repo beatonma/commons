@@ -25,8 +25,10 @@ import org.beatonma.commons.data.core.room.entities.constituency.Constituency
 import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyBoundary
 import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyCandidate
 import org.beatonma.commons.data.core.room.entities.constituency.ConstituencyElectionDetails
-import org.beatonma.commons.data.core.room.entities.division.Division
-import org.beatonma.commons.data.core.room.entities.division.Vote
+import org.beatonma.commons.data.core.room.entities.division.CommonsDivisionData
+import org.beatonma.commons.data.core.room.entities.division.CommonsDivisionVoteData
+import org.beatonma.commons.data.core.room.entities.division.LordsDivisionData
+import org.beatonma.commons.data.core.room.entities.division.LordsDivisionVoteData
 import org.beatonma.commons.data.core.room.entities.division.ZeitgeistDivision
 import org.beatonma.commons.data.core.room.entities.election.ConstituencyResult
 import org.beatonma.commons.data.core.room.entities.election.Election
@@ -90,9 +92,11 @@ import org.beatonma.commons.data.core.room.entities.user.UserToken
         ConstituencyResult::class,
 
         // Divisions
-        Division::class,
+        CommonsDivisionData::class,
+        LordsDivisionData::class,
+        LordsDivisionVoteData::class,
         ZeitgeistDivision::class,
-        Vote::class,
+        CommonsDivisionVoteData::class,
 
         // User
         UserToken::class,

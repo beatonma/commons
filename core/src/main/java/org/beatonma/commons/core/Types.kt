@@ -23,11 +23,20 @@ enum class House {
     }
 }
 
+sealed interface DivisionVoteType
+
 @Keep
-enum class VoteType {
+enum class VoteType : DivisionVoteType {
     AyeVote,
     NoVote,
     Abstains,
     DidNotVote,
     SuspendedOrExpelledVote,
+}
+
+@Keep
+enum class LordsVoteType : DivisionVoteType {
+    content,
+    not_content,
+    ;
 }

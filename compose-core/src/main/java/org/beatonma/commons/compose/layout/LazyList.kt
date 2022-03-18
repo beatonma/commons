@@ -1,8 +1,10 @@
 package org.beatonma.commons.compose.layout
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
@@ -188,5 +190,22 @@ class ItemState internal constructor(
         result = 31 * result + overlapsPrevious.hashCode()
         result = 31 * result + overlapsNext.hashCode()
         return result
+    }
+}
+
+
+inline fun <T> LazyListScope.itemsOrEmpty(
+    items: List<T>,
+    noinline key: ((item: T) -> Any)? = null,
+    noinline contentType: (item: T) -> Any? = { null },
+    crossinline emptyContent: @Composable LazyItemScope.() -> Unit,
+    noinline itemContent: @Composable LazyItemScope.(item: T) -> Unit,
+) {
+    if (items.isEmpty()) {
+        item {
+            emptyContent()
+        }
+    } else {
+        items(items, key, contentType, itemContent)
     }
 }

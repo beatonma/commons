@@ -3,7 +3,6 @@ package org.beatonma.commons.snommoc
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.runBlocking
-import org.beatonma.commons.core.House
 import org.beatonma.commons.test.extensions.assertions.shouldbe
 import org.junit.Before
 import org.junit.Rule
@@ -44,14 +43,14 @@ class CommonsServiceTest {
     @Test
     fun commonsdivision_is_retrieved() {
         runBlocking {
-            service.getDivision(House.commons, 161145).body()!!.parliamentdotuk shouldbe 161145
+            service.getCommonsDivision(161145).body()!!.parliamentdotuk shouldbe 161145
         }
     }
 
     @Test
     fun lordsdivision_is_retrieved() {
         runBlocking {
-            service.getDivision(House.lords, 2710).body()!!.parliamentdotuk shouldbe 2710
+            service.getLordsDivision(2710).body()!!.parliamentdotuk shouldbe 2710
         }
     }
 

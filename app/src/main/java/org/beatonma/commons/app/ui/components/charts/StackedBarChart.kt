@@ -9,6 +9,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.LocalContentColor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -27,7 +30,12 @@ fun <T : Number> HorizontalStackedBarChart(
     modifier: Modifier = Modifier,
     height: Dp = 16.dp,
 ) {
-    val totalValue: Float = items.map { it.value.toFloat() }.reduce { acc, t -> acc + t }
+    val totalValue: Float by remember {
+        mutableStateOf(
+            items.map { it.value.toFloat() }
+                .reduce { acc, t -> acc + t }
+        )
+    }
     if (totalValue == 0F) return
 
     val itemModifier = Modifier.height(height - 4.dp)

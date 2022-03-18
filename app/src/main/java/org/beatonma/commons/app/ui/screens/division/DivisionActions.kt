@@ -1,8 +1,8 @@
 package org.beatonma.commons.app.ui.screens.division
 
-import org.beatonma.commons.data.core.room.entities.division.Vote
+import org.beatonma.commons.core.ParliamentID
 
-internal typealias MemberVoteAction = (Vote) -> Unit
+internal typealias MemberVoteAction = (memberId: ParliamentID) -> Unit
 
 class DivisionActions(
     val onMemberClick: MemberVoteAction = {},

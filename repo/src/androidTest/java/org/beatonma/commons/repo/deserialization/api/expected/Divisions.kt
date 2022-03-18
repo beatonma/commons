@@ -2,13 +2,13 @@ package org.beatonma.commons.repo.deserialization.api.expected
 
 import org.beatonma.commons.core.House
 import org.beatonma.commons.core.VoteType
-import org.beatonma.commons.snommoc.models.ApiDivision
+import org.beatonma.commons.snommoc.models.ApiCommonsDivision
 import org.beatonma.commons.snommoc.models.ApiParty
 import org.beatonma.commons.snommoc.models.ApiVote
 import org.beatonma.commons.test.extensions.util.asDate
 
 /** https://snommoc.org/api/division/commons/161145/ */
-internal fun expectedApiDivisionCommons(): ApiDivision = ApiDivision(
+internal fun expectedApiDivisionCommons(): ApiCommonsDivision = ApiCommonsDivision(
     parliamentdotuk = 161145,
     title = "Motion made and Question proposed, That the draft Criminal Justice and Data Protection (Protocol No. 36) Regulations 2014, which were laid before this House on 3 November, be approved. Q acc negatived",
     date = "2014-11-10".asDate(),
@@ -5807,7 +5807,7 @@ internal fun expectedApiDivisionCommons(): ApiDivision = ApiDivision(
 )
 
 /** https://snommoc.org/api/division/lords/712319/ */
-internal fun expectedApiDivisionLords(): ApiDivision = ApiDivision(
+internal fun expectedApiDivisionLords(): ApiCommonsDivision = ApiCommonsDivision(
     parliamentdotuk = 712319,
     title = "Digital Economy Bill",
     description = "Lord Paddick moved amendment 25YN, after clause 24, to insert the new clause Anonymity. The House divided:",

@@ -16,7 +16,7 @@
             app:destination="@id/billFragment" />
         <action
             android:id="@+id/action_frontPageFragment_to_divisionProfileFragment"
-            app:destination="@id/divisionProfileFragment" />
+            app:destination="@id/divisionFragment" />
         <deepLink
             android:id="@+id/deeplink_frontpage"
             android:autoVerify="true"
@@ -56,8 +56,8 @@
     </fragment>
 
     <fragment
-        android:id="@+id/divisionProfileFragment"
-        android:name="org.beatonma.commons.app.ui.screens.division.DivisionDetailFragment"
+        android:id="@+id/divisionFragment"
+        android:name="org.beatonma.commons.app.ui.screens.division.commons.CommonsDivisionFragment"
         android:label="DivisionProfileFragment">
         <action
             android:id="@+id/action_divisionProfileFragment_to_memberProfileFragment"
@@ -65,13 +65,26 @@
         <argument
             android:name="@string/parliamentdotuk"
             app:argType="integer" />
-        <argument
-            android:name="house"
-            app:argType="org.beatonma.commons.core.House"/>
         <deepLink
             android:id="@+id/deeplink_division"
             android:autoVerify="true"
-            app:uri="https://snommoc.org/api/division/{house}/{parliamentdotuk}/" />
+            app:uri="https://snommoc.org/api/division/commons/{parliamentdotuk}/" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/LordsDivisionFragment"
+        android:name="org.beatonma.commons.app.ui.screens.division.lords.LordsDivisionFragment"
+        android:label="LordsDivisionFragment">
+        <action
+            android:id="@+id/action_LordsDivisionFragment_to_memberProfileFragment"
+            app:destination="@id/memberProfileFragment" />
+        <argument
+            android:name="@string/parliamentdotuk"
+            app:argType="integer" />
+        <deepLink
+            android:id="@+id/deeplink_division_lords"
+            android:autoVerify="true"
+            app:uri="https://snommoc.org/api/division/lords/{parliamentdotuk}/" />
     </fragment>
 
     <fragment

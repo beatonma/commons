@@ -1,4 +1,4 @@
-package org.beatonma.commons.app.ui.screens.division
+package org.beatonma.commons.app.ui.screens.division.commons
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,13 +7,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
 import org.beatonma.commons.app.ui.base.SocialFragment
+import org.beatonma.commons.app.ui.screens.division.DivisionActions
 import org.beatonma.commons.app.ui.util.composeScreen
 import org.beatonma.commons.app.util.getDivision
 import org.beatonma.commons.app.util.navigateToMember
 
 @AndroidEntryPoint
-class DivisionDetailFragment : SocialFragment() {
-    private val viewmodel: DivisionDetailViewModel by viewModels()
+class CommonsDivisionFragment : SocialFragment() {
+    private val viewmodel: CommonsDivisionViewModel by viewModels()
 
     private fun getDivisionFromBundle() = arguments.getDivision()
 
@@ -26,14 +27,13 @@ class DivisionDetailFragment : SocialFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View =
-        composeScreen(
-            LocalDivisionActions provides DivisionActions(
-                onMemberClick = { vote ->
-                    navigateToMember(vote.memberId)
-                }
-            ),
-        ) {
-            DivisionDetailLayout(viewmodel, socialViewModel, userAccountViewModel)
-        }
+    ): View = composeScreen(
+        LocalDivisionActions provides DivisionActions(
+            onMemberClick = { memberId ->
+                navigateToMember(memberId)
+            }
+        ),
+    ) {
+        CommonsDivisionLayout(viewmodel, socialViewModel, userAccountViewModel)
+    }
 }

@@ -3,7 +3,7 @@ package org.beatonma.commons.snommoc
 /**
  * snommorg.org API JSON key values. Use constants to avoid errors caused by typos.
  */
-object Contract {
+internal object Contract {
     const val PARLIAMENTDOTUK = "parliamentdotuk"
 
     const val API_KEY = "key"
@@ -137,6 +137,7 @@ object Contract {
     const val PUBLICATIONS = "publications"
     const val SESSION = "session"
     const val TYPE = "type"
+    const val SPONSOR = "sponsor"
     const val SPONSORS = "sponsors"
     const val CURRENT_STAGE = "current_stage"
     const val STAGES = "stages"

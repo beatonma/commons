@@ -5,12 +5,12 @@ import android.os.Bundle
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
-import org.beatonma.commons.core.House
 import org.beatonma.commons.core.PARLIAMENTDOTUK
 import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.room.entities.bill.ZeitgeistBill
 import org.beatonma.commons.data.core.room.entities.constituency.Constituency
-import org.beatonma.commons.data.core.room.entities.division.Division
+import org.beatonma.commons.data.core.room.entities.division.CommonsDivisionData
+import org.beatonma.commons.data.core.room.entities.division.ZeitgeistDivision
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 import org.beatonma.commons.snommoc.CommonsService
 import org.beatonma.commons.snommoc.models.search.SearchResult
@@ -33,8 +33,11 @@ fun Fragment.navigateTo(memberProfile: MemberProfile) =
 fun Fragment.navigateTo(constituency: Constituency) =
     navigateTo(CommonsService.getConstituencyUrl(constituency.parliamentdotuk).toUri())
 
-fun Fragment.navigateTo(division: Division) =
+fun Fragment.navigateTo(division: CommonsDivisionData) =
     navigateTo(CommonsService.getDivisionUrl(division.house, division.parliamentdotuk).toUri())
+
+fun Fragment.navigateTo(division: ZeitgeistDivision) =
+    navigateTo(CommonsService.getDivisionUrl(division.house, division.id).toUri())
 
 fun Fragment.navigateTo(bill: ZeitgeistBill) =
     navigateTo(CommonsService.getBillUrl(bill.id).toUri())
@@ -63,9 +66,12 @@ class BundledConstituencyResult(val constituencyId: ParliamentID, val electionId
     )
 }
 
-class BundledDivision(val house: House, val parliamentdotuk: ParliamentID) {
+class BundledDivision(
+//    val house: House,
+    val parliamentdotuk: ParliamentID,
+) {
     constructor(bundle: Bundle) : this(
-        house = bundle.getSerializable(HOUSE) as House,
+//        house = bundle.getSerializable(HOUSE) as House,
         parliamentdotuk = bundle.parliamentID
     )
 }
