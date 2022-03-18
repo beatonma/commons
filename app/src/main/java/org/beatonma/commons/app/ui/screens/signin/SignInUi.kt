@@ -12,8 +12,8 @@ import org.beatonma.commons.R
 import org.beatonma.commons.compose.components.fabbottomsheet.BottomSheetText
 import org.beatonma.commons.compose.components.fabbottomsheet.FabBottomSheet
 import org.beatonma.commons.compose.components.fabbottomsheet.FabText
-import org.beatonma.commons.compose.components.text.LinkedText
 import org.beatonma.commons.compose.modifiers.wrapContentSize
+import org.beatonma.commons.compose.util.HtmlText
 import org.beatonma.commons.core.extensions.progressIn
 
 
@@ -55,9 +55,10 @@ private fun SignInFabUi(onSignIn: () -> Unit) {
 @Composable
 private fun SignInRationale(visibilityProgress: Float) {
     val linkedTextSize = visibilityProgress.progressIn(0F, 0.1F)
-    LinkedText(
+
+    HtmlText(
         stringResource(R.string.account_sign_in_rationale),
-        clickable = visibilityProgress == 1F,
+        clickable = visibilityProgress == 1f,
         modifier = Modifier
             .wrapContentSize(linkedTextSize)
             .testTag(UserAccountTestTag.SignInRationale)

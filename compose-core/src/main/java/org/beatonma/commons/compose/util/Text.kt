@@ -3,6 +3,9 @@ package org.beatonma.commons.compose.util
 import android.util.Patterns
 import androidx.annotation.PluralsRes
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -182,9 +185,9 @@ fun String.withAnnotatedStyle(
 }
 
 @Composable
-fun String.linkify(
+fun String.rememberLinkifiedText(
     style: SpanStyle = themedSpanStyle.hyperlink,
-) = withAnnotatedUrls(style)
+): MutableState<AnnotatedString> = remember { mutableStateOf(withAnnotatedUrls(style)) }
 
 internal fun String.withAnnotatedUrls(
     style: SpanStyle,

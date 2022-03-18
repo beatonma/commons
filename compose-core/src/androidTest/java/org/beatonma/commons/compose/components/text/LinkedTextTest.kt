@@ -12,8 +12,7 @@ import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.percentOffset
-import androidx.compose.ui.test.performGesture
+import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.text.font.FontFamily
 import androidx.test.filters.MediumTest
 import org.beatonma.commons.compose.TestLayout
@@ -38,7 +37,7 @@ class LinkedTextTest: ComposeTest() {
 
         perform {
             onNodeWithText(defaultText)
-                .performGesture {
+                .performTouchInput {
                     // Click in left half
                     click(percentOffset(0.25F, .5F))
                 }
@@ -56,7 +55,7 @@ class LinkedTextTest: ComposeTest() {
 
         perform {
             onNodeWithText(defaultText)
-                .performGesture {
+                .performTouchInput {
                     // Click in right half
                     click(percentOffset(0.75F, .5F))
                 }
@@ -77,7 +76,7 @@ class LinkedTextTest: ComposeTest() {
                 LinkedText(
                     text,
                     fontFamily = FontFamily.Monospace,
-                    action = { url ->
+                    onClick = { url ->
                         urlsOpened.value = urlsOpened.value + listOf(url)
                     }
                 )
