@@ -18,11 +18,11 @@ import androidx.compose.ui.test.assertLeftPositionInRootIsEqualTo
 import androidx.compose.ui.test.assertWidthIsEqualTo
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performGesture
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.unit.dp
 import androidx.test.filters.MediumTest
 import org.beatonma.commons.compose.TestLayout
-import org.beatonma.commons.testcompose.actions.swipeLeft
 import org.beatonma.commons.testcompose.test.ComposeTest
 import org.junit.Test
 
@@ -82,7 +82,7 @@ class StickyHeaderRowTest : ComposeTest() {
 
         perform {
             onNodeWithText(Headers.LessThanFifty.toString())
-                .performGesture {
+                .performTouchInput {
                     swipeLeft(200F)
                 }
 
