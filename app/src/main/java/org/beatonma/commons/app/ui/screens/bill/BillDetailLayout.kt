@@ -116,7 +116,6 @@ private fun LazyListScope.lazyContent(
         Stages(stages, sectionModifier)
     }
 
-//    Publications(publicationState)
     optionalItem(bill.publications) { publications ->
         Publications(publications, sectionModifier)
     }
@@ -134,120 +133,6 @@ private fun Description(
         Quote(bill.data.description)
     }
 }
-
-//@OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
-//private fun LazyListScope.Publications(
-//    publicationState: CollapsedColumnState<BillPublication>,
-////    modifier: Modifier,
-//) {
-//    CollapsedColumn(
-//        publicationState,
-//        headerBlock = CollapsedColumn.simpleHeader("BILLS"
-////            pluralResource(R.plurals.bill_publications, bill.publications.size)
-//        ),
-////        modifier = modifier,
-////        lazy = false,
-//    ) { publication ->
-//        ListItem(
-//            text = { Text(publication.data.title) },
-//            secondaryText = { Text(publication.data.type dot publication.data.date.formatted()) },
-////            modifier = Modifier.clickable { focussed = publication }
-//        )
-//    }
-////    var focussed: BillPublication? by remember { mutableStateOf(null) }
-////
-////    CollapsedColumn(
-////        publications,
-////        headerBlock = CollapsedColumn.simpleHeader(
-////            pluralResource(R.plurals.bill_publications, publications.size)
-////        ),
-////        modifier = modifier,
-////        lazy = false,
-////    ) { publication ->
-////        ListItem(
-////            text = { Text(publication.data.title) },
-////            secondaryText = { Text(publication.data.type dot publication.data.date.formatted()) },
-////            modifier = Modifier.clickable { focussed = publication }
-////        )
-////    }
-////
-////    withNotNull(focussed) { pub ->
-////        AlertDialog(
-////            onDismissRequest = { focussed = null },
-////            title = { Text(pub.data.type) },
-////            text = { Publication(pub) },
-////            buttons = {},
-////            properties = DialogProperties(usePlatformDefaultWidth = false)
-////        )
-////    }
-//}
-
-//@OptIn(ExperimentalMaterialApi::class)
-//@Composable
-//private fun Publications(
-//    publications: List<BillPublication>,
-//    modifier: Modifier,
-//) {
-//    var focussed: BillPublication? by remember { mutableStateOf(null) }
-//    var state by rememberExpandCollapseState()
-//    val collapsedItemCount = 3
-//    CollapsedColumn(
-//        publications,
-//        CollapsedColumn.simpleHeader("title"),
-//        state,
-//        { state = it },
-//        collapsedItemCount = collapsedItemCount,
-//    ) { displayItems ->
-//        displayItems.take(collapsedItemCount).forEach { publication ->
-//            ListItem(
-//                text = { Text(publication.data.title) },
-//                secondaryText = { Text(publication.data.type dot publication.data.date.formatted()) },
-//                modifier = Modifier.clickable { focussed = publication }
-//            )
-//        }
-//    }
-//
-//    if (focussed != null || state.isExpanded) {
-//        FocussedPublications(
-//            publications,
-//            focussed,
-//            onClose = {
-//                focussed = null
-//                state = ExpandCollapseState.Collapsed
-//            }
-//        )
-////        AlertDialog(
-////            onDismissRequest = { focussed = null },
-////            title = { Text(pub.data.type) },
-////            text = { Publication(pub) },
-////            buttons = {},
-////            properties = DialogProperties(usePlatformDefaultWidth = false)
-////        )
-//    }
-//}
-//
-//@OptIn(ExperimentalComposeUiApi::class)
-//@Composable
-//private fun FocussedPublications(
-//    publications: List<BillPublication>,
-//    focussed: BillPublication?,
-//    onClose: () -> Unit,
-//) {
-//    Dialog(
-//        onClose,
-//        properties = DialogProperties(usePlatformDefaultWidth = false)
-//    ) {
-//        if (focussed == null) {
-//            LazyColumn(
-//
-//            )
-//        }
-//        else {
-//
-//        }
-//    }
-//}
-
 
 @Composable
 private fun Sponsors(
@@ -321,40 +206,6 @@ private fun Stages(
         }
     )
 }
-
-//@Composable
-//private fun Publication(publication: BillPublication) {
-//    Column {
-//        publication.links.forEach { link ->
-//            PublicationLink(link)
-//        }
-//    }
-//}
-//
-//@Composable
-//private fun PublicationLink(link: BillPublicationLink) {
-//    val onClick = openUrl(link.url)
-//
-//    val label = when (link.contentType) {
-//        "application/pdf" -> "PDF"
-//        else -> null
-//    }
-//
-//    Column(
-//        Modifier
-//            .clickable(onClick = onClick)
-//            .padding(themedPadding.VerticalListItem)
-//    ) {
-//        Text(link.title, style = typography.h5)
-//
-//        Row(verticalAlignment = Alignment.CenterVertically) {
-//            withNotNull(label) {
-//                Tag(it, color = colors.error, contentColor = colors.onError)
-//            }
-//            Text(link.url)
-//        }
-//    }
-//}
 
 private fun buildStageGroups(stages: List<BillStage>): List<StageGroup> {
     val groups = mutableListOf<StageGroup>()
