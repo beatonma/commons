@@ -105,8 +105,10 @@
     <string name="account_sign_in" translatable="true">Sign in</string>
     <string name="account_sign_out" translatable="true">Sign out</string>
     <string name="account_sign_in_already_signed_in" translatable="true">You are signed in with account \'%1$s:%2$s\'</string>
-    <string name="account_sign_in_rationale" translatable="true">Sign in with your Google account to create an account on the Commons service. This is necessary if you want to vote or comment on any app content.\n\nPlease check our privacy policy for more details: <a href="https://snommoc.org/privacy">https://snommoc.org/privacy</a></string>
-    <string name="account_profile_about" translatable="true">Your username may be visible to other users. Your name, email address and photo never leave your device.\n\nPlease check our privacy policy for more details: <a href="https://snommoc.org/privacy">https://snommoc.org/privacy</a>.</string>
+    <string name="account_sign_in_rationale" translatable="true"><![CDATA[
+    <p>Sign in with your Google account to create an account on the Commons service. This is necessary if you want to vote or comment on any app content.</p>
+    <p>Please check our privacy policy for more details: <a href="https://snommoc.org/privacy">https://snommoc.org/privacy</a></p>
+    ]]></string>
     <string name="account_submit_new_username" translatable="true">Submit new username</string>
     <string name="account_username_hint" translatable="true">Choose a username</string>
     <string name="account_username_validation_too_short" translatable="true">Username must be at least %d characters.</string>
