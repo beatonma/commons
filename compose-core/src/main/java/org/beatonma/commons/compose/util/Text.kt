@@ -15,7 +15,7 @@ import java.util.regex.Pattern
 
 private const val DOT = '•'
 private const val SEPARATOR = " $DOT "
-internal const val URL_TAG = "url"
+internal const val ANNOTATION_TAG_URL = "url"
 
 @Composable
 fun dotted(vararg components: String?) =
@@ -200,6 +200,6 @@ internal fun String.withAnnotatedUrls(
         val last = result.range.last
 
         addStyle(style, first, last + 1)
-        addStringAnnotation(URL_TAG, result.value, first, last)
+        addStringAnnotation(ANNOTATION_TAG_URL, result.value, first, last)
     }
 }

@@ -38,6 +38,7 @@ import androidx.compose.ui.text.style.TextGeometricTransform
 import androidx.compose.ui.unit.em
 import androidx.core.text.getSpans
 import org.beatonma.commons.compose.components.text.ClickableText
+import org.beatonma.commons.core.extensions.fastForEach
 
 
 @Composable
@@ -60,7 +61,7 @@ fun HtmlText(
         annotatedText.getStringAnnotations(offset, offset)
             .firstOrNull()
             ?.let { annotation ->
-                if (annotation.tag == URL_TAG) {
+                if (annotation.tag == ANNOTATION_TAG_URL) {
                     uriHandler.openUri(annotation.item)
                 }
             }
@@ -84,7 +85,7 @@ private fun Spanned.asAnnotatedHtml(htmlStyle: HtmlStyle): AnnotatedString {
     return buildAnnotatedString {
         append(this@asAnnotatedHtml.toString())
         this@asAnnotatedHtml.getSpanRanges<ParcelableSpan>(htmlStyle)
-            .forEach { (span, style, start, end) ->
+            .fastForEach { (span, style, start, end) ->
                 when (span) {
                     is URLSpan -> {
                         addStyle(style, start, end)
@@ -289,9 +290,6 @@ data class HtmlStyle internal constructor(
     @Composable
     private fun Color.disabled(): Color = this.copy(alpha = ContentAlpha.disabled)
 }
-
-
-internal const val ANNOTATION_TAG_URL = "url"
 
 private inline fun <reified T : ParcelableSpan> Spanned.getSpanRanges(
     htmlStyle: HtmlStyle,

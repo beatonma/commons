@@ -25,7 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
-import org.beatonma.commons.compose.util.URL_TAG
+import org.beatonma.commons.compose.util.ANNOTATION_TAG_URL
 import org.beatonma.commons.compose.util.rememberLinkifiedText
 import org.beatonma.commons.themed.themedSpanStyle
 
@@ -144,7 +144,7 @@ fun LinkedText(
         annotatedText.getStringAnnotations(offset, offset)
             .firstOrNull()
             ?.let { annotation ->
-                if (annotation.tag == URL_TAG) {
+                if (annotation.tag == ANNOTATION_TAG_URL) {
                     resolvedOnClick(annotation.item)
                 }
             }
