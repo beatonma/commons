@@ -80,9 +80,9 @@ import org.beatonma.commons.data.core.room.entities.member.PhysicalAddress
 import org.beatonma.commons.data.core.room.entities.member.WebAddress
 import org.beatonma.commons.repo.result.IoLoading
 import org.beatonma.commons.theme.AppIcon
-import org.beatonma.commons.theme.CommonsPadding
 import org.beatonma.commons.theme.formatting.dateRange
 import org.beatonma.commons.themed.themedElevation
+import org.beatonma.commons.themed.themedPadding
 
 private const val AVATAR_ASPECT_RATIO = 1f
 internal const val TestTagMemberTitleBar = "title_bar"
@@ -222,7 +222,7 @@ private fun Weblinks(weblinks: List<WebAddress>, modifier: Modifier) {
         itemsIndexed(weblinks) { i, weblink ->
             val itemModifier = Modifier
                 .onlyWhen(i == 0) { padding(start = 4.dp) }
-                .padding(CommonsPadding.LinkItem)
+                .padding(end = 4.dp)
 
             Weblink(weblink, itemModifier)
         }
@@ -322,7 +322,7 @@ private fun ConstituencyLink(
                 onClick = { onConstituencyClick(constituency) }
             )
             .fillMaxWidth()
-            .padding(CommonsPadding.VerticalListItemLarge),
+            .padding(themedPadding.VerticalListItemLarge),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -372,7 +372,7 @@ private fun MemberHistory(
             history,
             collapseState = state,
             onCollapseStateChange = { state = it },
-            modifier = Modifier.padding(CommonsPadding.VerticalListItemLarge),
+            modifier = Modifier.padding(themedPadding.VerticalListItemLarge),
             barModifier = Modifier.padding(vertical = 6.dp),
             surfaceColor = surfaceColor,
             contentColor = contentColor,
@@ -391,7 +391,7 @@ private fun ContactInfo(
             EmptyMessage(R.string.member_contact_info_none)
         } else {
             Column {
-                val itemModifier = Modifier.padding(CommonsPadding.LinkItem)
+                val itemModifier = Modifier.padding(end = 4.dp)
                 addresses.fastForEachIndexed { i, address ->
                     Text(address.description, style = typography.overline)
 
@@ -450,7 +450,7 @@ private fun FinancialInterests(
                 lazy = false,
             ) { interest ->
                 Column(
-                    Modifier.padding(CommonsPadding.VerticalListItem)
+                    Modifier.padding(themedPadding.VerticalListItem)
                 ) {
                     Text(interest.category, style = typography.overline)
                     Text(interest.description)
@@ -479,7 +479,7 @@ private fun Links(modifier: Modifier = Modifier, content: LazyListScope.() -> Un
         LazyRow(
             Modifier
                 .fillMaxWidth()
-                .padding(CommonsPadding.Links)
+                .padding(vertical = 12.dp)
                 .then(modifier),
             content = content
         )

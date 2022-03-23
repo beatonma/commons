@@ -39,10 +39,10 @@ import org.beatonma.commons.compose.padding.padding
 import org.beatonma.commons.compose.util.dotted
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.data.core.room.entities.user.UserToken
-import org.beatonma.commons.theme.CommonsPadding
 import org.beatonma.commons.theme.onWarningSurface
 import org.beatonma.commons.theme.warningSurface
 import org.beatonma.commons.themed.themedAnimation
+import org.beatonma.commons.themed.themedPadding
 
 /**
  * Chooses the appropriate user UI to display depending on whether they are
@@ -172,7 +172,7 @@ private fun ProfileSheetContent(
                     themedAnimation.AnimatedVisibility(visible = isReadOnly, horizontal = false) {
                         Caption(
                             dotted(userToken.name, userToken.email),
-                            Modifier.padding(CommonsPadding.VerticalListItem)
+                            Modifier.padding(themedPadding.VerticalListItem)
                         )
                     }
                 }
@@ -219,7 +219,7 @@ private fun SignOutButton(
     CommonsOutlinedButton(
         onClick = onClick,
         modifier = Modifier
-            .padding(CommonsPadding.CardButton)
+            .padding(themedPadding.CardButton)
             .testTag(UserAccountTestTag.SignOut),
     ) {
         ResourceText(R.string.account_sign_out)
@@ -233,7 +233,7 @@ private fun DeleteAccountButton(
     WarningButton(
         onClick = onClick,
         modifier = Modifier
-            .padding(CommonsPadding.CardButton)
+            .padding(themedPadding.CardButton)
             .testTag(UserAccountTestTag.DeleteAccount),
     ) {
         ResourceText(R.string.account_delete_account_button)

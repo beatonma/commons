@@ -26,8 +26,8 @@ import org.beatonma.commons.compose.padding.EndOfContent
 import org.beatonma.commons.compose.padding.padding
 import org.beatonma.commons.compose.util.withAnnotatedStyle
 import org.beatonma.commons.snommoc.models.social.SocialComment
-import org.beatonma.commons.theme.CommonsPadding
 import org.beatonma.commons.themed.themedAnimation
+import org.beatonma.commons.themed.themedPadding
 
 @Composable
 internal fun CommentList(
@@ -105,7 +105,7 @@ private fun Comment(
             }
             .clickable { onClick(comment) }
             .fillMaxWidth()
-            .padding(CommonsPadding.VerticalListItem + CommonsPadding.ScreenHorizontal)
+            .padding(themedPadding.VerticalListItem + themedPadding.ScreenHorizontal)
             .testTag(SocialTestTag.Comment)
     ) {
         WithContentAlpha(ContentAlpha.high) {
@@ -117,7 +117,7 @@ private fun Comment(
                 Username(
                     comment.username,
                     style = typography.caption,
-                    modifier = Modifier.padding(CommonsPadding.HorizontalListItem)
+                    modifier = Modifier.padding(themedPadding.HorizontalListItem)
                 )
                 DateTime(comment.created)
             }

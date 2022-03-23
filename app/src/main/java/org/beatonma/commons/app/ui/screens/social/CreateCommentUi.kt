@@ -42,7 +42,7 @@ import org.beatonma.commons.compose.util.RequestFocusWhen
 import org.beatonma.commons.compose.util.rememberBoolean
 import org.beatonma.commons.compose.util.rememberText
 import org.beatonma.commons.data.core.room.entities.user.UserToken
-import org.beatonma.commons.theme.CommonsPadding
+import org.beatonma.commons.themed.themedPadding
 
 
 /**
@@ -105,7 +105,7 @@ private fun CreateCommentSheetContent(
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .padding(CommonsPadding.VerticalListItem),
+                    .padding(themedPadding.VerticalListItem),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -139,7 +139,7 @@ private fun CreateCommentSheetContent(
                 onClick = { socialActions.onCommentSubmitClick(commentText.value) },
                 modifier = Modifier
                     .align(Alignment.End)
-                    .padding(CommonsPadding.CardButton)
+                    .padding(themedPadding.CardButton)
                     .testTag(TestTag.Submit),
                 enabled = commentIsValid.value,
             ) {

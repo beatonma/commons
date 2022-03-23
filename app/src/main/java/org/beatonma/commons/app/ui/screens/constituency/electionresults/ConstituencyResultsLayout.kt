@@ -77,7 +77,6 @@ import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 import org.beatonma.commons.data.core.room.entities.member.Party
 import org.beatonma.commons.repo.result.IoLoading
 import org.beatonma.commons.theme.AppIcon
-import org.beatonma.commons.theme.CommonsPadding
 import org.beatonma.commons.theme.CommonsSize
 import org.beatonma.commons.theme.componentTitle
 import org.beatonma.commons.theme.formatting.formatPercent
@@ -247,7 +246,7 @@ private fun WinningCandidate(
                     ) {
                         Text(
                             candidate.votes.formatted() dot votePercentage.formatPercent(),
-                            Modifier.padding(CommonsPadding.LinkItem)
+                            Modifier.padding(end = 4.dp)
                         )
                         ResourceText(
                             R.string.constituency_winner_majority,

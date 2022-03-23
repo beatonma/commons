@@ -68,10 +68,10 @@ import org.beatonma.commons.snommoc.models.search.MemberSearchResult
 import org.beatonma.commons.snommoc.models.search.SearchResult
 import org.beatonma.commons.theme.AppIcon
 import org.beatonma.commons.theme.CommonsElevation
-import org.beatonma.commons.theme.CommonsPadding
 import org.beatonma.commons.theme.onSearchBar
 import org.beatonma.commons.theme.searchBar
 import org.beatonma.commons.theme.searchBarColors
+import org.beatonma.commons.themed.themedPadding
 
 internal typealias SearchUiState = ExpandCollapseState
 
@@ -174,7 +174,7 @@ private fun SearchBar(
     ) {
         Row(
             Modifier
-                .padding(CommonsPadding.SearchBar)
+                .padding(themedPadding.Screen)
                 .statusBarsPadding(animation.statusBarProgress),
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
@@ -285,7 +285,7 @@ private fun MemberSearchResult(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClickMember(result) }
-            .padding(CommonsPadding.VerticalListItemLarge)
+            .padding(themedPadding.VerticalListItemLarge)
             .testTag(SearchTestTag.Result),
     )
 }

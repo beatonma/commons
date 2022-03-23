@@ -56,8 +56,8 @@ import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.preview.InAppPreview
 import org.beatonma.commons.sampledata.SampleUserToken
 import org.beatonma.commons.theme.AppIcon
-import org.beatonma.commons.theme.CommonsPadding
 import org.beatonma.commons.themed.themedAnimation
+import org.beatonma.commons.themed.themedPadding
 
 internal enum class EditableState {
     ReadOnly,
@@ -249,7 +249,7 @@ private fun EditableUsernameLayout(
     ) {
         ComponentTitle(
             stringResource(R.string.account_username_hint),
-            Modifier.padding(CommonsPadding.VerticalListItem),
+            Modifier.padding(themedPadding.VerticalListItem),
             autoPadding = false,
         )
 

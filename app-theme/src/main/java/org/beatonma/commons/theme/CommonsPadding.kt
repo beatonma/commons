@@ -5,28 +5,22 @@ import org.beatonma.commons.themed.ThemedPadding
 import org.beatonma.commons.themed.paddingValues
 
 
-object CommonsPadding : ThemedPadding {
+internal object CommonsPadding : ThemedPadding {
     override val Zero = paddingValues(0.dp)
     override val Card = paddingValues(all = 12.dp, bottom = 16.dp)
 
     // Standard inset from screen edges
     override val ScreenHorizontal = paddingValues(horizontal = 12.dp)
-    override val Screen = paddingValues(16.dp)
+    override val Screen = paddingValues(16.dp, horizontal = 12.dp)
 
     override val Spacer = paddingValues(bottom = 16.dp)
 
     override val VerticalListItem = paddingValues(bottom = 8.dp)
     override val VerticalListItemLarge = paddingValues(vertical = 8.dp)
-    override val HorizontalListItem = paddingValues(end = 12.dp)
+    override val HorizontalListItem = paddingValues(end = 8.dp)
 
     override val HorizontalSeparator = paddingValues(vertical = 8.dp)
     override val VerticalSeparator = paddingValues(horizontal = 8.dp)
-
-    val SearchBar = Screen
-
-    // For rows of Weblink, EmailLink, PhoneLink
-    val LinkItem = paddingValues(end = 4.dp)
-    val Links = paddingValues(vertical = 12.dp)
 
     override val IconSmall = paddingValues(8.dp)
     override val IconLarge = paddingValues(16.dp)

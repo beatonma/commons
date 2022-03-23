@@ -51,9 +51,9 @@ import org.beatonma.commons.data.core.room.entities.bill.BillStage
 import org.beatonma.commons.data.core.room.entities.bill.BillType
 import org.beatonma.commons.data.core.room.entities.bill.ParliamentarySession
 import org.beatonma.commons.repo.result.IoLoading
-import org.beatonma.commons.theme.CommonsPadding
 import org.beatonma.commons.theme.formatting.formatted
 import org.beatonma.commons.themed.paddingValues
+import org.beatonma.commons.themed.themedPadding
 import java.time.LocalDate
 
 internal val LocalBillActions: ProvidableCompositionLocal<BillActions> =
@@ -86,12 +86,14 @@ fun BillDetailLayout(
     bill: Bill,
     onSponsorClick: SponsorAction = LocalBillActions.current.onClickProfile,
 ) {
+    val sectionModifier = Modifier.padding(themedPadding.VerticalListItemLarge)
+
     SocialScaffold(
         title = { ScreenTitle(bill.data.title) },
         aboveSocial = null,
         belowSocial = null,
     ) { modifier ->
-        lazyContent(bill, onSponsorClick, modifier)
+        lazyContent(bill, onSponsorClick, modifier.then(sectionModifier))
     }
 }
 
@@ -101,23 +103,20 @@ private fun LazyListScope.lazyContent(
     onSponsorClick: SponsorAction,
     modifier: Modifier = Modifier,
 ) {
-    val sectionModifier = modifier
-        .padding(CommonsPadding.VerticalListItemLarge)
-
     item {
-        Description(bill.type, bill.sessions, bill, sectionModifier)
+        Description(bill.type, bill.sessions, bill, modifier)
     }
 
     optionalItem(bill.sponsors) { sponsors ->
-        Sponsors(sponsors, onSponsorClick, sectionModifier)
+        Sponsors(sponsors, onSponsorClick, modifier)
     }
 
     optionalItem(bill.stages) { stages ->
-        Stages(stages, sectionModifier)
+        Stages(stages, modifier)
     }
 
     optionalItem(bill.publications) { publications ->
-        Publications(publications, sectionModifier)
+        Publications(publications, modifier)
     }
 }
 
