@@ -67,10 +67,10 @@ import org.beatonma.commons.sampledata.SampleSearchResults
 import org.beatonma.commons.snommoc.models.search.MemberSearchResult
 import org.beatonma.commons.snommoc.models.search.SearchResult
 import org.beatonma.commons.theme.AppIcon
-import org.beatonma.commons.theme.CommonsElevation
 import org.beatonma.commons.theme.onSearchBar
 import org.beatonma.commons.theme.searchBar
 import org.beatonma.commons.theme.searchBarColors
+import org.beatonma.commons.themed.themedElevation
 import org.beatonma.commons.themed.themedPadding
 
 internal typealias SearchUiState = ExpandCollapseState
@@ -296,7 +296,7 @@ private fun searchBarAnimation(expansionProgress: Float) =
         expansionProgress,
         statusBarProgress = expansionProgress.progressIn(KeyframeFillStatusBar, 1F),
         widthProgress = expansionProgress.progressIn(0.1F, KeyframeFillWidth),
-        elevation = expansionProgress.lerpBetween(0.dp, CommonsElevation.ModalSurface),
+        elevation = expansionProgress.lerpBetween(0.dp, themedElevation.ModalSurface),
         surfaceColor = expansionProgress
             .progressIn(0F, KeyframeIsOpaque)
             .lerpBetween(Color.Transparent, colors.searchBar),

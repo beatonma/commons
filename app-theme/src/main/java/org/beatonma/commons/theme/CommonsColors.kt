@@ -15,7 +15,7 @@ import org.beatonma.commons.theme.color.resolveColor
 /**
  * Standard color definitions for MaterialTheme.
  */
-val CommonsLightThemeColors = lightColors(
+internal val CommonsLightThemeColors = lightColors(
     primary = CommonsColor.Primary.light,
     primaryVariant = CommonsColor.PrimaryVariant.light,
     onPrimary = CommonsColor.Text.PrimaryLight,
@@ -37,7 +37,7 @@ val CommonsLightThemeColors = lightColors(
 /**
  * Standard color definitions for MaterialTheme.
  */
-val CommonsDarkThemeColors: Colors = darkColors(
+internal val CommonsDarkThemeColors: Colors = darkColors(
     primary = CommonsColor.Primary.dark,
     primaryVariant = CommonsColor.PrimaryVariant.dark,
     onPrimary = CommonsColor.Text.PrimaryDark,

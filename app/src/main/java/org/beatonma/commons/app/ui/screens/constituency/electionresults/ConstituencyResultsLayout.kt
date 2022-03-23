@@ -77,13 +77,13 @@ import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 import org.beatonma.commons.data.core.room.entities.member.Party
 import org.beatonma.commons.repo.result.IoLoading
 import org.beatonma.commons.theme.AppIcon
-import org.beatonma.commons.theme.CommonsSize
 import org.beatonma.commons.theme.componentTitle
 import org.beatonma.commons.theme.formatting.formatPercent
 import org.beatonma.commons.theme.formatting.formatted
 import org.beatonma.commons.theme.onWarningSurface
 import org.beatonma.commons.theme.warningSurface
 import org.beatonma.commons.themed.themedPadding
+import org.beatonma.commons.themed.themedSize
 import java.util.Locale
 
 
@@ -341,7 +341,7 @@ private fun CandidatePosition(
 ) {
     Box(
         modifier = Modifier
-            .size(CommonsSize.IconButton)
+            .size(themedSize.IconButton)
             .clip(shapes.small)
             .background(if (withBackgroundColor) partyWithTheme.theme.primary else Color.Transparent),
         contentAlignment = Alignment.Center,

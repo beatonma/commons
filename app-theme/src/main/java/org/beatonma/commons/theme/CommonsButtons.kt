@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import org.beatonma.commons.themed.ThemedButtons
 
-object CommonsButtons : ThemedButtons {
+internal object CommonsButtons : ThemedButtons {
     @Composable
     override fun outlineButtonColors() = buttonColors(
         contentColor = colors.primary,
