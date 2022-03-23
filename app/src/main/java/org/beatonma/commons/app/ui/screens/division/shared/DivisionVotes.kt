@@ -29,9 +29,6 @@ import org.beatonma.commons.data.core.room.entities.member.Party
 inline fun <reified V : ResolvedHouseVote<T>, T : DivisionVoteType> List<V>.sortedVotes() =
     this.sortedBy { it.data.memberName }
 
-//fun <V: DivisionVoteType, T: ResolvedHouseVote<V>> List<ResolvedHouseVote<T>>.sortedVotes() =
-//    this.sortedBy { it.data.memberName }
-
 
 @Composable
 fun <T : DivisionVoteType> DivisionVotesLaunchedEffect(

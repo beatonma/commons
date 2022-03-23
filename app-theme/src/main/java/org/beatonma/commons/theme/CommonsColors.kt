@@ -73,6 +73,12 @@ val Colors.warningSurface: Color
 val Colors.onWarningSurface: Color
     @Composable get() = resolveColor(CommonsColor.OnWarningSurface)
 
+val Colors.selectedSurface: Color
+    @Composable get() = resolveColor(CommonsColor.SelectedSurface)
+
+val Colors.onSelectedSurface: Color
+    @Composable get() = resolveColor(CommonsColor.OnSelectedSurface)
+
 val Colors.politicalVotes get() = PoliticalColor.Vote
 val Colors.house get() = PoliticalColor.House
 val Colors.graphPrimaryColors get() = CommonsColor.Graph.Primary
@@ -86,22 +92,22 @@ val invertedColors
         false -> CommonsLightThemeColors
     }
 
-//val Colors.textPrimary: Color
-//    @Composable get() = resolveColor(CommonsColor.TextPrimary)
-//
-//val Colors.textSecondary: Color
-//    @Composable get() = resolveColor(CommonsColor.TextSecondary)
-//
-//val Colors.textTertiary: Color
-//    @Composable get() = resolveColor(CommonsColor.TextTertiary)
+val Colors.textPrimary: Color
+    @Composable get() = resolveColor(CommonsColor.TextPrimary)
+
+val Colors.textSecondary: Color
+    @Composable get() = resolveColor(CommonsColor.TextSecondary)
+
+val Colors.textTertiary: Color
+    @Composable get() = resolveColor(CommonsColor.TextTertiary)
 
 val Colors.textPrimaryLight: Color get() = resolveColor(CommonsColor.Text.PrimaryLight)
-//val Colors.textSecondaryLight: Color get() = resolveColor(CommonsColor.Text.SecondaryLight)
-//val Colors.textTertiaryLight: Color get() = resolveColor(CommonsColor.Text.TertiaryLight)
+val Colors.textSecondaryLight: Color get() = resolveColor(CommonsColor.Text.SecondaryLight)
+val Colors.textTertiaryLight: Color get() = resolveColor(CommonsColor.Text.TertiaryLight)
 
 val Colors.textPrimaryDark: Color get() = resolveColor(CommonsColor.Text.PrimaryDark)
-//val Colors.textSecondaryDark: Color get() = resolveColor(CommonsColor.Text.SecondaryDark)
-//val Colors.textTertiaryDark: Color get() = resolveColor(CommonsColor.Text.TertiaryDark)
+val Colors.textSecondaryDark: Color get() = resolveColor(CommonsColor.Text.SecondaryDark)
+val Colors.textTertiaryDark: Color get() = resolveColor(CommonsColor.Text.TertiaryDark)
 
 val Colors.searchBarColors
     @Composable get() =

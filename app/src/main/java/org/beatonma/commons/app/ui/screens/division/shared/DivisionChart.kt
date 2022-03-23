@@ -1,27 +1,19 @@
 package org.beatonma.commons.app.ui.screens.division.shared
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.selection.selectable
-import androidx.compose.material.MaterialTheme.colors
-import androidx.compose.material.MaterialTheme.shapes
-import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.unit.dp
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.components.charts.ChartItem
-import org.beatonma.commons.app.ui.components.charts.ChartKeyItem
 import org.beatonma.commons.app.ui.components.charts.HorizontalStackedBarChart
-import org.beatonma.commons.app.ui.components.charts.selectionDecoration
 import org.beatonma.commons.compose.components.FlowRow
+import org.beatonma.commons.compose.components.button.SelectableButton
 import org.beatonma.commons.compose.components.text.ResourceText
 import org.beatonma.commons.compose.padding.padding
 import org.beatonma.commons.core.DivisionVoteType
@@ -138,7 +130,9 @@ private fun <T : DivisionVoteType> DivisionVoteChart(
             voteTypes,
             voteTypeFilter,
             onSelectChanged,
-            Modifier.padding(themedPadding.HorizontalListItem),
+            Modifier
+                .padding(themedPadding.ScreenHorizontal)
+                .fillMaxWidth(),
         )
     }
 }
@@ -188,27 +182,18 @@ private fun <T : DivisionVoteType> ChartKeyItem(
 ) {
     if (voteCount == 0) return
 
-    ChartKeyItem(
-        icon = { DivisionVoteIcon(voteType, Modifier.padding(themedPadding.IconSmall)) },
-        description = {
+    SelectableButton(
+        selected,
+        onSelectChanged,
+        modifier,
+        icon = { DivisionVoteIcon(voteType) },
+        content = {
             ResourceText(
                 voteType.descriptionRes,
                 voteCount,
                 withAnnotatedStyle = true
             )
-        },
-        modifier = modifier
-            .clip(shapes.small)
-            .selectable(
-                selected = selected,
-                interactionSource = remember(::MutableInteractionSource),
-                indication = rememberRipple(color = colors.primary),
-                role = Role.Checkbox,
-                onClick = { onSelectChanged(!selected) },
-            )
-            .selectionDecoration(selected, color = colors.primary)
-            .padding(4.dp)
-            .padding(end = 8.dp),
+        }
     )
 }
 

@@ -36,9 +36,9 @@ internal object CommonsColor {
     val Background: Themed = themed(Color(0xff_EB_E9_E8), Color(0xff_11_11_11))
     val Surface: Themed = themed(Color.White, Color(0xff_22_22_22))
 
-    //    val TextPrimary: Themed = themed(Text.PrimaryDark, Text.PrimaryLight)
-//    val TextSecondary: Themed = themed(Text.SecondaryDark, Text.SecondaryLight)
-//    val TextTertiary: Themed = themed(Text.TertiaryDark, Text.TertiaryLight)
+    val TextPrimary: Themed = themed(Text.PrimaryDark, Text.PrimaryLight)
+    val TextSecondary: Themed = themed(Text.SecondaryDark, Text.SecondaryLight)
+    val TextTertiary: Themed = themed(Text.TertiaryDark, Text.TertiaryLight)
     val Primary: Themed = themed(Accent.Purple, Accent.Mint)
     val PrimaryVariant: Themed = themed(Accent.DarkPurple, Accent.DarkMint)
     val Secondary: Themed = themed(Accent.Mint, Accent.Purple)
@@ -47,6 +47,8 @@ internal object CommonsColor {
     val OnWarningSurface: Color = Text.PrimaryLight
     val SearchBar: Color = Color(0xff_48406e)
     val OnSearchBar: Color = Text.PrimaryLight
+    val SelectedSurface: Themed = themed(Color(0xff_f1ebfc), Color(0xff_b0d6c6))
+    val OnSelectedSurface: Color = Text.PrimaryDark
 
     val Positive = Color(0xff_4C_AF_50)
     val Negative = Color(0xff_F4_43_36)

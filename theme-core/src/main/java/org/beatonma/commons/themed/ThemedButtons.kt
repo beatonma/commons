@@ -21,13 +21,16 @@ interface ThemedButtons {
     fun warningButtonColors(): ButtonColors
 
     @Composable
-    fun contentButtonColors(): ButtonColors
+    fun surfaceButtonColors(): ButtonColors
+
+    @Composable
+    fun accentButtonColors(): ButtonColors
 
     @Composable
     fun buttonColors(
         contentColor: Color,
         backgroundColor: Color,
-        disabledContentColor: Color
+        disabledContentColor: Color,
     ): ButtonColors
 
     @Composable

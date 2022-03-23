@@ -1,10 +1,13 @@
 package org.beatonma.commons.compose.components
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Placeable
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.LayoutDirection
 import org.beatonma.commons.core.extensions.fastForEach
 import org.beatonma.commons.core.extensions.fastForEachIndexed
 
@@ -15,6 +18,8 @@ import org.beatonma.commons.core.extensions.fastForEachIndexed
 @Composable
 fun FlowRow(
     modifier: Modifier = Modifier,
+    alignment: Alignment.Horizontal = Alignment.Start,
+    layoutDirection: LayoutDirection = LocalLayoutDirection.current,
     content: @Composable () -> Unit,
 ) {
     Layout(
@@ -28,7 +33,8 @@ fun FlowRow(
         val rowSizes = mutableListOf<IntSize>()
         val rowStartY = mutableListOf(0)
 
-        val placeables = measurables.map { it.measure(constraints) }
+        val itemConstraints = constraints.copy(minWidth = 0)
+        val placeables = measurables.map { it.measure(itemConstraints) }
 
         var rowHeight = 0
         var rowWidth = 0
@@ -57,15 +63,14 @@ fun FlowRow(
             storeRowAndReset()
         }
 
-        val totalWidth = rowSizes.maxOf(IntSize::width)
         val totalHeight = rowSizes.sumOf(IntSize::height)
 
         check(rows.size < rowStartY.size)
         check(currentRow.isEmpty())
 
-        layout(totalWidth, totalHeight) {
+        layout(maxWidth, totalHeight) {
             rows.fastForEachIndexed { rowIndex, rowItems ->
-                var left = 0
+                var left = alignment.align(rowSizes[rowIndex].width, maxWidth, layoutDirection)
                 val top = rowStartY[rowIndex]
 
                 rowItems.fastForEach { item ->

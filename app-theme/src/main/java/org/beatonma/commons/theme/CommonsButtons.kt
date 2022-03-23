@@ -1,7 +1,6 @@
 package org.beatonma.commons.theme
 
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -22,11 +21,17 @@ object CommonsButtons : ThemedButtons {
         )
 
     @Composable
-    override fun contentButtonColors() =
+    override fun surfaceButtonColors() =
         buttonColors(
-            contentColor = LocalContentColor.current,
-            backgroundColor = Color.Transparent,
+            contentColor = colors.onSurface,
+            backgroundColor = colors.surface,
         )
+
+    @Composable
+    override fun accentButtonColors() = buttonColors(
+        contentColor = colors.onSelectedSurface,
+        backgroundColor = colors.selectedSurface,
+    )
 
     @Composable
     override fun buttonColors(
