@@ -101,7 +101,15 @@ private object TestButtons : ThemedButtons {
         )
 
     @Composable
-    override fun contentButtonColors(): ButtonColors =
+    override fun surfaceButtonColors(): ButtonColors =
+        buttonColors(
+            Color.Black,
+            Color.White,
+            Color.Green,
+        )
+
+    @Composable
+    override fun accentButtonColors(): ButtonColors =
         buttonColors(
             Color.Black,
             Color.White,
@@ -112,7 +120,7 @@ private object TestButtons : ThemedButtons {
     override fun buttonColors(
         contentColor: Color,
         backgroundColor: Color,
-        disabledContentColor: Color
+        disabledContentColor: Color,
     ): ButtonColors =
         ButtonDefaults.buttonColors(
             contentColor = Color.White,
