@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.test.filters.MediumTest
 import org.beatonma.commons.app.TestTheme
+import org.beatonma.commons.app.ui.components.members.MembersLayout
 import org.beatonma.commons.compose.util.HslColor
 import org.beatonma.commons.compose.util.toColor
 import org.beatonma.commons.testcompose.test.ComposeTest
