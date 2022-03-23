@@ -36,7 +36,7 @@ import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.theme.onWarningSurface
 import org.beatonma.commons.theme.warningSurface
-import org.beatonma.commons.themed.themedButtons
+import org.beatonma.commons.themed.buttons
 
 
 @Composable
@@ -98,15 +98,15 @@ private fun ConfirmDeletionButton(
         modifier = Modifier.testTag(UserAccountTestTag.DeleteAccount),
         enabled = enabled,
         colors = doubleConfirmationColors(
-            safeColors = themedButtons.buttonColors(
+            safeColors = buttons.buttonColors(
                 contentColor = colors.onWarningSurface,
                 backgroundColor = colors.warningSurface
             ),
-            awaitingConfirmationColors = themedButtons.buttonColors(
+            awaitingConfirmationColors = buttons.buttonColors(
                 contentColor = colors.warningSurface,
                 backgroundColor = colors.onWarningSurface
             ),
-            confirmedColor = themedButtons.surfaceButtonColors()
+            confirmedColor = buttons.surfaceButtonColors()
         ),
         border = when (confirmationState) {
             ConfirmationState.Confirmed -> null
@@ -124,7 +124,7 @@ private fun CancelButton(
 ) {
     CommonsOutlinedButton(
         onClick = onClick,
-        colors = themedButtons.surfaceButtonColors(),
+        colors = buttons.surfaceButtonColors(),
         modifier = Modifier.testTag(TestTag.Cancel)
     ) {
         ResourceText(R.string.account_delete_cancel_button)

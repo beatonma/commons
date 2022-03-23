@@ -56,8 +56,8 @@ import org.beatonma.commons.compose.modifiers.onlyWhen
 import org.beatonma.commons.compose.modifiers.wrapContentWidth
 import org.beatonma.commons.compose.padding.padding
 import org.beatonma.commons.core.extensions.progressIn
-import org.beatonma.commons.themed.themedAnimation
-import org.beatonma.commons.themed.themedSize
+import org.beatonma.commons.themed.animation
+import org.beatonma.commons.themed.size
 
 
 @Composable
@@ -196,7 +196,7 @@ private fun BaseCollapsibleChip(
         }
     }
 
-    val animationProgress by themedAnimation.animateFloatAsState(
+    val animationProgress by animation.animateFloatAsState(
         if (state.isExpanded) 1F else 0F
     )
 
@@ -245,7 +245,7 @@ private fun AccessibleChipLayout(
             contentDescription = null,
             modifier = Modifier
                 .padding(all = IconPadding, start = ExpandedPadding)
-                .size(themedSize.IconSmall),
+                .size(size.IconSmall),
             tint = tint
         )
 
@@ -329,7 +329,7 @@ private fun CancelIcon(
             modifier = Modifier
                 .wrapContentWidth(animationProgress)
                 .padding(all = IconPadding, start = ExpandedPadding)
-                .size(themedSize.IconSmall)
+                .size(size.IconSmall)
                 .alpha(animationProgress),
             tint = colors.error
         )
@@ -358,7 +358,7 @@ private fun ExpandedContent(
             contentDescription = null,
             modifier = Modifier
                 .padding(IconPadding)
-                .size(themedSize.IconSmall),
+                .size(size.IconSmall),
             tint = tint,
         )
 

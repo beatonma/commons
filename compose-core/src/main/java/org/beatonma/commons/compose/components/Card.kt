@@ -16,8 +16,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.compose.padding.padding
 import org.beatonma.commons.themed.Padding
-import org.beatonma.commons.themed.themedElevation
-import org.beatonma.commons.themed.themedPadding
+import org.beatonma.commons.themed.padding
 
 @Composable
 fun Card(
@@ -26,7 +25,7 @@ fun Card(
     backgroundColor: Color = colors.surface,
     contentColor: Color = colors.onSurface,
     border: BorderStroke? = null,
-    elevation: Dp = themedElevation.Card,
+    elevation: Dp = org.beatonma.commons.themed.elevation.Card,
     content: @Composable () -> Unit,
 ) {
     Surface(
@@ -46,7 +45,7 @@ fun Card(
 @Composable
 inline fun CardText(
     modifier: Modifier = Modifier,
-    padding: Padding = themedPadding.Card,
+    padding: Padding = org.beatonma.commons.themed.padding.Card,
     crossinline content: @Composable BoxScope.() -> Unit,
 ) {
     Box(modifier.padding(padding), content = content)
@@ -57,5 +56,5 @@ inline fun BottomCardText(
     modifier: Modifier = Modifier,
     crossinline content: @Composable BoxScope.() -> Unit,
 ) {
-    CardText(modifier, themedPadding.Card.copy(bottom = 0.dp), content)
+    CardText(modifier, padding.Card.copy(bottom = 0.dp), content)
 }

@@ -70,8 +70,8 @@ import org.beatonma.commons.theme.AppIcon
 import org.beatonma.commons.theme.onSearchBar
 import org.beatonma.commons.theme.searchBar
 import org.beatonma.commons.theme.searchBarColors
-import org.beatonma.commons.themed.themedElevation
-import org.beatonma.commons.themed.themedPadding
+import org.beatonma.commons.themed.elevation
+import org.beatonma.commons.themed.padding
 
 internal typealias SearchUiState = ExpandCollapseState
 
@@ -174,7 +174,7 @@ private fun SearchBar(
     ) {
         Row(
             Modifier
-                .padding(themedPadding.Screen)
+                .padding(padding.Screen)
                 .statusBarsPadding(animation.statusBarProgress),
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
@@ -285,7 +285,7 @@ private fun MemberSearchResult(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClickMember(result) }
-            .padding(themedPadding.VerticalListItemLarge)
+            .padding(padding.VerticalListItemLarge)
             .testTag(SearchTestTag.Result),
     )
 }
@@ -296,7 +296,7 @@ private fun searchBarAnimation(expansionProgress: Float) =
         expansionProgress,
         statusBarProgress = expansionProgress.progressIn(KeyframeFillStatusBar, 1F),
         widthProgress = expansionProgress.progressIn(0.1F, KeyframeFillWidth),
-        elevation = expansionProgress.lerpBetween(0.dp, themedElevation.ModalSurface),
+        elevation = expansionProgress.lerpBetween(0.dp, elevation.ModalSurface),
         surfaceColor = expansionProgress
             .progressIn(0F, KeyframeIsOpaque)
             .lerpBetween(Color.Transparent, colors.searchBar),

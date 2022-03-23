@@ -13,9 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.compose.padding.padding
-import org.beatonma.commons.themed.themedAnimation
-import org.beatonma.commons.themed.themedButtons
-import org.beatonma.commons.themed.themedPadding
+import org.beatonma.commons.themed.animation
+import org.beatonma.commons.themed.buttons
+import org.beatonma.commons.themed.padding
 
 @Composable
 fun SelectableButton(
@@ -23,22 +23,22 @@ fun SelectableButton(
     onSelectChanged: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     shape: Shape = shapes.small,
-    selectedColors: ButtonColors = themedButtons.accentButtonColors(),
-    unselectedColors: ButtonColors = themedButtons.outlineButtonColors(),
+    selectedColors: ButtonColors = buttons.accentButtonColors(),
+    unselectedColors: ButtonColors = buttons.outlineButtonColors(),
     icon: (@Composable () -> Unit)?,
     content: @Composable () -> Unit,
 ) {
-    val backgroundColor by themedAnimation.animateColorAsState(targetValue = (if (selected) selectedColors.backgroundColor(
+    val backgroundColor by animation.animateColorAsState(targetValue = (if (selected) selectedColors.backgroundColor(
         true) else unselectedColors.backgroundColor(true)).value)
-    val contentColor by themedAnimation.animateColorAsState(targetValue = (if (selected) selectedColors.contentColor(
+    val contentColor by animation.animateColorAsState(targetValue = (if (selected) selectedColors.contentColor(
         true) else unselectedColors.contentColor(true)).value)
 
-    val buttonColors = themedButtons.buttonColors(
+    val buttonColors = buttons.buttonColors(
         contentColor = contentColor,
         backgroundColor = backgroundColor,
     )
 
-    val borderStroke by themedAnimation.animateDpAsState(if (selected) 0.dp else 2.dp)
+    val borderStroke by animation.animateDpAsState(if (selected) 0.dp else 2.dp)
     val elevation = ButtonDefaults.elevation(if (selected) 2.dp else 0.dp)
 
     Button(
@@ -51,7 +51,7 @@ fun SelectableButton(
     ) {
         if (icon != null) {
             Box(
-                Modifier.padding(themedPadding.HorizontalListItem)
+                Modifier.padding(padding.HorizontalListItem)
             ) {
                 icon()
             }

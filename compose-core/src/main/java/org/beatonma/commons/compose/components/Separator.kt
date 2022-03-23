@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.compose.padding.padding
 import org.beatonma.commons.compose.util.size
-import org.beatonma.commons.themed.themedPadding
+import org.beatonma.commons.themed.padding
 
 private const val ALPHA = 0.1F
 
@@ -41,7 +41,7 @@ fun HorizontalSeparator(
             Separator(
                 color = color,
                 modifier = Modifier
-                    .padding(themedPadding.HorizontalSeparator)
+                    .padding(padding.HorizontalSeparator)
                     .height(1.dp)
                     .fillMaxWidth(0.25F)
                     .then(modifier),
@@ -66,7 +66,7 @@ fun VerticalSeparator(
             modifier = Modifier
                 .width(1.dp)
                 .fillMaxHeight(0.6F)
-                .padding(themedPadding.VerticalSeparator)
+                .padding(padding.VerticalSeparator)
                 .then(modifier)
         )
     }
@@ -86,8 +86,8 @@ private fun HorizontalSeparatorWithContent(
 ) {
     val alignment = Alignment.Center
     val lineModifier = Modifier
-        .padding(themedPadding.HorizontalSeparator)
-        .padding(themedPadding.VerticalSeparator)
+        .padding(padding.HorizontalSeparator)
+        .padding(padding.VerticalSeparator)
         .height(1.dp)
 
     CompositionLocalProvider(

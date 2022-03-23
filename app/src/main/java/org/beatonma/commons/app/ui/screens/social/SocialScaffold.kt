@@ -45,7 +45,7 @@ import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.core.extensions.reversed
 import org.beatonma.commons.preview.PreviewProviders
 import org.beatonma.commons.snommoc.models.social.SocialContent
-import org.beatonma.commons.themed.themedAnimation
+import org.beatonma.commons.themed.animation
 import kotlin.math.max
 
 private const val DefaultParallax: Float = .33f
@@ -173,7 +173,7 @@ fun SocialScaffold(
                 scrollState,
                 "social_header",
             ) { _, headerModifier ->
-                val headerHeight by themedAnimation.animateIntAsState(
+                val headerHeight by animation.animateIntAsState(
                     if (socialUiState.isCollapsed) metrics.primaryHeaderHeight else metrics.socialHeaderHeight
                 )
 

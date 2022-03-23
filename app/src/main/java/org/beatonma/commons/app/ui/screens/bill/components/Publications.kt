@@ -44,7 +44,7 @@ import org.beatonma.commons.data.core.room.entities.bill.BillPublication
 import org.beatonma.commons.data.core.room.entities.bill.BillPublicationLink
 import org.beatonma.commons.theme.AppIcon
 import org.beatonma.commons.theme.formatting.formatted
-import org.beatonma.commons.themed.themedPadding
+import org.beatonma.commons.themed.padding
 import org.beatonma.commons.themed.titleMedium
 import org.beatonma.commons.themed.titleSmall
 
@@ -149,7 +149,7 @@ private fun FocussedPublication(publication: BillPublication, defocus: () -> Uni
             Icon(AppIcon.Back, null,
                 Modifier
                     .clickable(onClick = defocus)
-                    .padding(themedPadding.IconLarge.copy(start = 0.dp))
+                    .padding(padding.IconLarge.copy(start = 0.dp))
             )
 
             Text("Links", style = typography.titleMedium)
@@ -187,7 +187,7 @@ private fun PublicationLink(link: BillPublicationLink) {
         Modifier
             .clickable(onClick = openUrl(link.url))
             .fillMaxWidth()
-            .padding(themedPadding.VerticalListItem)
+            .padding(padding.VerticalListItem)
     ) {
         Text(link.title, style = typography.titleSmall)
 

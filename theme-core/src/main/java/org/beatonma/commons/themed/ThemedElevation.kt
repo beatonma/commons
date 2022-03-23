@@ -8,7 +8,7 @@ import androidx.compose.ui.unit.Dp
 val LocalElevation =
     staticCompositionLocalOf<ThemedElevation> { error("LocalElevation has not been provided") }
 
-val themedElevation: ThemedElevation
+inline val elevation: ThemedElevation
     @ReadOnlyComposable @Composable get() = LocalElevation.current
 
 interface ThemedElevation {

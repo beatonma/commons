@@ -46,7 +46,7 @@ import org.beatonma.commons.sampledata.SampleConstituency
 import org.beatonma.commons.sampledata.SampleMember
 import org.beatonma.commons.sampledata.SampleParty
 import org.beatonma.commons.theme.invertedColors
-import org.beatonma.commons.themed.themedElevation
+import org.beatonma.commons.themed.elevation
 
 private val CardWidth = 260.dp
 private val TextPadding = 16.dp
@@ -77,7 +77,7 @@ fun MemberLayout(
                     this.contentDescription = contentDescription
                 },
             color = invertedColors.surface,
-            elevation = themedElevation.Card,
+            elevation = elevation.Card,
             shape = shapes.small,
         ) {
             if (profile.portraitUrl == null) {
@@ -127,7 +127,7 @@ private fun MemberLayoutCard(
                 this.contentDescription = contentDescription
             },
         color = invertedColors.surface,
-        elevation = themedElevation.Card,
+        elevation = elevation.Card,
         shape = shapes.small,
         content = content,
     )

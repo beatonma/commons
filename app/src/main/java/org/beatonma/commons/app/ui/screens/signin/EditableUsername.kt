@@ -56,8 +56,8 @@ import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.preview.InAppPreview
 import org.beatonma.commons.sampledata.SampleUserToken
 import org.beatonma.commons.theme.AppIcon
-import org.beatonma.commons.themed.themedAnimation
-import org.beatonma.commons.themed.themedPadding
+import org.beatonma.commons.themed.animation
+import org.beatonma.commons.themed.padding
 
 internal enum class EditableState {
     ReadOnly,
@@ -77,7 +77,7 @@ internal fun EditableUsername(
     focusRequester: FocusRequester = remember(::FocusRequester),
     coroutineScope: CoroutineScope = rememberCoroutineScope()
 ) {
-    Crossfade(targetState = state.value, animationSpec = themedAnimation.spec()) { editableState ->
+    Crossfade(targetState = state.value, animationSpec = animation.spec()) { editableState ->
         when (editableState) {
             EditableState.ReadOnly ->
                 ReadOnlyUsernameLayout(
@@ -114,7 +114,7 @@ private fun ReadOnlyUsernameLayout(
     modifier: Modifier = Modifier,
 ) {
     val contentDescription = stringResource(R.string.content_description_edit_username)
-    themedAnimation.AnimatedVisibility(visible = true, initiallyVisible = false, expand = false) {
+    animation.AnimatedVisibility(visible = true, initiallyVisible = false, expand = false) {
         val content: @Composable () -> Unit = {
             Username(
                 userToken.username,
@@ -162,7 +162,7 @@ private fun AwaitingResultLayout(
     userToken: UserToken,
     modifier: Modifier = Modifier,
 ) {
-    themedAnimation.AnimatedVisibility(visible = true, initiallyVisible = false, expand = false) {
+    animation.AnimatedVisibility(visible = true, initiallyVisible = false, expand = false) {
         Row(
             modifier = modifier.testTag(EditableState.AwaitingResult),
             verticalAlignment = Alignment.CenterVertically,
@@ -213,7 +213,7 @@ private fun EditableUsernameLayout(
         }
     }
 
-    themedAnimation.AnimatedVisibility(visible = true, initiallyVisible = false, expand = false) {
+    animation.AnimatedVisibility(visible = true, initiallyVisible = false, expand = false) {
         EditableUsernameLayout(
             text = text,
             onTextChange = { text = it },
@@ -249,7 +249,7 @@ private fun EditableUsernameLayout(
     ) {
         ComponentTitle(
             stringResource(R.string.account_username_hint),
-            Modifier.padding(themedPadding.VerticalListItem),
+            Modifier.padding(padding.VerticalListItem),
             autoPadding = false,
         )
 

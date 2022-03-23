@@ -11,13 +11,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.themed.Padding
-import org.beatonma.commons.themed.themedAnimation
+import org.beatonma.commons.themed.animation
 
 @Composable
 fun animatePaddingAsState(
     targetValue: Padding,
-    animationSpec: AnimationSpec<Padding> = themedAnimation.spec(),
-    finishedListener: ((Padding) -> Unit)? = null
+    animationSpec: AnimationSpec<Padding> = animation.spec(),
+    finishedListener: ((Padding) -> Unit)? = null,
 ) = animateValueAsState(
     targetValue = targetValue,
     typeConverter = PaddingVectorConverter,
@@ -28,7 +28,7 @@ fun animatePaddingAsState(
 @Composable
 fun <S> Transition<S>.animatePadding(
     transitionSpec: @Composable Transition.Segment<S>.() -> FiniteAnimationSpec<Padding> = {
-        themedAnimation.spec()
+        animation.spec()
     },
     label: String = "PaddingAnimation",
     targetValueByState: @Composable (state: S) -> Padding,

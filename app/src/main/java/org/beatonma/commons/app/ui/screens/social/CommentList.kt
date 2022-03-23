@@ -26,8 +26,8 @@ import org.beatonma.commons.compose.padding.EndOfContent
 import org.beatonma.commons.compose.padding.padding
 import org.beatonma.commons.compose.util.withAnnotatedStyle
 import org.beatonma.commons.snommoc.models.social.SocialComment
-import org.beatonma.commons.themed.themedAnimation
-import org.beatonma.commons.themed.themedPadding
+import org.beatonma.commons.themed.animation
+import org.beatonma.commons.themed.padding
 
 @Composable
 internal fun CommentList(
@@ -40,7 +40,7 @@ internal fun CommentList(
     } else {
         LazyColumn(Modifier.testTag(SocialTestTag.CommentsList)) {
             itemsIndexed(comments) { i, comment ->
-                themedAnimation.AnimatedItemVisibility(position = i, horizontal = false) {
+                animation.AnimatedItemVisibility(position = i, horizontal = false) {
                     Comment(
                         comment,
                         modifier,
@@ -67,7 +67,7 @@ internal fun LazyListScope.CommentList(
         }
     } else {
         itemsIndexed(comments) { i, comment ->
-            themedAnimation.AnimatedItemVisibility(position = i, horizontal = false) {
+            animation.AnimatedItemVisibility(position = i, horizontal = false) {
                 Comment(
                     comment,
                     modifier,
@@ -105,7 +105,7 @@ private fun Comment(
             }
             .clickable { onClick(comment) }
             .fillMaxWidth()
-            .padding(themedPadding.VerticalListItem + themedPadding.ScreenHorizontal)
+            .padding(padding.VerticalListItem + padding.ScreenHorizontal)
             .testTag(SocialTestTag.Comment)
     ) {
         WithContentAlpha(ContentAlpha.high) {
@@ -117,7 +117,7 @@ private fun Comment(
                 Username(
                     comment.username,
                     style = typography.caption,
-                    modifier = Modifier.padding(themedPadding.HorizontalListItem)
+                    modifier = Modifier.padding(padding.HorizontalListItem)
                 )
                 DateTime(comment.created)
             }

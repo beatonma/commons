@@ -14,7 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
-import org.beatonma.commons.themed.themedButtons
+import org.beatonma.commons.themed.buttons
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -26,7 +26,7 @@ fun CommonsOutlinedButton(
     elevation: ButtonElevation? = null,
     shape: Shape = shapes.small,
     border: BorderStroke? = ButtonDefaults.outlinedBorder,
-    colors: ButtonColors = themedButtons.outlineButtonColors(),
+    colors: ButtonColors = buttons.outlineButtonColors(),
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     content: @Composable RowScope.() -> Unit,
 ) = Button(
@@ -52,7 +52,7 @@ fun WarningButton(
     elevation: ButtonElevation? = null,
     shape: Shape = shapes.small,
     border: BorderStroke? = ButtonDefaults.outlinedBorder,
-    colors: ButtonColors = themedButtons.warningButtonColors(),
+    colors: ButtonColors = buttons.warningButtonColors(),
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     content: @Composable RowScope.() -> Unit,
 ) {

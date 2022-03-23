@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 val LocalAnimationSpec: ProvidableCompositionLocal<ThemedAnimation> =
     staticCompositionLocalOf { error("LocalAnimationSpec has not been provided") }
 
-inline val themedAnimation
+inline val animation
     @ReadOnlyComposable @Composable get() = LocalAnimationSpec.current
 
 /**

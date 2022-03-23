@@ -52,8 +52,8 @@ import org.beatonma.commons.data.core.room.entities.bill.BillType
 import org.beatonma.commons.data.core.room.entities.bill.ParliamentarySession
 import org.beatonma.commons.repo.result.IoLoading
 import org.beatonma.commons.theme.formatting.formatted
+import org.beatonma.commons.themed.padding
 import org.beatonma.commons.themed.paddingValues
-import org.beatonma.commons.themed.themedPadding
 import java.time.LocalDate
 
 internal val LocalBillActions: ProvidableCompositionLocal<BillActions> =
@@ -86,7 +86,7 @@ fun BillDetailLayout(
     bill: Bill,
     onSponsorClick: SponsorAction = LocalBillActions.current.onClickProfile,
 ) {
-    val sectionModifier = Modifier.padding(themedPadding.VerticalListItemLarge)
+    val sectionModifier = Modifier.padding(padding.VerticalListItemLarge)
 
     SocialScaffold(
         title = { ScreenTitle(bill.data.title) },

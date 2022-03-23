@@ -8,7 +8,7 @@ import androidx.compose.ui.unit.Dp
 val LocalSize =
     staticCompositionLocalOf<ThemedSize> { error("LocalSize has not been provided") }
 
-val themedSize: ThemedSize
+inline val size: ThemedSize
     @ReadOnlyComposable @Composable get() = LocalSize.current
 
 interface ThemedSize {

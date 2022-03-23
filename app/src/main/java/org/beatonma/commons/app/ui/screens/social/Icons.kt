@@ -36,9 +36,9 @@ import org.beatonma.commons.snommoc.models.social.SocialContent
 import org.beatonma.commons.snommoc.models.social.SocialVoteType
 import org.beatonma.commons.theme.AppIcon
 import org.beatonma.commons.themed.Padding
-import org.beatonma.commons.themed.themedAnimation
-import org.beatonma.commons.themed.themedPadding
-import org.beatonma.commons.themed.themedSize
+import org.beatonma.commons.themed.animation
+import org.beatonma.commons.themed.padding
+import org.beatonma.commons.themed.size
 import kotlin.math.roundToInt
 
 @Composable
@@ -61,7 +61,7 @@ internal fun SocialIcons(
     val voteColors =
         SocialVoteType.values().map {
             if (progress == 1F) {
-                themedAnimation.animateColorAsState(if (socialContent.userVote == it) activeTint else inactiveTint)
+                animation.animateColorAsState(if (socialContent.userVote == it) activeTint else inactiveTint)
             } else {
                 derivedStateOf { inactiveTint }
             }
@@ -257,13 +257,13 @@ private class IconStyle(val size: Dp, val padding: Padding)
 
 private val SmallIconStyle
     @Composable get() = IconStyle(
-        themedSize.IconSmall,
-        themedPadding.IconSmall
+        size.IconSmall,
+        padding.IconSmall
     )
 private val LargeIconStyle
     @Composable get() = IconStyle(
-        themedSize.IconLarge,
-        themedPadding.IconLarge
+        size.IconLarge,
+        padding.IconLarge
     )
 
 private fun Float.lerpBetween(start: IconStyle, end: IconStyle): IconStyle =

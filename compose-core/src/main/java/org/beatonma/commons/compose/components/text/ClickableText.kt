@@ -27,7 +27,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import org.beatonma.commons.compose.util.ANNOTATION_TAG_URL
 import org.beatonma.commons.compose.util.rememberLinkifiedText
-import org.beatonma.commons.themed.themedSpanStyle
+import org.beatonma.commons.themed.spanStyle
 
 
 /**
@@ -97,7 +97,7 @@ fun LinkedText(
     text: String,
     modifier: Modifier = Modifier,
     color: Color = LocalContentColor.current,
-    linkStyle: SpanStyle = themedSpanStyle.hyperlink,
+    linkStyle: SpanStyle = spanStyle.hyperlink,
     fontSize: TextUnit = TextUnit.Unspecified,
     fontStyle: FontStyle? = null,
     fontWeight: FontWeight? = null,

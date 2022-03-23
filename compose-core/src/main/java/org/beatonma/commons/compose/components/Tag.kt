@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import org.beatonma.commons.compose.padding.padding
-import org.beatonma.commons.themed.themedPadding
+import org.beatonma.commons.themed.padding
 
 @Composable
 fun Tag(
@@ -42,10 +42,10 @@ fun Tag(
     ) {
         Box(
             modifier
-                .padding(themedPadding.Tag)
+                .padding(padding.Tag)
                 .clip(shapes.small)
                 .background(color)
-                .padding(themedPadding.Tag),
+                .padding(padding.Tag),
             content = content,
         )
     }

@@ -41,8 +41,8 @@ import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.theme.onWarningSurface
 import org.beatonma.commons.theme.warningSurface
-import org.beatonma.commons.themed.themedAnimation
-import org.beatonma.commons.themed.themedPadding
+import org.beatonma.commons.themed.animation
+import org.beatonma.commons.themed.padding
 
 /**
  * Chooses the appropriate user UI to display depending on whether they are
@@ -152,7 +152,7 @@ private fun ProfileSheetContent(
                 verticalAlignment = Alignment.Top,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                themedAnimation.AnimatedVisibility(visible = isReadOnly) {
+                animation.AnimatedVisibility(visible = isReadOnly) {
                     Avatar(
                         userToken.photoUrl,
                         Modifier
@@ -169,16 +169,16 @@ private fun ProfileSheetContent(
                         userAccountActions.renameAccount
                     )
 
-                    themedAnimation.AnimatedVisibility(visible = isReadOnly, horizontal = false) {
+                    animation.AnimatedVisibility(visible = isReadOnly, horizontal = false) {
                         Caption(
                             dotted(userToken.name, userToken.email),
-                            Modifier.padding(themedPadding.VerticalListItem)
+                            Modifier.padding(padding.VerticalListItem)
                         )
                     }
                 }
             }
 
-            themedAnimation.AnimatedVisibility(visible = isReadOnly, horizontal = false) {
+            animation.AnimatedVisibility(visible = isReadOnly, horizontal = false) {
                 Row(
                     Modifier
                         .fillMaxWidth()
@@ -219,7 +219,7 @@ private fun SignOutButton(
     CommonsOutlinedButton(
         onClick = onClick,
         modifier = Modifier
-            .padding(themedPadding.CardButton)
+            .padding(padding.CardButton)
             .testTag(UserAccountTestTag.SignOut),
     ) {
         ResourceText(R.string.account_sign_out)
@@ -233,7 +233,7 @@ private fun DeleteAccountButton(
     WarningButton(
         onClick = onClick,
         modifier = Modifier
-            .padding(themedPadding.CardButton)
+            .padding(padding.CardButton)
             .testTag(UserAccountTestTag.DeleteAccount),
     ) {
         ResourceText(R.string.account_delete_account_button)
@@ -265,7 +265,7 @@ private fun getContentColor(fabProgress: Float, profileProgress: Float): Color {
 }
 
 @Composable
-private fun ProfileState.animateAsState() = themedAnimation.animateFloatAsState(
+private fun ProfileState.animateAsState() = animation.animateFloatAsState(
     when (this) {
         ProfileState.Overview -> 0F
         ProfileState.DeleteAccount -> 1F

@@ -10,7 +10,7 @@ import androidx.compose.ui.graphics.Color
 val LocalButtonTheme =
     staticCompositionLocalOf<ThemedButtons> { error("LocalButtonTheme has not been provided") }
 
-val themedButtons: ThemedButtons
+inline val buttons: ThemedButtons
     @ReadOnlyComposable @Composable get() = LocalButtonTheme.current
 
 interface ThemedButtons {

@@ -11,7 +11,7 @@ import java.util.Objects
 val LocalPadding =
     staticCompositionLocalOf<ThemedPadding> { error("LocalPadding has not been provided") }
 
-val themedPadding: ThemedPadding
+inline val padding: ThemedPadding
     @ReadOnlyComposable @Composable get() = LocalPadding.current
 
 

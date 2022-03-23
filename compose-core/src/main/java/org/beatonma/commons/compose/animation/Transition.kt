@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
-import org.beatonma.commons.themed.themedAnimation
+import org.beatonma.commons.themed.animation
 
 @Composable
 fun <T> animateColor(
@@ -16,7 +16,7 @@ fun <T> animateColor(
     targetValueByState: @Composable (T) -> Color
 ): State<Color> =
     transition.animateColor(
-        transitionSpec = { themedAnimation.spec() },
+        transitionSpec = { animation.spec() },
         label = "AnimatedColor",
         targetValueByState = targetValueByState,
     )
@@ -27,7 +27,7 @@ fun <T> animateDp(
     targetValueByState: @Composable (T) -> Dp
 ): State<Dp> =
     transition.animateDp(
-        transitionSpec = { themedAnimation.spec() },
+        transitionSpec = { animation.spec() },
         label = "AnimatedDp",
         targetValueByState = targetValueByState,
     )
@@ -38,7 +38,7 @@ fun <T> animateFloat(
     targetValueByState: @Composable (T) -> Float
 ): State<Float> =
     transition.animateFloat(
-        transitionSpec = { themedAnimation.spec() },
+        transitionSpec = { animation.spec() },
         label = "AnimatedFloat",
         targetValueByState = targetValueByState,
     )

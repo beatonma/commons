@@ -47,7 +47,7 @@ import org.beatonma.commons.compose.modifiers.onlyWhen
 import org.beatonma.commons.compose.modifiers.wrapContentHeight
 import org.beatonma.commons.compose.shape.BottomSheetShape
 import org.beatonma.commons.core.extensions.progressIn
-import org.beatonma.commons.themed.themedAnimation
+import org.beatonma.commons.themed.animation
 import kotlin.math.roundToInt
 
 
@@ -146,7 +146,7 @@ fun Dialog(
                                     .withEasing(FastOutSlowInEasing))
                             // Animate changes in content once the dialog is fully visible.
                             .onlyWhen(progress == 1f) {
-                                animateContentSize(themedAnimation.spec())
+                                animateContentSize(animation.spec())
                             }
                             .alpha(progress.progressIn(.6f, 1f))
                     ) {
@@ -181,7 +181,7 @@ private fun DialogScaffold(
     dialogContent: DialogContent?,
     content: @Composable () -> Unit,
 ) {
-    val progress by state.animateExpansionAsState(themedAnimation.stiffSpring())
+    val progress by state.animateExpansionAsState(animation.stiffSpring())
 
     Box(
         Modifier.fillMaxSize()

@@ -81,8 +81,8 @@ import org.beatonma.commons.data.core.room.entities.member.WebAddress
 import org.beatonma.commons.repo.result.IoLoading
 import org.beatonma.commons.theme.AppIcon
 import org.beatonma.commons.theme.formatting.dateRange
-import org.beatonma.commons.themed.themedElevation
-import org.beatonma.commons.themed.themedPadding
+import org.beatonma.commons.themed.elevation
+import org.beatonma.commons.themed.padding
 
 private const val AVATAR_ASPECT_RATIO = 1f
 internal const val TestTagMemberTitleBar = "title_bar"
@@ -322,7 +322,7 @@ private fun ConstituencyLink(
                 onClick = { onConstituencyClick(constituency) }
             )
             .fillMaxWidth()
-            .padding(themedPadding.VerticalListItemLarge),
+            .padding(padding.VerticalListItemLarge),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -357,7 +357,7 @@ private fun MemberHistory(
         if (s.isCollapsed) colors.onSurface else colors.onBackground
     }
     val elevation by animateDp(transition) { s ->
-        if (s.isCollapsed) themedElevation.Card else 0.dp
+        if (s.isCollapsed) elevation.Card else 0.dp
     }
 
     Card(
@@ -372,7 +372,7 @@ private fun MemberHistory(
             history,
             collapseState = state,
             onCollapseStateChange = { state = it },
-            modifier = Modifier.padding(themedPadding.VerticalListItemLarge),
+            modifier = Modifier.padding(padding.VerticalListItemLarge),
             barModifier = Modifier.padding(vertical = 6.dp),
             surfaceColor = surfaceColor,
             contentColor = contentColor,
@@ -450,7 +450,7 @@ private fun FinancialInterests(
                 lazy = false,
             ) { interest ->
                 Column(
-                    Modifier.padding(themedPadding.VerticalListItem)
+                    Modifier.padding(padding.VerticalListItem)
                 ) {
                     Text(interest.category, style = typography.overline)
                     Text(interest.description)

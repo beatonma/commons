@@ -5,7 +5,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import org.beatonma.commons.compose.animation.TwoState
-import org.beatonma.commons.themed.themedAnimation
+import org.beatonma.commons.themed.animation
 
 enum class FabBottomSheetState : TwoState<FabBottomSheetState> {
     Fab,
@@ -23,7 +23,7 @@ fun rememberFabBottomSheetState() = remember { mutableStateOf(FabBottomSheetStat
 
 @Composable
 fun FabBottomSheetState.animateExpansionAsState(): State<Float> =
-    themedAnimation.animateFloatAsState(
+    animation.animateFloatAsState(
         when (this) {
             FabBottomSheetState.Fab -> 0F
             FabBottomSheetState.BottomSheet -> 1F

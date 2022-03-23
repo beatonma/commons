@@ -26,7 +26,7 @@ import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.data.core.room.entities.division.LordsDivision
 import org.beatonma.commons.data.core.room.entities.division.LordsDivisionVote
 import org.beatonma.commons.repo.result.IoLoading
-import org.beatonma.commons.themed.themedPadding
+import org.beatonma.commons.themed.padding
 
 
 @Composable
@@ -80,7 +80,7 @@ fun LordsDivisionLayout(
     ) { modifier ->
         item {
             HtmlText(division.data.description,
-                Modifier.padding(themedPadding.Screen.copy(bottom = 0.dp)))
+                Modifier.padding(padding.Screen.copy(bottom = 0.dp)))
         }
 
         DivisionVotes(

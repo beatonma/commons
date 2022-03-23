@@ -7,7 +7,8 @@ import androidx.compose.ui.text.SpanStyle
 
 val LocalSpanStyle =
     staticCompositionLocalOf<ThemedSpanStyle> { error("LocalSpanStyle has not been provided") }
-val themedSpanStyle: ThemedSpanStyle
+
+inline val spanStyle: ThemedSpanStyle
     @ReadOnlyComposable @Composable get() = LocalSpanStyle.current
 
 interface ThemedSpanStyle {

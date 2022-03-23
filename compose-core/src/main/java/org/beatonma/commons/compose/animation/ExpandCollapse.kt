@@ -8,7 +8,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import org.beatonma.commons.themed.themedAnimation
+import org.beatonma.commons.themed.animation
 
 @Composable
 fun rememberExpandCollapseState(
@@ -34,16 +34,16 @@ val MutableState<ExpandCollapseState>.isExpanded: Boolean get() = value.isExpand
 @Composable
 fun Transition<ExpandCollapseState>.animateExpansion(): State<Float> =
     animateFloat(
-        transitionSpec = { themedAnimation.spec() },
+        transitionSpec = { animation.spec() },
         label = "AnimatedExpandCollapse",
     ) { state -> state.progress }
 
 
 @Composable
 fun ExpandCollapseState.animateExpansionAsState(
-    animationSpec: FiniteAnimationSpec<Float> = themedAnimation.spec(),
+    animationSpec: FiniteAnimationSpec<Float> = animation.spec(),
 ): State<Float> =
-    themedAnimation.animateFloatAsState(
+    animation.animateFloatAsState(
         progress,
         animationSpec = animationSpec
     )

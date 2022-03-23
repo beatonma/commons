@@ -8,7 +8,7 @@ import androidx.compose.ui.draw.alpha
 import org.beatonma.commons.compose.padding.padding
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.core.extensions.reversed
-import org.beatonma.commons.themed.themedPadding
+import org.beatonma.commons.themed.padding
 
 
 @Composable
@@ -20,7 +20,7 @@ fun FabText(
     Text(
         text,
         modifier
-            .padding(themedPadding.ExtendedFabContent)
+            .padding(padding.ExtendedFabContent)
             .alpha(
                 progress
                     .reversed()

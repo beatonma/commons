@@ -29,8 +29,8 @@ import org.beatonma.commons.compose.shape.BottomSheetShape
 import org.beatonma.commons.compose.systemui.navigationBarsPadding
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.core.extensions.reversed
-import org.beatonma.commons.themed.themedElevation
-import org.beatonma.commons.themed.themedPadding
+import org.beatonma.commons.themed.elevation
+import org.beatonma.commons.themed.padding
 
 
 /**
@@ -126,7 +126,7 @@ private fun Fab(
 ) {
     Surface(
         modifier
-            .padding(themedPadding.Fab)
+            .padding(padding.Fab)
             .navigationBarsPadding() // The bottom sheet should extend behind navigation bar as it expands.
             .testTag(TestTag.Fab)
             .clickable(
@@ -136,7 +136,7 @@ private fun Fab(
         shape = surfaceShape,
         color = surfaceColor,
         contentColor = contentColor,
-        elevation = themedElevation.ModalSurface,
+        elevation = elevation.ModalSurface,
     ) {
         Box(content = content)
     }
@@ -154,14 +154,14 @@ private fun BottomSheet(
 ) {
     Surface(
         modifier
-            .padding(progress.lerpBetween(themedPadding.Fab, themedPadding.Zero))
+            .padding(progress.lerpBetween(padding.Fab, padding.Zero))
             .navigationBarsPadding(scale = progress.reversed()) // The bottom sheet should extend behind navigation bar as it expands.
             .consumePointerInput()
             .testTag(TestTag.FabBottomSheet),
         shape = surfaceShape,
         color = surfaceColor,
         contentColor = contentColor,
-        elevation = themedElevation.ModalSurface,
+        elevation = elevation.ModalSurface,
     ) {
         Box {
             if (progress != 1F) {

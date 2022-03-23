@@ -29,7 +29,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.beatonma.commons.compose.animation.AutoCollapse
-import org.beatonma.commons.themed.themedButtons
+import org.beatonma.commons.themed.buttons
 
 enum class ConfirmationState {
     /**
@@ -62,9 +62,9 @@ data class DoubleConfirmationButtonColors @OptIn(ExperimentalMaterialApi::class)
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun doubleConfirmationColors(
-    safeColors: ButtonColors = themedButtons.outlineButtonColors(),
-    awaitingConfirmationColors: ButtonColors = themedButtons.warningButtonColors(),
-    confirmedColor: ButtonColors = themedButtons.outlineButtonColors(),
+    safeColors: ButtonColors = buttons.outlineButtonColors(),
+    awaitingConfirmationColors: ButtonColors = buttons.warningButtonColors(),
+    confirmedColor: ButtonColors = buttons.outlineButtonColors(),
 ) = DoubleConfirmationButtonColors(safeColors, awaitingConfirmationColors, confirmedColor)
 
 @Composable
@@ -179,7 +179,7 @@ fun DoubleConfirmationButton(
         elevation = elevation,
         shape = shape,
         border = border,
-        colors = themedButtons.buttonColors(
+        colors = buttons.buttonColors(
             contentColor = contentColor,
             backgroundColor = backgroundColor,
         ),

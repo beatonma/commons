@@ -3,7 +3,7 @@ package org.beatonma.commons.app.ui.screens.social
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import org.beatonma.commons.themed.themedAnimation
+import org.beatonma.commons.themed.animation
 
 enum class SocialUiState {
     Collapsed,
@@ -20,7 +20,7 @@ fun rememberSocialUiState(default: SocialUiState = SocialUiState.Collapsed) =
     remember { mutableStateOf(default) }
 
 @Composable
-fun SocialUiState.animateExpansionAsState() = themedAnimation.animateFloatAsState(
+fun SocialUiState.animateExpansionAsState() = animation.animateFloatAsState(
     when (this) {
         SocialUiState.Collapsed -> 0F
         else -> 1F

@@ -62,7 +62,7 @@ import org.beatonma.commons.theme.formatting.formatted
 import org.beatonma.commons.theme.formatting.formattedPeriod
 import org.beatonma.commons.theme.graphPrimaryColors
 import org.beatonma.commons.theme.graphSecondaryColors
-import org.beatonma.commons.themed.themedAnimation
+import org.beatonma.commons.themed.animation
 import java.time.LocalDate
 import java.time.Period
 
@@ -176,7 +176,7 @@ private fun TimelineLayout(
     Layout(
         content = {
             groups.fastForEachIndexed { index, group ->
-                themedAnimation.AnimatedItemVisibility(position = index) { visibility ->
+                animation.AnimatedItemVisibility(position = index) { visibility ->
                     val color = colors.bars.modGet(index)
                     GroupLayout(group, visibility, colors, color, modifier)
                 }
@@ -328,7 +328,7 @@ private fun GroupLayout(
                 text = AnnotatedString("${group.label}: $allDatesText")
             }
             .clickable { state.toggle() }
-            .animateContentSize(themedAnimation.spec())
+            .animateContentSize(animation.spec())
             .then(modifier),
         horizontalAlignment = Alignment.Start,
     ) {
@@ -407,7 +407,7 @@ private fun GroupLabel(
             overflow = TextOverflow.Ellipsis,
         )
 
-        themedAnimation.AnimatedVisibility(visible = state.isExpanded, horizontal = false) {
+        animation.AnimatedVisibility(visible = state.isExpanded, horizontal = false) {
             Text(
                 expandedText,
                 Modifier.background(colors.overlay),

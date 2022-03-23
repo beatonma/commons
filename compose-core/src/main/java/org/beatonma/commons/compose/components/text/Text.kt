@@ -13,7 +13,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import org.beatonma.commons.compose.modifiers.onlyWhen
 import org.beatonma.commons.compose.padding.padding
-import org.beatonma.commons.themed.themedPadding
+import org.beatonma.commons.themed.padding
 
 
 @Composable
@@ -30,7 +30,7 @@ fun ScreenTitle(
         modifier
             .semantics { heading() }
             .onlyWhen(autoPadding) {
-                padding(themedPadding.ScreenHorizontal)
+                padding(padding.ScreenHorizontal)
             },
         color,
         style = typography.h4,
@@ -52,7 +52,7 @@ fun ComponentTitle(
         modifier
             .semantics { heading() }
             .onlyWhen(autoPadding) {
-                padding(themedPadding.ScreenHorizontal)
+                padding(padding.ScreenHorizontal)
             },
         color,
         style = typography.h5,
@@ -68,7 +68,7 @@ fun Quote(
     if (text == null) return
     Text(
         text,
-        modifier.padding(themedPadding.Card),
+        modifier.padding(padding.Card),
         style = typography.body1,
     )
 }

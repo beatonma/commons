@@ -23,7 +23,7 @@ import org.beatonma.commons.data.core.room.entities.division.CommonsDivision
 import org.beatonma.commons.data.core.room.entities.division.HouseDivision
 import org.beatonma.commons.data.core.room.entities.division.LordsDivision
 import org.beatonma.commons.theme.color.color
-import org.beatonma.commons.themed.themedPadding
+import org.beatonma.commons.themed.padding
 
 private class VoteChartItem<T : DivisionVoteType>(
     val voteType: T,
@@ -123,7 +123,7 @@ private fun <T : DivisionVoteType> DivisionVoteChart(
     Column(modifier) {
         Chart(
             voteTypes,
-            Modifier.padding(themedPadding.VerticalListItem)
+            Modifier.padding(padding.VerticalListItem)
         )
 
         ChartKey(
@@ -131,7 +131,7 @@ private fun <T : DivisionVoteType> DivisionVoteChart(
             voteTypeFilter,
             onSelectChanged,
             Modifier
-                .padding(themedPadding.ScreenHorizontal)
+                .padding(padding.ScreenHorizontal)
                 .fillMaxWidth(),
         )
     }
@@ -163,8 +163,8 @@ private fun <T : DivisionVoteType> ChartKey(
                 type.voteType,
                 type.count,
                 modifier = Modifier
-                    .padding(themedPadding.HorizontalListItem)
-                    .padding(themedPadding.VerticalListItem),
+                    .padding(padding.HorizontalListItem)
+                    .padding(padding.VerticalListItem),
                 selected = filter.contains(type.voteType),
                 onSelectChanged = { selected -> onSelectChanged(type.voteType, selected) },
             )

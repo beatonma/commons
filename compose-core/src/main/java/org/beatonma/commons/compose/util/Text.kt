@@ -10,7 +10,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import org.beatonma.commons.themed.themedSpanStyle
+import org.beatonma.commons.themed.spanStyle
 import java.util.regex.Pattern
 
 private const val DOT = '•'
@@ -56,9 +56,9 @@ private enum class MarkdownStyle {
 
 @Composable
 fun String.withAnnotatedStyle() = withAnnotatedStyle(
-    themedSpanStyle.italic,
-    themedSpanStyle.bold,
-    themedSpanStyle.quote,
+    spanStyle.italic,
+    spanStyle.bold,
+    spanStyle.quote,
 )
 
 /**
@@ -186,7 +186,7 @@ fun String.withAnnotatedStyle(
 
 @Composable
 fun String.rememberLinkifiedText(
-    style: SpanStyle = themedSpanStyle.hyperlink,
+    style: SpanStyle = spanStyle.hyperlink,
 ): MutableState<AnnotatedString> = remember { mutableStateOf(withAnnotatedUrls(style)) }
 
 internal fun String.withAnnotatedUrls(

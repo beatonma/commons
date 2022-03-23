@@ -29,8 +29,8 @@ import org.beatonma.commons.compose.padding.padding
 import org.beatonma.commons.compose.systemui.imeOrNavigationBarsPadding
 import org.beatonma.commons.compose.systemui.statusBarsPadding
 import org.beatonma.commons.core.extensions.progressIn
-import org.beatonma.commons.themed.themedElevation
-import org.beatonma.commons.themed.themedPadding
+import org.beatonma.commons.themed.elevation
+import org.beatonma.commons.themed.padding
 
 typealias FeedbackProvider = MutableState<AnnotatedString?>
 
@@ -118,13 +118,13 @@ private fun FeedbackMessageLayout(
             modifier
                 .wrapContentHeight(sizeProgress)
                 .testTag(TestTag.FeedbackSurface),
-            elevation = themedElevation.ModalSurface,
+            elevation = elevation.ModalSurface,
         ) {
             Text(
                 message ?: EmptyText,
                 modifier = Modifier
                     .wrapContentHeight(sizeProgress)
-                    .padding(themedPadding.Snackbar)
+                    .padding(padding.Snackbar)
                     .onlyWhen(alignment.isAtTop) {
                         statusBarsPadding(scale = sizeProgress)
                     }

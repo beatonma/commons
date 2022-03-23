@@ -21,8 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.compose.padding.padding
-import org.beatonma.commons.themed.themedPadding
-import org.beatonma.commons.themed.themedSize
+import org.beatonma.commons.themed.padding
+import org.beatonma.commons.themed.size
 
 
 @Composable
@@ -65,7 +65,7 @@ fun ListItem(
         Row(
             modifier
                 .background(colors.surface)
-                .padding(themedPadding.ScreenHorizontal)
+                .padding(padding.ScreenHorizontal)
                 .padding(vertical = 8.dp),
             verticalAlignment = alignment,
         ) {
@@ -74,7 +74,7 @@ fun ListItem(
                     Modifier
                         .padding(end = 16.dp)
                         .clip(shapes.small)
-                        .size(themedSize.IconLarge)
+                        .size(size.IconLarge)
                 ) {
                     icon()
                 }

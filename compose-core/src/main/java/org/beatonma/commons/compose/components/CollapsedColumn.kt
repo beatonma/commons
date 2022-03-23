@@ -47,9 +47,9 @@ import org.beatonma.commons.compose.padding.padding
 import org.beatonma.commons.compose.util.rememberListOf
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.core.extensions.reversed
-import org.beatonma.commons.themed.themedAnimation
-import org.beatonma.commons.themed.themedPadding
-import org.beatonma.commons.themed.themedSize
+import org.beatonma.commons.themed.animation
+import org.beatonma.commons.themed.padding
+import org.beatonma.commons.themed.size
 import kotlin.math.roundToInt
 
 private typealias HeaderBlock = @Composable (
@@ -78,7 +78,7 @@ object CollapsedColumn {
         Row(
             modifier
                 .fillMaxWidth()
-                .padding(themedPadding.VerticalListItem)
+                .padding(padding.VerticalListItem)
                 .semantics(mergeDescendants = true) {
                     heading()
                     this.contentDescription = if (contentDescription == null) {
@@ -109,7 +109,7 @@ object CollapsedColumn {
         modifier: Modifier,
     ) {
         Column(
-            modifier.onlyWhen(autoPadding) { padding(themedPadding.ScreenHorizontal) }
+            modifier.onlyWhen(autoPadding) { padding(padding.ScreenHorizontal) }
         ) {
             ComponentTitle(title, autoPadding = false)
             OptionalText(description)
@@ -122,7 +122,7 @@ object CollapsedColumn {
         contentDescription: String?,
     ) {
         val iconRotation by transition.animateFloat(
-            transitionSpec = { themedAnimation.spec() },
+            transitionSpec = { animation.spec() },
             label = "AnimatedShowMoreLess",
         ) { state ->
             when (state) {
@@ -132,7 +132,7 @@ object CollapsedColumn {
         }
 
         Box(
-            Modifier.size(themedSize.IconButton),
+            Modifier.size(size.IconButton),
             contentAlignment = Alignment.Center,
         ) {
             Icon(
@@ -194,7 +194,7 @@ fun <T> LazyListScope.CollapsedColumn(
     }
 
     itemsIndexed(state.items) { index, item ->
-        themedAnimation.AnimatedItemVisibility(
+        animation.AnimatedItemVisibility(
             visible = true,
             initiallyVisible = index < state.collapsedItemCount,
             position = index
@@ -233,7 +233,7 @@ fun <T> CollapsedColumn(
         }
 
         val item: @Composable (Int, T) -> Unit = { index, item ->
-            themedAnimation.AnimatedItemVisibility(
+            animation.AnimatedItemVisibility(
                 visible = true,
                 initiallyVisible = index < collapsedItemCount,
                 position = index
@@ -366,7 +366,7 @@ private fun MoreContentIndication(
             UiIcon.EllipsisVertical,
             contentDescription = contentDescription,
             Modifier
-                .padding(themedPadding.IconSmall)
+                .padding(padding.IconSmall)
                 .rotate(90F)
         )
     }

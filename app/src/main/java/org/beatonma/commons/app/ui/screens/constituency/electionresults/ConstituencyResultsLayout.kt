@@ -82,8 +82,8 @@ import org.beatonma.commons.theme.formatting.formatPercent
 import org.beatonma.commons.theme.formatting.formatted
 import org.beatonma.commons.theme.onWarningSurface
 import org.beatonma.commons.theme.warningSurface
-import org.beatonma.commons.themed.themedPadding
-import org.beatonma.commons.themed.themedSize
+import org.beatonma.commons.themed.padding
+import org.beatonma.commons.themed.size
 import java.util.Locale
 
 
@@ -141,7 +141,7 @@ fun ConstituencyResultsLayout(
             itemWithState(state, "collapsing") { itemState ->
                 Column(
                     Modifier
-                        .padding(themedPadding.ScreenHorizontal)
+                        .padding(padding.ScreenHorizontal)
                         .alpha(itemState.visibility)
                 ) {
                     ResourceText(
@@ -233,7 +233,7 @@ private fun WinningCandidate(
 ) {
     PartyBackground(
         modifier = modifier
-            .padding(themedPadding.VerticalListItemLarge),
+            .padding(padding.VerticalListItemLarge),
     ) {
         ListItem(
             text = {
@@ -259,7 +259,7 @@ private fun WinningCandidate(
             },
             icon = { CandidatePosition(position = candidate.order, withBackgroundColor = false) },
             trailing = { ResultSummary(details, Modifier.width(TrailingSize)) },
-            modifier = Modifier.padding(themedPadding.VerticalListItemLarge),
+            modifier = Modifier.padding(padding.VerticalListItemLarge),
         )
     }
 }
@@ -325,8 +325,8 @@ private fun DepositLostMarker() {
                 R.string.constituency_candidate_deposit_info,
                 modifier = Modifier
                     .alpha(expandedness.progressIn(.8F, 1F))
-                    .padding(themedPadding.VerticalListItemLarge)
-                    .padding(themedPadding.ScreenHorizontal),
+                    .padding(padding.VerticalListItemLarge)
+                    .padding(padding.ScreenHorizontal),
                 color = colors.onWarningSurface,
             )
         }
@@ -341,7 +341,7 @@ private fun CandidatePosition(
 ) {
     Box(
         modifier = Modifier
-            .size(themedSize.IconButton)
+            .size(size.IconButton)
             .clip(shapes.small)
             .background(if (withBackgroundColor) partyWithTheme.theme.primary else Color.Transparent),
         contentAlignment = Alignment.Center,

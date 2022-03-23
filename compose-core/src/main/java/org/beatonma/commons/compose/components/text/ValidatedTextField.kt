@@ -48,7 +48,7 @@ import org.beatonma.commons.compose.components.LocalFeedbackMessage
 import org.beatonma.commons.compose.components.clear
 import org.beatonma.commons.compose.components.rememberFeedbackProvider
 import org.beatonma.commons.compose.shape.withSquareBottom
-import org.beatonma.commons.themed.themedAnimation
+import org.beatonma.commons.themed.animation
 
 enum class TextValidationResult {
     OK,
@@ -265,7 +265,7 @@ private fun FeedbackText(
     if (message == null) {
         Spacer(Modifier.testTag(TestTag.FeedbackNoText))
     } else {
-        Crossfade(message, animationSpec = themedAnimation.spec()) { msg ->
+        Crossfade(message, animationSpec = animation.spec()) { msg ->
             Text(
                 msg,
                 Modifier.testTag(TestTag.FeedbackText),

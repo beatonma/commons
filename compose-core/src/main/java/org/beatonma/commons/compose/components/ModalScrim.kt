@@ -18,7 +18,7 @@ import androidx.compose.ui.zIndex
 import org.beatonma.commons.compose.Layer
 import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.compose.animation.AnimatedVisibility
-import org.beatonma.commons.themed.themedAnimation
+import org.beatonma.commons.themed.animation
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -38,7 +38,7 @@ fun ModalScrim(
             .zIndex(Layer.ModalScrim),
         contentAlignment = alignment,
     ) {
-        themedAnimation.AnimatedVisibility(
+        animation.AnimatedVisibility(
             visible = visible,
             expand = false,
         ) {
