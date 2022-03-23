@@ -57,7 +57,7 @@ fun <T, N> cachedResultFlow(
                         else -> result != null
                     }
                 }
-                .mapLatest(::Success)
+                .mapLatest(::wrapResult)
                 .collectLatest(::send)
         }
 
@@ -102,7 +102,7 @@ fun <T> cachedResultFlow(
                         else -> result != null
                     }
                 }
-                .mapLatest(::Success)
+                .mapLatest(::wrapResult)
                 .collectLatest(::send)
         }
 
@@ -111,6 +111,11 @@ fun <T> cachedResultFlow(
     }.catch { e ->
         emit(Failure(e, "multiCallCachedResultFlow error"))
     }.flowOn(Dispatchers.IO)
+
+private fun <T> wrapResult(value: T?): IoResult<T> = when (value) {
+    null -> Failure(Exception("Result value is null"))
+    else -> Success(value)
+}
 
 /**
  * [networkCall] will only execute if [databaseQuery] does not emit a useful value.
