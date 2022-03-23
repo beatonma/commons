@@ -1,4 +1,4 @@
-package org.beatonma.commons.compose.components
+package org.beatonma.commons.compose.components.button
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -16,11 +16,12 @@ import androidx.compose.material.ButtonElevation
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme.shapes
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import kotlinx.coroutines.CoroutineScope
@@ -71,7 +72,6 @@ fun DoubleConfirmationButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    state: MutableState<ConfirmationState> = rememberConfirmationState(),
     interactionSource: MutableInteractionSource = remember(::MutableInteractionSource),
     elevation: ButtonElevation? = null,
     shape: Shape = shapes.small,
@@ -83,15 +83,15 @@ fun DoubleConfirmationButton(
     awaitingConfirmationContent: @Composable () -> Unit,
     confirmedContent: @Composable () -> Unit,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
-) =
+) {
+    var state by rememberConfirmationState()
+
     DoubleConfirmationButton(
         onClick,
+        state,
+        { state = it },
         modifier,
         enabled,
-        state = state.value,
-        onStateChange = { toState ->
-            state.value = toState
-        },
         interactionSource,
         elevation,
         shape,
@@ -104,45 +104,44 @@ fun DoubleConfirmationButton(
         confirmedContent,
         coroutineScope,
     )
+}
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-private fun DoubleConfirmationButton(
+fun DoubleConfirmationButton(
     onClick: () -> Unit,
-    modifier: Modifier,
-    enabled: Boolean,
     state: ConfirmationState,
     onStateChange: (ConfirmationState) -> Unit,
-    interactionSource: MutableInteractionSource,
-    elevation: ButtonElevation?,
-    shape: Shape,
-    border: BorderStroke?,
-    colors: DoubleConfirmationButtonColors,
-    autoCollapse: Long,
-    contentPadding: PaddingValues,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    interactionSource: MutableInteractionSource = remember(::MutableInteractionSource),
+    elevation: ButtonElevation? = null,
+    shape: Shape = shapes.small,
+    border: BorderStroke? = ButtonDefaults.outlinedBorder,
+    colors: DoubleConfirmationButtonColors = doubleConfirmationColors(),
+    autoCollapse: Long = AutoCollapse.Default,
+    contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     safeContent: @Composable () -> Unit,
     awaitingConfirmationContent: @Composable () -> Unit,
     confirmedContent: @Composable () -> Unit,
-    coroutineScope: CoroutineScope,
+    coroutineScope: CoroutineScope = rememberCoroutineScope(),
 ) {
-    if (state == ConfirmationState.Confirmed) {
-        coroutineScope.cancel()
-    }
+    val transition = updateTransition(state, label = "confirmation-state")
 
-    val transition = updateTransition(state)
-
-    val contentColor by transition.animateColor {
+    val contentColor by transition.animateColor(label = "content-color") {
         when (it) {
             ConfirmationState.Safe -> colors.safeColors.contentColor(enabled)
-            ConfirmationState.AwaitingConfirmation -> colors.awaitingConfirmationColors.contentColor(enabled)
+            ConfirmationState.AwaitingConfirmation -> colors.awaitingConfirmationColors.contentColor(
+                enabled)
             ConfirmationState.Confirmed -> colors.confirmedColor.contentColor(enabled)
         }.value
     }
 
-    val backgroundColor by transition.animateColor {
+    val backgroundColor by transition.animateColor(label = "background-color") {
         when (it) {
             ConfirmationState.Safe -> colors.safeColors.backgroundColor(enabled)
-            ConfirmationState.AwaitingConfirmation -> colors.awaitingConfirmationColors.backgroundColor(enabled)
+            ConfirmationState.AwaitingConfirmation -> colors.awaitingConfirmationColors.backgroundColor(
+                enabled)
             ConfirmationState.Confirmed -> colors.confirmedColor.backgroundColor(enabled)
         }.value
     }
@@ -166,6 +165,12 @@ private fun DoubleConfirmationButton(
         }
     }
 
+    LaunchedEffect(state) {
+        if (state == ConfirmationState.Confirmed) {
+            coroutineScope.cancel()
+        }
+    }
+
     Button(
         onClick = filteredOnClick,
         modifier = modifier,
@@ -177,8 +182,7 @@ private fun DoubleConfirmationButton(
         colors = themedButtons.buttonColors(
             contentColor = contentColor,
             backgroundColor = backgroundColor,
-
-            ),
+        ),
         contentPadding = contentPadding,
         content = {
             Box(Modifier.animateContentSize()) {
