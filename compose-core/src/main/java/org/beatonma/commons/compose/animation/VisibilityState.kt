@@ -137,3 +137,18 @@ fun FadeIn(
         visible = true
     }
 }
+
+
+@Composable
+fun <T> ThemedAnimation.Crossfade(
+    state: T,
+    modifier: Modifier = Modifier,
+    content: @Composable (T) -> Unit,
+) {
+    androidx.compose.animation.Crossfade(
+        state,
+        modifier,
+        spec(),
+        content
+    )
+}
