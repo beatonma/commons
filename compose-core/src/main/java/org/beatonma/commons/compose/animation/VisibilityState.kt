@@ -1,11 +1,18 @@
 package org.beatonma.commons.compose.animation
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.core.Easing
 import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import org.beatonma.commons.compose.modifiers.onlyWhen
@@ -13,9 +20,10 @@ import org.beatonma.commons.compose.modifiers.wrapContentHeight
 import org.beatonma.commons.compose.modifiers.wrapContentWidth
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.themed.ThemedAnimation
+import org.beatonma.commons.themed.animation
 
 @Composable
-fun ThemedAnimation.AnimatedVisibility(
+inline fun ThemedAnimation.AnimatedVisibility(
     modifier: Modifier = Modifier,
     visible: Boolean = true,
     initiallyVisible: Boolean = false,
@@ -24,7 +32,7 @@ fun ThemedAnimation.AnimatedVisibility(
     vertical: Boolean = expand,
     horizontal: Boolean = expand,
     easing: Easing = FastOutLinearInEasing,
-    content: @Composable BoxScope.() -> Unit
+    content: @Composable BoxScope.() -> Unit,
 ) {
     val visibility by animateFloatAsState(
         if (visible) 1F else 0F,
@@ -64,7 +72,7 @@ fun ThemedAnimation.AnimatedVisibility(
 
 
 @Composable
-fun ThemedAnimation.AnimatedItemVisibility(
+inline fun ThemedAnimation.AnimatedItemVisibility(
     position: Int,
     modifier: Modifier = Modifier,
     visible: Boolean = true,
@@ -73,7 +81,7 @@ fun ThemedAnimation.AnimatedItemVisibility(
     vertical: Boolean = false,
     horizontal: Boolean = false,
     easing: Easing = FastOutLinearInEasing,
-    content: @Composable BoxScope.(visibility: Float) -> Unit
+    content: @Composable BoxScope.(visibility: Float) -> Unit,
 ) {
     val visibility by animateFloatAsState(
         if (visible) 1F else 0F,
@@ -107,5 +115,25 @@ fun ThemedAnimation.AnimatedItemVisibility(
             .then(modifier)
     ) {
         content(visibility)
+    }
+}
+
+
+@Composable
+fun FadeIn(
+    modifier: Modifier = Modifier,
+    content: @Composable AnimatedVisibilityScope.() -> Unit,
+) {
+    var visible by remember { mutableStateOf(false) }
+
+    AnimatedVisibility(
+        visible,
+        modifier,
+        enter = fadeIn(animation.spec()),
+        content = content,
+    )
+
+    LaunchedEffect(Unit) {
+        visible = true
     }
 }

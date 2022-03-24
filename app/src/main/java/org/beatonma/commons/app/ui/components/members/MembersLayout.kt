@@ -1,5 +1,6 @@
 package org.beatonma.commons.app.ui.components.members
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.lazy.LazyListScope
@@ -13,6 +14,7 @@ import androidx.compose.ui.Modifier
 import org.beatonma.commons.app.ui.components.party.ProvidePartyImageConfig
 import org.beatonma.commons.core.extensions.fastForEach
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
+import org.beatonma.commons.themed.animation
 import kotlin.random.Random
 
 private sealed interface MemberContainer
@@ -113,7 +115,7 @@ private fun MembersLayoutWithImages(
 
     BaseMembersLayout(modifier) {
         orderedProfiles.fastForEach { container ->
-            item {
+            item(contentType = container::class) {
                 MemberContainer(container, decoration, onClick)
             }
         }
@@ -126,7 +128,7 @@ private fun BaseMembersLayout(
     content: LazyListScope.() -> Unit,
 ) {
     ProvidePartyImageConfig {
-        LazyRow(modifier) {
+        LazyRow(modifier.animateContentSize(animation.spec())) {
             content()
         }
     }

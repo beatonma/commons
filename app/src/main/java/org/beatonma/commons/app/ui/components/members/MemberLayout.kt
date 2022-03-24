@@ -37,6 +37,7 @@ import org.beatonma.commons.app.ui.components.party.PartyWithTheme
 import org.beatonma.commons.app.ui.components.party.partyWithTheme
 import org.beatonma.commons.app.ui.currentPostUiDescription
 import org.beatonma.commons.compose.TestTag
+import org.beatonma.commons.compose.animation.FadeIn
 import org.beatonma.commons.compose.shape.withSquareTop
 import org.beatonma.commons.core.extensions.fastForEach
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
@@ -66,16 +67,18 @@ internal fun MemberLayout(
     CompositionLocalProvider(
         LocalPartyTheme provides partyWithTheme
     ) {
-        MemberLayoutCard(
-            profile.name,
-            contentDescription,
-            modifier
-        ) {
-            when {
-                showImages && profile.portraitUrl != null -> {
-                    MemberWithPortrait(profile, onClick, decoration = decoration)
+        FadeIn {
+            MemberLayoutCard(
+                profile.name,
+                contentDescription,
+                modifier
+            ) {
+                when {
+                    showImages && profile.portraitUrl != null -> {
+                        MemberWithPortrait(profile, onClick, decoration = decoration)
+                    }
+                    else -> MemberWithoutPortrait(profile, onClick, decoration = decoration)
                 }
-                else -> MemberWithoutPortrait(profile, onClick, decoration = decoration)
             }
         }
     }

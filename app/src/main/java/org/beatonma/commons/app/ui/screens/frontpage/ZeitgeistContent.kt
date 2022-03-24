@@ -1,6 +1,8 @@
 package org.beatonma.commons.app.ui.screens.frontpage
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -125,6 +127,9 @@ private fun ZeitgeistMembers(
 
     MembersLayout(
         profiles,
+        Modifier
+            .fillMaxWidth()
+            .heightIn(min = 330.dp),
         onClick = onClick,
         decoration = { profile ->
             val reason = remember {
