@@ -1,6 +1,6 @@
 package org.beatonma.commons.app.ui.components.members
 
-import android.text.TextPaint
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.MaterialTheme.shapes
 import androidx.compose.material.MaterialTheme.typography
@@ -18,14 +17,15 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -35,62 +35,25 @@ import org.beatonma.commons.app.ui.components.party.LocalPartyTheme
 import org.beatonma.commons.app.ui.components.party.PartyBackground
 import org.beatonma.commons.app.ui.components.party.PartyWithTheme
 import org.beatonma.commons.app.ui.components.party.partyWithTheme
-import org.beatonma.commons.app.ui.components.party.providePartyImageConfig
 import org.beatonma.commons.app.ui.currentPostUiDescription
+import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.compose.shape.withSquareTop
-import org.beatonma.commons.data.core.MinimalMember
+import org.beatonma.commons.core.extensions.fastForEach
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 import org.beatonma.commons.preview.InAppPreview
-import org.beatonma.commons.preview.PreviewProviders
-import org.beatonma.commons.sampledata.SampleConstituency
 import org.beatonma.commons.sampledata.SampleMember
-import org.beatonma.commons.sampledata.SampleParty
 import org.beatonma.commons.theme.invertedColors
 import org.beatonma.commons.themed.elevation
 
-private val CardWidth = 260.dp
+@VisibleForTesting
+internal val MemberLayoutCardWidth = 260.dp
 private val TextPadding = 16.dp
-private val MemberPadding = 4.dp // Space between members
+private val MemberPadding = 4.dp // Space around each member
 private const val MemberDescriptionMaxLines = 2
 
 
 @Composable
-fun MemberLayout(
-    member: MinimalMember,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    decoration: (@Composable () -> Unit)? = null,
-) {
-    val profile = member.profile
-    val partyWithTheme = partyWithTheme(member.party)
-
-    val contentDescription = profile.contentDescription
-
-    CompositionLocalProvider(
-        LocalPartyTheme provides partyWithTheme
-    ) {
-        Surface(
-            modifier
-                .width(CardWidth)
-                .padding(MemberPadding)
-                .semantics(mergeDescendants = true) {
-                    this.contentDescription = contentDescription
-                },
-            color = invertedColors.surface,
-            elevation = elevation.Card,
-            shape = shapes.small,
-        ) {
-            if (profile.portraitUrl == null) {
-                MemberWithoutPortrait(profile, onClick, decoration = decoration)
-            } else {
-                MemberWithPortrait(profile, onClick, decoration = decoration)
-            }
-        }
-    }
-}
-
-@Composable
-fun MemberLayout(
+internal fun MemberLayout(
     profile: MemberProfile,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -103,11 +66,16 @@ fun MemberLayout(
     CompositionLocalProvider(
         LocalPartyTheme provides partyWithTheme
     ) {
-        MemberLayoutCard(contentDescription, modifier) {
-            if (showImages && profile.portraitUrl != null) {
-                MemberWithPortrait(profile, onClick, decoration = decoration)
-            } else {
-                MemberWithoutPortrait(profile, onClick, decoration = decoration)
+        MemberLayoutCard(
+            profile.name,
+            contentDescription,
+            modifier
+        ) {
+            when {
+                showImages && profile.portraitUrl != null -> {
+                    MemberWithPortrait(profile, onClick, decoration = decoration)
+                }
+                else -> MemberWithoutPortrait(profile, onClick, decoration = decoration)
             }
         }
     }
@@ -115,17 +83,19 @@ fun MemberLayout(
 
 @Composable
 private fun MemberLayoutCard(
+    name: String,
     contentDescription: String,
     modifier: Modifier,
     content: @Composable () -> Unit,
 ) {
     Surface(
         modifier
-            .width(CardWidth)
-            .padding(MemberPadding)
+            .width(MemberLayoutCardWidth)
             .semantics(mergeDescendants = true) {
                 this.contentDescription = contentDescription
-            },
+                testTag = TestTag.member(name)
+            }
+            .padding(MemberPadding),
         color = invertedColors.surface,
         elevation = elevation.Card,
         shape = shapes.small,
@@ -154,7 +124,7 @@ private fun MemberWithPortrait(
     modifier: Modifier = Modifier,
     decoration: (@Composable () -> Unit)?,
 ) {
-    Column(
+    MemberWithPortraitLayout(
         modifier.clickable(onClick = onClick)
     ) {
         Avatar(
@@ -163,7 +133,6 @@ private fun MemberWithPortrait(
                 .fillMaxWidth()
                 .aspectRatio(1f),
         )
-
         PartyBackground(
             Modifier.clip(shapes.small.withSquareTop())
         ) {
@@ -232,78 +201,75 @@ private fun MemberText(
     }
 }
 
-/**
- * Description may be anything up to [MemberDescriptionMaxLines] lines long but [MemberText] needs
- * to be a fixed height so we force the maximum possible height based on the font.
- *
- * No straightforward way to get actual font height (including ascenders/descenders) from
- * [androidx.compose.ui.text.TextStyle] so we resort to using TextPaint.FontMetrics directly.
- * Feels a bit hacky...
- */
 @Composable
 private fun MemberDescription(
     text: String,
     textColor: Color,
 ) {
-    val fontStyle: TextStyle = typography.caption
-    val fontSize = fontStyle.fontSize
-    val captionTextHeight = remember(fontSize) {
-        val paint: TextPaint = TextPaint().apply {
-            textSize = fontSize.value
-        }
-        with(paint.fontMetrics) {
-            ((bottom - top) * MemberDescriptionMaxLines).dp
-        }
-    }
-
+    // MemberDescription must always be the same height so we add newline characters to fill
+    // up to [MemberDescriptionMaxLines].
     Text(
-        text,
-        style = fontStyle,
+        "$text${"\n".repeat(MemberDescriptionMaxLines)}",
+        style = typography.caption,
         color = textColor,
         maxLines = MemberDescriptionMaxLines,
         overflow = TextOverflow.Ellipsis,
-        modifier = Modifier.requiredHeight(captionTextHeight),
     )
 }
 
+/**
+ * Layout ensures a MemberWithPortrait is the same height as 3 MemberWithoutPortrait.
+ */
 @Composable
-@Preview("MemberWithPortrait")
-private fun MemberPreview() {
-    PreviewProviders {
-        val party = remember { SampleParty }
-        CompositionLocalProvider(
-            LocalPartyTheme provides partyWithTheme(party),
-            *providePartyImageConfig()
-        ) {
-            MemberLayout(
-                member = MinimalMember(
-                    SampleMember,
-                    party,
-                    SampleConstituency,
-                ),
-                onClick = {},
-            )
+private fun MemberWithPortraitLayout(
+    modifier: Modifier,
+    content: @Composable () -> Unit,
+) {
+    Layout(content, modifier) { measurables, constraints ->
+        check(measurables.size == 2) { "Expected Avatar, MemberText" }
+
+        val textPlaceable = measurables[1].measure(constraints)
+        val textHeight = textPlaceable.height
+        val avatarHeight = (textHeight * 2) + (MemberPadding.roundToPx() * 4)
+        val avatarPlaceable = measurables[0].measure(
+            constraints.copy(minHeight = avatarHeight, maxHeight = avatarHeight)
+        )
+        val placeables = listOf(avatarPlaceable, textPlaceable)
+
+        val width: Int = constraints.maxWidth
+        val height: Int = placeables.sumOf(Placeable::height)
+
+        layout(width, height) {
+            val x = 0
+            var y = 0
+
+            placeables.fastForEach {
+                it.placeRelative(x, y)
+                y += it.height
+            }
         }
     }
 }
 
+@Preview("MemberWithPortrait")
 @Composable
-@Preview("MemberWithoutPortrait")
+private fun MemberWithPortraitPreview() {
+    InAppPreview {
+        MemberLayout(
+            SampleMember,
+            onClick = {},
+        )
+    }
+}
+
+@Preview("MemberNoPortrait")
+@Composable
 private fun MemberNoPortraitPreview() {
     InAppPreview {
-        val party = remember { SampleParty }
-        CompositionLocalProvider(
-            LocalPartyTheme provides partyWithTheme(party),
-            *providePartyImageConfig()
-        ) {
-            MemberLayout(
-                member = MinimalMember(
-                    SampleMember,
-                    party,
-                    SampleConstituency
-                ),
-                onClick = {},
-            )
-        }
+        MemberLayout(
+            SampleMember,
+            showImages = false,
+            onClick = {},
+        )
     }
 }

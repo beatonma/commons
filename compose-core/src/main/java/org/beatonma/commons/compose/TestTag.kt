@@ -33,4 +33,6 @@ object TestTag {
     const val Cancel = "action_cancel"
     const val Submit = "action_submit"
     const val Clear = "action_clear"
+
+    fun member(name: String) = "member_$name"
 }

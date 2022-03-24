@@ -1,108 +1,57 @@
 package org.beatonma.commons.app.ui.screens.frontpage
 
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertHeightIsEqualTo
 import androidx.compose.ui.test.assertWidthIsEqualTo
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.test.filters.MediumTest
 import org.beatonma.commons.app.TestTheme
+import org.beatonma.commons.app.ui.components.members.MemberLayoutCardWidth
 import org.beatonma.commons.app.ui.components.members.MembersLayout
-import org.beatonma.commons.compose.util.HslColor
-import org.beatonma.commons.compose.util.toColor
+import org.beatonma.commons.compose.TestTag
+import org.beatonma.commons.sampledata.SampleMember
 import org.beatonma.commons.testcompose.test.ComposeTest
+import org.beatonma.commons.testcompose.withUnclippedBoundsInRoot
 import org.junit.Test
+
 
 @MediumTest
 class MembersLayoutTest : ComposeTest() {
-    private val profileLayoutTag = "profile_layout"
-    private val smallHeight = 24.dp
-    private val tallHeight = smallHeight * 3
-    private val itemWidth = 32.dp
+    private fun memberWithPortrait(name: String? = null) =
+        SampleMember.copy(name = name ?: SampleMember.name)
+
+    private fun memberNoPortrait(name: String? = null) =
+        SampleMember.copy(
+            name = name ?: SampleMember.name,
+            portraitUrl = null,
+        )
 
     @Test
-    fun testProfileLayout_withAllChildrenSameSize() {
+    fun MembersLayout_withSmallAndLargeItems_alignsCorrectly() {
+        var smallTotalHeight = 0.dp
         withContent {
-            TestLayout {
-                (0 until 5).forEach {
-                    Block(height = tallHeight, color = HslColor(it * 20F).toColor())
-                }
+            TestTheme {
+                MembersLayout(
+                    listOf(
+                        memberWithPortrait("large"),
+                        memberNoPortrait("small1"),
+                        memberNoPortrait("small2"),
+                        memberNoPortrait("small3"),
+                    ),
+                    onClick = {},
+                )
             }
         }
 
         perform {
-            val expectedWidth = itemWidth * 5
-            val expectedHeight = tallHeight
-
-            onNodeWithTag(profileLayoutTag).run {
-                assertWidthIsEqualTo(expectedWidth)
-                assertHeightIsEqualTo(expectedHeight)
+            listOf("small1", "small2", "small3").forEach { name ->
+                onNodeWithTag(TestTag.member(name))
+                    .withUnclippedBoundsInRoot { smallTotalHeight += it.height.toDp() }
             }
+
+            onNodeWithTag(TestTag.member("large"))
+                .assertHeightIsEqualTo(smallTotalHeight)
+                .assertWidthIsEqualTo(MemberLayoutCardWidth)
         }
-    }
-
-    @Test
-    fun testProfileLayout_withNoChildren() {
-        withContent {
-            TestLayout {
-
-            }
-        }
-
-        perform {
-            onNodeWithTag(profileLayoutTag).run {
-                assertWidthIsEqualTo(0.dp)
-                assertHeightIsEqualTo(0.dp)
-            }
-        }
-    }
-
-    @Test
-    fun testProfileLayout_withSmallAndLargeChildren() {
-        withContent {
-            TestLayout {
-                (0 until 5).forEach {
-                    Block(height = smallHeight, color = HslColor(it * 20F).toColor())
-                    Block(height = tallHeight, color = HslColor(it * 20F).toColor())
-                }
-            }
-        }
-
-        perform {
-            // 3 small items per column -> 2 columns, and 5 columns for the large items
-            val expectedWidth = (itemWidth * 2) + (itemWidth * 5)
-
-            onNodeWithTag(profileLayoutTag).run {
-                assertWidthIsEqualTo(expectedWidth)
-                assertHeightIsEqualTo(tallHeight)
-            }
-        }
-    }
-
-    @Composable
-    private fun TestLayout(content: @Composable () -> Unit) {
-        TestTheme {
-            MembersLayout(
-                Modifier.testTag(profileLayoutTag),
-                content = content,
-            )
-        }
-    }
-
-    @Composable
-    private fun Block(
-        width: Dp = itemWidth,
-        height: Dp,
-        color: Color,
-        content: @Composable () -> Unit = { Text("Hello") }
-    ) {
-        Surface(Modifier.size(width, height), color = color, content = content)
     }
 }

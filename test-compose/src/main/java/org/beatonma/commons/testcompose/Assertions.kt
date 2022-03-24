@@ -46,8 +46,8 @@ fun SemanticsNodeInteraction.assertHeightIsAtMost(expected: Dp) =
     }
 
 
-private fun SemanticsNodeInteraction.withUnclippedBoundsInRoot(
-    assertion: Density.(Rect) -> Unit
+fun SemanticsNodeInteraction.withUnclippedBoundsInRoot(
+    assertion: Density.(Rect) -> Unit,
 ): SemanticsNodeInteraction {
     val node = fetchSemanticsNode("Failed to retrieve bounds of the node.")
     val density = node.root!!.density

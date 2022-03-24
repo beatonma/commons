@@ -1,7 +1,6 @@
 package org.beatonma.commons.app.ui.screens.frontpage
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -15,22 +14,21 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.beatonma.commons.BuildConfig
 import org.beatonma.commons.R
-import org.beatonma.commons.app.ui.components.members.MemberLayout
 import org.beatonma.commons.app.ui.components.members.MembersLayout
-import org.beatonma.commons.app.ui.components.party.ProvidePartyImageConfig
 import org.beatonma.commons.app.ui.uiDescription
 import org.beatonma.commons.app.util.logDebug
 import org.beatonma.commons.compose.padding.endOfContent
-import org.beatonma.commons.compose.systemui.navigationBarsPadding
 import org.beatonma.commons.compose.util.dot
 import org.beatonma.commons.core.House
 import org.beatonma.commons.core.ZeitgeistReason
-import org.beatonma.commons.core.extensions.fastForEach
 import org.beatonma.commons.data.core.room.entities.bill.ZeitgeistBill
 import org.beatonma.commons.data.core.room.entities.division.ZeitgeistDivision
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
@@ -102,13 +100,7 @@ private fun ZeitgeistContent(
                 Text(BuildConfig.APPLICATION_ID, style = typography.caption)
             }
 
-            item {
-                Spacer(
-                    modifier = Modifier
-                        .navigationBarsPadding()
-                        .endOfContent()
-                )
-            }
+            endOfContent()
         }
     }
 }
@@ -127,19 +119,24 @@ private fun ZeitgeistMembers(
     members: List<ZeitgeistMember>,
     onClick: MemberAction,
 ) {
-    ProvidePartyImageConfig {
-        MembersLayout {
-            members.fastForEach {
-                MemberLayout(
-                    it.member,
-                    onClick = { onClick(it.member.profile) },
-                    decoration = {
-                        ReasonIcon(it.reason)
-                    }
-                )
+    val profiles by remember(members) {
+        mutableStateOf(members.map { it.member.profile })
+    }
+
+    MembersLayout(
+        profiles,
+        onClick = onClick,
+        decoration = { profile ->
+            val reason = remember {
+                members.find {
+                    it.member.profile.parliamentdotuk == profile.parliamentdotuk
+                }?.reason
+            }
+            if (reason != null) {
+                ReasonIcon(reason)
             }
         }
-    }
+    )
 }
 
 @OptIn(ExperimentalMaterialApi::class)

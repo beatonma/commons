@@ -1,206 +1,186 @@
 package org.beatonma.commons.app.ui.components.members
 
-import androidx.annotation.VisibleForTesting
-import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.layout.MeasureResult
-import androidx.compose.ui.layout.MeasureScope
-import androidx.compose.ui.layout.Placeable
-import androidx.compose.ui.unit.dp
 import org.beatonma.commons.app.ui.components.party.ProvidePartyImageConfig
-import org.beatonma.commons.compose.util.size
 import org.beatonma.commons.core.extensions.fastForEach
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
-import kotlin.math.ceil
-import kotlin.math.roundToInt
+import kotlin.random.Random
+
+private sealed interface MemberContainer
+
+/**
+ * Represents a profile with a portrait image.
+ */
+@JvmInline
+private value class LargeMember(val profile: MemberProfile) : MemberContainer
+
+/**
+ * Represents a group of profiles which do not have portrait images available.
+ */
+@JvmInline
+private value class SmallMemberGroup(val profiles: List<MemberProfile>) : MemberContainer
+
 
 @Composable
 fun MembersLayout(
     profiles: List<MemberProfile>,
     modifier: Modifier = Modifier,
-    itemModifier: Modifier = Modifier,
     showImages: Boolean = true,
+    shuffle: Boolean = true,
     decoration: (@Composable (MemberProfile) -> Unit)? = null,
     onClick: (MemberProfile) -> Unit,
 ) {
-    ProvidePartyImageConfig {
-        MembersLayout(modifier) {
-            profiles.fastForEach { profile ->
-                val resolvedOnClick = { onClick(profile) }
-                val resolvedDecoration: (@Composable () -> Unit)? = decoration?.let { func ->
-                    { func(profile) }
-                }
-
-                MemberLayout(
-                    profile,
-                    onClick = resolvedOnClick,
-                    modifier = itemModifier,
-                    showImages = showImages,
-                    decoration = resolvedDecoration,
-                )
-            }
-        }
+    if (showImages) {
+        MembersLayoutWithImages(profiles, modifier, shuffle, decoration, onClick)
+    } else {
+        CompactMembersLayout(profiles, modifier, decoration, onClick)
     }
 }
 
 /**
- * TODO cannot browse with accessibility
- *
- * Displays member profile of two different sizes: big ones with an avatar and small ones without.
- * Small profiles are grouped into columns among the large profiles.
- *
- * e.g. Two big profiles and three small ones might look like:
- *
- *  --- === ---
- *  | | === | |
- *  --- === ---
+ * Render a group of [MemberProfile]s without any portrait images.
  */
 @Composable
-fun MembersLayout(
-    modifier: Modifier = Modifier,
-    scrollState: ScrollState = rememberScrollState(0),
-    isScrollEnabled: Boolean = true,
-    reverseScrollDirection: Boolean = false,
-    contentPadding: PaddingValues = PaddingValues(0.dp),
-    content: @Composable () -> Unit,
-) {
-    MembersLayout(
-        modifier = modifier
-            .horizontalScroll(
-                scrollState,
-                isScrollEnabled,
-                reverseScrolling = reverseScrollDirection,
-            )
-            .clipToBounds()
-            .padding(contentPadding),
-        wrapHeight = 240.dp.value.toInt(),
-        content = content
-    )
-}
-
-
-@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-@Composable
-private fun MembersLayout(
+private fun CompactMembersLayout(
+    profiles: List<MemberProfile>,
     modifier: Modifier,
-    wrapHeight: Int,
-    content: @Composable () -> Unit,
+    decoration: (@Composable (MemberProfile) -> Unit)?,
+    onClick: (MemberProfile) -> Unit,
 ) {
-    Layout(content, modifier) { measurables, constraints ->
-        val placeables = measurables.map { it.measure(constraints) }
-
-        buildProfilesLayout(placeables, wrapHeight)
-    }
-}
-
-/**
- * Layout items as a simple row - all items must have the same dimensions.
- */
-private fun MeasureScope.buildProfilesLayoutAllSameSize(
-    placeables: List<Placeable>,
-): MeasureResult {
-
-    val f = placeables.first()
-    val (w, h) = f.size
-
-    val totalWidth = w * placeables.size
-
-    return layout(totalWidth, h) {
-        var x = 0
-        val y = 0
-
-        placeables.fastForEach { placeable ->
-            placeable.placeRelative(x, y)
-            x += w
+    BaseMembersLayout(modifier) {
+        items(profiles) { profile ->
+            Profile(
+                profile,
+                showImages = false,
+                decoration,
+                onClick,
+            )
         }
     }
 }
 
 /**
- * Expects items of 0-2 different sizes. Small items are grouped into columns.
- * Large items get a column of their own.
+ * Render a group of [MemberProfile]s with portrait images where available.
+ *
+ * Members with portraits are displayed as items in a row.
+ * Members without portraits are grouped together and displayed as columns, interspersed among
+ * those that do have portraits.
  */
-private fun MeasureScope.buildProfilesLayout(
-    placeables: List<Placeable>,
-    wrapHeight: Int,
-): MeasureResult {
-    if (placeables.isEmpty()) {
-        return layout(0, 0) {}
+@Composable
+private fun MembersLayoutWithImages(
+    profiles: List<MemberProfile>,
+    modifier: Modifier,
+    shuffle: Boolean,
+    decoration: (@Composable (MemberProfile) -> Unit)?,
+    onClick: (MemberProfile) -> Unit,
+) {
+    fun <T> List<T>.maybeShuffled() = if (shuffle) this.shuffled() else this
+
+    val groupSize = 3
+    val orderedProfiles: List<MemberContainer> by remember(profiles) {
+        val (small, large) =
+            profiles
+                .maybeShuffled()
+                .partition { it.portraitUrl == null }
+
+        val smallContainers = small.chunked(groupSize).map(::SmallMemberGroup)
+        val largeContainers = large.map(::LargeMember)
+
+        // Recombine the large and small containers
+        val smallContainerPositions =
+            smallContainers
+                .map { Random.nextInt(0, largeContainers.size) }
+                .sorted()
+
+        val containers: MutableList<MemberContainer> = largeContainers.toMutableList()
+        smallContainerPositions.forEachIndexed { index, position ->
+            containers.add(position, smallContainers[index])
+        }
+
+        mutableStateOf(
+            containers.toList()
+        )
     }
 
-    val groups = placeables.groupBy { it.height }
-
-    if (groups.size == 1) {
-        return buildProfilesLayoutAllSameSize(placeables)
-    }
-
-    check(groups.size == 2) {
-        "Unexpected number of member card size groups: ${groups.size}"
-    }
-
-    val heights = groups.keys.sorted()
-    val minHeight = (heights.firstOrNull() ?: 1)
-    val maxHeight = (heights.lastOrNull() ?: wrapHeight)
-
-    val smallRows = (maxHeight.toFloat() / minHeight.toFloat()).roundToInt()
-
-    val smallCount = groups[minHeight]!!.size
-    val largeCount = groups[maxHeight]!!.size
-    val smallColumnsCount = ceil((smallCount.toFloat() / smallRows.toFloat())).toInt()
-    val columnCount = smallColumnsCount + largeCount
-    val totalWidth = (columnCount * placeables.first().width)
-
-    return layout(totalWidth, maxHeight) {
-        var smallRow = 0
-        var smallX = Int.MIN_VALUE
-        var smallY = 0
-
-        var largeX = Int.MIN_VALUE
-        val largeY = 0
-
-        var nextX = 0
-
-        placeables.fastForEach { placeable ->
-            val (w, h) = placeable.size
-
-            // Combine small items into columns
-            if (h == minHeight) {
-                if (smallX < 0) {
-                    smallX = nextX
-                    nextX = maxOf(smallX, largeX) + w
-                }
-
-                placeable.placeRelative(smallX, smallY)
-
-                if (smallRow >= smallRows) {
-                    smallRow = 0
-                    smallX = nextX
-                    smallY = 0
-                }
-                else {
-                    smallY += h
-                }
+    BaseMembersLayout(modifier) {
+        orderedProfiles.fastForEach { container ->
+            item {
+                MemberContainer(container, decoration, onClick)
             }
-
-            // Large items get their own column.
-            else {
-                if (largeX < 0) {
-                    largeX = nextX
-                    nextX = maxOf(smallX, largeX) + w
-                }
-                placeable.placeRelative(largeX, largeY)
-
-                largeX = nextX
-            }
-
-            nextX = maxOf(smallX, largeX) + w
         }
     }
+}
+
+@Composable
+private fun BaseMembersLayout(
+    modifier: Modifier,
+    content: LazyListScope.() -> Unit,
+) {
+    ProvidePartyImageConfig {
+        LazyRow(modifier) {
+            content()
+        }
+    }
+}
+
+@Composable
+private fun MemberContainer(
+    container: MemberContainer,
+    decoration: @Composable ((MemberProfile) -> Unit)?,
+    onClick: (MemberProfile) -> Unit,
+) {
+    when (container) {
+        is LargeMember -> Profile(container.profile, true, decoration, onClick)
+        is SmallMemberGroup -> MemberGroup(container, decoration, onClick)
+    }
+}
+
+@Composable
+private fun MemberGroup(
+    group: SmallMemberGroup,
+    decoration: @Composable ((MemberProfile) -> Unit)?,
+    onClick: (MemberProfile) -> Unit,
+) {
+    Column(
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
+        group.profiles.fastForEach { profile ->
+            Profile(
+                profile,
+                true,
+                decoration,
+                onClick,
+            )
+        }
+    }
+}
+
+@Composable
+private fun Profile(
+    profile: MemberProfile,
+    showImages: Boolean,
+    decoration: @Composable ((MemberProfile) -> Unit)?,
+    onClick: (MemberProfile) -> Unit,
+) {
+    val resolvedOnClick = { onClick(profile) }
+    val resolvedDecoration: (@Composable () -> Unit)? =
+        decoration?.let { func ->
+            { func(profile) }
+        }
+
+    MemberLayout(
+        profile,
+        onClick = resolvedOnClick,
+        showImages = showImages,
+        decoration = resolvedDecoration,
+    )
 }
