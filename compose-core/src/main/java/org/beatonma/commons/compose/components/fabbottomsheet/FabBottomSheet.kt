@@ -42,20 +42,55 @@ fun FabBottomSheet(
     fabClickLabel: String?,
     modifier: Modifier = Modifier,
     state: MutableState<FabBottomSheetState> = rememberFabBottomSheetState(),
-    surfaceColor: Color? = null,
-    contentColor: Color? = null,
+    fabColor: Color = colors.primary,
+    fabContentColor: Color = colors.onPrimary,
+    sheetColor: Color = colors.surface,
+    sheetContentColor: Color = colors.onSurface,
     onDismiss: () -> Unit = {},
     fabContent: @Composable (progress: Float) -> Unit,
     bottomSheetContent: @Composable (progress: Float) -> Unit,
 ) {
-    val progress by state.value.animateExpansionAsState()
-    val resolvedContentColor = contentColor ?: getContentColor(progress)
-    val resolvedSurfaceColor = surfaceColor ?: getSurfaceColor(progress)
-
-    FabBottomSheetLayout(
+    FabBottomSheet(
         fabClickLabel = fabClickLabel,
         state = state.value,
         onStateChange = { newState -> state.value = newState },
+        fabColor = fabColor,
+        fabContentColor = fabContentColor,
+        sheetColor = sheetColor,
+        sheetContentColor = sheetContentColor,
+        fabContent = fabContent,
+        bottomSheetContent = bottomSheetContent,
+        modifier = modifier,
+        onDismiss = onDismiss,
+    )
+}
+
+/**
+ * Displays a FloatingActionButton which expands into a bottom sheet dialog when tapped.
+ */
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun FabBottomSheet(
+    fabClickLabel: String?,
+    modifier: Modifier = Modifier,
+    state: FabBottomSheetState,
+    onStateChange: (FabBottomSheetState) -> Unit,
+    fabColor: Color = colors.primary,
+    fabContentColor: Color = colors.onPrimary,
+    sheetColor: Color = colors.surface,
+    sheetContentColor: Color = colors.onSurface,
+    onDismiss: () -> Unit = {},
+    fabContent: @Composable (progress: Float) -> Unit,
+    bottomSheetContent: @Composable (progress: Float) -> Unit,
+) {
+    val progress by state.animateExpansionAsState()
+    val resolvedContentColor = getContentColor(fabContentColor, sheetContentColor, progress)
+    val resolvedSurfaceColor = getSurfaceColor(fabColor, sheetColor, progress)
+
+    FabBottomSheetLayout(
+        fabClickLabel = fabClickLabel,
+        state = state,
+        onStateChange = onStateChange,
         progress = progress,
         fabContent = fabContent,
         bottomSheetContent = bottomSheetContent,
@@ -173,16 +208,24 @@ private fun BottomSheet(
 }
 
 @Composable
-private fun getSurfaceColor(progress: Float): Color =
+private fun getSurfaceColor(
+    fabColor: Color,
+    sheetColor: Color,
+    progress: Float,
+): Color =
     progress
         .progressIn(0F, 0.4F)
-        .lerpBetween(colors.primary, colors.surface)
+        .lerpBetween(fabColor, sheetColor)
 
 @Composable
-private fun getContentColor(progress: Float): Color =
+private fun getContentColor(
+    fabContentColor: Color,
+    sheetContentColor: Color,
+    progress: Float,
+): Color =
     progress
         .progressIn(0F, 0.4F)
-        .lerpBetween(colors.onPrimary, colors.onSurface)
+        .lerpBetween(fabContentColor, sheetContentColor)
 
 @Composable
 private fun getSurfaceShape(progress: Float): CornerBasedShape {

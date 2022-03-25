@@ -10,7 +10,6 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -43,7 +42,7 @@ import org.beatonma.commons.themed.buttons
 internal fun DeleteAccountUi(
     userToken: UserToken,
     progress: Float,
-    profileState: MutableState<ProfileState>,
+    onCancel: () -> Unit,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     confirmDeleteAction: suspend (UserToken) -> Unit,
 ) {
@@ -72,7 +71,7 @@ internal fun DeleteAccountUi(
                     enabled = progress == 1f,
                 )
 
-                CancelButton(onClick = { profileState.value = ProfileState.Overview })
+                CancelButton(onClick = onCancel)
             }
         }
     }

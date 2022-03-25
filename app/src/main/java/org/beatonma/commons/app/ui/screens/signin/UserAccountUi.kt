@@ -15,6 +15,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,7 +32,6 @@ import org.beatonma.commons.compose.animation.lerpBetween
 import org.beatonma.commons.compose.components.fabbottomsheet.BottomSheetText
 import org.beatonma.commons.compose.components.fabbottomsheet.FabBottomSheet
 import org.beatonma.commons.compose.components.fabbottomsheet.FabText
-import org.beatonma.commons.compose.components.fabbottomsheet.animateExpansionAsState
 import org.beatonma.commons.compose.components.fabbottomsheet.rememberFabBottomSheetState
 import org.beatonma.commons.compose.components.text.Caption
 import org.beatonma.commons.compose.components.text.ResourceText
@@ -39,7 +39,9 @@ import org.beatonma.commons.compose.padding.padding
 import org.beatonma.commons.compose.util.dotted
 import org.beatonma.commons.core.extensions.progressIn
 import org.beatonma.commons.data.core.room.entities.user.UserToken
+import org.beatonma.commons.theme.onSearchBar
 import org.beatonma.commons.theme.onWarningSurface
+import org.beatonma.commons.theme.searchBar
 import org.beatonma.commons.theme.warningSurface
 import org.beatonma.commons.themed.animation
 import org.beatonma.commons.themed.padding
@@ -68,18 +70,20 @@ internal fun UserProfileFabUi(
     userToken: UserToken = LocalUserToken.current,
     accountActions: UserAccountActions,
 ) {
-    val fabState = rememberFabBottomSheetState()
-    val profileState = remember { mutableStateOf(ProfileState.Overview) }
+    var fabState by rememberFabBottomSheetState()
+    var profileState by remember { mutableStateOf(ProfileState.Overview) }
 
-    val fabProgress by fabState.value.animateExpansionAsState()
-    val profileStateProgress by profileState.value.animateAsState()
+    val profileStateProgress by profileState.animateAsState()
 
     FabBottomSheet(
         fabClickLabel = userToken.contentDescription,
         state = fabState,
-        surfaceColor = getSurfaceColor(fabProgress, profileStateProgress),
-        contentColor = getContentColor(fabProgress, profileStateProgress),
-        onDismiss = { profileState.value = ProfileState.Overview },
+        onStateChange = { fabState = it },
+        fabColor = colors.searchBar,
+        fabContentColor = colors.onSearchBar,
+        sheetColor = getSurfaceColor(profileStateProgress),
+        sheetContentColor = getContentColor(profileStateProgress),
+        onDismiss = { profileState = ProfileState.Overview },
         fabContent = { progress ->
             FabText(
                 userToken.username,
@@ -91,7 +95,7 @@ internal fun UserProfileFabUi(
                 ProfileSheetContent(
                     userToken = userToken,
                     progress = progress - profileStateProgress,
-                    profileState = profileState,
+                    onProfileStateChange = { profileState = it },
                     userAccountActions = accountActions,
                 )
             }
@@ -100,7 +104,7 @@ internal fun UserProfileFabUi(
                 DeleteAccountUi(
                     userToken,
                     progress = profileStateProgress,
-                    profileState = profileState,
+                    onCancel = { profileState = ProfileState.Overview },
                     confirmDeleteAction = accountActions.deleteAccount
                 )
             }
@@ -112,7 +116,7 @@ internal fun UserProfileFabUi(
 private fun ProfileSheetContent(
     userToken: UserToken,
     progress: Float,
-    profileState: MutableState<ProfileState>,
+    onProfileStateChange: (ProfileState) -> Unit,
     userAccountActions: UserAccountActions,
 ) {
     val usernameState = remember { mutableStateOf(EditableState.ReadOnly) }
@@ -123,7 +127,7 @@ private fun ProfileSheetContent(
         progress = progress,
         usernameState = usernameState,
         isReadOnly = isReadOnly,
-        onProfileStateChange = { profileState.value = it },
+        onProfileStateChange = onProfileStateChange,
         userAccountActions = userAccountActions,
     )
 }
@@ -241,35 +245,25 @@ private fun DeleteAccountButton(
 }
 
 @Composable
-private fun getSurfaceColor(fabProgress: Float, profileProgress: Float): Color {
-    val startColor = if (fabProgress == 1F) colors.surface else colors.primary
-    val endColor = if (profileProgress == 0F) colors.surface else colors.warningSurface
-
-    return getColor(
-        if (profileProgress > 0F) profileProgress else fabProgress,
-        startColor,
-        endColor
-    )
-}
-
-@Composable
-private fun getContentColor(fabProgress: Float, profileProgress: Float): Color {
-    val startColor = if (fabProgress == 1F) colors.onSurface else colors.onPrimary
-    val endColor = if (profileProgress == 0F) colors.onSurface else colors.onWarningSurface
-
-    return getColor(
-        if (profileProgress > 0F) profileProgress else fabProgress,
-        startColor,
-        endColor
-    )
-}
-
-@Composable
 private fun ProfileState.animateAsState() = animation.animateFloatAsState(
     when (this) {
         ProfileState.Overview -> 0F
         ProfileState.DeleteAccount -> 1F
     }
+)
+
+@Composable
+private fun getSurfaceColor(profileProgress: Float): Color = getColor(
+    profileProgress,
+    colors.surface,
+    colors.warningSurface
+)
+
+@Composable
+private fun getContentColor(profileProgress: Float): Color = getColor(
+    profileProgress,
+    colors.onSurface,
+    colors.onWarningSurface
 )
 
 private fun getColor(progress: Float, start: Color, end: Color) =
