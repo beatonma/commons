@@ -84,14 +84,14 @@ fun NavController.navigateTo(searchResult: SearchResult) {
 }
 
 fun NavController.navigateToMember(memberID: ParliamentID) {
-    navigate(CommonsService.getMemberUrl(memberID))
+    navigateTo(CommonsService.getMemberUrl(memberID))
 }
 
 fun NavController.navigateToConstituencyResult(
     constituencyId: ParliamentID,
     electionId: ParliamentID,
 ) {
-    navigate(CommonsService.getConstituencyResultsUrl(constituencyId, electionId))
+    navigateTo(CommonsService.getConstituencyResultsUrl(constituencyId, electionId))
 }
 
 fun NavController.navigateTo(memberProfile: MemberProfile) {

@@ -1,40 +1,44 @@
 package org.beatonma.commons.app.ui.screens.frontpage
 
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import org.beatonma.commons.app.ui.base.IoLiveDataViewModel
 import org.beatonma.commons.data.core.room.entities.ZeitgeistContent
 import org.beatonma.commons.repo.models.Zeitgeist
 import org.beatonma.commons.repo.repository.ZeitgeistRepository
-import org.beatonma.commons.repo.result.BaseResult
 import org.beatonma.commons.repo.result.Success
+import org.beatonma.commons.repo.result.map
+import org.beatonma.commons.repo.result.onSuccess
 import javax.inject.Inject
 
 @HiltViewModel
 class ZeitgeistViewModel @Inject constructor(
-    zeitgeistRepository: ZeitgeistRepository,
-) : ViewModel() {
-    val zeitgeist: Flow<BaseResult<Zeitgeist, Throwable>> =
-        zeitgeistRepository.getZeitgeist().transform { v: BaseResult<Zeitgeist, Throwable> ->
-            when (v) {
-                is Success -> {
-                    val zeitgeist = v.data
+    private val repository: ZeitgeistRepository,
+) : IoLiveDataViewModel<Zeitgeist>() {
+    init {
+        loadZeitgeist()
+    }
 
-                    emit(
-                        Success(
-                            Zeitgeist(
-                                zeitgeistShuffler(zeitgeist.members),
-                                zeitgeistShuffler(zeitgeist.divisions),
-                                zeitgeistShuffler(zeitgeist.bills),
-                            ),
-                            v.message,
-                        )
-                    )
+    fun loadZeitgeist() {
+        viewModelScope.launch {
+            repository.getZeitgeist()
+                .collectLatest { result ->
+                    result
+                        .map { zeitgeist ->
+                            Success(
+                                Zeitgeist(
+                                    zeitgeistShuffler(zeitgeist.members),
+                                    zeitgeistShuffler(zeitgeist.divisions),
+                                    zeitgeistShuffler(zeitgeist.bills),
+                                )
+                            )
+                        }
+                        .onSuccess(this@ZeitgeistViewModel::postValue)
                 }
-                else -> emit(v)
-            }
         }
+    }
 
     /**
      * Reorder zeitgeist content lists while respecting priority settings.

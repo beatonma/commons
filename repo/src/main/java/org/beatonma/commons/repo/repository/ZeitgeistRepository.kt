@@ -27,7 +27,6 @@ class ZeitgeistRepository @Inject constructor(
     private val billDao: BillDao,
     private val divisionDao: DivisionDao,
 ) {
-
     fun getZeitgeist(): ResultFlow<Zeitgeist> = cachedResultFlow(
         databaseQuery = ::loadZeitgeist,
         networkCall = remoteSource::getZeitgeist,
@@ -51,7 +50,7 @@ class ZeitgeistRepository @Inject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun loadZeitgeist(): Flow<Zeitgeist> = channelFlow {
+    private fun loadZeitgeist(): Flow<Zeitgeist> = channelFlow {
         val zeitgeist = Zeitgeist()
 
         launch {

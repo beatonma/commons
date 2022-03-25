@@ -18,19 +18,24 @@ import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ProvidableCompositionLocal
-import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import org.beatonma.commons.BuildConfig
 import org.beatonma.commons.R
 import org.beatonma.commons.app.ui.components.members.MembersLayout
 import org.beatonma.commons.app.ui.uiDescription
+import org.beatonma.commons.app.util.findNavigationController
 import org.beatonma.commons.app.util.logDebug
+import org.beatonma.commons.app.util.navigateTo
 import org.beatonma.commons.compose.padding.endOfContent
 import org.beatonma.commons.compose.util.dot
 import org.beatonma.commons.core.House
@@ -40,37 +45,38 @@ import org.beatonma.commons.data.core.room.entities.division.ZeitgeistDivision
 import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 import org.beatonma.commons.data.core.room.entities.member.ZeitgeistMember
 import org.beatonma.commons.repo.models.Zeitgeist
+import org.beatonma.commons.repo.result.IoLoading
+import org.beatonma.commons.repo.result.onSuccess
 import org.beatonma.commons.theme.AppIcon
 import org.beatonma.commons.theme.formatting.formatted
 import org.beatonma.commons.theme.house
 
 
-val LocalZeitgeistActions: ProvidableCompositionLocal<ZeitgeistActions> =
-    compositionLocalOf { error("ZeitgeistActions have not been provided") }
-
 internal typealias MemberAction = (MemberProfile) -> Unit
 internal typealias DivisionAction = (ZeitgeistDivision) -> Unit
 internal typealias BillAction = (ZeitgeistBill) -> Unit
 
-class ZeitgeistActions(
-    val onMemberClick: MemberAction,
-    val onDivisionClick: DivisionAction,
-    val onBillClick: BillAction,
-)
 
 @Composable
 fun ZeitgeistContent(
-    zeitgeist: Zeitgeist,
     modifier: Modifier = Modifier,
+    viewmodel: ZeitgeistViewModel = hiltViewModel(),
+    navController: NavController = findNavigationController(),
     lazyListState: LazyListState = rememberLazyListState(),
-    actions: ZeitgeistActions = LocalZeitgeistActions.current,
 ) {
+    val result by viewmodel.livedata.observeAsState(IoLoading)
+    var zeitgeist by remember { mutableStateOf(Zeitgeist()) }
+
+    LaunchedEffect(result) {
+        result.onSuccess { zeitgeist = it }
+    }
+
     ZeitgeistContent(
         zeitgeist,
         lazyListState,
-        actions.onMemberClick,
-        actions.onDivisionClick,
-        actions.onBillClick,
+        navController::navigateTo,
+        navController::navigateTo,
+        navController::navigateTo,
         modifier,
     )
 }

@@ -13,23 +13,14 @@ import androidx.compose.ui.Modifier
 import org.beatonma.commons.app.ui.screens.search.SearchDisplayType
 import org.beatonma.commons.app.ui.screens.search.SearchUi
 import org.beatonma.commons.app.ui.screens.signin.UserAccountFabUi
-import org.beatonma.commons.app.ui.util.WithResultData
-import org.beatonma.commons.repo.models.Zeitgeist
-import org.beatonma.commons.repo.result.IoResult
 
 @Composable
-fun FrontPageUi(result: IoResult<Zeitgeist>) {
+fun FrontPageUi() {
     val zeitgeistListState = rememberLazyListState()
     var searchDisplayType by remember { mutableStateOf(SearchDisplayType.Transparent) }
 
     Box {
-        WithResultData(result) { data ->
-            ZeitgeistContent(
-                data,
-                Modifier,
-                zeitgeistListState
-            )
-        }
+        ZeitgeistContent(lazyListState = zeitgeistListState)
 
         SearchUi(
             modifier = Modifier.align(Alignment.TopEnd),
