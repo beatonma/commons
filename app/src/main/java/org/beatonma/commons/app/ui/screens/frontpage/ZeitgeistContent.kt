@@ -1,11 +1,15 @@
 package org.beatonma.commons.app.ui.screens.frontpage
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.ListItem
@@ -58,10 +62,12 @@ class ZeitgeistActions(
 fun ZeitgeistContent(
     zeitgeist: Zeitgeist,
     modifier: Modifier = Modifier,
+    lazyListState: LazyListState = rememberLazyListState(),
     actions: ZeitgeistActions = LocalZeitgeistActions.current,
 ) {
     ZeitgeistContent(
         zeitgeist,
+        lazyListState,
         actions.onMemberClick,
         actions.onDivisionClick,
         actions.onBillClick,
@@ -72,6 +78,7 @@ fun ZeitgeistContent(
 @Composable
 private fun ZeitgeistContent(
     zeitgeist: Zeitgeist,
+    lazyListState: LazyListState,
     memberOnClick: MemberAction,
     divisionOnClick: DivisionAction,
     billOnClick: BillAction,
@@ -81,7 +88,11 @@ private fun ZeitgeistContent(
         modifier,
         color = colors.background
     ) {
-        LazyColumn {
+        LazyColumn(state = lazyListState) {
+            item {
+                Spacer(Modifier.height(72.dp))
+            }
+
             item {
                 MainTitle()
             }

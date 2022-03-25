@@ -7,6 +7,13 @@ import org.beatonma.commons.core.ParliamentID
 import org.beatonma.commons.snommoc.CommonsService
 import org.beatonma.commons.snommoc.Contract
 
+sealed interface SearchResult {
+    val parliamentdotuk: ParliamentID
+    val name: String
+
+    fun toUri(): Uri
+}
+
 data class MemberSearchResult(
     @field:Json(name = Contract.PARLIAMENTDOTUK) override val parliamentdotuk: ParliamentID,
     @field:Json(name = Contract.NAME) override val name: String,
@@ -14,7 +21,7 @@ data class MemberSearchResult(
     @field:Json(name = Contract.PARTY) val party: PartySearchResult?,
     @field:Json(name = Contract.CONSTITUENCY) val constituency: ConstituencySearchResult?,
     @field:Json(name = Contract.CURRENT_POST) val currentPost: String?,
-): SearchResult {
+) : SearchResult {
     override fun toUri() = CommonsService.getMemberUrl(parliamentdotuk).toUri()
 }
 
@@ -34,12 +41,4 @@ data class ConstituencySearchResult(
     override fun toUri(): Uri {
         TODO("Not yet implemented")
     }
-}
-
-
-interface SearchResult {
-    val parliamentdotuk: ParliamentID
-    val name: String
-
-    fun toUri(): Uri
 }

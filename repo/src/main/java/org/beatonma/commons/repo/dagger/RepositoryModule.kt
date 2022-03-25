@@ -15,6 +15,7 @@ import org.beatonma.commons.repo.repository.ConstituencyRepository
 import org.beatonma.commons.repo.repository.DivisionRepository
 import org.beatonma.commons.repo.repository.MemberRepository
 import org.beatonma.commons.repo.repository.MemberRepositoryImpl
+import org.beatonma.commons.repo.repository.SearchRepository
 import org.beatonma.commons.repo.repository.SocialRepository
 import org.beatonma.commons.repo.repository.UserRepository
 import javax.inject.Singleton
@@ -65,4 +66,10 @@ class RepositoryModule {
     fun providesSocialRepository(
         remoteSource: CommonsApi,
     ): SocialRepository = SocialRepository(remoteSource)
+
+    @Singleton
+    @Provides
+    fun providesSearchRepository(
+        remoteSource: CommonsApi,
+    ): SearchRepository = SearchRepository(remoteSource)
 }

@@ -6,6 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import org.beatonma.commons.R
+import org.beatonma.commons.compose.padding.padding
+import org.beatonma.commons.themed.padding
 import org.beatonma.commons.themed.titleSmall
 
 @Composable
@@ -13,5 +15,5 @@ fun EmptyList(
     modifier: Modifier = Modifier,
     message: String = stringResource(R.string.empty_list),
 ) {
-    Text(message, modifier, style = typography.titleSmall)
+    Text(message, modifier.padding(padding.Screen), style = typography.titleSmall)
 }

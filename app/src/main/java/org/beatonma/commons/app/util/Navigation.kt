@@ -2,8 +2,11 @@ package org.beatonma.commons.app.util
 
 import android.net.Uri
 import android.os.Bundle
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalView
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import org.beatonma.commons.core.PARLIAMENTDOTUK
 import org.beatonma.commons.core.ParliamentID
@@ -68,3 +71,41 @@ class BundledDivision(val parliamentdotuk: ParliamentID) {
 private fun Fragment.navigateTo(uri: Uri) =
     Navigation.findNavController(requireView())
         .navigate(uri)
+
+@Composable
+fun findNavigationController() = Navigation.findNavController(LocalView.current)
+
+fun NavController.navigateTo(uri: String) {
+    navigate(uri.toUri())
+}
+
+fun NavController.navigateTo(searchResult: SearchResult) {
+    navigate(searchResult.toUri())
+}
+
+fun NavController.navigateToMember(memberID: ParliamentID) {
+    navigate(CommonsService.getMemberUrl(memberID))
+}
+
+fun NavController.navigateToConstituencyResult(
+    constituencyId: ParliamentID,
+    electionId: ParliamentID,
+) {
+    navigate(CommonsService.getConstituencyResultsUrl(constituencyId, electionId))
+}
+
+fun NavController.navigateTo(memberProfile: MemberProfile) {
+    navigateToMember(memberProfile.parliamentdotuk)
+}
+
+fun NavController.navigateTo(constituency: Constituency) {
+    navigateTo(CommonsService.getConstituencyUrl(constituency.parliamentdotuk))
+}
+
+fun NavController.navigateTo(division: ZeitgeistDivision) {
+    navigateTo(CommonsService.getDivisionUrl(division.house, division.id))
+}
+
+fun NavController.navigateTo(bill: ZeitgeistBill) {
+    navigateTo(CommonsService.getBillUrl(bill.id))
+}

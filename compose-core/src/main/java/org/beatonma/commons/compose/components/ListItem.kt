@@ -72,9 +72,9 @@ fun ListItem(
             if (icon != null) {
                 Box(
                     Modifier
+                        .size(size.IconLarge)
                         .padding(end = 16.dp)
                         .clip(shapes.small)
-                        .size(size.IconLarge)
                 ) {
                     icon()
                 }
