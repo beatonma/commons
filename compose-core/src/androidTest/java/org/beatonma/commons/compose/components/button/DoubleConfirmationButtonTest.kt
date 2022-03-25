@@ -1,4 +1,4 @@
-package org.beatonma.commons.compose.components
+package org.beatonma.commons.compose.components.button
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Text
@@ -196,8 +196,9 @@ class DoubleConfirmationButtonTest : ComposeTest() {
         TestLayout {
             Column {
                 DoubleConfirmationButton(
-                    state = state,
                     onClick = onClick,
+                    state = state.value,
+                    onStateChange = { state.value = it },
                     safeContent = {
                         Text(safeContentText)
                     },

@@ -1,5 +1,6 @@
 package org.beatonma.commons.compose.components
 
+import org.beatonma.commons.compose.components.button.DoubleConfirmationButtonTest
 import org.beatonma.commons.compose.components.fabbottomsheet.FabBottomSheetTest
 import org.beatonma.commons.compose.components.text.TextTestSuite
 import org.junit.runner.RunWith
