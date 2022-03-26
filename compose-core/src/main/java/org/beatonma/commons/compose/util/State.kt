@@ -18,23 +18,30 @@ fun MutableState<Boolean>.toggle(): Boolean {
     return value
 }
 
+@Deprecated("Prefer explicit remember { mutableStateOf() }")
 @Composable
 private fun <T> rememberMutableState(default: T) = remember { mutableStateOf(default) }
 
+@Deprecated("Prefer explicit remember { mutableStateOf() }")
 @Composable
 fun rememberText(default: String = ""): MutableState<String> = rememberMutableState(default)
 
+@Deprecated("Prefer explicit remember { mutableStateOf() }")
 @Composable
 fun rememberBoolean(default: Boolean = false) = rememberMutableState(default)
 
+@Deprecated("Prefer explicit remember { mutableStateOf() }")
 @Composable
 fun rememberInt(default: Int = 0) = rememberMutableState(default)
 
+@Deprecated("Prefer explicit remember { mutableStateOf() }")
 @Composable
 fun rememberFloat(default: Float = 0F) = rememberMutableState(default)
 
+@Deprecated("Prefer explicit remember { mutableStateOf() }")
 @Composable
 fun <T> rememberListOf(default: List<T> = listOf()) = rememberMutableState(default)
 
+@Deprecated("Prefer explicit remember { mutableStateOf() }")
 @Composable
 fun <T> rememberSetOf(default: Set<T> = setOf()) = rememberMutableState(default)

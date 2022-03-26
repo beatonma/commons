@@ -11,6 +11,8 @@ import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -67,8 +69,8 @@ fun CommonsDivisionLayout(
     onMemberClick: MemberVoteAction = LocalDivisionActions.current.onMemberClick,
 ) {
     val query = rememberText()
-    val voteTypeFilters = rememberSetOf(VoteType.values().toSet())
-    var filteredVotes by rememberListOf(division.votes)
+    val voteTypeFilters = remember { mutableStateOf(VoteType.values().toSet()) }
+    var filteredVotes by remember { mutableStateOf(division.votes) }
 
     DivisionVotesLaunchedEffect(
         query.value,
