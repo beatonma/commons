@@ -15,14 +15,6 @@ fun rememberExpandCollapseState(
     default: ExpandCollapseState = ExpandCollapseState.Collapsed,
 ) = remember { mutableStateOf(default) }
 
-fun MutableState<ExpandCollapseState>.collapse() {
-    value = ExpandCollapseState.Collapsed
-}
-
-fun MutableState<ExpandCollapseState>.expand() {
-    value = ExpandCollapseState.Expanded
-}
-
 val MutableState<ExpandCollapseState>.isCollapsed: Boolean get() = value.isCollapsed
 val MutableState<ExpandCollapseState>.isExpanded: Boolean get() = value.isExpanded
 
