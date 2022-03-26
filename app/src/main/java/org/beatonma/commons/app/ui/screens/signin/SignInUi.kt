@@ -1,13 +1,27 @@
 package org.beatonma.commons.app.ui.screens.signin
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.Button
+import androidx.compose.material.MaterialTheme.colors
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import org.beatonma.commons.R
 import org.beatonma.commons.compose.components.fabbottomsheet.BottomSheetText
 import org.beatonma.commons.compose.components.fabbottomsheet.FabBottomSheet
@@ -15,6 +29,8 @@ import org.beatonma.commons.compose.components.fabbottomsheet.FabText
 import org.beatonma.commons.compose.modifiers.wrapContentSize
 import org.beatonma.commons.compose.util.HtmlText
 import org.beatonma.commons.core.extensions.progressIn
+import org.beatonma.commons.theme.textPrimaryDark
+import org.beatonma.commons.themed.buttons
 
 
 @Composable
@@ -46,6 +62,8 @@ private fun SignInFabUi(onSignIn: () -> Unit) {
                         onClick = onSignIn,
                         modifier = Modifier.align(Alignment.End)
                     )
+
+                    Spacer(Modifier.height(24.dp))
                 }
             }
         },
@@ -67,17 +85,47 @@ private fun SignInRationale(visibilityProgress: Float) {
 
 @Composable
 private fun SignInButton(
-    modifier: Modifier,
     onClick: () -> Unit,
+    modifier: Modifier,
 ) {
-    AndroidView(
-        factory = { context ->
-            com.google.android.gms.common.SignInButton(context).apply {
-                setSize(com.google.android.gms.common.SignInButton.SIZE_STANDARD)
-                setColorScheme(com.google.android.gms.common.SignInButton.COLOR_AUTO)
-                setOnClickListener { onClick() }
-            }
-        },
-        modifier.testTag(UserAccountTestTag.SignInGoogleButton),
+    GoogleSignInButton(onClick, modifier)
+}
+
+
+/**
+ * Spec: https://developers.google.com/identity/branding-guidelines
+ */
+@Composable
+private fun GoogleSignInButton(
+    onClick: () -> Unit,
+    modifier: Modifier,
+) {
+    Button(
+        onClick,
+        modifier
+            .height(40.dp)
+            .testTag(UserAccountTestTag.SignInGoogleButton),
+        colors = buttons.buttonColors(contentColor = colors.textPrimaryDark,
+            backgroundColor = Color.White),
+    ) {
+        GoogleIcon()
+        Spacer(Modifier.width(24.dp))
+        Text(
+            stringResource(R.string.account_sign_in_google),
+            fontFamily = FontFamily.SansSerif,
+            fontWeight = FontWeight.Medium,
+            fontSize = 14.sp
+        )
+    }
+}
+
+@Composable
+private fun GoogleIcon() {
+    Image(
+        painterResource(R.drawable.googleg_standard_color_18),
+        contentDescription = stringResource(R.string.account_sign_in_google),
+        modifier = Modifier
+            .size(18.dp)
+            .background(Color.White)
     )
 }

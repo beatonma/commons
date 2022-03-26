@@ -7,15 +7,11 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.test.espresso.Espresso
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.matcher.ViewMatchers.withClassName
 import androidx.test.filters.MediumTest
 import org.beatonma.commons.R
 import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.sampledata.SampleUserToken
 import org.beatonma.commons.test.extensions.assertions.shouldbe
-import org.hamcrest.core.Is.`is`
 import org.junit.Test
 
 @MediumTest
@@ -97,8 +93,8 @@ class SignInUiTest: UserAccountComposeTest() {
         }
 
         perform {
-            Espresso.onView(withClassName(`is`("com.google.android.gms.common.SignInButton")))
-                .perform(click())
+            onNodeWithTag(signInButtonTag)
+                .performClick()
 
             token.value shouldbe SampleUserToken
         }

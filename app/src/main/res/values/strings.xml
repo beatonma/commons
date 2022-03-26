@@ -103,6 +103,7 @@
     <!-- User account sign-in -->
     <string name="account_profile_title" translatable="true">Your account</string>
     <string name="account_sign_in" translatable="true">Sign in</string>
+    <string name="account_sign_in_google" translatable="true">Sign in with Google</string>
     <string name="account_sign_out" translatable="true">Sign out</string>
     <string name="account_sign_in_already_signed_in" translatable="true">You are signed in with account \'%1$s:%2$s\'</string>
     <string name="account_sign_in_rationale" translatable="true"><![CDATA[
