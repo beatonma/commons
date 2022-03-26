@@ -37,7 +37,7 @@ fun Avatar(
     logDebug("Avatar: $source")
     @Composable
     fun Boxed(content: @Composable BoxScope.() -> Unit) {
-        Box(modifier, contentAlignment = alignment, content = content)
+        Box(modifier.testTag(AvatarTestTag), contentAlignment = alignment, content = content)
     }
 
     if (source.isNullOrBlank()) {
@@ -50,24 +50,17 @@ fun Avatar(
         builder = builder,
     )
 
-    Box(modifier) {
-        when (val state = painter.state) {
-            is ImagePainter.State.Loading -> {
-                Boxed(loading)
-            }
-            is ImagePainter.State.Error -> {
-                Boxed { error(state.throwable) }
-            }
-            else -> {
-                Image(
-                    painter = painter,
-                    contentDescription = contentDescription,
-                    modifier = modifier.testTag(AvatarTestTag),
-                    alignment = alignment,
-                    contentScale = contentScale,
-                )
-            }
-        }
+    when (val state = painter.state) {
+        is ImagePainter.State.Loading -> Boxed(loading)
+        is ImagePainter.State.Error -> Boxed { error(state.throwable) }
+        else -> Image(
+            painter = painter,
+            contentDescription = contentDescription,
+            modifier = modifier.testTag(AvatarTestTag),
+            alignment = alignment,
+            contentScale = contentScale,
+        )
+
     }
 }
 
