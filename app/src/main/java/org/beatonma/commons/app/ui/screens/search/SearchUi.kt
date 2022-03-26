@@ -1,6 +1,7 @@
 package org.beatonma.commons.app.ui.screens.search
 
 import androidx.activity.compose.BackHandler
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -91,7 +92,6 @@ internal object SearchTestTag {
     const val Result = "search_result"
 }
 
-
 enum class SearchDisplayType {
     Transparent,
     Opaque,
@@ -152,8 +152,9 @@ fun SearchUi(
     }
 }
 
+@VisibleForTesting
 @Composable
-private fun SearchUi(
+internal fun SearchUi(
     state: SearchUiState,
     onStateChange: (SearchUiState) -> Unit,
     results: List<SearchResult>,
