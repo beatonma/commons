@@ -19,9 +19,9 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.test.filters.MediumTest
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.StandardTestDispatcher
 import org.beatonma.commons.compose.TestTag
 import org.beatonma.commons.data.core.room.entities.user.UserToken
 import org.beatonma.commons.sampledata.SampleUserToken
@@ -46,7 +46,7 @@ class EditableUsernameTest: ComposeTest() {
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private val dispatcher = TestCoroutineDispatcher()
+    private val dispatcher = StandardTestDispatcher()
 
 
     @Test
@@ -170,7 +170,8 @@ class EditableUsernameTest: ComposeTest() {
         }
 
         perform {
-            dispatcher.runBlockingTest {
+//            dispatcher.runBlockingTest {
+            dispatcher.dispatch(Dispatchers.Main) {
                 onNodeWithTag(testRenameSuccessfulTag)
                     .assertTextEquals("false")
 
@@ -214,7 +215,7 @@ class EditableUsernameTest: ComposeTest() {
         }
 
         perform {
-            dispatcher.runBlockingTest {
+            dispatcher.dispatch(Dispatchers.Main) {
                 onNodeWithTag(actionRequestRenameTag)
                     .performClick()
 
