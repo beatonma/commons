@@ -30,8 +30,6 @@ import org.beatonma.commons.app.ui.uiDescription
 import org.beatonma.commons.app.ui.util.WithResultData
 import org.beatonma.commons.compose.components.text.Quote
 import org.beatonma.commons.compose.systemui.statusBarsPadding
-import org.beatonma.commons.compose.util.rememberListOf
-import org.beatonma.commons.compose.util.rememberSetOf
 import org.beatonma.commons.compose.util.rememberText
 import org.beatonma.commons.core.VoteType
 import org.beatonma.commons.data.core.room.entities.division.CommonsDivision
@@ -39,6 +37,7 @@ import org.beatonma.commons.data.core.room.entities.division.CommonsDivisionData
 import org.beatonma.commons.data.core.room.entities.division.CommonsDivisionVote
 import org.beatonma.commons.repo.result.IoLoading
 import org.beatonma.commons.theme.formatting.formatted
+import org.beatonma.commons.themed.titleMedium
 
 internal val LocalDivisionActions: ProvidableCompositionLocal<DivisionActions> =
     compositionLocalOf { DivisionActions() }
@@ -119,7 +118,7 @@ private fun CollapsingHeader(
         modifier.statusBarsPadding(),
     ) {
         Row(verticalAlignment = Alignment.Bottom) {
-            Text(division.house.uiDescription(), style = typography.h5)
+            Text(division.house.uiDescription(), style = typography.titleMedium)
             Text(division.date.formatted())
         }
 

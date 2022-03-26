@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import org.beatonma.commons.compose.systemui.systemBarsPadding
 import org.beatonma.commons.repo.result.ResponseCode
+import org.beatonma.commons.themed.titleMedium
 
 @Composable
 fun ErrorUi(
@@ -36,7 +37,7 @@ fun ErrorUi(
     Box(modifier.systemBarsPadding(), contentAlignment = Alignment.Center) {
         Text(
             message ?: "Error",
-            style = typography.h5,
+            style = typography.titleMedium,
             color = colors.error,
             textAlign = TextAlign.Center,
         )

@@ -14,6 +14,7 @@ import androidx.compose.ui.text.style.TextAlign
 import org.beatonma.commons.compose.modifiers.onlyWhen
 import org.beatonma.commons.compose.padding.padding
 import org.beatonma.commons.themed.padding
+import org.beatonma.commons.themed.titleMedium
 
 
 @Composable
@@ -55,7 +56,7 @@ fun ComponentTitle(
                 padding(padding.ScreenHorizontal)
             },
         color,
-        style = typography.h5,
+        style = typography.titleMedium,
         maxLines = maxLines,
     )
 }

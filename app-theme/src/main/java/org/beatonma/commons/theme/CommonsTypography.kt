@@ -72,7 +72,3 @@ internal val CommonsTypography = Typography(
         letterSpacing = 1.5.sp
     )
 )
-
-val Typography.screenTitle get() = h4
-val Typography.componentTitle get() = h5
-val Typography.quote get() = body1

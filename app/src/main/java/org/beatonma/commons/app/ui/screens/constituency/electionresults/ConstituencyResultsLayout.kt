@@ -77,13 +77,13 @@ import org.beatonma.commons.data.core.room.entities.member.MemberProfile
 import org.beatonma.commons.data.core.room.entities.member.Party
 import org.beatonma.commons.repo.result.IoLoading
 import org.beatonma.commons.theme.AppIcon
-import org.beatonma.commons.theme.componentTitle
 import org.beatonma.commons.theme.formatting.formatPercent
 import org.beatonma.commons.theme.formatting.formatted
 import org.beatonma.commons.theme.onWarningSurface
 import org.beatonma.commons.theme.warningSurface
 import org.beatonma.commons.themed.padding
 import org.beatonma.commons.themed.size
+import org.beatonma.commons.themed.titleMedium
 import java.util.Locale
 
 
@@ -348,7 +348,7 @@ private fun CandidatePosition(
     ) {
         Text(
             "$position",
-            style = typography.componentTitle,
+            style = typography.titleMedium,
             color = partyWithTheme.theme.onPrimary
         )
     }
