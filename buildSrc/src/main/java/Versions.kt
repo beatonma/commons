@@ -33,7 +33,7 @@ object Versions {
         const val ACTIVITY = "1.3.1"
         const val ANNOTATIONS = "1.4.0-alpha02"
         const val APPCOMPAT = "1.4.0-alpha03"
-        const val CORE_KTX = "1.8.0-alpha04"
+        const val CORE_KTX = "1.9.0-alpha02"
         const val FRAGMENT = "1.4.0-alpha05"
         const val LIFECYCLE = "2.4.0-alpha02"
         const val NAVIGATION = "2.4.0-alpha05"
@@ -42,7 +42,7 @@ object Versions {
         const val WORK = "2.5.0"
 
         object Compose {
-            const val COMPOSE = "1.2.0-alpha03"
+            const val COMPOSE = "1.2.0-alpha06"
             const val ACTIVITY = "1.3.1"
             const val CONSTRAINT_LAYOUT = "1.0.0-beta02"
             const val LIFECYCLE_VIEWMODEL = "1.0.0-alpha07"
